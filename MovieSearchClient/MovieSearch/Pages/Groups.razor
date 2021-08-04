@@ -1,0 +1,33 @@
+﻿@using MovieSearch.Models
+
+<div class="card GroupsList">
+
+  <div class="card-header">
+    <button class="btn btn-primary" @onclick="@(async ()=> await Refresh("/"))">Root</button>
+    <button class="btn btn-primary" @onclick="@(async ()=> await Refresh("<back>"))" disabled="@BackDisabled">Back</button>
+  </div>
+
+  <div class="card-body">
+    @if (MovieGroups == null) {
+      <Loading Message="Loading..." />
+    }
+
+    @if (MovieGroups != null && MovieGroups.Groups != null && MovieGroups.Groups.Any()) {
+      <table class="table">
+        @foreach (IMovieGroup MovieGroupItem in MovieGroups.Groups) {
+          <tr class="Group" @onclick="async ()=> await Refresh(MovieGroupItem.Name)">
+            <td class="GroupName">
+              @MovieGroupItem.Name
+            </td>
+            <td class="GroupCount">
+              @MovieGroupItem.Count
+            </td>
+          </tr>
+        }
+      </table>
+    }
+
+  </div>
+
+</div>
+

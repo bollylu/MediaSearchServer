@@ -1,0 +1,49 @@
+﻿@using BLTools;
+@using MovieSearch.Models
+
+@if (Movies != null) {
+
+  <div class="card">
+
+    <div class="card-header">
+      <table class="VideoList col-12">
+        <tr>
+          <td class="col-4 text-center align-middle">
+            <table class="col-12">
+              <tr>
+                <td class="col-2"><button type="button" class="btn btn-block btn-outline-secondary m-1" @onclick="RefreshHome">&lt;&lt;</button></td>
+                <td class="col-2"><button type="button" class="btn btn-block btn-outline-secondary m-1" @onclick="RefreshPrevious" disabled="@BackDisabled">&lt;</button></td>
+                <td class="col-4 ActualPage h3 align-middle text-center">(@Pagination)</td>
+                <td class="col-2"> <button type="button" class="btn btn-block btn-outline-secondary m-1" @onclick="RefreshNext" disabled="@NextDisabled">&gt;</button></td>
+                <td class="col-2"> <button type="button" class="btn btn-block btn-outline-secondary m-1" @onclick="RefreshEnd">&gt;&gt;</button></td>
+              </tr>
+            </table>
+          </td>
+          <td class="col-8 text-center align-middle">
+            <span class="font-weight-bold h3 text-center align-middle">@MoviesTitle</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="card-body">
+
+      <div class="row row-cols-sm-1 row-cols-2">
+
+        @foreach (IMovie MovieItem in Movies.Movies) {
+          string HeaderText;
+          if (MovieItem.LocalName.Contains("(")) {
+            HeaderText = MovieItem.LocalName.BeforeLast('(').Trim();
+          } else {
+            HeaderText = MovieItem.LocalName.BeforeLast('.').Trim();
+          }
+          <div class="col-6 h-100">
+            <Video_card HeaderText="@HeaderText" BodySubTitle="Description" BodyText="@MovieItem.Group" ImageSource="@MovieItem.Picture" />
+          </div>
+        }
+
+      </div>
+
+    </div>
+  </div>
+}

@@ -1,0 +1,72 @@
+﻿<div class="container">
+  <div class="card mb-4 ">
+    <div class="card-header">
+      <span class="h3">@HeaderText</span>
+    </div>
+    <div class="card-body">
+      <div class="card-title">@BodyTitle</div>
+
+      <div class="row">
+        <div class="col-3">
+          @if (IsImageLoaded) {
+            <div class="card-img-top">
+              <img src="@ImageSource" />
+            </div>
+          } else {
+            <Loading Message="..." />
+          }
+        </div>
+        <div class="col-9">
+          <div class="card-subtitle">@BodySubTitle</div>
+          <div class="card-text">@BodyText</div>
+        </div>
+      </div>
+
+
+    </div>
+    @if (!string.IsNullOrEmpty(FooterLink)) {
+      <div class="card-footer">
+        <div class="card-link">@FooterLink</div>
+      </div>
+    }
+  </div>
+</div>
+
+@using MovieSearch.Services;
+
+@code {
+
+  [Parameter]
+  public string HeaderText { get; set; }
+  [Parameter]
+  public string BodyTitle { get; set; }
+  [Parameter]
+  public string BodySubTitle { get; set; }
+  [Parameter]
+  public string BodyText { get; set; }
+  [Parameter]
+  public string FooterLink { get; set; }
+  [Parameter]
+  public string ImageSource { get; set; }
+  [Parameter]
+  public string ImageWidth { get; set; }
+
+
+  protected override async Task OnParametersSetAsync() {
+    await GetImageSource();
+  }
+
+  private async Task GetImageSource() {
+    IsImageLoaded = false;
+    StateHasChanged();
+    ImageSource = await MovieService.GetPicture64(ImageSource);
+    IsImageLoaded = true;
+    StateHasChanged();
+  }
+
+  private bool IsImageLoaded = false;
+
+  [Inject]
+  public IMovieService MovieService { get; set; }
+
+}

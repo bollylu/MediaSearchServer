@@ -1,0 +1,25 @@
+﻿@page "/"
+
+<div class="container-fluid">
+  <div class="row">
+    <header>
+      <PageHeader />
+    </header>
+  </div>
+
+  <div class="row">
+    <div class="col-4">
+      <Groups />
+    </div>
+
+    <div class="col-8">
+      @if (CurrentGroup != null) {
+        <Videos Group="@(CurrentGroup ?? " / ")" Filter="@(CurrentFilter ?? "")" />
+      } else {
+        <Loading Message="Loading..." />
+      }
+    </div>
+
+  </div>
+
+</div>
