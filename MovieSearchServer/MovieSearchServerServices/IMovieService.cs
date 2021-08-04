@@ -12,7 +12,11 @@ namespace MovieSearchServerServices.MovieService {
 
     #region --- Movies --------------------------------------------
     List<string> ExcludedExtensions { get; }
+
+    Task<IMovie> GetMovies(int startPage = 1, int pageSize = 20);
+    Task<IMovie> GetMovies(string filter, int startPage = 1, int pageSize = 20);
     Task<IMovies> GetMovies(string group, string filter, int startPage = 1, int pageSize = 20);
+
     Task<byte[]> GetPicture(string pathname, int timeout = 5000);
     Task<string> GetPicture64(string pathname, int timeout = 5000);
     #endregion --- Movies --------------------------------------------

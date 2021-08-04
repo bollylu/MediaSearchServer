@@ -28,6 +28,35 @@ namespace MovieSearchServerServices.MovieService {
     public bool IsEmpty();
 
     /// <summary>
+    /// The count of movies in cache
+    /// </summary>
+    /// <returns>An integer >= 0</returns>
+    public int Count();
+
+    /// <summary>
+    /// Get all the movies in cache
+    /// </summary>
+    /// <returns>The complete list of movies in cache</returns>
+    public IEnumerable<IMovie> GetAllMovies();
+
+    /// <summary>
+    /// Get a page of movies
+    /// </summary>
+    /// <param name="startPage">Which page to start with</param>
+    /// <param name="pageSize">How many movies on a page</param>
+    /// <returns>A list of IMovie</returns>
+    public IEnumerable<IMovie> GetMovies(int startPage = 1, int pageSize = 20);
+
+    /// <summary>
+    /// Get a page of movie matching a filter
+    /// </summary>
+    /// <param name="filter">The data to check in name and alt. names</param>
+    /// <param name="startPage">Which page to start with</param>
+    /// <param name="pageSize">How many movies on a page</param>
+    /// <returns>A list of IMovie</returns>
+    public IEnumerable<IMovie> GetMovies(string filter, int startPage = 1, int pageSize = 20);
+
+    /// <summary>
     /// Get the list of movie that belong to the group name
     /// </summary>
     /// <param name="groupName">The name of the group</param>

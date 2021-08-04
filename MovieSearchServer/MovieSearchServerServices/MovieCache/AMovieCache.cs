@@ -11,16 +11,20 @@ using MovieSearch.Models;
 namespace MovieSearchServerServices.MovieService {
   public abstract class AMovieCache : ALoggable, IMovieCache {
 
+    public const int DEFAULT_START_PAGE = 1;
+    public const int DEFAULT_PAGE_SIZE = 20;
+
     /// <summary>
     /// Store the movies
     /// </summary>
-    protected readonly List<TMovie> _Items = new List<TMovie>();
+    protected readonly List<IMovie> _Items = new();
 
-    protected readonly object _LockCache = new object();
+    protected readonly object _LockCache = new();
 
     public string SourceName { get; set; }
 
     public abstract Task Load();
+
     public void Clear() {
       lock (_LockCache) {
         _Items.Clear();
@@ -31,6 +35,10 @@ namespace MovieSearchServerServices.MovieService {
       lock (_LockCache) {
         return _Items.IsEmpty();
       }
+    }
+
+    public int Count() {
+      return _Items.Count;
     }
 
     /// <summary>
@@ -44,7 +52,40 @@ namespace MovieSearchServerServices.MovieService {
       }
     }
 
-    
+    public IEnumerable<IMovie> GetAllMovies() {
+      try {
+        Log($"==> GetAllMovies()");
+        lock (_LockCache) {
+          return _Items.AsEnumerable();
+        }
+      } finally {
+        Log($"<== GetAllMovies()");
+      }
+    }
+
+    public IEnumerable<IMovie> GetMovies(int startPage = DEFAULT_START_PAGE, int pageSize = DEFAULT_PAGE_SIZE) {
+      return GetMovies("", startPage, pageSize);
+    }
+
+    public IEnumerable<IMovie> GetMovies(string filter, int startPage = DEFAULT_START_PAGE, int pageSize = DEFAULT_PAGE_SIZE) {
+      try {
+        Log($"==> GetMovies({filter.WithQuotes()}, {startPage}, {pageSize})");
+        lock (_LockCache) {
+          if (string.IsNullOrWhiteSpace(filter)) {
+            return _Items.Skip(pageSize * (startPage - 1))
+                         .Take(pageSize);
+          } else {
+            return _Items.Where(m => m.LocalName.Contains(filter, StringComparison.CurrentCultureIgnoreCase))
+                         .Skip(pageSize * (startPage - 1))
+                         .Take(pageSize);
+          }
+        }
+      } finally {
+        Log($"<== GetMovies({filter.WithQuotes()}, {startPage}, {pageSize})");
+      }
+    }
+
+
     public IReadOnlyList<IMovie> GetMoviesInGroup(string groupName) {
       try {
         Log("==> GetMoviesInGroup");
@@ -109,7 +150,7 @@ namespace MovieSearchServerServices.MovieService {
       return _Items.OrderBy(x => x.Group).Select(x => x.Group).Distinct();
     }
 
-    public async Task<IMovies> GetMoviesForGroupAndFilterInPages(string groupName, string filter, int startPage = 0, int pageSize = 20) {
+    public async Task<IMovies> GetMoviesForGroupAndFilterInPages(string groupName, string filter, int startPage = DEFAULT_START_PAGE, int pageSize = DEFAULT_PAGE_SIZE) {
 
       try {
         Log("==> GetMoviesForGroupAndFilterInPages");
@@ -117,7 +158,7 @@ namespace MovieSearchServerServices.MovieService {
         Log($"StartPage = {startPage}");
 
         if (IsEmpty()) {
-          return new TMovies() { Name="", Page = 1, AvailablePages = 1 };
+          return new TMovies() { Name = "", Page = 1, AvailablePages = 1 };
         }
 
         IReadOnlyList<IMovie> FilteredItems = await GetMoviesForGroupAndFilter(groupName, filter);

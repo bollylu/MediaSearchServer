@@ -116,6 +116,14 @@ namespace MovieSearchServerServices.MovieService {
       return RetVal;
     }
 
+    public Task<IMovie> GetMovies(int startPage = 1, int pageSize = 20) {
+      throw new NotImplementedException();
+    }
+
+    public Task<IMovie> GetMovies(string filter, int startPage = 1, int pageSize = 20) {
+      throw new NotImplementedException();
+    }
+
     public async Task<IMovies> GetMovies(string group, string filter = "", int startPage = 0, int pageSize = 20) {
 
       #region === Validate parameters ===
@@ -173,6 +181,6 @@ namespace MovieSearchServerServices.MovieService {
       return $"data:image/jpg;base64, {Convert.ToBase64String(PictureBytes)}";
     }
 
-
+    
   }
 }
