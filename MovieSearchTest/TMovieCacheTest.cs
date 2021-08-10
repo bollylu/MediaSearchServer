@@ -10,7 +10,7 @@ using MovieSearchServerServices.MovieService;
 namespace MovieSearchTest {
 
   [TestClass]
-  public class MovieCacheTest {
+  public class TMovieCacheTest {
 
     public static IMovieCache MovieCache;
 

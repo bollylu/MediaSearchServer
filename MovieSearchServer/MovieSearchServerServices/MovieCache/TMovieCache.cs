@@ -3,39 +3,40 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+
 using BLTools;
+
 using MovieSearch.Models;
 
 namespace MovieSearchServerServices.MovieService {
   public class TMovieCache : AMovieCache {
 
     public string RootPath { get; set; } = "";
-    public List<string> ExcludedExtensions { get; set; } = new List<string>() { ".nfo", ".jpg", ".vsmeta" };
+    public List<string> MoviesExtensions { get; set; } = new() { ".mkv", ".avi", ".mp4" };
 
     public override Task Load() {
-      Console.WriteLine("Initializing movies cache");
+      Log("Initializing movies cache");
 
       Clear();
 
       lock (_LockCache) {
-        
+
         DirectoryInfo RootFolder = new DirectoryInfo(RootPath);
 
         IEnumerable<FileInfo> MoviesInfo = RootFolder.GetFiles("*.*", new EnumerationOptions() { RecurseSubdirectories = true })
-                                                     .Where(f => !ExcludedExtensions.Contains(f.Extension));
+                                                     .Where(f => MoviesExtensions.Contains(f.Extension.ToLowerInvariant()));
 
         foreach (FileInfo MovieInfoItem in MoviesInfo.OrderBy(f => f.FullName)) {
 
-          string GroupName = MovieInfoItem.DirectoryName.After(RootPath, System.StringComparison.InvariantCultureIgnoreCase)
-                                                        .BeforeLast(Path.DirectorySeparatorChar)
-                                                        .Replace('\\', '/');
+          string LocalPath = MovieInfoItem.DirectoryName.After(RootPath, System.StringComparison.InvariantCultureIgnoreCase);
+
+          string GroupName = LocalPath.BeforeLast(Path.DirectorySeparatorChar).Replace('\\', '/');
 
           string FormattedGroupName = $"/{GroupName}/";
 
           LogDebug($"Group name = {GroupName}");
 
-          string PictureLocation = MovieInfoItem.DirectoryName.After(RootPath, System.StringComparison.InvariantCultureIgnoreCase)
-                                                              .Replace('\\', '/');
+          string PictureLocation = LocalPath.Replace('\\', '/');
 
           LogDebug($"PictureLocation = {PictureLocation}");
 
@@ -49,7 +50,7 @@ namespace MovieSearchServerServices.MovieService {
         }
       }
 
-      Console.WriteLine("Cache initialized successfully");
+      Log("Cache initialized successfully");
       return Task.CompletedTask;
     }
   }

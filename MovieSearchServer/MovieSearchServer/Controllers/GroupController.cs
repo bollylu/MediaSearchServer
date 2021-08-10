@@ -27,12 +27,12 @@ namespace MovieSearchServer.Controllers {
       MovieService = movieService;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IMovieGroups>> Get(string name, string filter) {
-      Console.WriteLine($"Get groups {name.FromUrl()} - {filter.FromUrl()}");
+    //[HttpGet]
+    //public async Task<ActionResult<IMovieGroups>> Get(string name, string filter) {
+    //  Console.WriteLine($"Get groups {name.FromUrl()} - {filter.FromUrl()}");
 
-      return new JsonResult(await MovieService.GetGroups(name.FromUrl(), filter.FromUrl()));
-    }
+    //  return new JsonResult(await MovieService.GetGroups(name.FromUrl(), filter.FromUrl()));
+    //}
 
   }
 }

@@ -35,7 +35,7 @@ namespace MovieSearchServer.Controllers {
     [HttpGet()]
     public async Task<ActionResult<IMovies>> Get(string group = "", string filter = "", int page = 1, int items = 20) {
       Console.WriteLine($"GetMovies for group {WebUtility.UrlDecode(group)}, filter={WebUtility.UrlDecode(filter)}, page={page}, items={items}");
-      return new JsonResult(await MovieService.GetMovies(WebUtility.UrlDecode(group), WebUtility.UrlDecode(filter), page, items));
+      return new JsonResult(await MovieService.GetMovies(WebUtility.UrlDecode(group), WebUtility.UrlDecode(filter), page, items).ToListAsync());
     }
 
     [HttpGet("getPicture")]
