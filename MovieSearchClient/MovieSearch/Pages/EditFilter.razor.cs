@@ -1,10 +1,10 @@
 ﻿
 using Microsoft.AspNetCore.Components;
 
-using MovieSearch.Client.Services;
-using MovieSearch.Client.Models;
+using MovieSearchClient.Services;
+using MovieSearchClient.Models;
 
-namespace MovieSearch.Pages {
+namespace MovieSearchClient.Pages {
   public partial class EditFilter : ComponentBase {
 
     public const string SVC_NAME = "filter";

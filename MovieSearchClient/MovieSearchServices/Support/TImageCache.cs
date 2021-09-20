@@ -6,12 +6,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MovieSearch.Services {
+namespace MovieSearchClient.Services {
   public class TImageCache {
 
     public static int MAX_ITEMS = 50;
 
-    private List<CachedItem> _CachedImages = new List<CachedItem>();
+    private List<CachedItem> _CachedImages = new();
     private readonly SemaphoreSlim _LockData = new SemaphoreSlim(1, 1);
 
     public TImageCache() {

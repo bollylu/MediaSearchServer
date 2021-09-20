@@ -13,8 +13,10 @@ using System.Threading.Tasks;
 using MovieSearch.Models;
 
 using BLTools.Diagnostic.Logging;
+using System.Text.Json.Serialization;
+using BLTools;
 
-namespace MovieSearch.Services {
+namespace MovieSearchClient.Services {
 
   /// <summary>
   /// Client Movie service. Provides access to groups, movies and pictures from a REST server
@@ -27,12 +29,17 @@ namespace MovieSearch.Services {
     #endregion --- Constants --------------------------------------------
 
     #region --- Constructor(s) ---------------------------------------------------------------------------------
-    private readonly HttpClient Client;
-    private readonly TImageCache ImageCache;
+    private readonly HttpClient _Client;
+    private readonly TImageCache _ImageCache;
+    private readonly TMoviesConverter _MoviesConverter;
+    private readonly TMovieConverter _MovieConverter;
 
-    public TMovieService(HttpClient client, TImageCache cache) {
-      Client = client;
-      ImageCache = cache;
+    public TMovieService(HttpClient client, TImageCache cache, TMoviesConverter moviesConverter, TMovieConverter movieConverter) {
+      _Client = client;
+      _ImageCache = cache;
+      _MoviesConverter = moviesConverter;
+      _MovieConverter = movieConverter;
+      Logger = new TConsoleLogger();
     }
     #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
@@ -50,7 +57,7 @@ namespace MovieSearch.Services {
         Log($"Requesting groups : {RequestUrl}");
         using (CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT)) {
           JsonSerializerOptions Options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-          IMovieGroups Result = await Client.GetFromJsonAsync<TMovieGroups>(RequestUrl, Options, Timeout.Token);
+          IMovieGroups Result = await _Client.GetFromJsonAsync<TMovieGroups>(RequestUrl, Options, Timeout.Token);
           Log($"Result : {Result.Name} - {Result.Groups.Count}");
           return Result;
         }
@@ -63,20 +70,25 @@ namespace MovieSearch.Services {
     #endregion --- Group actions --------------------------------------------
 
     #region --- Movie actions --------------------------------------------
-    public async Task<IMovies> GetMovies(string group, string filter, int startPage = 0, int pageSize = 20) {
+    public async Task<IMovies> GetMovies(string filter, int startPage = 1, int pageSize = 20) {
       try {
-        string RequestUrl = $"movie?group={group.ToUrl()}&filter={filter.ToUrl()}&page={startPage}&size={pageSize}";
-        Log($"Requesting movies : {RequestUrl}");
+        string RequestUrl = $"movie?filter={filter.ToUrl()}&page={startPage}&size={pageSize}";
+        Logger?.Log($"Requesting movies : {RequestUrl}");
         using (CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT)) {
-          JsonSerializerOptions Options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-          IMovies Result = await Client.GetFromJsonAsync<TMovies>(RequestUrl, Options, Timeout.Token);
 
-          Console.WriteLine(Result.ToString());
-          Log($"Result : {Result.Source} - {Result.Movies.Count}");
+          string JsonMovies = await _Client.GetStringAsync(RequestUrl, Timeout.Token);
+          IMovies Result = TMovies.FromJson(JsonMovies);
+
+          Logger?.Log(Result.ToString());
           return Result;
+
         }
       } catch (Exception ex) {
-        LogError($"Unable to get movies data : {ex.Message}");
+        Logger?.LogError($"Unable to get movies data : {ex.Message}");
+        if (ex.InnerException is not null) {
+          Logger?.LogError($"  Inner exception : {ex.InnerException.Message}");
+          Logger?.LogError($"  Inner call stack : {ex.InnerException.StackTrace}");
+        }
         return null;
       }
     }
@@ -89,7 +101,7 @@ namespace MovieSearch.Services {
         Log($"Requesting picture : {RequestUrl}");
         using (CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT)) {
           JsonSerializerOptions Options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-          byte[] Result = await Client.GetByteArrayAsync(RequestUrl, Timeout.Token);
+          byte[] Result = await _Client.GetByteArrayAsync(RequestUrl, Timeout.Token);
           return Result;
         }
       } catch (Exception ex) {
@@ -100,17 +112,17 @@ namespace MovieSearch.Services {
 
     public async Task<string> GetPicture64(string pathname) {
       Console.WriteLine($"Loading picture in B64 : {pathname}");
-      byte[] CachedPicture = ImageCache.GetImage(pathname);
+      byte[] CachedPicture = _ImageCache.GetImage(pathname);
       byte[] PictureBytes;
-      if (CachedPicture==null) {
+      if (CachedPicture == null) {
         PictureBytes = await GetPicture(pathname);
-        ImageCache.AddImage(pathname, PictureBytes);
+        _ImageCache.AddImage(pathname, PictureBytes);
       } else {
-        
+
         PictureBytes = new byte[CachedPicture.Length];
         CachedPicture.CopyTo(PictureBytes, 0);
       }
-      
+
       if (PictureBytes != null) {
         return $"data:image/jpg;base64, {Convert.ToBase64String(PictureBytes)}";
       } else {

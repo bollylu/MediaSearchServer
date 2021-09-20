@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,7 +27,9 @@ namespace MovieSearchServerServices.MovieService {
     protected readonly ReaderWriterLockSlim _LockCache = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
     #endregion --- Internal data storage --------------------------------------------
 
-    public string SourceName { get; set; }
+    public string Storage { get; init; }
+
+    public string StorageName { get; set; }
 
     #region --- Cache I/O --------------------------------------------
     public abstract Task Load();
@@ -40,6 +45,15 @@ namespace MovieSearchServerServices.MovieService {
       }
     }
 
+    public bool Any() {
+      try {
+        _LockCache.EnterReadLock();
+        return _Items.Any();
+      } finally {
+        _LockCache.ExitReadLock();
+      }
+    }
+
     public bool IsEmpty() {
       try {
         _LockCache.EnterReadLock();
@@ -48,7 +62,6 @@ namespace MovieSearchServerServices.MovieService {
         _LockCache.ExitReadLock();
       }
     }
-
     public int Count() {
       try {
         _LockCache.EnterReadLock();
@@ -159,6 +172,8 @@ namespace MovieSearchServerServices.MovieService {
     }
     #endregion --- Movies access --------------------------------------------
 
+    
+
     #region --- Groups access --------------------------------------------
     /// <summary>
     /// Get the distinct list of group names 
@@ -184,7 +199,7 @@ namespace MovieSearchServerServices.MovieService {
 
         TMovies RetVal = new TMovies() {
           Name = groupName,
-          Source = SourceName,
+          Source = StorageName,
           Page = startPage,
           AvailablePages = ItemCount % pageSize == 0 ?
                            ItemCount / pageSize :

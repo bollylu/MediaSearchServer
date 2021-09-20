@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using BLTools.Diagnostic.Logging;
@@ -9,6 +8,7 @@ using BLTools.Diagnostic.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using MovieSearch.Models;
+using static MovieSearch.Models.TSupport;
 
 using MovieSearchServerServices.MovieService;
 
@@ -16,22 +16,27 @@ namespace MovieSearchTest {
   [TestClass]
   public class TMovieServiceTest {
 
-    static IMovieService MovieService;
-
     [ClassInitialize]
     public static async Task MovieCacheInit(TestContext testContext) {
-      MovieService = new TMovieService(@"\\andromeda.sharenet.priv\films") { Logger = new TConsoleLogger() };
-      await MovieService.Initialize().ConfigureAwait(false);
+      if (Global.MovieService is null) {
+        if (Global.MovieCache is null) {
+          Global.MovieService = new TMovieService() { Storage = Global.STORAGE, Logger = new TConsoleLogger() };
+          await Global.MovieService.Initialize().ConfigureAwait(false);
+        }
+        else {
+          Global.MovieService = new TMovieService(Global.MovieCache) { Storage = Global.STORAGE, Logger = new TConsoleLogger() };
+        }
+      }
     }
 
     [TestMethod]
     public async Task TestCacheIsInitialized() {
 
-      Assert.IsTrue(MovieService.MoviesExtensions.Any());
+      Assert.IsTrue(Global.MovieService.MoviesExtensions.Any());
 
-      Assert.IsTrue(await MovieService.GetAllMovies().AnyAsync().ConfigureAwait(false));
+      Assert.IsTrue(await Global.MovieService.GetAllMovies().AnyAsync().ConfigureAwait(false));
 
-      int Count = await MovieService.GetAllMovies().CountAsync().ConfigureAwait(false);
+      int Count = await Global.MovieService.GetAllMovies().CountAsync().ConfigureAwait(false);
 
       Console.WriteLine($"Count : {Count}");
       Assert.IsTrue(Count > 0);
@@ -39,45 +44,46 @@ namespace MovieSearchTest {
 
     [TestMethod]
     public async Task Service_GetFirstPage() {
-      List<IMovie> Target = await MovieService.GetMovies(1, IMovieService.DEFAULT_PAGE_SIZE).ToListAsync().ConfigureAwait(false);
-      _Print(Target);
+      List<TMovie> Target = await Global.MovieService.GetMovies(1, IMovieService.DEFAULT_PAGE_SIZE).ToListAsync().ConfigureAwait(false);
+      PrintMoviesName(Target);
       Assert.AreEqual(IMovieService.DEFAULT_PAGE_SIZE, Target.Count);
     }
 
     [TestMethod]
     public async Task Service_GetLastPage() {
-      Console.WriteLine($"Movies count = {MovieService.MoviesCount()}");
-      Console.WriteLine($"Pages count = {MovieService.PagesCount(IMovieService.DEFAULT_PAGE_SIZE)}");
+      int MovieCount = await Global.MovieService.MoviesCount().ConfigureAwait(false);
+      int PageCount = await Global.MovieService.PagesCount(IMovieService.DEFAULT_PAGE_SIZE).ConfigureAwait(false);
 
-      List<IMovie> Target = await MovieService.GetMovies(MovieService.PagesCount(IMovieService.DEFAULT_PAGE_SIZE), IMovieService.DEFAULT_PAGE_SIZE).ToListAsync().ConfigureAwait(false);
-      _Print(Target);
+      Console.WriteLine($"Movie count = {MovieCount}");
+      Console.WriteLine($"Page count = {PageCount}");
+
+      List<TMovie> Target = await Global.MovieService.GetMovies(PageCount, IMovieService.DEFAULT_PAGE_SIZE).ToListAsync().ConfigureAwait(false);
+      PrintMoviesName(Target);
       Assert.AreNotEqual(IMovieService.DEFAULT_PAGE_SIZE, Target.Count);
     }
 
     [TestMethod]
     public async Task Service_GetFilteredFirstPage() {
-      List<IMovie> Target = await MovieService.GetMovies("The", 1, IMovieService.DEFAULT_PAGE_SIZE).ToListAsync().ConfigureAwait(false);
-      _Print(Target);
+      List<TMovie> Target = await Global.MovieService.GetMovies("The", 1, IMovieService.DEFAULT_PAGE_SIZE).ToListAsync().ConfigureAwait(false);
+      PrintMoviesName(Target);
       Assert.AreEqual(IMovieService.DEFAULT_PAGE_SIZE, Target.Count);
     }
 
     [TestMethod]
     public async Task Service_GetFilteredLastPage() {
-      Console.WriteLine($"Movies count = {MovieService.MoviesCount("The")}");
-      int LastPage = MovieService.PagesCount("The", IMovieService.DEFAULT_PAGE_SIZE);
-      Console.WriteLine($"Pages count = {LastPage}");
+      int MovieCount = await Global.MovieService.MoviesCount("the").ConfigureAwait(false);
+      int PageCount = await Global.MovieService.PagesCount("the", IMovieService.DEFAULT_PAGE_SIZE).ConfigureAwait(false);
 
-      List<IMovie> Target = await MovieService.GetMovies("The", LastPage, IMovieService.DEFAULT_PAGE_SIZE).ToListAsync().ConfigureAwait(false);
-      _Print(Target);
+      Console.WriteLine($"Movies count = {MovieCount}");
+      Console.WriteLine($"Last page = {PageCount}");
+
+      List<TMovie> Target = await Global.MovieService.GetMovies("The", PageCount, IMovieService.DEFAULT_PAGE_SIZE).ToListAsync().ConfigureAwait(false);
+      PrintMoviesName(Target);
       Assert.AreNotEqual(IMovieService.DEFAULT_PAGE_SIZE, Target.Count);
     }
 
 
-    private static void _Print(IEnumerable<IMovie> movies) {
-      foreach (IMovie MovieItem in movies) {
-        Console.WriteLine(MovieItem.LocalName);
-      }
-    }
+    
 
   }
 }

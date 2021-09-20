@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 
-namespace MovieSearch.Services {
+namespace MovieSearchClient.Services {
   public static class UrlTools {
     public static string ToUrl(this string source) {
       return WebUtility.UrlEncode(source);

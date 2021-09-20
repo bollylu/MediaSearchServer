@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 using MovieSearch.Models;
 
-namespace MovieSearch.Services {
+namespace MovieSearchClient.Services {
   public class XMovieService : IMovieService {
     public string RootPath { get; }
     public List<string> ExcludedExtensions { get; }
@@ -16,7 +16,7 @@ namespace MovieSearch.Services {
       return Task.FromResult(RetVal);
     }
 
-    public Task<IMovies> GetMovies(string group, string filter, int startPage = 1, int pageSize = 20) {
+    public Task<IMovies> GetMovies(string filter, int startPage = 1, int pageSize = 20) {
       IMovies RetVal = new TMovies();
       RetVal.Movies.Add(new TMovie() { LocalName = "Le seigneur des anneaux", Group="Fantasy", LocalPath="Le seigneur des anneaux 1.mvk", Size=8_000_000});
       RetVal.Movies.Add(new TMovie() { LocalName = "Le seigneur des anneaux 2", Group = "Fantasy", LocalPath = "Le seigneur des anneaux 2.mvk", Size = 8_001_000 });

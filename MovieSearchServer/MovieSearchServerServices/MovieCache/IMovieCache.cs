@@ -9,9 +9,14 @@ namespace MovieSearchServerServices.MovieService {
   public interface IMovieCache {
 
     /// <summary>
+    /// Path to the storage
+    /// </summary>
+    string Storage { get; }
+    
+    /// <summary>
     /// Name of the source
     /// </summary>
-    string SourceName { get; }
+    string StorageName { get; }
 
     #region --- Cache I/O --------------------------------------------
     /// <summary>
@@ -32,6 +37,12 @@ namespace MovieSearchServerServices.MovieService {
     /// </summary>
     /// <returns>true if the cache is empty, false otherwise</returns>
     bool IsEmpty();
+
+    /// <summary>
+    /// Indicate if the cache has at least on item
+    /// </summary>
+    /// <returns>true if the cache is not empty, false otherwise</returns>
+    bool Any();
 
     /// <summary>
     /// The count of movies in cache

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MovieSearch.Client.Services {
+namespace MovieSearchClient.Services {
   public class TBusService<T> : IBusService<T> {
 
     public event Action<string, T> OnMessage;

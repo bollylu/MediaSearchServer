@@ -2,7 +2,7 @@
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 
-using MovieSearch.Services;
+using MovieSearchClient.Services;
 using MovieSearch.Models;
 
 using BLTools.Diagnostic.Logging;
@@ -11,14 +11,11 @@ using Microsoft.AspNetCore.Components;
 
 
 
-namespace MovieSearch.Pages {
-  public partial class Videos : ComponentBase, ILoggable {
+namespace MovieSearchClient.Pages {
+  public partial class ViewVideoList : ComponentBase, ILoggable {
 
     [Inject]
     public IMovieService MovieService { get; set; }
-
-    [Parameter]
-    public string Group { get; set; }
 
     [Parameter]
     public string Filter { get; set; }
@@ -39,7 +36,7 @@ namespace MovieSearch.Pages {
 
     public string Pagination => $"{CurrentPage}/{Movies.AvailablePages}";
 
-    public bool BackDisabled => CurrentPage==0;
+    public bool BackDisabled => CurrentPage == 1;
     public bool NextDisabled => CurrentPage == Movies.AvailablePages;
 
     #region --- ILoggable --------------------------------------------
@@ -50,28 +47,30 @@ namespace MovieSearch.Pages {
     #endregion --- ILoggable --------------------------------------------
 
     protected override async Task OnInitializedAsync() {
-      SetLogger(ALogger.SYSTEM_LOGGER);
-      Movies = await MovieService.GetMovies(Group, Filter);
-      CurrentPage = 0;
+      SetLogger(new TConsoleLogger());
+      Logger.Log("Initialized async");
+      Movies = await MovieService.GetMovies(Filter);
+      CurrentPage = 1;
     }
 
     protected override async Task OnParametersSetAsync() {
-      Movies = await MovieService.GetMovies(Group, Filter);
-      CurrentPage = 0;
+      Logger.Log("Parameters set async");
+      Movies = await MovieService.GetMovies(Filter);
+      CurrentPage = 1;
       StateHasChanged();
     }
 
     private async Task RefreshHome() {
-      Movies = await MovieService.GetMovies(Group, "");
-      CurrentPage = 0;
+      Movies = await MovieService.GetMovies("");
+      CurrentPage = 1;
       StateHasChanged();
     }
 
     private async Task RefreshPrevious() {
-      if (CurrentPage > 0) {
+      if (CurrentPage > 1) {
         CurrentPage--;
       }
-      Movies = await MovieService.GetMovies(Group, "", CurrentPage);
+      Movies = await MovieService.GetMovies("", CurrentPage);
       StateHasChanged();
     }
 
@@ -79,13 +78,13 @@ namespace MovieSearch.Pages {
       if (CurrentPage < Movies.AvailablePages) {
         CurrentPage++;
       }
-      Movies = await MovieService.GetMovies(Group, "", CurrentPage);
+      Movies = await MovieService.GetMovies("", CurrentPage);
       StateHasChanged();
     }
 
     private async Task RefreshEnd() {
       CurrentPage = Movies.AvailablePages;
-      Movies = await MovieService.GetMovies(Group, "", CurrentPage);
+      Movies = await MovieService.GetMovies("", CurrentPage);
       StateHasChanged();
     }
   }

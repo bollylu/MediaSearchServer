@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 
 using MovieSearch.Models;
 
-namespace MovieSearch.Services {
+namespace MovieSearchClient.Services {
   public interface IMovieService {
 
     string RootPath { get; }
 
     #region --- Movies --------------------------------------------
     List<string> ExcludedExtensions { get; }
-    Task<IMovies> GetMovies(string group, string filter, int startPage = 0, int pageSize = 20);
+    Task<IMovies> GetMovies(string filter, int startPage = 1, int pageSize = 20);
     Task<byte[]> GetPicture(string pathname);
     Task<string> GetPicture64(string pathname);
     #endregion --- Movies --------------------------------------------

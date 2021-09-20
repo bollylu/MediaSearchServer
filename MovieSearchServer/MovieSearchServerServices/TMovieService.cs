@@ -21,32 +21,30 @@ namespace MovieSearchServerServices.MovieService {
 
     #region --- Constants --------------------------------------------
     private const string ROOT_NAME = "/";
-    
+
     #endregion --- Constants --------------------------------------------
 
     /// <summary>
     /// Root path to look for data
     /// </summary>
-    public string RootPath { get; set; }
+    public string Storage { get; init; }
 
     /// <summary>
     /// The name of the source
     /// </summary>
-    public string Source => "Andromeda";
+    public string StorageName { get; set; } = "Andromeda";
 
     /// <summary>
     /// The extensions of the files of interest
     /// </summary>
     public List<string> MoviesExtensions { get; } = new() { ".mkv", ".avi", ".mp4" };
 
-
     private IMovieCache _MoviesCache;
 
     #region --- Constructor(s) ---------------------------------------------------------------------------------
     public TMovieService() { }
-
-    public TMovieService(string rootPath) {
-      RootPath = rootPath;
+    public TMovieService(IMovieCache movieCache) {
+      _MoviesCache = movieCache;
     }
     #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
@@ -61,18 +59,18 @@ namespace MovieSearchServerServices.MovieService {
         return;
       }
 
-      _IsInitializing = true;
-
-      if (string.IsNullOrEmpty(RootPath)) {
-        if (OperatingSystem.IsWindows()) {
-          RootPath = @"\\andromeda.sharenet.priv\films\";
-        } else {
-          RootPath = @"/volume1/Films/";
-        }
+      if (_MoviesCache is not null && _MoviesCache.Any()) {
+        return;
       }
 
-      if (Directory.Exists(RootPath)) {
-        _MoviesCache = new TMovieCache() { Logger = ALogger.Create(Logger), RootPath = this.RootPath };
+      _IsInitializing = true;
+
+      if (string.IsNullOrEmpty(Storage)) {
+        throw new ApplicationException("Root path is missing. Cannot process movies.");
+      }
+
+      if (Directory.Exists(Storage)) {
+        _MoviesCache = new TMovieCache() { Logger = ALogger.Create(Logger), Storage = this.Storage };
       } else {
         _MoviesCache = new XMovieCache() { Logger = ALogger.Create(Logger) };
       }
@@ -82,8 +80,13 @@ namespace MovieSearchServerServices.MovieService {
       _IsInitializing = false;
     }
 
-    public string CurrentGroup { get; private set; }
-    public int MoviesCount(string filter = "") {
+    public void Reset() {
+      _MoviesCache.Clear();
+    }
+
+    public async ValueTask<int> MoviesCount(string filter = "") {
+      await Initialize().ConfigureAwait(false);
+
       if (string.IsNullOrWhiteSpace(filter)) {
         return _MoviesCache.Count();
       } else {
@@ -91,19 +94,53 @@ namespace MovieSearchServerServices.MovieService {
       }
     }
 
-    public int PagesCount(int pageSize = IMovieService.DEFAULT_PAGE_SIZE) {
-      return (MoviesCount() / pageSize) + (MoviesCount() % pageSize > 0 ? 1 : 0);
+    public async ValueTask<int> PagesCount(int pageSize = IMovieService.DEFAULT_PAGE_SIZE) {
+      int AllMoviesCount = await MoviesCount().ConfigureAwait(false);
+      return ( AllMoviesCount / pageSize) + (AllMoviesCount % pageSize > 0 ? 1 : 0);
     }
 
-    public int PagesCount(string filter, int pageSize = IMovieService.DEFAULT_PAGE_SIZE) {
+    public async ValueTask<int> PagesCount(string filter, int pageSize = IMovieService.DEFAULT_PAGE_SIZE) {
       if (string.IsNullOrWhiteSpace(filter)) {
-        return PagesCount(pageSize);
+        return await PagesCount(pageSize).ConfigureAwait(false);
       }
 
-      int FilteredMoviesCount = MoviesCount(filter);
+      int FilteredMoviesCount = await MoviesCount(filter).ConfigureAwait(false);
       return (FilteredMoviesCount / pageSize) + (FilteredMoviesCount % pageSize > 0 ? 1 : 0);
     }
 
+    public async IAsyncEnumerable<TMovie> GetAllMovies() {
+      await Initialize().ConfigureAwait(false);
+
+      foreach (TMovie MovieItem in _MoviesCache.GetAllMovies()) {
+        yield return MovieItem;
+      }
+    }
+
+    public async IAsyncEnumerable<TMovie> GetMovies(int startPage = 1, int pageSize = 20) {
+      await Initialize().ConfigureAwait(false);
+
+      foreach (TMovie MovieItem in _MoviesCache.GetAllMovies().Skip((startPage - 1) * pageSize).Take(pageSize)) {
+        yield return MovieItem;
+      }
+    }
+
+    public async IAsyncEnumerable<TMovie> GetMovies(string filter = "", int startPage = 1, int pageSize = 20) {
+      await Initialize().ConfigureAwait(false);
+
+      foreach (TMovie MovieItem in _MoviesCache.GetAllMovies()
+                                               .Where(m => filter is null ? true : m.LocalName.Contains(filter, StringComparison.CurrentCultureIgnoreCase))
+                                               .Skip((startPage - 1) * pageSize)
+                                               .Take(pageSize)) {
+        yield return MovieItem;
+      }
+    }
+
+
+
+
+
+
+    public string CurrentGroup { get; private set; }
     public async Task<IMovieGroups> GetGroups(string group, string filter) {
 
       #region === Validate parameters ===
@@ -141,40 +178,7 @@ namespace MovieSearchServerServices.MovieService {
     }
 
 
-
-
-
-
-
-
-    public async IAsyncEnumerable<IMovie> GetAllMovies() {
-      await Initialize().ConfigureAwait(false);
-
-      foreach (IMovie MovieItem in _MoviesCache.GetAllMovies()) {
-        yield return MovieItem;
-      }
-    }
-
-    public async IAsyncEnumerable<IMovie> GetMovies(int startPage = 1, int pageSize = 20) {
-      await Initialize().ConfigureAwait(false);
-
-      foreach (IMovie MovieItem in _MoviesCache.GetAllMovies().Skip((startPage - 1) * pageSize).Take(pageSize)) {
-        yield return MovieItem;
-      }
-    }
-
-    public async IAsyncEnumerable<IMovie> GetMovies(string filter, int startPage = 1, int pageSize = 20) {
-      await Initialize().ConfigureAwait(false);
-
-      foreach (IMovie MovieItem in _MoviesCache.GetAllMovies()
-                                               .Where(m => m.LocalName.Contains(filter, StringComparison.CurrentCultureIgnoreCase))
-                                               .Skip((startPage - 1) * pageSize)
-                                               .Take(pageSize)) {
-        yield return MovieItem;
-      }
-    }
-
-    public async IAsyncEnumerable<IMovie> GetMovies(string group, string filter = "", int startPage = 0, int pageSize = 20) {
+    public async IAsyncEnumerable<TMovie> GetMovies(string group, string filter = "", int startPage = 0, int pageSize = 20) {
       await Initialize().ConfigureAwait(false);
 
       #region === Validate parameters ===
@@ -188,49 +192,13 @@ namespace MovieSearchServerServices.MovieService {
       }
       #endregion === Validate parameters ===
 
-      foreach (IMovie MovieItem in _MoviesCache.GetAllMovies()) {
+      foreach (TMovie MovieItem in _MoviesCache.GetAllMovies()) {
         yield return MovieItem;
       }
 
     }
 
-    #region --- Pictures --------------------------------------------
-    private static byte[] _MissingPicture = File.ReadAllBytes($"Pictures{Path.DirectorySeparatorChar}missing.jpg");
 
-    public async Task<byte[]> GetPicture(string pathname, int timeout = 5000) {
-      if (string.IsNullOrWhiteSpace(pathname)) {
-        return _MissingPicture;
-      }
-
-      string FullFileName = Path.Combine(RootPath, pathname, "folder.jpg");
-
-      if (!File.Exists(FullFileName)) {
-        return _MissingPicture;
-      }
-
-      using (CancellationTokenSource TimeOut = new CancellationTokenSource(timeout)) {
-        try {
-          using (Image FolderJpg = Image.FromStream((await File.ReadAllBytesAsync(FullFileName, TimeOut.Token)).ToStream())) {
-            using (Bitmap ResizedPicture = new Bitmap(FolderJpg, 128, 160)) {
-              using (MemoryStream OutputStream = new()) {
-                ResizedPicture.Save(OutputStream, ImageFormat.Jpeg);
-                return OutputStream.ToArray();
-              }
-            }
-          }
-        } catch (Exception ex) {
-          LogError($"Unable to get picture {pathname} : {ex.Message}");
-          return _MissingPicture;
-        }
-      }
-    }
-
-    public async Task<string> GetPicture64(string pathname, int timeout = 5000) {
-
-      byte[] PictureBytes = await GetPicture(pathname, timeout);
-      return $"data:image/jpg;base64, {Convert.ToBase64String(PictureBytes)}";
-    }
-    #endregion --- Pictures --------------------------------------------
 
   }
 }

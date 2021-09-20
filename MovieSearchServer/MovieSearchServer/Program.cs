@@ -38,7 +38,8 @@ namespace MovieSearchServer {
                           //    options.ServerCertificate = Cert;
                           //  });
                           //})
-                          //.UseUrls("https://lucwks7.sharenet.priv:4567")
+                          .UseKestrel()
+                          .UseUrls("http://localhost:4567")
                           ;
               }
             });

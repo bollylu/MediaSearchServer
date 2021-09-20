@@ -10,24 +10,25 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Http;
 
+using MovieSearchClient.Services;
 using MovieSearch.Models;
-using MovieSearch.Services;
-using MovieSearch.Client.Services;
+using BLTools.Diagnostic.Logging;
 
-namespace MovieSearch {
+namespace MovieSearchClient {
   public class Program {
     public static async Task Main(string[] args) {
       var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
       builder.Services.AddHttpClient<IMovieService, TMovieService>(client => 
-        client.BaseAddress = new Uri("https://lucwks7.sharenet.priv:4567/api/")
+        client.BaseAddress = new Uri("http://localhost:4567/api/")
       );
 
       builder.Services.AddSingleton<TImageCache>();
+      builder.Services.AddSingleton<TMoviesConverter>(new TMoviesConverter(new TConsoleLogger()));
+      builder.Services.AddSingleton<TMovieConverter>(new TMovieConverter(new TConsoleLogger()));
 
       builder.RootComponents.Add<App>("#app");
 
-      //builder.Services.AddScoped<IMovieService>(sp => new TMovieService(new HttpClient() { BaseAddress = new Uri("http://multimedia.sharenet.priv:4567") }));
       builder.Services.AddSingleton<IBusService<string>, TBusService<string>>();
 
       await builder.Build().RunAsync();
