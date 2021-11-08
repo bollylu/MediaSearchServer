@@ -17,8 +17,16 @@ using Microsoft.OpenApi.Models;
 
 using MovieSearchServerServices.MovieService;
 
+using ILogger = BLTools.Diagnostic.Logging.ILogger;
+
 namespace MovieSearchServer {
   public class Startup {
+
+    public static ILogger Logger { get; private set; }
+
+    public const string DEFAULT_DATASOURCE = @"\\andromeda.sharenet.priv\multimedia\films\";
+    public const string DEFAULT_LOGFILE_LINUX = "/var/log/MovieSearch/MovieSearchServer.log";
+    public const string DEFAULT_LOGFILE_WINDOWS = @"c:\logs\MovieSearch\MovieSearchServer.log";
     public Startup(IConfiguration configuration) {
       Configuration = configuration;
     }
@@ -28,17 +36,25 @@ namespace MovieSearchServer {
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services) {
 
-      services.AddSingleton<BLTools.Diagnostic.Logging.ILogger>(new TConsoleLogger());
+      string DataSource = Program.AppArgs.GetValue("datasource", DEFAULT_DATASOURCE);
+      string LogFile = OperatingSystem.IsWindows() ? Program.AppArgs.GetValue("log", DEFAULT_LOGFILE_WINDOWS) : Program.AppArgs.GetValue("log", DEFAULT_LOGFILE_LINUX);
+
+      Logger = new TFileLogger(LogFile);
+      Logger.Log("MovieSearchServer startup...");
+
+      services.AddSingleton<ILogger>(Logger);
 
       TMovieService MovieService = new TMovieService() {
-        Storage = OperatingSystem.IsWindows() ? @"\\andromeda.sharenet.priv\films\" : @"/volume1/Films/"
+        Storage = DataSource
       };
+
+      MovieService.SetLogger(Logger);
       Task.Run(async () => await MovieService.Initialize());
 
       services.AddSingleton<IMovieService>(MovieService);
 
       services.AddCors(options => {
-        options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin()
+        options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin()//.WithOrigins("http://10.100.200.7")
                                                       .AllowAnyMethod()
                                                       .AllowAnyHeader()
                          );
@@ -48,7 +64,7 @@ namespace MovieSearchServer {
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "MovieSearchServer", Version = "v1" });
       });
 
-
+      Logger.Log("MovieSearchServer startup complete. Running.");
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 using BLTools;
 using BLTools.Diagnostic.Logging;
 
-using MovieSearch.Models;
+using MovieSearchModels;
 
 namespace MovieSearchServerServices.MovieService {
   public abstract class AMovieCache : ALoggable, IMovieCache {
@@ -18,11 +19,13 @@ namespace MovieSearchServerServices.MovieService {
     public const int DEFAULT_START_PAGE = 1;
     public const int DEFAULT_PAGE_SIZE = 20;
 
+    public const char FOLDER_SEPARATOR = '/';
+
     #region --- Internal data storage --------------------------------------------
     /// <summary>
     /// Store the movies
     /// </summary>
-    protected readonly List<IMovie> _Items = new();
+    protected readonly SortedList<string, IMovie> _Items = new();
 
     protected readonly ReaderWriterLockSlim _LockCache = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
     #endregion --- Internal data storage --------------------------------------------
@@ -32,7 +35,68 @@ namespace MovieSearchServerServices.MovieService {
     public string StorageName { get; set; }
 
     #region --- Cache I/O --------------------------------------------
-    public abstract Task Load();
+    public virtual IEnumerable<IFileInfo> FetchFiles() {
+      return FetchFiles(CancellationToken.None);
+    }
+
+    public abstract IEnumerable<IFileInfo> FetchFiles(CancellationToken token);
+
+    public virtual Task Parse(IEnumerable<IFileInfo> fileSource, CancellationToken token) {
+      Log("Initializing movies cache");
+      Clear();
+
+      foreach (IFileInfo FileItem in fileSource) {
+        if (token.IsCancellationRequested) {
+          return Task.FromCanceled(token);
+        }
+        try {
+          IMovie NewMovie = _ParseEntry(FileItem);
+          _Items.Add($"{NewMovie.Filename}{NewMovie.OutputYear}", NewMovie);
+        } catch (Exception ex) {
+          LogWarning($"Unable to parse movie {FileItem} : {ex.Message}");
+          if (ex.InnerException is not null) {
+            LogWarning($"  {ex.InnerException.Message}");
+          }
+        }
+      }
+
+      Log("Cache initialized successfully");
+
+      return Task.CompletedTask;
+    }
+    protected virtual IMovie _ParseEntry(IFileInfo item) {
+
+      IMovie RetVal = new TMovie();
+
+      // Standardize directory separator
+      string ProcessedFileItem = item.FullName.Replace('\\', FOLDER_SEPARATOR);
+
+      RetVal.StorageRoot = Storage.Replace('\\', FOLDER_SEPARATOR);
+      RetVal.StoragePath = ProcessedFileItem.BeforeLast(FOLDER_SEPARATOR).After(RetVal.StorageRoot, System.StringComparison.InvariantCultureIgnoreCase);
+
+      RetVal.Filename = item.Name;
+      RetVal.Name = ProcessedFileItem.AfterLast(FOLDER_SEPARATOR).BeforeLast(" (");
+      RetVal.FileExtension = RetVal.Filename.AfterLast('.').ToLowerInvariant();
+
+      string[] Tags = RetVal.StoragePath.BeforeLast(FOLDER_SEPARATOR).Split(FOLDER_SEPARATOR, StringSplitOptions.RemoveEmptyEntries);
+      RetVal.Group = Tags.Any() ? Tags[0] : "(Unknown)";
+
+      foreach (string TagItem in Tags) {
+        RetVal.Tags.Add(TagItem);
+      }
+
+      try {
+        RetVal.OutputYear = int.Parse(RetVal.Filename.AfterLast('(').BeforeLast(')'));
+      } catch {
+        LogWarning($"Unable to find output year : Invalid or missing number : {item.FullName}");
+        RetVal.OutputYear = 0;
+      }
+
+      RetVal.Size = item.Length;
+
+      return RetVal;
+    }
+
     #endregion --- Cache I/O --------------------------------------------
 
     #region --- Cache management --------------------------------------------
@@ -75,19 +139,19 @@ namespace MovieSearchServerServices.MovieService {
     #region --- Movies access --------------------------------------------
     public IEnumerable<IMovie> GetMoviesWithGroup() {
       lock (_LockCache) {
-        return _Items.Where(m => !string.IsNullOrWhiteSpace(m.Group));
+        return _Items.Values.Where(m => !string.IsNullOrWhiteSpace(m.Group));
       }
     }
 
     public IEnumerable<IMovie> GetAllMovies() {
       try {
-        Log($"==> GetAllMovies()");
+        Log($"==> GetAllMovies() from cache");
         _LockCache.EnterReadLock();
-          foreach (IMovie MovieItem in _Items) {
-            yield return MovieItem;
-          }
+        foreach (KeyValuePair<string, IMovie> MovieItem in _Items) {
+          yield return MovieItem.Value;
+        }
       } finally {
-        Log($"<== GetAllMovies()");
+        Log($"<== GetAllMovies() from cache");
         _LockCache.ExitReadLock();
       }
     }
@@ -101,10 +165,10 @@ namespace MovieSearchServerServices.MovieService {
         Log($"==> GetMovies({filter.WithQuotes()}, {startPage}, {pageSize})");
         lock (_LockCache) {
           if (string.IsNullOrWhiteSpace(filter)) {
-            return _Items.Skip(pageSize * (startPage - 1))
+            return _Items.Values.Skip(pageSize * (startPage - 1))
                          .Take(pageSize);
           } else {
-            return _Items.Where(m => m.LocalName.Contains(filter, StringComparison.CurrentCultureIgnoreCase))
+            return _Items.Values.Where(m => m.Filename.Contains(filter, StringComparison.CurrentCultureIgnoreCase))
                          .Skip(pageSize * (startPage - 1))
                          .Take(pageSize);
           }
@@ -119,7 +183,7 @@ namespace MovieSearchServerServices.MovieService {
       try {
         Log("==> GetMoviesInGroup");
         lock (_LockCache) {
-          return _Items.Where(m => m.Group.StartsWith(groupName, StringComparison.CurrentCultureIgnoreCase))
+          return _Items.Values.Where(m => m.Group.StartsWith(groupName, StringComparison.CurrentCultureIgnoreCase))
                        .ToList();
         }
       } finally {
@@ -131,7 +195,7 @@ namespace MovieSearchServerServices.MovieService {
       try {
         Log("==> GetMoviesNotInGroup");
         lock (_LockCache) {
-          return _Items.Where(m => m.Group.StartsWith(groupName))
+          return _Items.Values.Where(m => m.Group.StartsWith(groupName))
                        .Where(m => !m.Group.Equals(groupName, StringComparison.CurrentCultureIgnoreCase))
                        .ToList();
         }
@@ -144,8 +208,8 @@ namespace MovieSearchServerServices.MovieService {
       try {
         Log("==> GetMoviesForGroupAndFilter");
         lock (_LockCache) {
-          IReadOnlyList<IMovie> RetVal = _Items.Where(m => m.Group.StartsWith(groupName, StringComparison.CurrentCultureIgnoreCase))
-                                               .Where(m => m.LocalName.Contains(filter, StringComparison.CurrentCultureIgnoreCase))
+          IReadOnlyList<IMovie> RetVal = _Items.Values.Where(m => m.Group.StartsWith(groupName, StringComparison.CurrentCultureIgnoreCase))
+                                               .Where(m => m.Filename.Contains(filter, StringComparison.CurrentCultureIgnoreCase))
                                                .ToList();
           return Task.FromResult(RetVal);
         }
@@ -160,7 +224,7 @@ namespace MovieSearchServerServices.MovieService {
         int Level = groupName.Count(x => x == '/');
 
         IReadOnlyList<IMovieGroup> RetVal = GetMoviesNotInGroup(groupName)
-                                              .Where(x => x.LocalName.Contains(filter, StringComparison.CurrentCultureIgnoreCase))
+                                              .Where(x => x.Filename.Contains(filter, StringComparison.CurrentCultureIgnoreCase))
                                               .GroupBy(x => _getGroupFilter(x.Group, Level))
                                               .Select(x => new TMovieGroup() { Name = x.Key, Count = x.Count() })
                                               .ToList();
@@ -172,7 +236,7 @@ namespace MovieSearchServerServices.MovieService {
     }
     #endregion --- Movies access --------------------------------------------
 
-    
+
 
     #region --- Groups access --------------------------------------------
     /// <summary>
@@ -180,7 +244,7 @@ namespace MovieSearchServerServices.MovieService {
     /// </summary>
     /// <returns>A list of string</returns>
     public IEnumerable<string> GetGroupNames() {
-      return _Items.OrderBy(x => x.Group).Select(x => x.Group).Distinct();
+      return _Items.Values.OrderBy(x => x.Group).Select(x => x.Group).Distinct();
     }
 
     public async Task<IMovies> GetMoviesForGroupAndFilterInPages(string groupName, string filter, int startPage = DEFAULT_START_PAGE, int pageSize = DEFAULT_PAGE_SIZE) {

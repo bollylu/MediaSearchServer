@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,20 +9,25 @@ using System.Threading.Tasks;
 
 using BLTools.Diagnostic.Logging;
 
-namespace MovieSearch.Models {
-  public abstract class AMovie : ALoggable, IMovie {
+namespace MovieSearchModels {
+  public abstract class AMovie : AMedia, IMovie {
 
-    public string Storage { get; set; }
-    public string LocalPath { get; set; }
-    public string LocalName { get; set; }
-
-    public List<string> AltNames { get; set; } = new();
+    #region --- Public properties ------------------------------------------------------------------------------
+    public EMovieExtension Extension =>
+      FileExtension switch {
+        "avi" => EMovieExtension.AVI,
+        "mkv" => EMovieExtension.MKV,
+        "mp4" => EMovieExtension.MP4,
+        "iso" => EMovieExtension.ISO,
+        _ => EMovieExtension.Unknown,
+      };
 
     public string Group { get; set; }
     public long Size { get; set; }
     public int OutputYear { get; set; }
-    public List<string> Tags { get; set; } = new();
+    #endregion --- Public properties ---------------------------------------------------------------------------
 
+    #region --- Picture --------------------------------------------
     public virtual Task<byte[]> GetPicture(int timeout = 5000) {
       throw new NotImplementedException();
     }
@@ -29,55 +35,41 @@ namespace MovieSearch.Models {
       throw new NotImplementedException();
     }
 
-    public static Lazy<string> PictureMissing => new Lazy<string>($"Pictures{Path.DirectorySeparatorChar}missing.jpg");
+    public static byte[] PictureMissing
+    {
+      get
+      {
+        if (_PictureMissingBytes is null) {
+          _PictureMissingBytes = TSupport.GetPicture("missing", ".jpg");
+        }
+        return _PictureMissingBytes;
+      }
+    }
+    private static byte[] _PictureMissingBytes;
+    #endregion --- Picture --------------------------------------------
 
-    protected static byte[] _PictureMissingBytes => TSupport.GetPicture(PictureMissing.Value);
-
+    #region --- Constructor(s) ---------------------------------------------------------------------------------
     protected AMovie() { }
-    protected AMovie(IMovie movie) {
-      Storage = movie.Storage;
-      LocalPath = movie.LocalPath;
-      LocalName = movie.LocalName;
+    protected AMovie(IMovie movie) : base(movie) {
       Size = movie.Size;
       OutputYear = movie.OutputYear;
       Group = movie.Group;
-      AltNames.AddRange(movie.AltNames);
-      Tags.AddRange(movie.Tags);
     }
+    #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
     public override string ToString() {
-      StringBuilder RetVal = new StringBuilder();
-      RetVal.AppendLine($"{nameof(Storage)} = {Storage}");
-      RetVal.AppendLine($"{nameof(LocalPath)} = {LocalPath}");
-      RetVal.AppendLine($"{nameof(LocalName)} = {LocalName}");
+      StringBuilder RetVal = new StringBuilder(base.ToString());
+      RetVal.AppendLine($"{nameof(Extension)} = {Extension}");
       RetVal.AppendLine($"{nameof(Group)} = {Group}");
       RetVal.AppendLine($"{nameof(Size)} = {Size}");
       RetVal.AppendLine($"{nameof(OutputYear)} = {OutputYear}");
-      if (AltNames.Any()) {
-        RetVal.AppendLine("Alt. names");
-        foreach (string NameItem in AltNames) {
-          RetVal.AppendLine($"|- {NameItem}");
-        }
-      } else {
-        RetVal.AppendLine($"{nameof(AltNames)} is empty");
-      }
-
-      if (Tags.Any()) {
-        RetVal.AppendLine("Tags");
-        foreach (string TagItem in Tags) {
-          RetVal.AppendLine($"|- {TagItem}");
-        }
-      } else {
-        RetVal.AppendLine($"{nameof(Tags)} is empty");
-      }
 
       return RetVal.ToString();
     }
 
     public abstract string ToJson();
     public abstract string ToJson(JsonWriterOptions options);
-
-    public abstract IMovie ParseJson(string source);
-    public abstract IMovie ParseJson(JsonElement source);
+    public abstract IJson ParseJson(string source);
+    public abstract IJson ParseJson(JsonElement source);
   }
 }

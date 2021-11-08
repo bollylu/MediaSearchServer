@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30709.132
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieSearchClient", "MovieSearchClient\MovieSearch\MovieSearchClient.csproj", "{F21B17FB-0FAE-46D7-A19C-BFDE4AD7FB87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieSearchClient", "MovieSearchClient\MovieSearchClient\MovieSearchClient.csproj", "{F21B17FB-0FAE-46D7-A19C-BFDE4AD7FB87}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieSearchModels", "MoviesearchShared\MovieSearchModels\MovieSearchModels.csproj", "{ABCACF88-D22A-4D2F-9DEA-74779DBCBD35}"
 EndProject

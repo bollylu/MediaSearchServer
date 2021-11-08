@@ -2,9 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <RootNamespace>MovieSearch.Services</RootNamespace>
-    <AssemblyName>MovieSearchServices</AssemblyName>
+    <RootNamespace>MovieSearchClient.Services</RootNamespace>
+    <AssemblyName>MovieSearchClientServices</AssemblyName>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="IApiServer.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove="sample-data\groups.json" />

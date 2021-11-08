@@ -1,18 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
-using MovieSearch.Models;
+using BLTools.Diagnostic.Logging;
+
+using MovieSearchModels;
 
 namespace MovieSearchServerServices.MovieService {
-  public interface IMovieCache {
+  public interface IMovieCache : ILoggable {
 
     /// <summary>
     /// Path to the storage
     /// </summary>
     string Storage { get; }
-    
+
     /// <summary>
     /// Name of the source
     /// </summary>
@@ -20,10 +24,25 @@ namespace MovieSearchServerServices.MovieService {
 
     #region --- Cache I/O --------------------------------------------
     /// <summary>
-    /// Load the data into the cache
+    /// Fetch the files from storage
     /// </summary>
+    /// <returns>An IEnumerable of FileInfo</returns>
+    IEnumerable<IFileInfo> FetchFiles();
+
+    /// <summary>
+    /// Fetch the files from storage
+    /// </summary>
+    /// <param name="token">A token to cancel operation</param>
+    /// <returns>An IEnumerable of FileInfo</returns>
+    IEnumerable<IFileInfo> FetchFiles(CancellationToken token);
+
+    /// <summary>
+    /// Load the data into the cache (if the storage is available)
+    /// </summary>
+    /// <param name="fileSource">The list of files to process</param>
+    /// <param name="token">A token to cancel operation</param>
     /// <returns>A background task</returns>
-    Task Load();
+    Task Parse(IEnumerable<IFileInfo> fileSource, CancellationToken token);
     #endregion --- Cache I/O --------------------------------------------
 
     #region --- Cache management --------------------------------------------
@@ -120,7 +139,7 @@ namespace MovieSearchServerServices.MovieService {
     /// <param name="groupName">The name of master group</param>
     /// <param name="filter">The string that needs to be contained in the name of the group</param>
     /// <returns><A readonly list of IMovieGroup/returns>
-     Task<IReadOnlyList<IMovieGroup>> GetGroupsByGroupAndFilter(string groupName, string filter);
+    Task<IReadOnlyList<IMovieGroup>> GetGroupsByGroupAndFilter(string groupName, string filter);
     #endregion --- Groups access --------------------------------------------
   }
 }

@@ -7,8 +7,8 @@ using BLTools.Diagnostic.Logging;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using MovieSearch.Models;
-using static MovieSearch.Models.TSupport;
+using MovieSearchModels;
+using static MovieSearchModels.TSupport;
 
 using MovieSearchServerServices.MovieService;
 

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 using BLTools.Diagnostic.Logging;
 
-namespace MovieSearch.Models {
+namespace MovieSearchModels {
   public class TMovies : IMovies {
     public string Name { get; set; }
 
@@ -18,6 +18,7 @@ namespace MovieSearch.Models {
 
     public int Page { get; set; }
     public int AvailablePages { get; set; }
+    public int AvailableMovies { get; set; }
     public string Source { get; set; }
 
     #region --- Constructor(s) ---------------------------------------------------------------------------------
@@ -31,13 +32,13 @@ namespace MovieSearch.Models {
       AvailablePages = movies.AvailablePages;
       Source = movies.Source;
       Movies.AddRange(movies.Movies);
-    } 
+    }
     #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
     public override string ToString() {
       StringBuilder RetVal = new StringBuilder();
       RetVal.AppendLine($"{Name} / page {Page}/{AvailablePages}");
-      foreach(IMovie MovieItem in Movies) {
+      foreach (IMovie MovieItem in Movies) {
         RetVal.AppendLine($"# {MovieItem}");
       }
       return RetVal.ToString();
@@ -58,9 +59,10 @@ namespace MovieSearch.Models {
           Writer.WriteString(nameof(IMovies.Source), Source);
           Writer.WriteNumber(nameof(IMovies.Page), Page);
           Writer.WriteNumber(nameof(IMovies.AvailablePages), AvailablePages);
+          Writer.WriteNumber(nameof(IMovies.AvailableMovies), AvailableMovies);
 
           Writer.WriteStartArray(nameof(IMovies.Movies));
-          foreach (IMovie MovieItem in Movies) {
+          foreach (IJson MovieItem in Movies.OfType<IJson>()) {
             Writer.WriteRawValue(MovieItem.ToJson(options));
           }
           Writer.WriteEndArray();
@@ -70,7 +72,7 @@ namespace MovieSearch.Models {
 
         return Encoding.UTF8.GetString(Utf8JsonStream.ToArray());
       }
-    } 
+    }
     #endregion --- ToJson --------------------------------------------
 
     #region --- ParseJson --------------------------------------------
@@ -86,6 +88,7 @@ namespace MovieSearch.Models {
       Source = Root.GetPropertyEx(nameof(IMovies.Source)).GetString();
       Page = Root.GetPropertyEx(nameof(IMovies.Page)).GetInt32();
       AvailablePages = Root.GetPropertyEx(nameof(IMovies.AvailablePages)).GetInt32();
+      AvailableMovies = Root.GetPropertyEx(nameof(IMovies.AvailableMovies)).GetInt32();
 
       foreach (JsonElement MovieItem in Root.GetPropertyEx(nameof(IMovies.Movies)).EnumerateArray()) {
         Movies.Add(TMovie.FromJson(MovieItem));
@@ -111,9 +114,9 @@ namespace MovieSearch.Models {
       }
 
       return FromJson(source.GetRawText());
-    } 
+    }
     #endregion --- Static FromJson --------------------------------------------
   }
 
-  
+
 }

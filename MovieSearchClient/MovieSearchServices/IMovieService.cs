@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using MovieSearch.Models;
+using MovieSearchModels;
 
-namespace MovieSearchClient.Services {
+namespace MovieSearchClientServices {
   public interface IMovieService {
 
     string RootPath { get; }
@@ -13,8 +13,8 @@ namespace MovieSearchClient.Services {
     #region --- Movies --------------------------------------------
     List<string> ExcludedExtensions { get; }
     Task<IMovies> GetMovies(string filter, int startPage = 1, int pageSize = 20);
-    Task<byte[]> GetPicture(string pathname);
-    Task<string> GetPicture64(string pathname);
+    Task<byte[]> GetPicture(string pathname, int w = 128, int h = 160);
+    Task<string> GetPicture64(IMovie movie);
     #endregion --- Movies --------------------------------------------
 
     #region --- Groups --------------------------------------------

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-using MovieSearch.Models;
+using MovieSearchModels;
 
 using MovieSearchServerServices.MovieService;
 using MovieSearch.Services;

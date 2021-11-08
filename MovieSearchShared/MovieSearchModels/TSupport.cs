@@ -7,17 +7,23 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MovieSearch.Models {
+namespace MovieSearchModels {
   public static class TSupport {
     public static void PrintMoviesName(IEnumerable<IMovie> movies) {
       foreach (IMovie MovieItem in movies) {
-        Console.WriteLine(MovieItem.LocalName);
+        Console.WriteLine(MovieItem.Filename);
       }
     }
 
     public static byte[] GetPicture(string pictureName, string pictureExtension = ".png") {
       try {
-        using (BinaryReader reader = new BinaryReader(Assembly.GetExecutingAssembly().GetManifestResourceStream($"pictures{Path.DirectorySeparatorChar}{pictureName}{pictureExtension}"))) {
+        Assembly Asm = Assembly.GetExecutingAssembly();
+        string CompleteName = $"{Asm.GetName().Name}.Pictures.{pictureName}{pictureExtension}";
+        string[] Resources = Asm.GetManifestResourceNames();
+        foreach (string ResourceItem in Resources) {
+          Console.WriteLine(ResourceItem);
+        }
+        using (BinaryReader reader = new BinaryReader(Asm.GetManifestResourceStream(CompleteName))) {
           return reader.ReadBytes((int)reader.BaseStream.Length);
         }
       } catch (Exception ex) {

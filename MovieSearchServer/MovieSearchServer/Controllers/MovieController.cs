@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-using MovieSearch.Models;
+using MovieSearchModels;
 
 using MovieSearchServerServices.MovieService;
 
@@ -17,42 +17,15 @@ using System.Text.Json;
 namespace MovieSearchServer.Controllers {
   [ApiController]
   [Route("api/movie")]
-  public class TMovieController : ControllerBase, ILoggable {
+  public class TMovieController : AController {
 
     private readonly IMovieService _MovieService;
 
     #region --- Constructor(s) ---------------------------------------------------------------------------------
-    public TMovieController(IMovieService movieService, ILogger logger) {
+    public TMovieController(IMovieService movieService, ILogger logger) : base(logger) {
       _MovieService = movieService;
-      SetLogger(logger);
     }
     #endregion --- Constructor(s) ------------------------------------------------------------------------------
-
-    #region --- ILoggable --------------------------------------------
-    public ILogger Logger { get; set; }
-    [NonAction]
-    public void SetLogger(ILogger logger) {
-      if (logger is null) {
-        Logger = ALogger.DEFAULT_LOGGER;
-      } else {
-        Logger = ALogger.Create(logger);
-      }
-    }
-    #endregion --- ILoggable --------------------------------------------
-
-    ///// <summary>
-    ///// Obtain the list of movies for a given group, with the possibility of filtering and pagination
-    ///// </summary>
-    ///// <param name="group">The group name</param>
-    ///// <param name="filter">A possible filter for the movie names</param>
-    ///// <param name="page">The first page (x items count)</param>
-    ///// <param name="items">The items count for the request</param>
-    ///// <returns>A IMovies object containing the data</returns>
-    //[HttpGet()]
-    //public async Task<ActionResult<IMovies>> Get(string group = "", string filter = "", int page = 1, int items = 20) {
-    //  Console.WriteLine($"GetMovies for group {WebUtility.UrlDecode(group)}, filter={WebUtility.UrlDecode(filter)}, page={page}, items={items}");
-    //  return new JsonResult(await MovieService.GetMovies(WebUtility.UrlDecode(group), WebUtility.UrlDecode(filter), page, items).ToListAsync());
-    //}
 
     /// <summary>
     /// Obtain a page of movies with the possibility of filtering
@@ -65,20 +38,28 @@ namespace MovieSearchServer.Controllers {
     public async Task<ActionResult<IMovies>> Get(string filter = "", int page = 1, int items = 20) {
       Logger?.Log($"New request : {HttpContext.Request.QueryString}");
       Logger?.Log($"Origin : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.RemotePort}");
+
+      IMovies RetVal;
+
       if (string.IsNullOrWhiteSpace(filter)) {
         Logger?.Log($"GetMovies : page={page}, items={items}");
-
+        RetVal = new TMovies() {
+          Source = _MovieService.Storage,
+          Page = page,
+          AvailablePages = await _MovieService.PagesCount(items).ConfigureAwait(false),
+          AvailableMovies = await _MovieService.MoviesCount()
+        };
       } else {
         Logger?.Log($"GetMovies : filter={WebUtility.UrlDecode(filter)}, page={page}, items={items}");
+        RetVal = new TMovies() {
+          Source = _MovieService.Storage,
+          Page = page,
+          AvailablePages = await _MovieService.PagesCount(WebUtility.UrlDecode(filter), items).ConfigureAwait(false),
+          AvailableMovies = await _MovieService.MoviesCount(WebUtility.UrlDecode(filter))
+        };
       }
 
-      IMovies RetVal = new TMovies() {
-        Source = _MovieService.Storage,
-        Page = page,
-        AvailablePages = await _MovieService.PagesCount(items).ConfigureAwait(false)
-      };
-
-      await foreach(TMovie MovieItem in _MovieService.GetMovies(WebUtility.UrlDecode(filter), page, items).ConfigureAwait(false)) {
+      await foreach (TMovie MovieItem in _MovieService.GetMovies(WebUtility.UrlDecode(filter), page, items).ConfigureAwait(false)) {
         RetVal.Movies.Add(MovieItem);
       }
 
@@ -90,18 +71,24 @@ namespace MovieSearchServer.Controllers {
 
 
 
-    //[HttpGet("getPicture")]
-    //public async Task<FileContentResult> GetPicture(string pathname) {
-    //  byte[] Result = await MovieService.GetPicture(WebUtility.UrlDecode(pathname));
-    //  return File(Result, "image/jpeg");
-    //}
+    [HttpGet("getPicture")]
+    public async Task<ActionResult> GetPicture(string pathname, int width, int height) {
+      byte[] Result = await _MovieService.GetPicture(picturePath: WebUtility.UrlDecode(pathname), 
+                                                     width: width,
+                                                     height: height);
+      if (Result is null) {
+        return new NotFoundResult();
+      } else {
+        return File(Result, "image/jpeg");
+      }
+    }
 
     #region --- Support --------------------------------------------
     private string _PrintMovies(IEnumerable<IMovie> movies) {
       StringBuilder RetVal = new();
 
       foreach (IMovie MovieItem in movies) {
-        RetVal.AppendLine($"  {MovieItem.LocalName}");
+        RetVal.AppendLine($"  {MovieItem.Filename}");
       }
       return RetVal.ToString();
     }

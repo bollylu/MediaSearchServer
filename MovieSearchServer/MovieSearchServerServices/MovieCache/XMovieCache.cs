@@ -1,35 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using MovieSearch.Models;
+
+using BLTools;
+
+using MovieSearchModels;
 
 namespace MovieSearchServerServices.MovieService {
+
+  /// <summary>
+  /// Fake movie cache with hardcoded values
+  /// </summary>
   public class XMovieCache : AMovieCache {
 
-    public XMovieCache () {
+    #region --- Constructor(s) ---------------------------------------------------------------------------------
+    public XMovieCache() {
       StorageName = "Demo";
+      Storage = @"\\andromeda.sharenet.priv\Films";
+    }
+    #endregion --- Constructor(s) ------------------------------------------------------------------------------
+
+    public override IEnumerable<IFileInfo> FetchFiles(CancellationToken token) {
+      IList<IFileInfo> RetVal = new List<IFileInfo> {
+        new XFileInfo(@"\\andromeda.sharenet.priv\Films\Science-fiction\[Aliens, créatures, ...]\Alien agent (2007)\Alien agent (2007).avi") { Length = 123456789 },
+        new XFileInfo(@"\\andromeda.sharenet.priv\Films\Science-fiction\[Aliens, créatures, ...]\Godzilla #\Godzilla (1954)\Godzilla (1954).mkv") { Length = 987654321 }
+      };
+      return RetVal;
     }
 
-    public override Task Load() {
-
-      _Items.Add(new TMovie() {
-        Storage = @"andromeda.sharenet.priv\Films",
-        LocalName = "Alien agent (2007).avi",
-        LocalPath = @"Science-fiction\[Aliens, créatures, ...]\Alien agent (2007)",
-        Group = @"/Science-fiction/[Aliens, créatures, ...]",
-        Size = 123456
-      });
-
-      _Items.Add(new TMovie() {
-        Storage = @"andromeda.sharenet.priv\Films",
-        LocalName = "Godzilla (1954).mkv",
-        LocalPath = @"Science-fiction\[Aliens, créatures, ...]\Godzilla #\Godzilla (1954)",
-        Group = @"/Science-fiction/[Aliens, créatures, ...]",
-        Size = 123457
-      });
-
-      return Task.CompletedTask;
-    }
   }
 }

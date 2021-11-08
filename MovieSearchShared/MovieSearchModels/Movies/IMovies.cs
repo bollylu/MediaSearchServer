@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace MovieSearch.Models {
+namespace MovieSearchModels {
   public interface IMovies {
     string Name { get; }
     string Source { get; }
@@ -14,6 +14,7 @@ namespace MovieSearch.Models {
     
     int Page { get; }
     int AvailablePages { get; }
+    int AvailableMovies { get; }
 
     string ToJson();
     string ToJson(JsonWriterOptions options);

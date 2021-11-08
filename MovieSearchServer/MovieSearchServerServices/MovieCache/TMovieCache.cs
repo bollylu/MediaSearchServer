@@ -9,14 +9,30 @@ using System.Threading.Tasks;
 
 using BLTools;
 
-using MovieSearch.Models;
+using MovieSearchModels;
 
 namespace MovieSearchServerServices.MovieService {
   public class TMovieCache : AMovieCache {
 
-    public List<string> MoviesExtensions { get; } = new() { ".mkv", ".avi", ".mp4" };
+    public List<string> MoviesExtensions { get; } = new() { ".mkv", ".avi", ".mp4", ".iso" };
 
-    public override Task Load() {
+    public override IEnumerable<IFileInfo> FetchFiles(CancellationToken token) {
+
+      DirectoryInfo RootFolder = new DirectoryInfo(Storage);
+
+      foreach (IFileInfo FileInfoItem in RootFolder.EnumerateFiles("*.*", new EnumerationOptions() { RecurseSubdirectories = true })
+                                                   .Where(f => MoviesExtensions.Contains(f.Extension.ToLowerInvariant()))
+                                                   .Select(f=> new TFileInfo(f))) {
+
+        if (token.IsCancellationRequested) {
+          yield break;
+        }
+
+        yield return FileInfoItem;
+      }
+    }
+
+    public override async Task Parse(IEnumerable<IFileInfo> fileSource, CancellationToken token) {
       Log("Initializing movies cache");
 
       if (string.IsNullOrWhiteSpace(Storage)) {
@@ -25,39 +41,32 @@ namespace MovieSearchServerServices.MovieService {
 
       Clear();
 
-      lock (_LockCache) {
+      int Progress = 0;
 
-        DirectoryInfo RootFolder = new DirectoryInfo(Storage);
+      foreach (IFileInfo MovieInfoItem in fileSource) {
+        Progress++;
 
-        IEnumerable<FileInfo> MoviesInfo = RootFolder.GetFiles("*.*", new EnumerationOptions() { RecurseSubdirectories = true })
-                                                     .Where(f => MoviesExtensions.Contains(f.Extension.ToLowerInvariant()));
+        try {
+          IMovie NewMovie = _ParseEntry(MovieInfoItem);
 
-        foreach (FileInfo MovieInfoItem in MoviesInfo.OrderBy(f => f.FullName)) {
+          await Task.Yield();
 
-          string LocalPath = MovieInfoItem.DirectoryName.After(Storage, System.StringComparison.InvariantCultureIgnoreCase);
-
-          string GroupName = LocalPath.BeforeLast(Path.DirectorySeparatorChar).Replace('\\', '/');
-
-          string FormattedGroupName = $"/{GroupName}/";
-
-          LogDebug($"Group name = {GroupName}");
-
-          string PictureLocation = LocalPath.Replace('\\', '/');
-
-          LogDebug($"PictureLocation = {PictureLocation}");
-
-          _Items.Add(new TMovie() {
-            Storage = Storage,
-            LocalName = MovieInfoItem.Name,
-            LocalPath = MovieInfoItem.DirectoryName.After(Storage, System.StringComparison.InvariantCultureIgnoreCase),
-            Group = FormattedGroupName,
-            Size = MovieInfoItem.Length
-          });
+          _Items.Add($"{NewMovie.Filename}{NewMovie.OutputYear}", NewMovie);
+        } catch (Exception ex) {
+          LogWarning($"Unable to parse movie {MovieInfoItem} : {ex.Message}");
+          if (ex.InnerException is not null) {
+            LogWarning($"  {ex.InnerException.Message}");
+          }
         }
+
+        if (Progress % 100 == 0) {
+          Log($"Processed {Progress} movies...");
+        }
+
       }
 
-      Log("Cache initialized successfully");
-      return Task.CompletedTask;
+      Log($"Cache initialized successfully : {Progress} movies");
+
     }
 
   }

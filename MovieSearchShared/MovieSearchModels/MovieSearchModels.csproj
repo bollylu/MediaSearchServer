@@ -2,8 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <RootNamespace>MovieSearch.Models</RootNamespace>
+    <RootNamespace>MovieSearchModels</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Converters\**" />
+    <EmbeddedResource Remove="Converters\**" />
+    <None Remove="Converters\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Movie\TMovieJson.cs" />

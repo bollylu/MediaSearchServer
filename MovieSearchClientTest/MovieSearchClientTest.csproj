@@ -17,8 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MovieSearchClient\MovieSearchClient\MovieSearchClient.csproj" />
     <ProjectReference Include="..\MovieSearchClient\MovieSearchServices\MovieSearchClientService.csproj" />
-    <ProjectReference Include="..\MovieSearchClient\MovieSearch\MovieSearchClient.csproj" />
     <ProjectReference Include="..\MoviesearchShared\MovieSearchModels\MovieSearchModels.csproj" />
   </ItemGroup>
 

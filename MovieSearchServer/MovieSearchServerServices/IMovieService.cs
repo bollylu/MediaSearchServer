@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using MovieSearch.Models;
+using MovieSearchModels;
 
 namespace MovieSearchServerServices.MovieService {
   public interface IMovieService {
 
-    const int DEFAULT_PAGE_SIZE = 20;
+    public const int DEFAULT_PAGE_SIZE = 20;
+
+    public const int DEFAULT_PICTURE_WIDTH = 128;
+    public const int DEFAULT_PICTURE_HEIGHT = 160;
+
+    public const string DEFAULT_PICTURE_NAME = "folder.jpg";
 
     string Storage { get; }
 
@@ -71,22 +76,22 @@ namespace MovieSearchServerServices.MovieService {
     /// <returns>A list of IMovie</returns>
     IAsyncEnumerable<TMovie> GetMovies(string filter, int startPage = 1, int pageSize = DEFAULT_PAGE_SIZE);
 
-    /// <summary>
-    /// Get a page of movies matching a group and a filter
-    /// </summary>
-    /// <param name="group">The group to match (empty means all)</param>
-    /// <param name="filter">The filter to match (empty means all)</param>
-    /// <param name="startPage">Which page to start with</param>
-    /// <param name="pageSize">How many movies on a page</param>
-    /// <returns>A list of IMovie</returns>
-    IAsyncEnumerable<TMovie> GetMovies(string group, string filter, int startPage = 1, int pageSize = DEFAULT_PAGE_SIZE);
-    
+    ///// <summary>
+    ///// Get a page of movies matching a group and a filter
+    ///// </summary>
+    ///// <param name="group">The group to match (empty means all)</param>
+    ///// <param name="filter">The filter to match (empty means all)</param>
+    ///// <param name="startPage">Which page to start with</param>
+    ///// <param name="pageSize">How many movies on a page</param>
+    ///// <returns>A list of IMovie</returns>
+    //IAsyncEnumerable<TMovie> GetMovies(string group, string filter, int startPage = 1, int pageSize = DEFAULT_PAGE_SIZE);
+
     #endregion --- Movies --------------------------------------------
 
-    //#region --- Groups --------------------------------------------
-    //string CurrentGroup { get; }
-    //Task<IMovieGroups> GetGroups(string group = "", string filter = "");
-    //#endregion --- Groups --------------------------------------------
+    Task<byte[]> GetPicture(string picturePath,
+                            string pictureName = DEFAULT_PICTURE_NAME,
+                            int width = DEFAULT_PICTURE_WIDTH,
+                            int height = DEFAULT_PICTURE_HEIGHT);
 
 
 

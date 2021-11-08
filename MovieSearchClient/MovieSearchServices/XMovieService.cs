@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-using MovieSearch.Models;
+using MovieSearchModels;
 
-namespace MovieSearchClient.Services {
+namespace MovieSearchClientServices {
   public class XMovieService : IMovieService {
     public string RootPath { get; }
     public List<string> ExcludedExtensions { get; }
@@ -24,11 +24,11 @@ namespace MovieSearchClient.Services {
       return Task.FromResult(RetVal);
     }
 
-    public Task<byte[]> GetPicture(string pathname) {
+    public Task<byte[]> GetPicture(string pathname, int w, int h) {
       throw new NotImplementedException();
     }
 
-    public Task<string> GetPicture64(string pathname) {
+    public Task<string> GetPicture64(IMovie movie) {
       throw new NotImplementedException();
     }
 
