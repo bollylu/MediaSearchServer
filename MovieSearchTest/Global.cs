@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
-using BLTools.Diagnostic.Logging;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using MovieSearchServerServices.MovieService;
 
 namespace MovieSearchTest {
   [TestClass]
