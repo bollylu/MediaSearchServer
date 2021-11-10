@@ -4,11 +4,11 @@
   <table class="col-12">
     <tr class="col-12">
       <td class="col-5">
-        @Movie.LocalName
+        @Movie.Name
         <span class="badge rounded-pill bg-danger text-light">@Movie.OutputYear</span>
       </td>
       <td class="col-7">
-        @Movie.LocalPath.BeforeLast("/")
+        @Movie.StoragePath.BeforeLast("/")
       </td>
     </tr>
   </table>

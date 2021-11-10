@@ -18,9 +18,9 @@ namespace MovieSearchClientServices {
 
     public Task<IMovies> GetMovies(string filter, int startPage = 1, int pageSize = 20) {
       IMovies RetVal = new TMovies();
-      RetVal.Movies.Add(new TMovie() { LocalName = "Le seigneur des anneaux", Group="Fantasy", LocalPath="Le seigneur des anneaux 1.mvk", Size=8_000_000});
-      RetVal.Movies.Add(new TMovie() { LocalName = "Le seigneur des anneaux 2", Group = "Fantasy", LocalPath = "Le seigneur des anneaux 2.mvk", Size = 8_001_000 });
-      RetVal.Movies.Add(new TMovie() { LocalName = "Le seigneur des anneaux 3", Group = "Fantasy", LocalPath = "Le seigneur des anneaux 3.mvk", Size = 8_002_000 });
+      RetVal.Movies.Add(new TMovie() { Name = "Le seigneur des anneaux", Group="Fantasy", StoragePath="Le seigneur des anneaux 1.mvk", Size=8_000_000});
+      RetVal.Movies.Add(new TMovie() { Name = "Le seigneur des anneaux 2", Group = "Fantasy", StoragePath = "Le seigneur des anneaux 2.mvk", Size = 8_001_000 });
+      RetVal.Movies.Add(new TMovie() { Name = "Le seigneur des anneaux 3", Group = "Fantasy", StoragePath = "Le seigneur des anneaux 3.mvk", Size = 8_002_000 });
       return Task.FromResult(RetVal);
     }
 

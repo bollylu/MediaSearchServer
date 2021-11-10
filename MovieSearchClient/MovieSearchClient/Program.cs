@@ -27,8 +27,8 @@ namespace MovieSearchClient {
 
       builder.Services.AddSingleton<ILogger, TConsoleLogger>();
 
-      if (Dns.GetHostEntry(DEFAULT_API_ADDRESS).AddressList.Any()) {
-        
+      if ( _ProbeLocalServer() ) {
+
         builder.Services.AddSingleton<TApiServer>(new TApiServer() { BaseAddress = new Uri(DEFAULT_API_ADDRESS) });
         builder.Services.AddSingleton<THttpClientEx>(new THttpClientEx() { BaseAddress = new Uri(DEFAULT_API_ADDRESS) });
       } else {
@@ -51,10 +51,14 @@ namespace MovieSearchClient {
 
     }
 
-    private bool _ProbeLocalServer() {
-      using (THttpClientEx Client = new() { BaseAddress = new Uri(DEFAULT_API_ADDRESS) }) { 
-      Client.SendAsync()
+    private static bool _ProbeLocalServer() {
+      using ( THttpClientEx Client = new() {
+        BaseAddress = new Uri(DEFAULT_API_ADDRESS)
+      } ) {
+
       }
+
+      return true;
     }
   }
 }

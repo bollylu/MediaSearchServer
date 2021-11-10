@@ -50,7 +50,6 @@ namespace MovieSearchClientServices {
 
     public async Task<IMovieGroups> GetGroups(string group = "/", string filter = "") {
       try {
-
         string RequestUrl = $"group?name={group.ToUrl()}&filter={filter.ToUrl()}";
         Log($"Requesting groups : {RequestUrl}");
         using (CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT_IN_MS)) {
@@ -63,7 +62,6 @@ namespace MovieSearchClientServices {
         LogError($"Unable to get groups data : {ex.Message}");
         return null;
       }
-
     }
     #endregion --- Group actions --------------------------------------------
 
@@ -113,7 +111,7 @@ namespace MovieSearchClientServices {
     }
 
     public async Task<string> GetPicture64(IMovie movie) {
-      string FullPicturePath = Path.Combine(movie.Storage, movie.LocalPath);
+      string FullPicturePath = Path.Combine(movie.StorageRoot, movie.StoragePath);
       LogDebug($"Loading picture in B64 for {FullPicturePath}");
       byte[] CachedPicture = _ImageCache.GetImage(FullPicturePath);
       byte[] PictureBytes;

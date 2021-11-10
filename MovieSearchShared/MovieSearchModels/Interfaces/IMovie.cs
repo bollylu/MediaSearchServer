@@ -1,6 +1,6 @@
 ﻿namespace MovieSearchModels;
 
-public interface IMovie : IMedia, IJson {
+public interface IMovie : IMedia{
 
   /// <summary>
   /// The normalized extension of the movie (container type) based on file extension
@@ -37,4 +37,9 @@ public interface IMovie : IMedia, IJson {
   const string DEFAULT_PICTURE_NAME = "folder.jpg";
   #endregion --- Pictures --------------------------------------------
 
+  string ToJson();
+  string ToJson(JsonWriterOptions options);
+
+  IMovie ParseJson(string source);
+  IMovie ParseJson(JsonElement source);
 }

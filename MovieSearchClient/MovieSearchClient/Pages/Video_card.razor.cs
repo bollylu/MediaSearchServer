@@ -27,7 +27,7 @@ namespace MovieSearchClient.Pages {
 
 
     protected override async Task OnParametersSetAsync() {
-      HeaderText = Movie.LocalName;
+      HeaderText = Movie.Name;
       await GetImageSource();
       //if (Movie.LocalName.Contains("(")) {
       //  HeaderText = Movie.LocalName.BeforeLast('(').Trim();

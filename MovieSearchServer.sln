@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30711.63
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieSearchServer", "MovieSearchServer\MovieSearchServer\MovieSearchServer.csproj", "{69577F33-94BC-4370-AA71-AD45CCF00666}"
 EndProject
@@ -11,19 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieSearchModels", "MovieS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieSearchTest", "MovieSearchTest\MovieSearchTest.csproj", "{6B8F4084-E720-4907-9504-C8A7A53D6342}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieSearchClient", "MovieSearchClient\MovieSearch\MovieSearchClient.csproj", "{192CCDDD-613F-4B3C-80AF-AD091AF5967C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieSearchClientService", "MovieSearchClient\MovieSearchServices\MovieSearchClientService.csproj", "{24250ECF-0864-413D-8627-0AC83323D6D9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieSearchClientTest", "MovieSearchClientTest\MovieSearchClientTest.csproj", "{7D814070-F50A-4D3D-AB6E-E97598EC420E}"
-	ProjectSection(ProjectDependencies) = postProject
-		{69577F33-94BC-4370-AA71-AD45CCF00666} = {69577F33-94BC-4370-AA71-AD45CCF00666}
-		{84443E3B-EF02-49B1-B025-F966F1FC03C3} = {84443E3B-EF02-49B1-B025-F966F1FC03C3}
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D6CF39B7-2B54-4C28-869D-1FD481F1F8E1}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{E4795F32-19E7-4AFB-ACA4-0680D5E8779B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{447F4FC7-68FE-40C0-BF53-542AC6CCE1CA}"
 EndProject
@@ -51,18 +39,6 @@ Global
 		{6B8F4084-E720-4907-9504-C8A7A53D6342}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B8F4084-E720-4907-9504-C8A7A53D6342}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B8F4084-E720-4907-9504-C8A7A53D6342}.Release|Any CPU.Build.0 = Release|Any CPU
-		{192CCDDD-613F-4B3C-80AF-AD091AF5967C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{192CCDDD-613F-4B3C-80AF-AD091AF5967C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{192CCDDD-613F-4B3C-80AF-AD091AF5967C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{192CCDDD-613F-4B3C-80AF-AD091AF5967C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{24250ECF-0864-413D-8627-0AC83323D6D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{24250ECF-0864-413D-8627-0AC83323D6D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{24250ECF-0864-413D-8627-0AC83323D6D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{24250ECF-0864-413D-8627-0AC83323D6D9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7D814070-F50A-4D3D-AB6E-E97598EC420E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7D814070-F50A-4D3D-AB6E-E97598EC420E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7D814070-F50A-4D3D-AB6E-E97598EC420E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7D814070-F50A-4D3D-AB6E-E97598EC420E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,9 +48,6 @@ Global
 		{84443E3B-EF02-49B1-B025-F966F1FC03C3} = {447F4FC7-68FE-40C0-BF53-542AC6CCE1CA}
 		{206A68D1-0C44-4EB9-B69C-91BE4D0A0E61} = {2F0A49D1-8D2C-496D-B6B5-A92BD2640968}
 		{6B8F4084-E720-4907-9504-C8A7A53D6342} = {D6CF39B7-2B54-4C28-869D-1FD481F1F8E1}
-		{192CCDDD-613F-4B3C-80AF-AD091AF5967C} = {E4795F32-19E7-4AFB-ACA4-0680D5E8779B}
-		{24250ECF-0864-413D-8627-0AC83323D6D9} = {E4795F32-19E7-4AFB-ACA4-0680D5E8779B}
-		{7D814070-F50A-4D3D-AB6E-E97598EC420E} = {D6CF39B7-2B54-4C28-869D-1FD481F1F8E1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2446CAF6-7821-4538-B9A5-18226B00E475}

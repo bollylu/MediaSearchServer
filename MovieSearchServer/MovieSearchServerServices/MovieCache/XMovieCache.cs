@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
-using BLTools;
-
-using MovieSearchModels;
-
-namespace MovieSearchServerServices.MovieService {
+﻿namespace MovieSearchServerServices.MovieService;
 
   /// <summary>
   /// Fake movie cache with hardcoded values
@@ -18,7 +7,7 @@ namespace MovieSearchServerServices.MovieService {
 
     #region --- Constructor(s) ---------------------------------------------------------------------------------
     public XMovieCache() {
-      StorageName = "Demo";
+      Name = "Demo";
       Storage = @"\\andromeda.sharenet.priv\Films";
     }
     #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -32,4 +21,3 @@ namespace MovieSearchServerServices.MovieService {
     }
 
   }
-}

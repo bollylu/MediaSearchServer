@@ -35,15 +35,15 @@ namespace MovieSearchServer.Controllers {
     /// <param name="items">The items count for the request</param>
     /// <returns>A IMovies object containing the data</returns>
     [HttpGet()]
-    public async Task<ActionResult<IMovies>> Get(string filter = "", int page = 1, int items = 20) {
+    public async Task<ActionResult<IMoviesPage>> Get(string filter = "", int page = 1, int items = 20) {
       Logger?.Log($"New request : {HttpContext.Request.QueryString}");
       Logger?.Log($"Origin : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.RemotePort}");
 
-      IMovies RetVal;
+      IMoviesPage RetVal;
 
       if (string.IsNullOrWhiteSpace(filter)) {
         Logger?.Log($"GetMovies : page={page}, items={items}");
-        RetVal = new TMovies() {
+        RetVal = new TMoviesPage() {
           Source = _MovieService.Storage,
           Page = page,
           AvailablePages = await _MovieService.PagesCount(items).ConfigureAwait(false),
@@ -51,7 +51,7 @@ namespace MovieSearchServer.Controllers {
         };
       } else {
         Logger?.Log($"GetMovies : filter={WebUtility.UrlDecode(filter)}, page={page}, items={items}");
-        RetVal = new TMovies() {
+        RetVal = new TMoviesPage() {
           Source = _MovieService.Storage,
           Page = page,
           AvailablePages = await _MovieService.PagesCount(WebUtility.UrlDecode(filter), items).ConfigureAwait(false),
@@ -66,7 +66,7 @@ namespace MovieSearchServer.Controllers {
       Logger?.Log($"Returning {RetVal.Movies.Count} movies");
       Logger?.Log(_PrintMovies(RetVal.Movies));
 
-      return new ActionResult<IMovies>(RetVal);
+      return new ActionResult<IMoviesPage>(RetVal);
     }
 
 
@@ -88,7 +88,7 @@ namespace MovieSearchServer.Controllers {
       StringBuilder RetVal = new();
 
       foreach (IMovie MovieItem in movies) {
-        RetVal.AppendLine($"  {MovieItem.Filename}");
+        RetVal.AppendLine($"  {MovieItem.FileName}");
       }
       return RetVal.ToString();
     }
