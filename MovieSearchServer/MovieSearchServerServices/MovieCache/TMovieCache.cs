@@ -36,7 +36,7 @@ public class TMovieCache : AMovieCache {
 
       try {
         IMovie NewMovie = _ParseEntry(MovieInfoItem);
-
+        LogDebugEx($"Found {MovieInfoItem.FullName}");
         await Task.Yield();
 
         _Items.Add($"{NewMovie.FileName}{NewMovie.OutputYear}", NewMovie);

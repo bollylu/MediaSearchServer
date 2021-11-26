@@ -9,7 +9,6 @@ namespace MovieSearchServerServices.MovieService {
   public class TMovieService : ALoggable, IMovieService, IName {
 
     #region --- Constants --------------------------------------------
-    private const string ROOT_NAME = "/";
     public const int TIMEOUT_IN_MS = 5000;
     #endregion --- Constants --------------------------------------------
 
@@ -31,14 +30,17 @@ namespace MovieSearchServerServices.MovieService {
     /// <summary>
     /// The extensions of the files of interest
     /// </summary>
-    public List<string> MoviesExtensions { get; } = new() { ".mkv", ".avi", ".mp4" };
+    public List<string> MoviesExtensions { get; } = new() { ".mkv", ".avi", ".mp4", ".iso" };
 
     private readonly IEnumerable<IFileInfo> _DataSource;
     private readonly IMovieCache _MoviesCache = new TMovieCache();
 
     #region --- Constructor(s) ---------------------------------------------------------------------------------
-    public TMovieService() {
+    public TMovieService(string storage) {
       _MoviesCache.SetLogger(Logger);
+      Storage = storage;
+      _MoviesCache = new TMovieCache() { Storage = storage};
+      _DataSource = _MoviesCache.FetchFiles();
     }
 
     public TMovieService(IMovieCache movieCache) {
@@ -71,6 +73,7 @@ namespace MovieSearchServerServices.MovieService {
 
       _IsInitializing = true;
 
+      Log($"Parsing data source : {Storage}");
       using ( CancellationTokenSource Timeout = new CancellationTokenSource((int)TimeSpan.FromMinutes(5).TotalMilliseconds) ) {
         await _MoviesCache.Parse(_DataSource, Timeout.Token).ConfigureAwait(false);
       }
@@ -82,6 +85,11 @@ namespace MovieSearchServerServices.MovieService {
 
     public void Reset() {
       _MoviesCache.Clear();
+    }
+
+    public override void SetLogger(ILogger logger) {
+      base.SetLogger(logger);
+      _MoviesCache.SetLogger(logger);
     }
 
     #region --- Movies --------------------------------------------

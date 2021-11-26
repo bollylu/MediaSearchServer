@@ -9,3 +9,6 @@ global using System.Text.Json;
 
 global using BLTools;
 global using BLTools.Diagnostic.Logging;
+global using MovieSearchServerServices.MovieService;
+
+global using ILogger = BLTools.Diagnostic.Logging.ILogger;
