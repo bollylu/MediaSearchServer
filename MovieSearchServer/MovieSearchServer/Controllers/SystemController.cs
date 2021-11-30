@@ -24,7 +24,7 @@ public class TSystemController : AController {
     Logger?.Log("Request to refresh the data");
     Logger?.Log($"Origin : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.RemotePort}");
 
-    _MovieService.Refresh();
+    await _MovieService.Refresh();
 
     return new ActionResult<string>("Refresh initiated.");
   }
