@@ -1,4 +1,6 @@
-﻿namespace MovieSearchServerServices.MovieService;
+﻿using BLTools.Encryption;
+
+namespace MovieSearchServerServices.MovieService;
 
 public abstract class AMovieCache : ALoggable, IMovieCache {
 
@@ -20,7 +22,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
 
   #region --- IName --------------------------------------------
   public string Name { get; set; }
-  public string Description { get; set; } 
+  public string Description { get; set; }
   #endregion --- IName --------------------------------------------
 
   #region --- Cache I/O --------------------------------------------
@@ -34,16 +36,17 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
     Log("Initializing movies cache");
     Clear();
 
-    foreach ( IFileInfo FileItem in fileSource ) {
-      if ( token.IsCancellationRequested ) {
+    foreach (IFileInfo FileItem in fileSource) {
+      if (token.IsCancellationRequested) {
         return Task.FromCanceled(token);
       }
       try {
         IMovie NewMovie = _ParseEntry(FileItem);
-        _Items.Add($"{NewMovie.FileName}{NewMovie.OutputYear}", NewMovie);
-      } catch ( Exception ex ) {
+
+        _Items.Add($"{NewMovie.Id}", NewMovie);
+      } catch (Exception ex) {
         LogWarning($"Unable to parse movie {FileItem} : {ex.Message}");
-        if ( ex.InnerException is not null ) {
+        if (ex.InnerException is not null) {
           LogWarning($"  {ex.InnerException.Message}");
         }
       }
@@ -70,14 +73,14 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
     string[] Tags = RetVal.StoragePath.BeforeLast(FOLDER_SEPARATOR).Split(FOLDER_SEPARATOR, StringSplitOptions.RemoveEmptyEntries);
     RetVal.Group = Tags.Any() ? Tags[0] : "(Unknown)";
 
-    foreach ( string TagItem in Tags ) {
+    foreach (string TagItem in Tags) {
       RetVal.Tags.Add(TagItem);
     }
 
     try {
       RetVal.OutputYear = int.Parse(RetVal.FileName.AfterLast('(').BeforeLast(')'));
-    } catch {
-      LogWarning($"Unable to find output year : Invalid or missing number : {item.FullName}");
+    } catch (FormatException ex) {
+      LogWarning($"Unable to find output year : {ex.Message} : {item.FullName}");
       RetVal.OutputYear = 0;
     }
 
@@ -85,7 +88,6 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
 
     return RetVal;
   }
-
   #endregion --- Cache I/O --------------------------------------------
 
   #region --- Cache management --------------------------------------------
@@ -126,8 +128,14 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
   #endregion --- Cache management --------------------------------------------
 
   #region --- Movies access --------------------------------------------
+  public IMovie GetMovie(string id) {
+    lock (_LockCache) {
+      return _Items.FirstOrDefault(x => x.Key == id).Value;
+    }
+  }
+
   public IEnumerable<IMovie> GetMoviesWithGroup() {
-    lock ( _LockCache ) {
+    lock (_LockCache) {
       return _Items.Values.Where(m => !string.IsNullOrWhiteSpace(m.Group));
     }
   }
@@ -136,7 +144,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
     try {
       Log($"==> GetAllMovies() from cache");
       _LockCache.EnterReadLock();
-      foreach ( KeyValuePair<string, IMovie> MovieItem in _Items ) {
+      foreach (KeyValuePair<string, IMovie> MovieItem in _Items) {
         yield return MovieItem.Value;
       }
     } finally {
@@ -152,13 +160,13 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
   public IEnumerable<IMovie> GetMovies(string filter, int startPage = DEFAULT_START_PAGE, int pageSize = DEFAULT_PAGE_SIZE) {
     try {
       Log($"==> GetMovies({filter.WithQuotes()}, {startPage}, {pageSize})");
-      lock ( _LockCache ) {
-        if ( string.IsNullOrWhiteSpace(filter) ) {
-          return _Items.Values.Skip(pageSize * ( startPage - 1 ))
+      lock (_LockCache) {
+        if (string.IsNullOrWhiteSpace(filter)) {
+          return _Items.Values.Skip(pageSize * (startPage - 1))
                        .Take(pageSize);
         } else {
           return _Items.Values.Where(m => m.FileName.Contains(filter, StringComparison.CurrentCultureIgnoreCase))
-                       .Skip(pageSize * ( startPage - 1 ))
+                       .Skip(pageSize * (startPage - 1))
                        .Take(pageSize);
         }
       }
@@ -171,7 +179,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
   public IReadOnlyList<IMovie> GetMoviesInGroup(string groupName) {
     try {
       Log("==> GetMoviesInGroup");
-      lock ( _LockCache ) {
+      lock (_LockCache) {
         return _Items.Values.Where(m => m.Group.StartsWith(groupName, StringComparison.CurrentCultureIgnoreCase))
                      .ToList();
       }
@@ -183,7 +191,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
   public IReadOnlyList<IMovie> GetMoviesNotInGroup(string groupName) {
     try {
       Log("==> GetMoviesNotInGroup");
-      lock ( _LockCache ) {
+      lock (_LockCache) {
         return _Items.Values.Where(m => m.Group.StartsWith(groupName))
                      .Where(m => !m.Group.Equals(groupName, StringComparison.CurrentCultureIgnoreCase))
                      .ToList();
@@ -196,7 +204,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
   public Task<IReadOnlyList<IMovie>> GetMoviesForGroupAndFilter(string groupName, string filter) {
     try {
       Log("==> GetMoviesForGroupAndFilter");
-      lock ( _LockCache ) {
+      lock (_LockCache) {
         IReadOnlyList<IMovie> RetVal = _Items.Values.Where(m => m.Group.StartsWith(groupName, StringComparison.CurrentCultureIgnoreCase))
                                              .Where(m => m.FileName.Contains(filter, StringComparison.CurrentCultureIgnoreCase))
                                              .ToList();
@@ -225,8 +233,6 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
   //}
   #endregion --- Movies access --------------------------------------------
 
-
-
   #region --- Groups access --------------------------------------------
   /// <summary>
   /// Get the distinct list of group names 
@@ -243,7 +249,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
       Log($"Filter = {filter}");
       Log($"StartPage = {startPage}");
 
-      if ( IsEmpty() ) {
+      if (IsEmpty()) {
         return new TMoviesPage() { Name = "", Page = 1, AvailablePages = 1 };
       }
 
@@ -256,10 +262,10 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
         Page = startPage,
         AvailablePages = ItemCount % pageSize == 0 ?
                          ItemCount / pageSize :
-                         (int)( ItemCount / pageSize ) + 1
+                         (int)(ItemCount / pageSize) + 1
       };
 
-      foreach ( TMovie MovieItem in FilteredItems.Skip(( startPage.WithinLimits(0, int.MaxValue) - 1 ) * pageSize).Take(pageSize) ) {
+      foreach (TMovie MovieItem in FilteredItems.Skip((startPage.WithinLimits(0, int.MaxValue) - 1) * pageSize).Take(pageSize)) {
         RetVal.Movies.Add(MovieItem);
       }
 
@@ -271,7 +277,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
   }
 
   private string _getGroupFilter(string group, int level = 1) {
-    if ( string.IsNullOrWhiteSpace(group) ) {
+    if (string.IsNullOrWhiteSpace(group)) {
       return "";
     }
     string RetVal = string.Join("/", group.Split('/', StringSplitOptions.RemoveEmptyEntries).Take(level));

@@ -1,30 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
 
-using MovieSearchModels;
+namespace MovieSearchServer.Controllers;
 
-using MovieSearchServerServices.MovieService;
-using MovieSearch.Services;
-
-using BLTools.Diagnostic.Logging;
-
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
-namespace MovieSearchServer.Controllers {
-
-  [Route("api/[controller]")]
-  [Produces("application/json")]
-  [ApiController]
-  public class GroupController : ControllerBase {
+[Route("api/[controller]")]
+[Produces("application/json")]
+[ApiController]
+public class GroupController : ControllerBase
+{
 
     private readonly IMovieService MovieService;
 
-    public GroupController(IMovieService movieService) {
-      MovieService = movieService;
+    public GroupController(IMovieService movieService)
+    {
+        MovieService = movieService;
     }
 
     //[HttpGet]
@@ -34,5 +22,5 @@ namespace MovieSearchServer.Controllers {
     //  return new JsonResult(await MovieService.GetGroups(name.FromUrl(), filter.FromUrl()));
     //}
 
-  }
 }
+

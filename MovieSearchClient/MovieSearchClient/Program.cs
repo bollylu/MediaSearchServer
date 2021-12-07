@@ -28,7 +28,6 @@ namespace MovieSearchClient {
       builder.Services.AddSingleton<ILogger, TConsoleLogger>();
 
       if ( _ProbeLocalServer() ) {
-
         builder.Services.AddSingleton<TApiServer>(new TApiServer() { BaseAddress = new Uri(DEFAULT_API_ADDRESS) });
         builder.Services.AddSingleton<THttpClientEx>(new THttpClientEx() { BaseAddress = new Uri(DEFAULT_API_ADDRESS) });
       } else {

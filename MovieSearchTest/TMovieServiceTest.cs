@@ -8,15 +8,15 @@ public class TMovieServiceTest {
   #region --- Initialize --------------------------------------------
   [ClassInitialize]
   public static async Task MovieCacheInit(TestContext testContext) {
-    if ( Global.MovieService is null ) {
-      if ( Global.MovieCache is null ) {
-        Global.MovieService = new TMovieService() { Storage = Global.STORAGE, Logger = new TConsoleLogger() };
+    if (Global.MovieService is null) {
+      if (Global.MovieCache is null) {
+        Global.MovieService = new TMovieService(Global.STORAGE) { Logger = new TConsoleLogger() };
         await Global.MovieService.Initialize().ConfigureAwait(false);
       } else {
-        Global.MovieService = new TMovieService(Global.MovieCache) { Storage = Global.STORAGE, Logger = new TConsoleLogger() };
+        Global.MovieService = new TMovieService(Global.MovieCache) { RootStoragePath = Global.STORAGE, Logger = new TConsoleLogger() };
       }
     }
-  } 
+  }
   #endregion --- Initialize --------------------------------------------
 
   [TestMethod]
@@ -69,7 +69,7 @@ public class TMovieServiceTest {
 
     List<TMovie> Target = await Global.MovieService.GetMovies("The", PageCount, IMovieService.DEFAULT_PAGE_SIZE).ToListAsync().ConfigureAwait(false);
     PrintMoviesName(Target);
-    Assert.AreNotEqual(IMovieService.DEFAULT_PAGE_SIZE, Target.Count);
+    Assert.IsTrue(IMovieService.DEFAULT_PAGE_SIZE >= Target.Count);
   }
 
 }

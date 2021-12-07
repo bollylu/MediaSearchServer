@@ -1,4 +1,6 @@
-﻿namespace MovieSearchModels;
+﻿using BLTools.Encryption;
+
+namespace MovieSearchModels;
 
 public abstract class AMovie : AMedia, IMovie {
 
@@ -18,16 +20,9 @@ public abstract class AMovie : AMedia, IMovie {
   #endregion --- Public properties ---------------------------------------------------------------------------
 
   #region --- Picture --------------------------------------------
-  //public virtual Task<byte[]> GetPicture(int timeout = 5000) {
-  //  throw new NotImplementedException();
-  //}
-  //public virtual Task<string> GetPicture64(int timeout = 5000) {
-  //  throw new NotImplementedException();
-  //}
-
   public static byte[] PictureMissing {
     get {
-      if ( _PictureMissingBytes is null ) {
+      if (_PictureMissingBytes is null) {
         _PictureMissingBytes = TSupport.GetPicture("missing", ".jpg");
       }
       return _PictureMissingBytes;
@@ -45,6 +40,9 @@ public abstract class AMovie : AMedia, IMovie {
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
+  protected override void _BuildId() {
+    Id = $"{Name}{OutputYear}".HashToBase64();
+  }
   public override string ToString() {
     StringBuilder RetVal = new StringBuilder(base.ToString());
     RetVal.AppendLine($"{nameof(Extension)} = {Extension}");

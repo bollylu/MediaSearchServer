@@ -1,6 +1,6 @@
 ﻿namespace MovieSearchModels;
 
-public interface IMovie : IMedia{
+public interface IMovie : IMedia {
 
   /// <summary>
   /// The normalized extension of the movie (container type) based on file extension

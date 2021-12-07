@@ -10,7 +10,7 @@ public class TSystemController : AController {
   private readonly IMovieService _MovieService;
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMovieController(IMovieService movieService, ILogger logger) : base(logger) {
+  public TSystemController(IMovieService movieService, ILogger logger) : base(logger) {
     _MovieService = movieService;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------

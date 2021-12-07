@@ -80,6 +80,13 @@ public interface IMovieCache : ILoggable, IName {
   IEnumerable<IMovie> GetMovies(string filter, int startPage = 1, int pageSize = 20);
 
   /// <summary>
+  /// Get a movie from the cache
+  /// </summary>
+  /// <param name="id">The id of the movie</param>
+  /// <returns>The requested movie or null if error</returns>
+  IMovie GetMovie(string id);
+
+  /// <summary>
   /// Get the list of movies with a valid group name
   /// </summary>
   IEnumerable<IMovie> GetMoviesWithGroup();

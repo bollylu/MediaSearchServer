@@ -27,8 +27,9 @@ public class TMovie : AMovie {
 
         Writer.WriteStartObject();
 
-        Writer.WriteString(nameof(IMovie.StorageRoot), StorageRoot);
-        Writer.WriteString(nameof(IMovie.StoragePath), StoragePath);
+        Writer.WriteString(nameof(IMovie.Id), Id);
+        //Writer.WriteString(nameof(IMovie.StorageRoot), StorageRoot);
+        //Writer.WriteString(nameof(IMovie.StoragePath), StoragePath);
         Writer.WriteString(nameof(IMovie.Name), Name);
         Writer.WriteString(nameof(IMovie.Group), Group);
         Writer.WriteString(nameof(IMovie.FileName), FileName);
@@ -71,8 +72,6 @@ public class TMovie : AMovie {
     JsonDocument JsonMovie = JsonDocument.Parse(source);
     JsonElement Root = JsonMovie.RootElement;
 
-    StorageRoot = Root.GetPropertyEx(nameof(IMovie.StorageRoot)).GetString();
-    StoragePath = Root.GetPropertyEx(nameof(IMovie.StoragePath)).GetString();
     FileName = Root.GetPropertyEx(nameof(IMovie.FileName)).GetString();
     Name = Root.GetPropertyEx(nameof(IMovie.Name)).GetString();
     Group = Root.GetPropertyEx(nameof(IMovie.Group)).GetString();

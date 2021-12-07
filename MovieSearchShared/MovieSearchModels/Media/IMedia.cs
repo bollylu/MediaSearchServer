@@ -3,6 +3,11 @@
 public interface IMedia : IName, ITags, IMultiNames {
 
   /// <summary>
+  /// Identifier for this item
+  /// </summary>
+  string Id { get; }
+
+  /// <summary>
   /// The filename used to store the media
   /// </summary>
   string FileName { get; set; }
@@ -22,5 +27,6 @@ public interface IMedia : IName, ITags, IMultiNames {
   /// </summary>
   string StoragePath { get; set; }
 
+  
 }
 
