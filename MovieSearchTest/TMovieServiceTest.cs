@@ -49,14 +49,14 @@ public class TMovieServiceTest {
 
     List<TMovie> Target = await Global.MovieService.GetMovies(PageCount, IMovieService.DEFAULT_PAGE_SIZE).ToListAsync().ConfigureAwait(false);
     PrintMoviesName(Target);
-    Assert.AreNotEqual(IMovieService.DEFAULT_PAGE_SIZE, Target.Count);
+    Assert.IsTrue(IMovieService.DEFAULT_PAGE_SIZE >= Target.Count);
   }
 
   [TestMethod]
   public async Task Service_GetFilteredFirstPage() {
     List<TMovie> Target = await Global.MovieService.GetMovies("The", 1, IMovieService.DEFAULT_PAGE_SIZE).ToListAsync().ConfigureAwait(false);
     PrintMoviesName(Target);
-    Assert.AreEqual(IMovieService.DEFAULT_PAGE_SIZE, Target.Count);
+    Assert.IsTrue(IMovieService.DEFAULT_PAGE_SIZE >= Target.Count);
   }
 
   [TestMethod]

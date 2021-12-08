@@ -38,8 +38,7 @@ public class TMovieCache : AMovieCache {
         IMovie NewMovie = _ParseEntry(MovieInfoItem);
         LogDebugEx($"Found {MovieInfoItem.FullName}");
         await Task.Yield();
-
-        _Items.Add($"{NewMovie.FileName}{NewMovie.OutputYear}", NewMovie);
+        AddMovie(NewMovie);
       } catch ( Exception ex ) {
         LogWarning($"Unable to parse movie {MovieInfoItem} : {ex.Message}");
         if ( ex.InnerException is not null ) {

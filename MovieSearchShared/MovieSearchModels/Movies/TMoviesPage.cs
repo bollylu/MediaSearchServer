@@ -54,7 +54,7 @@ public class TMoviesPage : IMoviesPage {
         Writer.WriteNumber(nameof(IMoviesPage.AvailableMovies), AvailableMovies);
 
         Writer.WriteStartArray(nameof(IMoviesPage.Movies));
-        foreach ( IJson MovieItem in Movies.OfType<IJson>() ) {
+        foreach ( IMovie MovieItem in Movies ) {
           Writer.WriteRawValue(MovieItem.ToJson(options));
         }
         Writer.WriteEndArray();

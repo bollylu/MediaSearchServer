@@ -38,14 +38,19 @@ public class Startup {
     Console.WriteLine($"Runtime version {Environment.Version}");
     Console.WriteLine($"OS version {Environment.OSVersion}");
     Console.WriteLine(TextBox.BuildHorizontalRow(80));
-    Console.WriteLine("Press any key to continue...");
-    Console.ReadKey();
+    //Console.WriteLine("Press any key to continue...");
+    //Console.ReadKey();
 
     Logger = new TFileLogger(LogFile);
     Logger.Log("MovieSearchServer startup...");
     Logger.Log($"Data source is {DataSource}");
 
     services.AddSingleton<ILogger>(Logger);
+
+    services.AddControllers(options => {
+      options.OutputFormatters.Insert(0, new TMovieOutputFormatter());
+      options.OutputFormatters.Insert(0, new TMoviesPageOutputFormatter());
+    });
 
     TMovieService MovieService = new TMovieService(DataSource);
 

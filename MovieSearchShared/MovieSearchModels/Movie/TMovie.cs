@@ -28,8 +28,6 @@ public class TMovie : AMovie {
         Writer.WriteStartObject();
 
         Writer.WriteString(nameof(IMovie.Id), Id);
-        //Writer.WriteString(nameof(IMovie.StorageRoot), StorageRoot);
-        //Writer.WriteString(nameof(IMovie.StoragePath), StoragePath);
         Writer.WriteString(nameof(IMovie.Name), Name);
         Writer.WriteString(nameof(IMovie.Group), Group);
         Writer.WriteString(nameof(IMovie.FileName), FileName);

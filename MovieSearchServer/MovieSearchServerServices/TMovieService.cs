@@ -1,5 +1,8 @@
-﻿using System.Drawing;
+﻿using MovieSearchModels;
+
+using System.Drawing;
 using System.Drawing.Imaging;
+using System.Net;
 
 namespace MovieSearchServerServices.MovieService;
 
@@ -149,6 +152,34 @@ public class TMovieService : ALoggable, IMovieService, IName {
                                              .Take(pageSize)) {
       yield return MovieItem;
     }
+  }
+
+  public async Task<IMoviesPage> GetMoviesPage(string filter = "", int startPage = 1, int pageSize = 20) {
+    await Initialize().ConfigureAwait(false);
+
+    IMoviesPage RetVal;
+    if (string.IsNullOrWhiteSpace(filter)) {
+      Logger?.Log($"GetMovies : page={startPage}, items={pageSize}");
+      RetVal = new TMoviesPage() {
+        Source = RootStoragePath,
+        Page = startPage,
+        AvailablePages = await PagesCount(pageSize).ConfigureAwait(false),
+        AvailableMovies = await MoviesCount().ConfigureAwait(false)
+      };
+    } else {
+      Logger?.Log($"GetMovies : filter={WebUtility.UrlDecode(filter)}, page={startPage}, items={pageSize}");
+      RetVal = new TMoviesPage() {
+        Source = RootStoragePath,
+        Page = startPage,
+        AvailablePages = await PagesCount(WebUtility.UrlDecode(filter), pageSize).ConfigureAwait(false),
+        AvailableMovies = await MoviesCount(WebUtility.UrlDecode(filter)).ConfigureAwait(false)
+      };
+    }
+
+    await foreach (TMovie MovieItem in GetMovies(WebUtility.UrlDecode(filter), startPage, pageSize).ConfigureAwait(false)) {
+      RetVal.Movies.Add(MovieItem);
+    }
+    return RetVal;
   }
 
   public Task<IMovie> GetMovie(string id) {

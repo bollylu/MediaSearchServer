@@ -67,7 +67,7 @@ public interface IMovieService {
   IAsyncEnumerable<TMovie> GetMovies(int startPage = 1, int pageSize = DEFAULT_PAGE_SIZE);
 
   /// <summary>
-  /// Get a page of movies matching a filter
+  /// Get a list of movies matching a filter
   /// </summary>
   /// <param name="filter">The data to check in name and alt. names</param>
   /// <param name="startPage">Which page to start with</param>
@@ -75,6 +75,14 @@ public interface IMovieService {
   /// <returns>A list of IMovie</returns>
   IAsyncEnumerable<TMovie> GetMovies(string filter, int startPage = 1, int pageSize = DEFAULT_PAGE_SIZE);
 
+  // <summary>
+  /// Get a page of movies matching a filter
+  /// </summary>
+  /// <param name="filter">The data to check in name and alt. names</param>
+  /// <param name="startPage">Which page to start with</param>
+  /// <param name="pageSize">How many movies on a page</param>
+  /// <returns>A page of IMovie</returns>
+  Task<IMoviesPage> GetMoviesPage(string filter, int startPage = 1, int pageSize = DEFAULT_PAGE_SIZE);
   /// <summary>
   /// Get a movie based on it's Id
   /// </summary>

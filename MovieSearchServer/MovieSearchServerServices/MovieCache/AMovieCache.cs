@@ -91,6 +91,14 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
   #endregion --- Cache I/O --------------------------------------------
 
   #region --- Cache management --------------------------------------------
+  public void AddMovie(IMovie item) {
+    try {
+      _LockCache.EnterWriteLock();
+      _Items.Add(item.Id, item);
+    } finally {
+      _LockCache.ExitWriteLock();
+    }
+  }
   public void Clear() {
     try {
       _LockCache.EnterWriteLock();
@@ -129,14 +137,20 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
 
   #region --- Movies access --------------------------------------------
   public IMovie GetMovie(string id) {
-    lock (_LockCache) {
+    try {
+      _LockCache.EnterReadLock();
       return _Items.FirstOrDefault(x => x.Key == id).Value;
+    } finally {
+      _LockCache.ExitReadLock();
     }
   }
 
   public IEnumerable<IMovie> GetMoviesWithGroup() {
-    lock (_LockCache) {
+    try {
+      _LockCache.EnterReadLock();
       return _Items.Values.Where(m => !string.IsNullOrWhiteSpace(m.Group));
+    } finally {
+      _LockCache.ExitReadLock();
     }
   }
 
@@ -159,18 +173,18 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
 
   public IEnumerable<IMovie> GetMovies(string filter, int startPage = DEFAULT_START_PAGE, int pageSize = DEFAULT_PAGE_SIZE) {
     try {
+      _LockCache.EnterReadLock();
       Log($"==> GetMovies({filter.WithQuotes()}, {startPage}, {pageSize})");
-      lock (_LockCache) {
-        if (string.IsNullOrWhiteSpace(filter)) {
-          return _Items.Values.Skip(pageSize * (startPage - 1))
-                       .Take(pageSize);
-        } else {
-          return _Items.Values.Where(m => m.FileName.Contains(filter, StringComparison.CurrentCultureIgnoreCase))
-                       .Skip(pageSize * (startPage - 1))
-                       .Take(pageSize);
-        }
+      if (string.IsNullOrWhiteSpace(filter)) {
+        return _Items.Values.Skip(pageSize * (startPage - 1))
+                     .Take(pageSize);
+      } else {
+        return _Items.Values.Where(m => m.FileName.Contains(filter, StringComparison.CurrentCultureIgnoreCase))
+                     .Skip(pageSize * (startPage - 1))
+                     .Take(pageSize);
       }
     } finally {
+      _LockCache.ExitReadLock();
       Log($"<== GetMovies({filter.WithQuotes()}, {startPage}, {pageSize})");
     }
   }

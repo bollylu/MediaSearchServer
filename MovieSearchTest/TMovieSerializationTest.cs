@@ -6,10 +6,10 @@ public class TMovieSerializationTest {
   private IMovieService _MovieService;
 
   [TestInitialize]
-  public void BuildData() {
+  public async Task BuildData() {
     IMovieCache Cache = new XMovieCache() { Storage = @"\\Andromeda.sharenet.priv\films" };
     IEnumerable<IFileInfo> Files = Cache.FetchFiles();
-    Cache.Parse(Files, CancellationToken.None);
+    await Cache.Parse(Files, CancellationToken.None);
     _MovieService = new TMovieService(Cache);
   }
 
