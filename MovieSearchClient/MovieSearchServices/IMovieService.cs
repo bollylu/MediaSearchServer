@@ -8,19 +8,30 @@ using MovieSearchModels;
 namespace MovieSearchClientServices {
   public interface IMovieService {
 
-    string RootPath { get; }
+    /// <summary>
+    /// The base address for the api server connection
+    /// </summary>
+    string ApiBase { get; }
+
+    /// <summary>
+    /// Test the api server for existance
+    /// </summary>
+    /// <returns>true if the server is available, false otherwise</returns>
+    Task<bool> ProbeApi();
+
+    //string RootPath { get; }
 
     #region --- Movies --------------------------------------------
-    List<string> ExcludedExtensions { get; }
-    Task<IMovies> GetMovies(string filter, int startPage = 1, int pageSize = 20);
+    //List<string> ExcludedExtensions { get; }
+    Task<IMoviesPage> GetMovies(string filter, int startPage = 1, int pageSize = 20);
     Task<byte[]> GetPicture(string pathname, int w = 128, int h = 160);
     Task<string> GetPicture64(IMovie movie);
     #endregion --- Movies --------------------------------------------
 
-    #region --- Groups --------------------------------------------
-    string CurrentGroup { get; }
-    Task<IMovieGroups> GetGroups(string group = "", string filter = "");
-    #endregion --- Groups --------------------------------------------
+    //#region --- Groups --------------------------------------------
+    //string CurrentGroup { get; }
+    //Task<IMovieGroups> GetGroups(string group = "", string filter = "");
+    //#endregion --- Groups --------------------------------------------
 
     string GetPictureLocation(string pathname);
 

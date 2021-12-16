@@ -1,5 +1,7 @@
 ﻿using BLTools.Encryption;
 
+using MovieSearch.Services;
+
 namespace MovieSearchServerServices.MovieService;
 
 public abstract class AMovieCache : ALoggable, IMovieCache {
@@ -7,7 +9,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
   public const int DEFAULT_START_PAGE = 1;
   public const int DEFAULT_PAGE_SIZE = 20;
 
-  public const char FOLDER_SEPARATOR = '/';
+  public static char FOLDER_SEPARATOR = Path.DirectorySeparatorChar;
 
   #region --- Internal data storage --------------------------------------------
   /// <summary>
@@ -61,9 +63,9 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
     IMovie RetVal = new TMovie();
 
     // Standardize directory separator
-    string ProcessedFileItem = item.FullName.Replace('\\', FOLDER_SEPARATOR);
+    string ProcessedFileItem = item.FullName.NormalizePath();
 
-    RetVal.StorageRoot = Storage.Replace('\\', FOLDER_SEPARATOR);
+    RetVal.StorageRoot = Storage.NormalizePath();
     RetVal.StoragePath = ProcessedFileItem.BeforeLast(FOLDER_SEPARATOR).After(RetVal.StorageRoot, System.StringComparison.InvariantCultureIgnoreCase);
 
     RetVal.FileName = item.Name;

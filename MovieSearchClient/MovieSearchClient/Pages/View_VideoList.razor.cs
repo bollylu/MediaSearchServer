@@ -22,7 +22,7 @@ namespace MovieSearchClient.Pages {
     [Parameter]
     public EViewType ViewType { get; set; } = EViewType.List;
 
-    public IMovies Movies { get; set; }
+    public IMoviesPage Movies { get; set; }
 
     public string MoviesTitle {
       get {

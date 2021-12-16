@@ -1,8 +1,8 @@
 ﻿using MovieSearchModels;
 
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Net;
+using SkiaSharp;
+using MovieSearch.Services;
 
 namespace MovieSearchServerServices.MovieService;
 
@@ -11,7 +11,7 @@ namespace MovieSearchServerServices.MovieService;
 /// </summary>
 public class TMovieService : ALoggable, IMovieService, IName {
   #region --- Constants --------------------------------------------
-  public const int TIMEOUT_IN_MS = 5000;
+  public const int TIMEOUT_IN_MS = 500000;
   #endregion --- Constants --------------------------------------------
 
   /// <summary>
@@ -167,16 +167,16 @@ public class TMovieService : ALoggable, IMovieService, IName {
         AvailableMovies = await MoviesCount().ConfigureAwait(false)
       };
     } else {
-      Logger?.Log($"GetMovies : filter={WebUtility.UrlDecode(filter)}, page={startPage}, items={pageSize}");
+      Logger?.Log($"GetMovies : filter={filter}, page={startPage}, items={pageSize}");
       RetVal = new TMoviesPage() {
         Source = RootStoragePath,
         Page = startPage,
-        AvailablePages = await PagesCount(WebUtility.UrlDecode(filter), pageSize).ConfigureAwait(false),
-        AvailableMovies = await MoviesCount(WebUtility.UrlDecode(filter)).ConfigureAwait(false)
+        AvailablePages = await PagesCount(filter, pageSize).ConfigureAwait(false),
+        AvailableMovies = await MoviesCount(filter).ConfigureAwait(false)
       };
     }
 
-    await foreach (TMovie MovieItem in GetMovies(WebUtility.UrlDecode(filter), startPage, pageSize).ConfigureAwait(false)) {
+    await foreach (TMovie MovieItem in GetMovies(filter, startPage, pageSize).ConfigureAwait(false)) {
       RetVal.Movies.Add(MovieItem);
     }
     return RetVal;
@@ -194,35 +194,54 @@ public class TMovieService : ALoggable, IMovieService, IName {
   #endregion --- Movies --------------------------------------------
 
   public async Task<byte[]> GetPicture(string id,
-                                       string pictureName = IMovieService.DEFAULT_PICTURE_NAME,
-                                       int width = IMovieService.DEFAULT_PICTURE_WIDTH,
-                                       int height = IMovieService.DEFAULT_PICTURE_HEIGHT) {
+                                       string pictureName,
+                                       int width,
+                                       int height) {
 
-    IMovie Movie = _MoviesCache.GetMovie(id);
-    string FullPicturePath = Path.Combine(RootStoragePath, Movie.StoragePath, pictureName);
+    #region === Validate parameters ===
+    string ParamPictureName = pictureName ?? IMovieService.DEFAULT_PICTURE_NAME;
+    int ParamWidth = width.WithinLimits(IMovieService.MIN_PICTURE_WIDTH, IMovieService.MAX_PICTURE_WIDTH);
+    int ParamHeight = height.WithinLimits(IMovieService.MIN_PICTURE_HEIGHT, IMovieService.MAX_PICTURE_HEIGHT);
+    if (string.IsNullOrWhiteSpace(id)) {
+      LogError("Unable to fetch picture : id is null or invalid");
+      return null;
+    }
+    string ParamId = id;
+    #endregion === Validate parameters ===
 
-    LogDebug($"GetPicture {FullPicturePath} : size({width}, {height})");
+    IMovie Movie = _MoviesCache.GetMovie(ParamId);
+    if (Movie is null) {
+      LogError($"Unable to fetch picture id \"{ParamId}\"");
+      return null;
+    }
+
+    string FullPicturePath = Path.Join(RootStoragePath.NormalizePath(), Movie.StoragePath.NormalizePath(), ParamPictureName);
+
+    LogDebug($"GetPicture {FullPicturePath} : size({ParamWidth}, {ParamHeight})");
+    if (!File.Exists(FullPicturePath)) {
+      LogError($"Unable to fetch picture {FullPicturePath} : File is missing or access is denied");
+      return null;
+    }
 
     try {
-      if (!File.Exists(FullPicturePath)) {
-        LogError($"Unable to fetch picture {FullPicturePath} : File is missing or access is denied");
-        return null;
-      }
-      using (CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT_IN_MS)) {
-        using (FileStream SourceStream = new FileStream(FullPicturePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true)) {
-          using (MemoryStream PictureStream = new()) {
-            await SourceStream.CopyToAsync(PictureStream, Timeout.Token);
-            Image Picture = Image.FromStream(PictureStream);
-            Bitmap ResizedPicture = new Bitmap(Picture, width, height);
-            using (MemoryStream OutputStream = new()) {
-              ResizedPicture.Save(OutputStream, ImageFormat.Jpeg);
-              return OutputStream.ToArray();
-            }
-          }
-        }
+      using CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT_IN_MS);
+      using FileStream SourceStream = new FileStream(FullPicturePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
+      using MemoryStream PictureStream = new MemoryStream();
+      await SourceStream.CopyToAsync(PictureStream, Timeout.Token);
+      PictureStream.Seek(0, SeekOrigin.Begin);
+      SKImage Image = SKImage.FromEncodedData(PictureStream);
+      SKBitmap Picture = SKBitmap.FromImage(Image);
+      SKBitmap ResizedPicture = Picture.Resize(new SKImageInfo(width, height), SKFilterQuality.High);
+      SKData Result = ResizedPicture.Encode(SKEncodedImageFormat.Jpeg, 100);
+      using (MemoryStream OutputStream = new()) {
+        Result.SaveTo(OutputStream);
+        return OutputStream.ToArray();
       }
     } catch (Exception ex) {
       LogError($"Unable to fetch picture {FullPicturePath} : {ex.Message}");
+      if (ex.InnerException is not null) {
+        LogError($"  {ex.InnerException.Message}");
+      }
       return null;
     }
   }

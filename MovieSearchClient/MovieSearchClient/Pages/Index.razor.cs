@@ -1,34 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using MovieSearchClientServices;
-
-using BLTools.Diagnostic.Logging;
-
+﻿using MovieSearchClientServices;
 using Microsoft.AspNetCore.Components;
 
-namespace MovieSearchClient.Pages {
+namespace MovieSearchClient.Pages;
 
   public partial class Index : ComponentBase, ILoggable {
 
-    [Inject]
+  public ILogger? Logger { get; set; }
+
+  public void SetLogger(ILogger logger) {
+    Logger = logger;
+  }
+
+  [Inject]
     public IBusService<string> BusService { get; set; }
+    [Inject]
+    public IMovieService MovieService { get; set; }
 
     private string CurrentFilter;
-
-    #region --- ILoggable --------------------------------------------
-    public ILogger Logger { get; set; }
-    public void SetLogger(ILogger logger) {
-      Logger = ALogger.Create(logger);
-    }
-    #endregion --- ILoggable --------------------------------------------
+    private string ServerApi;
 
     protected override void OnInitialized() {
       // subscribe to OnMessage event
       SetLogger(ALogger.SYSTEM_LOGGER);
       BusService.OnMessage += _MessageHandler;
+      ServerApi = MovieService.ApiBase;
     }
 
     public void Dispose() {
@@ -40,17 +35,17 @@ namespace MovieSearchClient.Pages {
       switch (source) {
 
         case EditFilter.SVC_NAME: {
-            Logger.Log($"Filter is now [{data}]");
+            Logger?.Log($"Filter is now [{data}]");
             CurrentFilter = data;
             StateHasChanged();
           }
           break;
 
-        default:
-          Logger.Log($"Unknown source : {source}");
-          StateHasChanged();
-          break;
+        default: {
+            Logger?.Log($"Unknown source : {source}");
+            StateHasChanged();
+            break;
+          }
       }
     }
   }
-}

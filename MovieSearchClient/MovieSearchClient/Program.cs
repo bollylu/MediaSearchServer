@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,49 +16,34 @@ using System.Net;
 using BLTools;
 using System.Linq;
 
-namespace MovieSearchClient {
-  public class Program {
+namespace MovieSearchClient;
 
-    public const string DEFAULT_EXTERNAL_API_ADDRESS = "https://mediasearch.sharenet.be/api/";
-    public const string DEFAULT_API_ADDRESS = "http://mediasearch.sharenet.priv/api/";
+public class Program {
 
-    public static async Task Main(string[] args) {
+  public const string DEFAULT_EXTERNAL_API_ADDRESS = "https://mediasearchapi.sharenet.be/api/";
+  public const string DEFAULT_API_ADDRESS = "http://mediasearchapi.sharenet.priv/api/";
 
-      var builder = WebAssemblyHostBuilder.CreateDefault(args);
+  public static async Task Main(string[] args) {
 
-      builder.Services.AddSingleton<ILogger, TConsoleLogger>();
+    var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-      if ( _ProbeLocalServer() ) {
-        builder.Services.AddSingleton<TApiServer>(new TApiServer() { BaseAddress = new Uri(DEFAULT_API_ADDRESS) });
-        builder.Services.AddSingleton<THttpClientEx>(new THttpClientEx() { BaseAddress = new Uri(DEFAULT_API_ADDRESS) });
-      } else {
-        builder.Services.AddSingleton<TApiServer>(new TApiServer() { BaseAddress = new Uri(DEFAULT_EXTERNAL_API_ADDRESS) });
-        builder.Services.AddSingleton<THttpClientEx>(new THttpClientEx() { BaseAddress = new Uri(DEFAULT_EXTERNAL_API_ADDRESS) });
-      }
+    builder.Services.AddSingleton<ILogger, TConsoleLogger>();
+    builder.Services.AddSingleton<TImageCache>();
 
-      builder.Services.AddSingleton<IMovieService, TMovieService>();
+    //await Task.Delay(60000);
+    IMovieService MovieService = new TMovieService(DEFAULT_API_ADDRESS, new TImageCache());
 
-      //builder.Services.AddHttpClient<IMovieService, TMovieService>(client =>
-      //  client.BaseAddress = new Uri(DEFAULT_API_ADDRESS)
-      //) ;
+    builder.Services.AddSingleton(MovieService);
 
-      builder.Services.AddSingleton<TImageCache>();
-      builder.Services.AddSingleton<IBusService<string>, TBusService<string>>();
 
-      builder.RootComponents.Add<App>("#app");
+    builder.Services.AddSingleton<IBusService<string>, TBusService<string>>();
 
-      await builder.Build().RunAsync();
+    builder.RootComponents.Add<App>("#app");
+    //builder.RootComponents.Add<HeadOutlet>("head::after");
 
-    }
+    await builder.Build().RunAsync();
 
-    private static bool _ProbeLocalServer() {
-      using ( THttpClientEx Client = new() {
-        BaseAddress = new Uri(DEFAULT_API_ADDRESS)
-      } ) {
-
-      }
-
-      return true;
-    }
   }
+
 }
+

@@ -22,11 +22,11 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "dotnetRunMessages": true,
-      "UseAppHost" :  true,
-      "applicationUrl": "http://lucwks7.sharenet.priv:5551",
       "jsWebView2Debugging": true,
-      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}"
+     
+      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
+      "applicationUrl": "http://localhost:6789",
+      "dotnetRunMessages": true
     }
   }
 }

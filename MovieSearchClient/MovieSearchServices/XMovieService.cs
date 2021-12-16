@@ -7,17 +7,20 @@ using MovieSearchModels;
 
 namespace MovieSearchClientServices {
   public class XMovieService : IMovieService {
-    public string RootPath { get; }
-    public List<string> ExcludedExtensions { get; }
-    public string CurrentGroup { get; }
+    public string ApiBase { get; }
 
-    public Task<IMovieGroups> GetGroups(string group = "", string filter = "") {
-      IMovieGroups RetVal = new TMovieGroups() { Name = "Fantasy" };
-      return Task.FromResult(RetVal);
-    }
+    //public string RootPath { get; }
+    //public List<string> ExcludedExtensions { get; }
+    //public string CurrentGroup { get; }
 
-    public Task<IMovies> GetMovies(string filter, int startPage = 1, int pageSize = 20) {
-      IMovies RetVal = new TMovies();
+    //public Task<IMovieGroups> GetGroups(string group = "", string filter = "") {
+    //  IMovieGroups RetVal = new TMovieGroups() { Name = "Fantasy" };
+    //  return Task.FromResult(RetVal);
+    //}
+
+
+    public Task<IMoviesPage> GetMovies(string filter, int startPage = 1, int pageSize = 20) {
+      IMoviesPage RetVal = new TMoviesPage();
       RetVal.Movies.Add(new TMovie() { Name = "Le seigneur des anneaux", Group="Fantasy", StoragePath="Le seigneur des anneaux 1.mvk", Size=8_000_000});
       RetVal.Movies.Add(new TMovie() { Name = "Le seigneur des anneaux 2", Group = "Fantasy", StoragePath = "Le seigneur des anneaux 2.mvk", Size = 8_001_000 });
       RetVal.Movies.Add(new TMovie() { Name = "Le seigneur des anneaux 3", Group = "Fantasy", StoragePath = "Le seigneur des anneaux 3.mvk", Size = 8_002_000 });
@@ -34,6 +37,10 @@ namespace MovieSearchClientServices {
 
     public string GetPictureLocation(string pathname) {
       return "/api/movies/getPicture/missing.jpg";
+    }
+
+    public Task<bool> ProbeApi() {
+      return Task.FromResult(true);
     }
   }
 }

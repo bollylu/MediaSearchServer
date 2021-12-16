@@ -29,21 +29,23 @@ public class Program {
       Usage();
     }
 
+    #region --- Configuration --------------------------------------------
     IConfigurationBuilder ConfigurationBuilder = new ConfigurationBuilder();
     ConfigurationBuilder.SetBasePath(Directory.GetCurrentDirectory());
     ConfigurationBuilder.AddJsonFile("appsettings.json");
     ConfigurationBuilder.AddJsonFile("appsettings.Development.json");
-    if ( OperatingSystem.IsWindows() ) {
+    if (OperatingSystem.IsWindows()) {
       ConfigurationBuilder.AddJsonFile("appsettings.windows.json");
     } else {
       ConfigurationBuilder.AddJsonFile("appsettings.linux.json");
     }
     ConfigurationBuilder.AddCommandLine(args);
-    Configuration = ConfigurationBuilder.Build();
-
+    Configuration = ConfigurationBuilder.Build(); 
+    
     if ( AppArgs.IsDefined(ARG_VERBOSE) || Configuration.GetSection(ARG_VERBOSE).Exists() ) {
-      Console.WriteLine(Configuration.DumpConfig().Trim().Box());
+      Console.WriteLine(Configuration.DumpConfig().BoxFixedWidth("From Main", 160));
     }
+    #endregion --- Configuration --------------------------------------------
 
     CreateHostBuilder(args).Build().Run();
   }

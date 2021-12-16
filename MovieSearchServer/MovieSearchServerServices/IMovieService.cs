@@ -4,8 +4,10 @@ public interface IMovieService {
 
   public const int DEFAULT_PAGE_SIZE = 20;
 
-  public const int DEFAULT_PICTURE_WIDTH = 128;
-  public const int DEFAULT_PICTURE_HEIGHT = 160;
+  public const int MIN_PICTURE_WIDTH = 128;
+  public const int MAX_PICTURE_WIDTH = 1024;
+  public const int MIN_PICTURE_HEIGHT = 160;
+  public const int MAX_PICTURE_HEIGHT = 1280;
 
   public const string DEFAULT_PICTURE_NAME = "folder.jpg";
 
@@ -92,8 +94,8 @@ public interface IMovieService {
   #endregion --- Movies --------------------------------------------
 
   Task<byte[]> GetPicture(string id,
-                          string pictureName = DEFAULT_PICTURE_NAME,
-                          int width = DEFAULT_PICTURE_WIDTH,
-                          int height = DEFAULT_PICTURE_HEIGHT);
+                          string pictureName,
+                          int width,
+                          int height);
 
 }

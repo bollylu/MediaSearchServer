@@ -33,7 +33,7 @@ namespace MovieSearchClientTest {
           using (CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT_IN_MS)) {
 
             HttpResponseMessage Result = await Client.GetAsync(RequestUrl, Timeout.Token).ConfigureAwait(false);
-            IMovies Target = TMovies.FromJson(await Result.Content.ReadAsStringAsync().ConfigureAwait(false));
+            IMoviesPage Target = TMoviesPage.FromJson(await Result.Content.ReadAsStringAsync().ConfigureAwait(false));
 
 
             Console.WriteLine(Result.ReasonPhrase);
@@ -63,7 +63,7 @@ namespace MovieSearchClientTest {
           string Result = await Client.GetStringAsync(RequestUrl, TIMEOUT_IN_MS).ConfigureAwait(false);
 
           if (Client.LastResponse.IsSuccessStatusCode) {
-            IMovies Target = TMovies.FromJson(Result);
+            IMoviesPage Target = TMoviesPage.FromJson(Result);
 
             Console.WriteLine(Result);
             Console.WriteLine(Target.ToString());
@@ -91,7 +91,7 @@ namespace MovieSearchClientTest {
           Console.WriteLine($"Requesting movies : {RequestUrl}");
           using (CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT_IN_MS)) {
             string Result = await Client.GetStringAsync(RequestUrl, Timeout.Token).ConfigureAwait(false);
-            IMovies Target = TMovies.FromJson(Result);
+            IMoviesPage Target = TMoviesPage.FromJson(Result);
 
             Console.WriteLine(Target.ToString());
             Console.WriteLine($"Result : {Target.Source} - {Target.Movies.Count}");
@@ -118,7 +118,7 @@ namespace MovieSearchClientTest {
           Console.WriteLine($"Requesting movies : {RequestUrl}");
           using (CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT_IN_MS)) {
             string Result = await Client.GetStringAsync(RequestUrl, Timeout.Token).ConfigureAwait(false);
-            IMovies Target = TMovies.FromJson(Result);
+            IMoviesPage Target = TMoviesPage.FromJson(Result);
 
             Console.WriteLine(Target.ToString());
             Console.WriteLine($"Result : {Target.Source} - {Target.Movies.Count}");

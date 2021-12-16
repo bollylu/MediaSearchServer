@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30709.132
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieSearchClient", "MovieSearchClient\MovieSearchClient\MovieSearchClient.csproj", "{F21B17FB-0FAE-46D7-A19C-BFDE4AD7FB87}"
 EndProject
@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieSearchModels", "Movies
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieSearchClientService", "MovieSearchClient\MovieSearchServices\MovieSearchClientService.csproj", "{C293E310-5742-49B7-A39D-CDBCFF941A95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieSearchClientTest", "MovieSearchClientTest\MovieSearchClientTest.csproj", "{A3D33B07-D4FA-46FD-AA8B-9566BF4DE71D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieSearchClientTest", "MovieSearchClientTest\MovieSearchClientTest.csproj", "{A3D33B07-D4FA-46FD-AA8B-9566BF4DE71D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorClient", "BlazorClient\BlazorClient.csproj", "{865EA219-900A-4E47-B833-66457DC81676}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{A3D33B07-D4FA-46FD-AA8B-9566BF4DE71D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3D33B07-D4FA-46FD-AA8B-9566BF4DE71D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3D33B07-D4FA-46FD-AA8B-9566BF4DE71D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{865EA219-900A-4E47-B833-66457DC81676}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{865EA219-900A-4E47-B833-66457DC81676}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{865EA219-900A-4E47-B833-66457DC81676}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{865EA219-900A-4E47-B833-66457DC81676}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

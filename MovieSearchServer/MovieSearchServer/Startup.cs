@@ -13,6 +13,8 @@ namespace MovieSearchServer;
 
 public class Startup {
 
+  public Version Version { get; } = new Version(0, 0, 2);
+
   public static ILogger Logger { get; private set; }
 
   public const string DEFAULT_DATASOURCE = @"\\andromeda.sharenet.priv\multimedia\films\";
@@ -30,18 +32,19 @@ public class Startup {
   public void ConfigureServices(IServiceCollection services) {
 
     string DataSource = Configuration.GetValue("datasource", DEFAULT_DATASOURCE);
-    string LogFile = OperatingSystem.IsWindows() ? Program.AppArgs.GetValue("log", DEFAULT_LOGFILE_WINDOWS) : Program.AppArgs.GetValue("log", DEFAULT_LOGFILE_LINUX);
+    string LogFile = Program.AppArgs.GetValue("log", OperatingSystem.IsWindows() ? DEFAULT_LOGFILE_WINDOWS : DEFAULT_LOGFILE_LINUX);
 
-    
-    Console.WriteLine($"Running for {Environment.UserName}");
-    Console.WriteLine($"Running on {Environment.MachineName}");
-    Console.WriteLine($"Runtime version {Environment.Version}");
-    Console.WriteLine($"OS version {Environment.OSVersion}");
-    Console.WriteLine(TextBox.BuildHorizontalRow(80));
+    Logger = new TFileLogger(LogFile) { SeverityLimit = ESeverity.Debug };
+    StringBuilder StartupInfo = new StringBuilder();
+    StartupInfo.AppendLine($"Version {Version}");
+    StartupInfo.AppendLine($"Running for {Environment.UserName}");
+    StartupInfo.AppendLine($"Running on {Environment.MachineName}");
+    StartupInfo.AppendLine($"Runtime version {Environment.Version}");
+    StartupInfo.AppendLine($"OS version {Environment.OSVersion}");
+    Logger.Log(TextBox.BuildFixedWidth(StartupInfo.ToString(), "Startup info", 80, TextBox.EStringAlignment.Left));
     //Console.WriteLine("Press any key to continue...");
     //Console.ReadKey();
 
-    Logger = new TFileLogger(LogFile);
     Logger.Log("MovieSearchServer startup...");
     Logger.Log($"Data source is {DataSource}");
 
@@ -84,7 +87,7 @@ public class Startup {
     app.UseCors("AllowAll");
 
     //app.UseHttpsRedirection();
-
+    
     app.UseRouting();
 
     app.UseAuthorization();

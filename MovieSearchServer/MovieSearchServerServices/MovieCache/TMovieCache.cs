@@ -46,7 +46,7 @@ public class TMovieCache : AMovieCache {
         }
       }
 
-      if ( Progress % 100 == 0 ) {
+      if ( Progress % 250 == 0 ) {
         Log($"Processed {Progress} movies...");
       }
 

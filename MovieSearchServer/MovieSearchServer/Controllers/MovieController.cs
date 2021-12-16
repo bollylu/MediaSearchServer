@@ -2,7 +2,7 @@
 
 using MovieSearchModels;
 
-using System.Net;
+using MovieSearch.Services;
 
 namespace MovieSearchServer.Controllers;
 
@@ -15,6 +15,7 @@ public class TMovieController : AController {
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMovieController(IMovieService movieService, ILogger logger) : base(logger) {
+    Logger?.LogDebug("Building TMovie controller");
     _MovieService = movieService;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -28,10 +29,10 @@ public class TMovieController : AController {
   /// <returns>A IMovies object containing the data</returns>
   [HttpGet()]
   public async Task<ActionResult<IMoviesPage>> Get(string filter = "", int page = 1, int items = 20) {
-    Logger?.Log($"New request : {HttpContext.Request.QueryString}");
-    Logger?.Log($"Origin : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.RemotePort}");
+    Logger?.LogDebug($"New request : {HttpContext.Request.QueryString}");
+    Logger?.LogDebug($"Origin : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.RemotePort}");
 
-    IMoviesPage RetVal = await _MovieService.GetMoviesPage(filter, page, items).ConfigureAwait(false);
+    IMoviesPage RetVal = await _MovieService.GetMoviesPage(filter.FromUrl(), page, items).ConfigureAwait(false);
 
     if (RetVal.AvailablePages < page) {
       return BadRequest();
@@ -47,10 +48,13 @@ public class TMovieController : AController {
 
   [HttpGet("getPicture")]
   public async Task<ActionResult> GetPicture(string id, int width, int height) {
-    byte[] Result = await _MovieService.GetPicture(id: WebUtility.UrlDecode(id),
+    Logger?.LogDebug($"Request for picture {id}, width={width}, height={height}");
+    byte[] Result = await _MovieService.GetPicture(id.FromUrl64(),
+                                                   "folder.jpg",
                                                    width: width,
                                                    height: height).ConfigureAwait(false);
     if (Result is null) {
+      Logger?.LogWarning($"Picture {id} not found");
       return new NotFoundResult();
     } else {
       return File(Result, "image/jpeg");
