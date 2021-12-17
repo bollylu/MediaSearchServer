@@ -11,11 +11,11 @@
           <td class="col-4 text-center align-middle">
             <table class="col-12">
               <tr>
-                <td class="col-2"><button type="button" class="btn btn-block btn-outline-secondary m-1" @onclick="RefreshHome">&lt;&lt;</button></td>
+                <td class="col-2"><button type="button" class="btn btn-block btn-outline-secondary m-1" @onclick="RefreshHome" disabled="@BackDisabled">>&lt;&lt;</button></td>
                 <td class="col-2"><button type="button" class="btn btn-block btn-outline-secondary m-1" @onclick="RefreshPrevious" disabled="@BackDisabled">&lt;</button></td>
                 <td class="col-4 ActualPage h3 align-middle text-center">(@Pagination)</td>
                 <td class="col-2"> <button type="button" class="btn btn-block btn-outline-secondary m-1" @onclick="RefreshNext" disabled="@NextDisabled">&gt;</button></td>
-                <td class="col-2"> <button type="button" class="btn btn-block btn-outline-secondary m-1" @onclick="RefreshEnd">&gt;&gt;</button></td>
+                <td class="col-2"> <button type="button" class="btn btn-block btn-outline-secondary m-1" @onclick="RefreshEnd" disabled="@NextDisabled">>&gt;&gt;</button></td>
               </tr>
             </table>
           </td>
@@ -33,25 +33,30 @@
       @switch (ViewType) {
 
         case EViewType.Card:
-          <table class="VideoList col-12">
-            @foreach (IMovie MovieItem in Movies.Movies) {
-              <tr>
-                <td>
-                  <Video_card Movie="@MovieItem" />
-                </td>
-              </tr>
-            }
+          <div class="VideoList col-12">
+            <div class="row row-cols-2 border-bottom">
+              @foreach (IMovie MovieItem in Movies.Movies) {
 
-          </table>
+                <div class="col">
+                  <Video_SmallCard Movie="@MovieItem" />
+                </div>
+              }
+            </div>
+
+          </div>
           break;
 
         case EViewType.List:
           <div class="container">
+
             @foreach (IMovie MovieItem in Movies.Movies) {
               <div class="row border-bottom">
-                <Video_item Movie="@MovieItem" />
+                <div class="col">
+                  <Video_item Movie="@MovieItem" />
+                </div>
               </div>
             }
+
           </div>
           break;
       }

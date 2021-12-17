@@ -5,7 +5,7 @@ using MovieSearchClientServices;
 using MovieSearchModels;
 
 namespace BlazorClient.Pages {
-  public partial class Video_card : ComponentBase {
+  public partial class Video_BigCard : ComponentBase {
 
     [Parameter]
     public IMovie? Movie { get; set; }

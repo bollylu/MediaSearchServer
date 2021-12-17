@@ -35,10 +35,6 @@ namespace MovieSearchClientServices {
       throw new NotImplementedException();
     }
 
-    public string GetPictureLocation(string pathname) {
-      return "/api/movies/getPicture/missing.jpg";
-    }
-
     public Task<bool> ProbeApi() {
       return Task.FromResult(true);
     }

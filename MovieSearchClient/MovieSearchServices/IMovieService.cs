@@ -32,8 +32,5 @@ namespace MovieSearchClientServices {
     //string CurrentGroup { get; }
     //Task<IMovieGroups> GetGroups(string group = "", string filter = "");
     //#endregion --- Groups --------------------------------------------
-
-    string GetPictureLocation(string pathname);
-
   }
 }
