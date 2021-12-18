@@ -12,13 +12,11 @@ public class Program {
   public const string ARG_VERBOSE = "verbose";
   public const string ARG_DATA_SOURCE = "datasource";
 
-  public static readonly Version AppVersion = new Version(0, 1, 1);
+  public static readonly Version AppVersion = new Version(0, 0, 5);
 
   public static ISplitArgs AppArgs { get; private set; }
   public static IConfiguration Configuration { get; private set; }
 
-  const string SERVER_CERTIFICATE = "Certificates\\lucwks7.sharenet.priv.pem";
-  const string SERVER_CERTIFICATE_KEY = "Certificates\\lucwks7.sharenet.priv.key";
   const string DEFAULT_SERVER_NAME = "http://localhost:4567";
 
   public static void Main(string[] args) {

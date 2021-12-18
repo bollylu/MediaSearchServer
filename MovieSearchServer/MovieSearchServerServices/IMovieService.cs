@@ -30,7 +30,13 @@ public interface IMovieService {
   /// <summary>
   /// Clear the cache content and call initialize will read data.
   /// </summary>
-  Task Refresh();
+  Task RefreshData();
+
+  /// <summary>
+  /// Indicate the number of records already processed
+  /// </summary>
+  /// <returns>The number of processed records or -1 when completed</returns>
+  int GetRefreshStatus();
 
   /// <summary>
   /// The quantity of movies in the cache, optionally matching the filter

@@ -13,8 +13,6 @@ namespace MovieSearchServer;
 
 public class Startup {
 
-  public Version Version { get; } = new Version(0, 0, 2);
-
   public static ILogger Logger { get; private set; }
 
   public const string DEFAULT_DATASOURCE = @"\\andromeda.sharenet.priv\multimedia\films\";
@@ -36,7 +34,7 @@ public class Startup {
 
     Logger = new TFileLogger(LogFile) { SeverityLimit = ESeverity.Debug };
     StringBuilder StartupInfo = new StringBuilder();
-    StartupInfo.AppendLine($"Version {Version}");
+    StartupInfo.AppendLine($"Version {Program.AppVersion}");
     StartupInfo.AppendLine($"Running for {Environment.UserName}");
     StartupInfo.AppendLine($"Running on {Environment.MachineName}");
     StartupInfo.AppendLine($"Runtime version {Environment.Version}");

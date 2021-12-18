@@ -19,13 +19,21 @@ public class TSystemController : AController {
   /// Refresh the selection from disk to cache
   /// </summary>
   /// <returns>A message</returns>
-  [HttpPost()]
-  public async Task<ActionResult<string>> RefreshData() {
+  [HttpGet("startRefreshData")]
+  public async Task<IActionResult> StartRefreshData() {
     Logger?.Log("Request to refresh the data");
     Logger?.Log($"Origin : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.RemotePort}");
+    await _MovieService.RefreshData();
+    return Ok();
+  }
 
-    await _MovieService.Refresh();
-
-    return new ActionResult<string>("Refresh initiated.");
+  /// <summary>
+  /// Refresh the selection from disk to cache
+  /// </summary>
+  /// <returns>The number of procesed records or -1 if completed</returns>
+  [HttpGet("getRefreshStatus")]
+  public ActionResult<int> GetRefreshStatus() {
+    int RetVal = _MovieService.GetRefreshStatus();
+    return new ActionResult<int>(RetVal);
   }
 }

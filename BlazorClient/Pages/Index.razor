@@ -1,24 +1,21 @@
 ﻿@page "/"
 
-<div >
+<div>
   <h2 Message=@ServerApi />
 </div>
 
 <div class="container-fluid">
-  <div class="row" >
+  <div class="row">
     <header>
-      <PageHeader VideoCount="10" />
+      <PageHeader />
     </header>
   </div>
 
   <div class="row">
 
-    @if (CurrentFilter is not null)
-    {
+    @if (CurrentFilter is not null) {
       <View_VideoList Filter=@CurrentFilter />
-    }
-    else
-    {
+    } else {
       <Loading Message="Loading..." />
     }
   </div>

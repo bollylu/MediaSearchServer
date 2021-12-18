@@ -38,6 +38,28 @@ public class TMovieService : ALoggable, IMovieService {
     }
   }
 
+  public async Task StartRefresh() {
+    try {
+      using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
+        HttpResponseMessage Response = await _Client.GetAsync("system/startrefreshdata", Timeout.Token);
+      }
+    } catch { }
+  }
+
+  public async Task<int> GetRefreshStatus() {
+    try {
+      using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
+        HttpResponseMessage Response = await _Client.GetAsync("system/getrefreshstatus", Timeout.Token);
+        if (Response.IsSuccessStatusCode) {
+          int RetVal = int.Parse(await Response.Content.ReadAsStringAsync());
+          return RetVal;
+        }
+        return 0;
+      }
+    } catch {
+      return 0;
+    }
+  }
   #region --- Movie actions --------------------------------------------
   public async Task<IMoviesPage> GetMovies(string filter, int startPage = 1, int pageSize = 20) {
     try {

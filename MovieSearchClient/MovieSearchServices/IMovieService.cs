@@ -28,9 +28,7 @@ namespace MovieSearchClientServices {
     Task<string> GetPicture64(IMovie movie);
     #endregion --- Movies --------------------------------------------
 
-    //#region --- Groups --------------------------------------------
-    //string CurrentGroup { get; }
-    //Task<IMovieGroups> GetGroups(string group = "", string filter = "");
-    //#endregion --- Groups --------------------------------------------
+    Task StartRefresh();
+    Task<int> GetRefreshStatus();
   }
 }

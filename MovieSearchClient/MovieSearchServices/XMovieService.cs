@@ -35,8 +35,16 @@ namespace MovieSearchClientServices {
       throw new NotImplementedException();
     }
 
+    public Task<int> GetRefreshStatus() {
+      return Task.FromResult(-1);
+    }
+
     public Task<bool> ProbeApi() {
       return Task.FromResult(true);
+    }
+
+    public Task StartRefresh() {
+      return Task.CompletedTask;
     }
   }
 }

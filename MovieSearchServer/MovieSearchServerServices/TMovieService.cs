@@ -90,9 +90,16 @@ public class TMovieService : ALoggable, IMovieService, IName {
     _IsInitialized = false;
   }
 
-  public async Task Refresh() {
+  public async Task RefreshData() {
     Reset();
     await Initialize();
+  }
+
+  public int GetRefreshStatus() {
+    if (_IsInitialized) { 
+      return -1; 
+    }
+    return _MoviesCache.Count();
   }
 
   #region --- ILoggable --------------------------------------------
