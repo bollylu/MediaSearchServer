@@ -27,6 +27,9 @@ public interface IMedia : IName, ITags, IMultiNames {
   /// </summary>
   string StoragePath { get; set; }
 
-  
+  /// <summary>
+  /// The date that the movie was added to the library
+  /// </summary>
+  DateOnly DateAdded { get; set; }
 }
 

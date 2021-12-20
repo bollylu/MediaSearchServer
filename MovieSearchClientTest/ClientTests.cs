@@ -12,7 +12,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MovieSearchModels;
 
 using MovieSearchClientServices;
-using MovieSearchClient;
 
 namespace MovieSearchClientTest {
   [TestClass]

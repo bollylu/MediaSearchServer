@@ -3,6 +3,6 @@
 namespace BlazorClient.Pages {
   public partial class PageHeader : ComponentBase {
 
-    public Version Version { get; set; } = new Version(0,0,1);
+    public Version Version { get; set; } = new Version(0,0,4);
   }
 }

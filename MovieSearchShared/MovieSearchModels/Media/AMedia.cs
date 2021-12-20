@@ -38,6 +38,7 @@ public abstract class AMedia : ALoggable, IMedia {
   public string StoragePath { get; set; }
   public string FileName { get; set; }
   public string FileExtension { get; set; }
+  public DateOnly DateAdded { get; set; }
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   protected AMedia() { }

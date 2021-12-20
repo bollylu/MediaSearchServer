@@ -25,8 +25,8 @@ public class TMovieCacheTest {
   public void CacheInitialized_RetrieveMovies_MoviesOk() {
     Assert.AreEqual(Global.MovieCache.Count(), Global.MovieCache.GetAllMovies().Count());
 
-    Assert.AreEqual(AMovieCache.DEFAULT_PAGE_SIZE, Global.MovieCache.GetMovies().Count());
-    Assert.AreEqual(AMovieCache.DEFAULT_PAGE_SIZE, Global.MovieCache.GetMovies(2).Count());
-    Assert.AreEqual(50, Global.MovieCache.GetMovies(2, 50).Count());
+    Assert.AreEqual(AMovieCache.DEFAULT_PAGE_SIZE, Global.MovieCache.GetMoviesPage().Movies.Count());
+    Assert.AreEqual(AMovieCache.DEFAULT_PAGE_SIZE, Global.MovieCache.GetMoviesPage(2).Movies.Count());
+    Assert.AreEqual(50, Global.MovieCache.GetMoviesPage(2, 50).Movies.Count());
   }
 }

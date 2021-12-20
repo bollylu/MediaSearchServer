@@ -12,6 +12,9 @@ public class TFileInfo : IFileInfo {
   public bool IsReadOnly => _Data.IsReadOnly;
   public long Length => _Data.Length;
 
+  public DateTime CreationDate => _Data.CreationTime;
+  public DateTime ModificationDate => _Data.LastWriteTime;
+
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TFileInfo(string filename) {
     _Data = new FileInfo(filename);

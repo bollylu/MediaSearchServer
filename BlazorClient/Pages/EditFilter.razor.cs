@@ -13,25 +13,22 @@ public partial class EditFilter : ComponentBase {
   public SearchFilter Filter { get; set; } = new SearchFilter();
 
   [Inject]
-  public IBusService<string>? BusService { get; set; }
+  public IBusService<SearchFilter>? BusService { get; set; }
 
   protected override void OnInitialized() {
     base.OnInitialized();
-    _NotifyMessage(Filter.Value);
+    Filter.Days = 0;
+    _NotifyMessage(Filter);
   }
 
-  private void _ProcessSearch(ChangeEventArgs args) {
-    if (args is not null) {
-      Filter.Value = (string?)args.Value;
-      _NotifyMessage(Filter.Value);
-    }
+  private void _ProcessSearch() {
+      _NotifyMessage(Filter);
   }
-
-  private void _NotifyMessage(string? message) {
-    if (message is null) {
+  private void _NotifyMessage(SearchFilter filter) {
+    if (filter is null) {
       return;
     }
-    BusService?.SendMessage(SVC_NAME, message);
+    BusService?.SendMessage(SVC_NAME, filter);
   }
 }
 

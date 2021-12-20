@@ -10,4 +10,7 @@ public interface IFileInfo {
   bool IsReadOnly { get; }
   long Length { get; }
 
+  DateTime CreationDate { get; }
+  DateTime ModificationDate { get; }
+
 }

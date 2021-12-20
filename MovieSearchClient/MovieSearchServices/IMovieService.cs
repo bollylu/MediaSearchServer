@@ -23,7 +23,7 @@ namespace MovieSearchClientServices {
 
     #region --- Movies --------------------------------------------
     //List<string> ExcludedExtensions { get; }
-    Task<IMoviesPage> GetMovies(string filter, int startPage = 1, int pageSize = 20);
+    Task<IMoviesPage> GetMovies(string filter, int days = 0, int startPage = 1, int pageSize = 20);
     Task<byte[]> GetPicture(string pathname, int w = 128, int h = 160);
     Task<string> GetPicture64(IMovie movie);
     #endregion --- Movies --------------------------------------------

@@ -68,16 +68,16 @@ public interface IMovieCache : ILoggable, IName {
   /// <param name="startPage">Which page to start with</param>
   /// <param name="pageSize">How many movies on a page</param>
   /// <returns>A list of IMovie</returns>
-  IEnumerable<IMovie> GetMovies(int startPage = 1, int pageSize = 20);
+  IMoviesPage GetMoviesPage(int startPage = 1, int pageSize = 20);
 
   /// <summary>
   /// Get a page of movie matching a filter
   /// </summary>
-  /// <param name="filter">The data to check in name and alt. names</param>
+  /// <param name="filter">The data to check against</param>
   /// <param name="startPage">Which page to start with</param>
   /// <param name="pageSize">How many movies on a page</param>
   /// <returns>A list of IMovie</returns>
-  IEnumerable<IMovie> GetMovies(string filter, int startPage = 1, int pageSize = 20);
+  IMoviesPage GetMoviesPage(RFilter filter, int startPage = 1, int pageSize = 20);
 
   /// <summary>
   /// Get a movie from the cache
@@ -85,43 +85,6 @@ public interface IMovieCache : ILoggable, IName {
   /// <param name="id">The id of the movie</param>
   /// <returns>The requested movie or null if error</returns>
   IMovie GetMovie(string id);
-
-  /// <summary>
-  /// Get the list of movies with a valid group name
-  /// </summary>
-  IEnumerable<IMovie> GetMoviesWithGroup();
-
-  /// <summary>
-  /// Get the list of movie that belong to the group name
-  /// </summary>
-  /// <param name="groupName">The name of the group</param>
-  /// <returns>A readonly list of movies</returns>
-  IReadOnlyList<IMovie> GetMoviesInGroup(string groupName);
-
-  /// <summary>
-  /// Get the list of movies that doesn't belong to the group name
-  /// </summary>
-  /// <param name="groupName">The name of the group</param>
-  /// <returns>A readonly list of movies</returns>
-  IReadOnlyList<IMovie> GetMoviesNotInGroup(string groupName);
-
-  /// <summary>
-  /// Get the list of movies that belong to the group, while matching the filter
-  /// </summary>
-  /// <param name="groupName">The name of the group</param>
-  /// <param name="filter">The string that needs to be contained in the name of the movie</param>
-  /// <returns>A readonly list of movies</returns>
-  Task<IReadOnlyList<IMovie>> GetMoviesForGroupAndFilter(string groupName, string filter);
-
-  /// <summary>
-  /// Get the list of movies that belong to the group, while matching a filter. The number of records are limited to <paramref name="pageSize"/> and the search start at <paramref name="startPage"/>
-  /// </summary>
-  /// <param name="groupName">The name of the group</param>
-  /// <param name="filter">The string that needs to be contained in the name of the movie</param>
-  /// <param name="startPage">The start page (it is a multiple of pageSize) to get the records</param>
-  /// <param name="pageSize">How many records do we request</param>
-  /// <returns>One IMovies containg name, start page, page size and available pages</returns>
-  Task<IMoviesPage> GetMoviesForGroupAndFilterInPages(string groupName, string filter, int startPage, int pageSize);
   #endregion --- Movies access --------------------------------------------
 
 }

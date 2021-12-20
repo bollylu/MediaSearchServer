@@ -61,9 +61,10 @@ public class TMovieService : ALoggable, IMovieService {
     }
   }
   #region --- Movie actions --------------------------------------------
-  public async Task<IMoviesPage> GetMovies(string filter, int startPage = 1, int pageSize = 20) {
+  public async Task<IMoviesPage> GetMovies(string filterName, int days = 0, int startPage = 1, int pageSize = 20) {
     try {
-      string RequestUrl = $"movie?filter={filter.ToUrl()}&page={startPage}&size={pageSize}";
+
+      string RequestUrl = $"movie?filtername={filterName.ToUrl()}&days={days}&page={startPage}&size={pageSize}";
       Logger?.LogDebug($"Requesting movies : {RequestUrl}");
 
       using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {

@@ -6,6 +6,7 @@
   <div class="card col-12">
 
     <div class="card-header">
+
       <table class="VideoList col-12">
         <tr>
           <td class="col-4 text-center align-middle">
@@ -22,10 +23,12 @@
           <td class="col-4 text-center align-middle">
             <span class="font-weight-bold h3 text-center align-middle">@MoviesTitle</span>
           </td>
+          
           <td class="col-2"><button type="button" class="btn btn-block btn-outline-secondary m-1" @onclick="ViewList">List</button></td>
           <td class="col-2"><button type="button" class="btn btn-block btn-outline-secondary m-1" @onclick="ViewCard">Card</button></td>
         </tr>
       </table>
+
     </div>
 
     <div class="card-body">
@@ -48,22 +51,37 @@
 
         case EViewType.List:
           <div class="container">
-
-            @foreach (IMovie MovieItem in Movies.Movies) {
-              <div class="row border-bottom">
-                <div class="col">
-                  <Video_item Movie="@MovieItem" />
-                </div>
-              </div>
-            }
-
+            <table class="table table-striped table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col" width="40%">Name</th>
+                  <th scope="col" width="8%">Year</th>
+                  <th scope="col" width="10%">Size (GB)</th>
+                  <th scope="col" width="42%">Path</th>
+                </tr>
+              </thead>
+              <tbody>
+                @foreach (IMovie MovieItem in Movies.Movies) {
+                  <tr class="border-bottom" height="64px">
+                    <td scope="row">
+                      @MovieItem.Name
+                    </td>
+                    <td>
+                      <span class="badge rounded-pill bg-danger text-light">@MovieItem.OutputYear</span>
+                    </td>
+                    <td class="text-end">
+                      @_GetSizeForDisplay(MovieItem.Size)
+                    </td>
+                    <td>
+                      @MovieItem.StoragePath.BeforeLast("/")
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
           </div>
           break;
       }
-
-
-
-
     </div>
   </div>
 }

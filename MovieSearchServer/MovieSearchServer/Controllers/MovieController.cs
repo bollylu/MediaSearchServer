@@ -15,7 +15,7 @@ public class TMovieController : AController {
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMovieController(IMovieService movieService, ILogger logger) : base(logger) {
-    Logger?.LogDebug("Building TMovie controller");
+    Logger?.LogDebugEx("Building TMovie controller");
     _MovieService = movieService;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -26,20 +26,55 @@ public class TMovieController : AController {
   /// <param name="filter">A possible filter for the movie names</param>
   /// <param name="page">The first page (x items count)</param>
   /// <param name="items">The items count for the request</param>
-  /// <returns>A IMovies object containing the data</returns>
+  /// <returns>A IMoviesPage object containing the data</returns>
   [HttpGet()]
-  public async Task<ActionResult<IMoviesPage>> Get(string filter = "", int page = 1, int items = 20) {
-    Logger?.LogDebug($"New request : {HttpContext.Request.QueryString}");
-    Logger?.LogDebug($"Origin : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.RemotePort}");
+  public async Task<ActionResult<IMoviesPage>> Get(string filterName = "", int days = 0, int page = 1, int items = 20) {
+    Logger?.LogDebug($"Request : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.Id} > {HttpContext.Request.QueryString}");
 
-    IMoviesPage RetVal = await _MovieService.GetMoviesPage(filter.FromUrl(), page, items).ConfigureAwait(false);
+    days = days.WithinLimits(0, int.MaxValue);
+    page = page.WithinLimits(1, int.MaxValue);
+    items = items.WithinLimits(1, int.MaxValue);
 
-    if (RetVal.AvailablePages < page) {
-      return BadRequest();
-    }
+    RFilter Filter = new RFilter() {
+      Name = String.IsNullOrWhiteSpace(filterName) ? "" : filterName.FromUrl(),
+      AddedAfter = days == 0 ? DateOnly.MinValue : DateOnly.FromDateTime(DateTime.Today.AddDays(-days))
+    };
 
-    Logger?.Log($"Returning {RetVal.Movies.Count} movies");
-    Logger?.Log(_PrintMovies(RetVal.Movies));
+    IMoviesPage RetVal = await _MovieService.GetMoviesPage(Filter, page, items).ConfigureAwait(false);
+
+    Logger?.LogDebug($"< {RetVal}");
+    Logger?.LogDebugEx(_PrintMovies(RetVal.Movies));
+
+    return new ActionResult<IMoviesPage>(RetVal);
+  }
+
+  /// <summary>
+  /// Obtain a page of movies filtered by added in the last n days
+  /// </summary>
+  /// <param name="days">The number of days from today</param>
+  /// <param name="page">The first page (x items count)</param>
+  /// <param name="items">The items count for the request</param>
+  /// <returns>A IMoviesPage object containing the data</returns>
+  [HttpGet("getNews")]
+  public async Task<ActionResult<IMoviesPage>> GetNews(int days, int page = 1, int items = 20) {
+    Logger?.LogDebug($"Request : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.Id} > {HttpContext.Request.QueryString}");
+
+    days = days.WithinLimits(0, int.MaxValue);
+    page = page.WithinLimits(1, int.MaxValue);
+    items = items.WithinLimits(1, int.MaxValue);
+
+    DateOnly Limit = DateOnly.FromDateTime(DateTime.Today.AddDays(-days));
+    RFilter Filter = new RFilter() {
+      AddedAfter = Limit
+    };
+    IMoviesPage RetVal = await _MovieService.GetMoviesPage(Filter, page, items).ConfigureAwait(false);
+
+    //if (RetVal.AvailablePages < page) {
+    //  return BadRequest();
+    //}
+
+    Logger?.LogDebug($"< {RetVal}");
+    Logger?.LogDebugEx(_PrintMovies(RetVal.Movies));
 
     return new ActionResult<IMoviesPage>(RetVal);
   }

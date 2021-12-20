@@ -13,6 +13,8 @@ public class XFileInfo : IFileInfo {
   public bool Exists { get; set; } = true;
   public bool IsReadOnly { get; set; } = true;
   public long Length { get; set; }
+  public DateTime CreationDate => _Data.CreationTime;
+  public DateTime ModificationDate => _Data.LastWriteTime;
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public XFileInfo(string filename) {

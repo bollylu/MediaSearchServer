@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace MovieSearchClientModels {
   public class SearchFilter {
-    public string? Value { get; set; } = "";
+    public string NameFilter { get; set; } = "";
+    public int Days { get; set; } = 0;
   }
 }

@@ -3,6 +3,8 @@ using BlazorClient;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
+using MovieSearchClientModels;
+
 using MovieSearchClientServices;
 
 const string DEFAULT_EXTERNAL_API_ADDRESS = "https://mediasearchapi.sharenet.be/api/";
@@ -21,7 +23,7 @@ if (!await MovieService.ProbeApi()) {
 
 builder.Services.AddSingleton(MovieService);
 
-builder.Services.AddSingleton<IBusService<string>, TBusService<string>>();
+builder.Services.AddSingleton<IBusService<SearchFilter>, TBusService<SearchFilter>>();
 
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");

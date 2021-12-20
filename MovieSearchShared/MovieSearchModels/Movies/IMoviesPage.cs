@@ -8,8 +8,8 @@ public interface IMoviesPage {
   List<IMovie> Movies { get; }
 
   int Page { get; }
-  int AvailablePages { get; }
-  int AvailableMovies { get; }
+  int AvailablePages { get; set; }
+  int AvailableMovies { get; set; }
 
   string ToJson();
   string ToJson(JsonWriterOptions options);

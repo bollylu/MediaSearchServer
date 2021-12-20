@@ -110,26 +110,17 @@ public class TMovieService : ALoggable, IMovieService, IName {
   #endregion --- ILoggable --------------------------------------------
 
   #region --- Movies --------------------------------------------
-  public async ValueTask<int> MoviesCount(string filter = "") {
+  public async ValueTask<int> MoviesCount(RFilter filter) {
     await Initialize().ConfigureAwait(false);
 
-    if (string.IsNullOrWhiteSpace(filter)) {
-      return _MoviesCache.Count();
-    } else {
-      return _MoviesCache.GetAllMovies().Count(m => m.FileName.Contains(filter, StringComparison.CurrentCultureIgnoreCase));
-    }
+    return _MoviesCache.GetAllMovies().FilterByName(filter.Name).FilterByDate(filter.AddedAfter).Count();
   }
 
   public async ValueTask<int> PagesCount(int pageSize = IMovieService.DEFAULT_PAGE_SIZE) {
-    int AllMoviesCount = await MoviesCount().ConfigureAwait(false);
-    return (AllMoviesCount / pageSize) + (AllMoviesCount % pageSize > 0 ? 1 : 0);
+    return await PagesCount(RFilter.Empty, pageSize).ConfigureAwait(false);
   }
 
-  public async ValueTask<int> PagesCount(string filter, int pageSize = IMovieService.DEFAULT_PAGE_SIZE) {
-    if (string.IsNullOrWhiteSpace(filter)) {
-      return await PagesCount(pageSize).ConfigureAwait(false);
-    }
-
+  public async ValueTask<int> PagesCount(RFilter filter, int pageSize = IMovieService.DEFAULT_PAGE_SIZE) {
     int FilteredMoviesCount = await MoviesCount(filter).ConfigureAwait(false);
     return (FilteredMoviesCount / pageSize) + (FilteredMoviesCount % pageSize > 0 ? 1 : 0);
   }
@@ -137,56 +128,28 @@ public class TMovieService : ALoggable, IMovieService, IName {
   public async IAsyncEnumerable<TMovie> GetAllMovies() {
     await Initialize().ConfigureAwait(false);
 
-    foreach (TMovie MovieItem in _MoviesCache.GetAllMovies().OrderBy(m => m.FileName).ThenBy(m => m.OutputYear)) {
+    foreach (TMovie MovieItem in _MoviesCache.GetAllMovies()) {
       yield return MovieItem;
     }
   }
 
-  public async IAsyncEnumerable<TMovie> GetMovies(int startPage = 1, int pageSize = 20) {
+  public async Task<IMoviesPage> GetMoviesPage(int startPage = 1, int pageSize = IMovieService.DEFAULT_PAGE_SIZE) {
     await Initialize().ConfigureAwait(false);
-
-    foreach (TMovie MovieItem in _MoviesCache.GetAllMovies().Skip((startPage - 1) * pageSize).Take(pageSize)) {
-      yield return MovieItem;
-    }
+    return await GetMoviesPage(RFilter.Empty, startPage, pageSize);
   }
 
-  public async IAsyncEnumerable<TMovie> GetMovies(string filter = "", int startPage = 1, int pageSize = 20) {
+  public async Task<IMoviesPage> GetMoviesPage(RFilter filter, int startPage = 1, int pageSize = 20) {
     await Initialize().ConfigureAwait(false);
-
-    foreach (TMovie MovieItem in _MoviesCache.GetAllMovies()
-                                             .Where(m => filter is null ? true : m.FileName.Contains(filter, StringComparison.CurrentCultureIgnoreCase))
-                                             .Skip((startPage - 1) * pageSize)
-                                             .Take(pageSize)) {
-      yield return MovieItem;
+    if (startPage>1) {
+      startPage = startPage.WithinLimits(1, await PagesCount(filter, pageSize));
     }
+    return _MoviesCache.GetMoviesPage(filter, startPage, pageSize);
   }
 
-  public async Task<IMoviesPage> GetMoviesPage(string filter = "", int startPage = 1, int pageSize = 20) {
+  public async Task<IMoviesPage> GetMoviesLastPage(RFilter filter, int pageSize = 20) {
     await Initialize().ConfigureAwait(false);
 
-    IMoviesPage RetVal;
-    if (string.IsNullOrWhiteSpace(filter)) {
-      Logger?.Log($"GetMovies : page={startPage}, items={pageSize}");
-      RetVal = new TMoviesPage() {
-        Source = RootStoragePath,
-        Page = startPage,
-        AvailablePages = await PagesCount(pageSize).ConfigureAwait(false),
-        AvailableMovies = await MoviesCount().ConfigureAwait(false)
-      };
-    } else {
-      Logger?.Log($"GetMovies : filter={filter}, page={startPage}, items={pageSize}");
-      RetVal = new TMoviesPage() {
-        Source = RootStoragePath,
-        Page = startPage,
-        AvailablePages = await PagesCount(filter, pageSize).ConfigureAwait(false),
-        AvailableMovies = await MoviesCount(filter).ConfigureAwait(false)
-      };
-    }
-
-    await foreach (TMovie MovieItem in GetMovies(filter, startPage, pageSize).ConfigureAwait(false)) {
-      RetVal.Movies.Add(MovieItem);
-    }
-    return RetVal;
+    return _MoviesCache.GetMoviesPage(filter, await PagesCount(filter, pageSize), pageSize);
   }
 
   public Task<IMovie> GetMovie(string id) {

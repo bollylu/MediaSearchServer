@@ -11,7 +11,7 @@ namespace BlazorClient.Pages {
     public IMovieService MovieService { get; set; }
 
     [Parameter]
-    public string? Filter { get; set; }
+    public SearchFilter Filter { get; set; }
 
     [Parameter]
     public EViewType ViewType { get; set; } = EViewType.List;
@@ -41,20 +41,20 @@ namespace BlazorClient.Pages {
     protected override async Task OnInitializedAsync() {
       SetLogger(new TConsoleLogger());
       Logger?.Log("Initialized async");
-      Movies = await MovieService.GetMovies(Filter);
+      Movies = await MovieService.GetMovies(Filter.NameFilter);
       CurrentPage = 1;
     }
 
     protected override async Task OnParametersSetAsync() {
       Logger.Log("Parameters set async");
-      Movies = await MovieService.GetMovies(Filter);
       CurrentPage = 1;
+      Movies = await MovieService.GetMovies(Filter.NameFilter, Filter.Days, CurrentPage);
       StateHasChanged();
     }
 
     private async Task RefreshHome() {
-      Movies = await MovieService.GetMovies("");
       CurrentPage = 1;
+      Movies = await MovieService.GetMovies(Filter.NameFilter, Filter.Days, CurrentPage);
       StateHasChanged();
     }
 
@@ -62,7 +62,7 @@ namespace BlazorClient.Pages {
       if (CurrentPage > 1) {
         CurrentPage--;
       }
-      Movies = await MovieService.GetMovies("", CurrentPage);
+      Movies = await MovieService.GetMovies(Filter.NameFilter, Filter.Days, CurrentPage);
       StateHasChanged();
     }
 
@@ -70,13 +70,13 @@ namespace BlazorClient.Pages {
       if (CurrentPage < Movies.AvailablePages) {
         CurrentPage++;
       }
-      Movies = await MovieService.GetMovies("", CurrentPage);
+      Movies = await MovieService.GetMovies(Filter.NameFilter, Filter.Days, CurrentPage);
       StateHasChanged();
     }
 
     private async Task RefreshEnd() {
       CurrentPage = Movies.AvailablePages;
-      Movies = await MovieService.GetMovies("", CurrentPage);
+      Movies = await MovieService.GetMovies(Filter.NameFilter, Filter.Days, CurrentPage);
       StateHasChanged();
     }
 
@@ -88,6 +88,25 @@ namespace BlazorClient.Pages {
     private void ViewCard() {
       ViewType = EViewType.Card;
       StateHasChanged();
+    }
+
+    private string _GetSizeForDisplay(long size) {
+      const long KB = 1024;
+      const long MB = 1024 * KB;
+      const long GB = 1024 * MB;
+      if (size > GB) {
+        double Size = (double)size / (double)GB;
+        return $"{Size:N3} GB";
+      }
+      if (size > MB) {
+        double Size = (double)size / (double)MB;
+        return $"{Size:N3} MB";
+      }
+      if (size > KB) {
+        double Size = (double)size / (double)KB;
+        return $"{Size:N3} KB";
+      }
+      return size.ToString();
     }
   }
 }

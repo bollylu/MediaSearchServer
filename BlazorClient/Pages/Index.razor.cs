@@ -1,9 +1,10 @@
 ﻿using MovieSearchClientServices;
 using Microsoft.AspNetCore.Components;
+using MovieSearchClientModels;
 
 namespace BlazorClient.Pages;
 
-  public partial class Index : ComponentBase, ILoggable {
+public partial class Index : ComponentBase, ILoggable {
 
   public ILogger? Logger { get; set; }
 
@@ -12,40 +13,41 @@ namespace BlazorClient.Pages;
   }
 
   [Inject]
-    public IBusService<string>? BusService { get; set; }
-    [Inject]
-    public IMovieService? MovieService { get; set; }
+  public IBusService<SearchFilter> BusService { get; set; }
 
-    private string? CurrentFilter;
-    private string? ServerApi;
+  [Inject]
+  public IMovieService? MovieService { get; set; }
 
-    protected override void OnInitialized() {
-      // subscribe to OnMessage event
-      SetLogger(ALogger.SYSTEM_LOGGER);
-      BusService.OnMessage += _MessageHandler;
-      ServerApi = MovieService.ApiBase;
-    }
+  private SearchFilter CurrentFilter;
+  private string? ServerApi;
 
-    public void Dispose() {
-      // unsubscribe from OnMessage event
-      BusService.OnMessage -= _MessageHandler;
-    }
+  protected override void OnInitialized() {
+    // subscribe to OnMessage event
+    SetLogger(ALogger.SYSTEM_LOGGER);
+    BusService.OnMessage += _MessageHandler;
+    ServerApi = MovieService.ApiBase;
+  }
 
-    private void _MessageHandler(string source, string data) {
-      switch (source) {
+  public void Dispose() {
+    // unsubscribe from OnMessage event
+    BusService.OnMessage -= _MessageHandler;
+  }
 
-        case EditFilter.SVC_NAME: {
-            Logger?.Log($"Filter is now [{data}]");
-            CurrentFilter = data;
-            StateHasChanged();
-          }
+  private void _MessageHandler(string source, SearchFilter data) {
+    switch (source) {
+
+      case EditFilter.SVC_NAME: {
+          Logger?.Log($"Filter is now [{data}]");
+          CurrentFilter = data;
+          StateHasChanged();
+        }
+        break;
+
+      default: {
+          Logger?.Log($"Unknown source : {source}");
+          StateHasChanged();
           break;
-
-        default: {
-            Logger?.Log($"Unknown source : {source}");
-            StateHasChanged();
-            break;
-          }
-      }
+        }
     }
   }
+}
