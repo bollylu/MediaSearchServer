@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>MovieSearchClient.Services</RootNamespace>
+    <AssemblyName>MovieSearchClientServices</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="IApiServer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BLTools" Version="4.5.28" />
+    <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MediaSearch.Models\MediaSearch.Models.csproj" />
+  </ItemGroup>
+
+</Project>
