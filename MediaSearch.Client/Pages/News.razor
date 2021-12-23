@@ -1,0 +1,8 @@
+﻿@page "/news"
+
+<View_VideoList Filter="@Filter" />
+
+@code {
+  public RFilter Filter { get; set; } = new RFilter() { DaysBack = 7 };
+  
+}

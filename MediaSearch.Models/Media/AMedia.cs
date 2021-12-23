@@ -41,8 +41,15 @@ public abstract class AMedia : ALoggable, IMedia {
   public DateOnly DateAdded { get; set; }
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  protected AMedia() { }
+  protected AMedia() {
+    Logger = new TConsoleLogger();
+    Logger.SeverityLimit = ESeverity.Debug;
+  }
+
   protected AMedia(IMedia media) {
+    Logger = new TConsoleLogger();
+    Logger.SeverityLimit = ESeverity.Debug;
+
     Id = media.Id;
     Name = media.Name;
     Description = media.Description;

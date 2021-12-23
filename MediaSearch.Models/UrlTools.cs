@@ -19,15 +19,7 @@ public static class UrlTools {
   }
 
   public static string NormalizePath(this string path) {
-    if (OperatingSystem.IsWindows()) {
-      return path.Replace('/', '\\');
-    }
-
-    if (OperatingSystem.IsLinux()) {
-      return path.Replace('\\', '/');
-    }
-
-    return path;
+    return path.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
   }
 }
 

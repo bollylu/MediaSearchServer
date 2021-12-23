@@ -12,20 +12,20 @@ namespace MediaSearch.Client.Pages {
     [Parameter]
     public EViewType ViewType { get; set; } = EViewType.List;
 
-    public IMoviesPage Movies { get; set; }
+    public IMoviesPage MoviesPage { get; set; }
 
     public string MoviesTitle {
       get {
-        return $"{(Movies is null ? 0 : Movies.AvailableMovies)} movies";
+        return $"{(MoviesPage is null ? 0 : MoviesPage.AvailableMovies)} movies";
       }
     }
 
     public int CurrentPage { get; set; }
 
-    public string Pagination => $"{CurrentPage}/{Movies.AvailablePages}";
+    public string Pagination => $"{CurrentPage}/{MoviesPage.AvailablePages}";
 
     public bool BackDisabled => CurrentPage == 1;
-    public bool NextDisabled => CurrentPage == Movies.AvailablePages;
+    public bool NextDisabled => CurrentPage == MoviesPage.AvailablePages;
 
     #region --- ILoggable --------------------------------------------
     public ILogger Logger { get; set; }
@@ -37,20 +37,21 @@ namespace MediaSearch.Client.Pages {
     protected override async Task OnInitializedAsync() {
       SetLogger(new TConsoleLogger());
       Logger?.Log("Initialized async");
-      Movies = await MovieService.GetMovies(Filter);
+      MoviesPage = await MovieService.GetMoviesPage(Filter);
+      Logger?.Log(MoviesPage.ToString(true));
       CurrentPage = 1;
     }
 
     protected override async Task OnParametersSetAsync() {
       Logger.Log("Parameters set async");
       CurrentPage = 1;
-      Movies = await MovieService.GetMovies(Filter, CurrentPage);
+      MoviesPage = await MovieService.GetMoviesPage(Filter, CurrentPage);
       StateHasChanged();
     }
 
     private async Task RefreshHome() {
       CurrentPage = 1;
-      Movies = await MovieService.GetMovies(Filter, CurrentPage);
+      MoviesPage = await MovieService.GetMoviesPage(Filter, CurrentPage);
       StateHasChanged();
     }
 
@@ -58,21 +59,21 @@ namespace MediaSearch.Client.Pages {
       if (CurrentPage > 1) {
         CurrentPage--;
       }
-      Movies = await MovieService.GetMovies(Filter, CurrentPage);
+      MoviesPage = await MovieService.GetMoviesPage(Filter, CurrentPage);
       StateHasChanged();
     }
 
     private async Task RefreshNext() {
-      if (CurrentPage < Movies.AvailablePages) {
+      if (CurrentPage < MoviesPage.AvailablePages) {
         CurrentPage++;
       }
-      Movies = await MovieService.GetMovies(Filter, CurrentPage);
+      MoviesPage = await MovieService.GetMoviesPage(Filter, CurrentPage);
       StateHasChanged();
     }
 
     private async Task RefreshEnd() {
-      CurrentPage = Movies.AvailablePages;
-      Movies = await MovieService.GetMovies(Filter, CurrentPage);
+      CurrentPage = MoviesPage.AvailablePages;
+      MoviesPage = await MovieService.GetMoviesPage(Filter, CurrentPage);
       StateHasChanged();
     }
 
@@ -82,7 +83,7 @@ namespace MediaSearch.Client.Pages {
     }
 
     private void ViewCard() {
-      ViewType = EViewType.Card;
+      ViewType = EViewType.SmallCard;
       StateHasChanged();
     }
 

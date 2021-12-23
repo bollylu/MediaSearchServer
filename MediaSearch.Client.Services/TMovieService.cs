@@ -1,4 +1,6 @@
-﻿namespace MediaSearch.Client.Services;
+﻿using BLTools.Text;
+
+namespace MediaSearch.Client.Services;
 
 /// <summary>
 /// Client Movie service. Provides access to groups, movies and pictures from a REST server
@@ -16,8 +18,9 @@ public class TMovieService : ALoggable, IMovieService {
   private readonly THttpClientEx _Client;
   private readonly TImageCache _ImagesCache;
 
-  public TMovieService(string apiServer, TImageCache imagesCache) {
-    SetLogger(new TTraceLogger());
+  public TMovieService(string apiServer, TImageCache imagesCache, ILogger logger) {
+    SetLogger(logger);
+    Logger.SeverityLimit = ESeverity.DebugEx;
     Log($"Api server = {apiServer}");
     ApiBase = apiServer;
     _Client = new THttpClientEx() { BaseAddress = new Uri(ApiBase) };
@@ -36,6 +39,7 @@ public class TMovieService : ALoggable, IMovieService {
     }
   }
 
+  #region --- Refresh data --------------------------------------------
   public async Task StartRefresh() {
     try {
       using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
@@ -58,27 +62,30 @@ public class TMovieService : ALoggable, IMovieService {
       return 0;
     }
   }
+  #endregion --- Refresh data --------------------------------------------
+
   #region --- Movie actions --------------------------------------------
-  public async Task<IMoviesPage> GetMovies(RFilter filter, int startPage = 1, int pageSize = 20) {
+  public async Task<IMoviesPage> GetMoviesPage(RFilter filter, int startPage = 1, int pageSize = 20) {
     try {
 
       string RequestUrl = $"movie?filtername={filter.Name.ToUrl()}&days={filter.DaysBack}&page={startPage}&size={pageSize}";
-      Logger?.LogDebug($"Requesting movies : {RequestUrl}");
+      LogDebug($"Requesting movies : {RequestUrl}".BoxFixedWidth($"get movie page request : {RequestUrl}", 80));
 
       using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
 
         string JsonMovies = await _Client.GetStringAsync(RequestUrl, Timeout.Token);
+        LogDebugEx(JsonMovies.BoxFixedWidth($"get movie page raw result", 80));
         IMoviesPage Result = TMoviesPage.FromJson(JsonMovies);
 
-        Logger?.LogDebugEx(Result.ToString());
+        LogDebugEx(Result.ToString().BoxFixedWidth($"IMoviesPage", 80));
         return Result;
 
       }
     } catch (Exception ex) {
-      Logger?.LogError($"Unable to get movies data : {ex.Message}");
+      LogError($"Unable to get movies data : {ex.Message}");
       if (ex.InnerException is not null) {
-        Logger?.LogError($"  Inner exception : {ex.InnerException.Message}");
-        Logger?.LogError($"  Inner call stack : {ex.InnerException.StackTrace}");
+        LogError($"  Inner exception : {ex.InnerException.Message}");
+        LogError($"  Inner call stack : {ex.InnerException.StackTrace}");
       }
       return null;
     }

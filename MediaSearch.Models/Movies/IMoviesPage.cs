@@ -11,6 +11,8 @@ public interface IMoviesPage {
   int AvailablePages { get; set; }
   int AvailableMovies { get; set; }
 
+  string ToString(bool withDetails);
+
   string ToJson();
   string ToJson(JsonWriterOptions options);
 

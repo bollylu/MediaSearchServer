@@ -1,0 +1,17 @@
+﻿@page "/DisplayFilterAndList"
+
+<div class="container-fluid">
+
+  <div class="row">
+    <header>
+      <PageHeader />
+    </header>
+  </div>
+
+  <div class="row mb-3">
+    <EditFilter />
+  </div>
+
+  <View_VideoList Filter=@CurrentFilter />
+
+</div>

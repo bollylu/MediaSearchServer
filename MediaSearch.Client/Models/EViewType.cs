@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 namespace MediaSearch.Client.Models {
   public enum EViewType {
     List,
-    Card
+    SmallCard
   }
 }

@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using BLTools.Text;
+
+using System.Drawing;
 using System.Drawing.Imaging;
 
 namespace MediaSearch.Models;
@@ -45,7 +47,7 @@ public class TMovie : AMovie {
 
         Writer.WriteStartArray(nameof(IMovie.Tags));
         foreach (string TagItem in Tags) {
-          Writer.WriteStringValue(TagItem);
+          Writer.WriteStringValue(TagItem.Replace("[","").Replace("]",""));
         }
         Writer.WriteEndArray();
 
@@ -73,6 +75,8 @@ public class TMovie : AMovie {
       JsonDocument JsonMovie = JsonDocument.Parse(source);
       JsonElement Root = JsonMovie.RootElement;
 
+      //LogDebugEx(Root.GetRawText().BoxFixedWidth("RawText", 80, TextBox.EStringAlignment.Left));
+
       FileName = Root.GetPropertyEx(nameof(IMovie.FileName)).GetString();
       Name = Root.GetPropertyEx(nameof(IMovie.Name)).GetString();
       Group = Root.GetPropertyEx(nameof(IMovie.Group)).GetString();
@@ -80,8 +84,6 @@ public class TMovie : AMovie {
       FileExtension = Root.GetPropertyEx(nameof(IMovie.FileExtension)).GetString();
       Size = Root.GetPropertyEx(nameof(IMovie.Size)).GetInt64();
       OutputYear = Root.GetPropertyEx(nameof(IMovie.OutputYear)).GetInt32();
-      string AddedDateString = Root.GetPropertyEx(nameof(IMovie.DateAdded)).GetString();
-      DateAdded = new DateOnly(int.Parse(AddedDateString.Left(4)), int.Parse(AddedDateString.Substring(2, 2)), int.Parse(AddedDateString.Right(2)));
 
       foreach (JsonElement AltNameItem in Root.GetPropertyEx(nameof(IMovie.AltNames)).EnumerateArray()) {
         string Key = AltNameItem.GetString().Before(':');
@@ -90,8 +92,14 @@ public class TMovie : AMovie {
       }
 
       foreach (JsonElement TagItem in Root.GetPropertyEx(nameof(IMovie.Tags)).EnumerateArray()) {
+        //LogDebugEx(TagItem.GetRawText().BoxFixedWidth("TagItem",80, TextBox.EStringAlignment.Left));
         Tags.Add(TagItem.GetString());
       }
+
+      string AddedDateString = Root.GetPropertyEx(nameof(IMovie.DateAdded)).GetString();
+      //LogDebugEx(AddedDateString.BoxFixedWidth("Added", 20, TextBox.EStringAlignment.Left));
+      DateAdded = new DateOnly(int.Parse(AddedDateString.Left(4)), int.Parse(AddedDateString.Substring(4, 2)), int.Parse(AddedDateString.Right(2)));
+
     } catch (Exception ex) {
       LogError($"Unable to parse json : {ex.Message}");
     }

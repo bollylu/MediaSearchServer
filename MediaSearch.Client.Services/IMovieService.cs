@@ -17,7 +17,7 @@ public interface IMovieService {
 
   #region --- Movies --------------------------------------------
   //List<string> ExcludedExtensions { get; }
-  Task<IMoviesPage> GetMovies(RFilter filter, int startPage = 1, int pageSize = 20);
+  Task<IMoviesPage> GetMoviesPage(RFilter filter, int startPage = 1, int pageSize = 20);
   Task<byte[]> GetPicture(string pathname, int w = 128, int h = 160);
   Task<string> GetPicture64(IMovie movie);
   #endregion --- Movies --------------------------------------------

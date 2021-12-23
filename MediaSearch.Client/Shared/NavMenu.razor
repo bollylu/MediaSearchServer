@@ -1,6 +1,6 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">MediaSearchClient</a>
+        <a class="navbar-brand" href="">MediaSearch client @GlobalProperties.AppVersion.ToString()</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -11,12 +11,17 @@
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
+                <span class="oi oi-home" aria-hidden="true"></span>List movies
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="news">
+                <span class="oi oi-plus" aria-hidden="true"></span>News 7 days
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="refresh">
-                <span class="oi oi-plus" aria-hidden="true"></span> Refresh
+                <span class="oi oi-plus" aria-hidden="true"></span>Refresh data from disk
             </NavLink>
         </div>
     </nav>

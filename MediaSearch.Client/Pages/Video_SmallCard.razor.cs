@@ -22,6 +22,7 @@ namespace MediaSearch.Client.Pages {
       if (Movie is not null) {
         HeaderText = Movie.Name;
         BodySubTitle = Movie.Group;
+        BodyText = string.Join(", ", Movie.Tags);
         await GetImage();
       }
       //if (Movie.LocalName.Contains("(")) {

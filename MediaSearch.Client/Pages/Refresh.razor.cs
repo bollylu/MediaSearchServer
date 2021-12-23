@@ -9,32 +9,38 @@ public partial class Refresh : ComponentBase {
 
   [Inject]
   public IMovieService MovieService { get; set; }
-  
+
   [Inject]
   public NavigationManager NavManager { get; set; }
 
   public int Progress { get; set; } = 0;
   public bool Completed { get; set; } = false;
+  public string Message { get; set; } = "";
+
+  private const int REFRESH_COMPLETED = -1;
+  private const int DELAY_BETWEEN_REFRESH_IN_MS = 1000;
 
   protected override async Task OnInitializedAsync() {
-    Completed = false;
-    Progress = 0;
-    await MovieService.StartRefresh();
-    BusService.SendMessage(nameof(Refresh), "REFRESH");
-    StateHasChanged();
-    await RefreshProgress();
+    int Status = await MovieService.GetRefreshStatus();
+    if (Status == REFRESH_COMPLETED) {
+      await MovieService.StartRefresh();
+      await RefreshProgress();
+    } else {
+      Message = "There is already a refresh in progress, be patient !";
+      await RefreshProgress();
+    }
     NavManager.NavigateTo("/");
   }
 
   private async Task RefreshProgress() {
     while (!Completed) {
       int Status = await MovieService.GetRefreshStatus();
-      if (Status == -1) {
+      if (Status == REFRESH_COMPLETED) {
         Completed = true;
       } else {
-        Progress = Status; 
+        Progress = Status;
         StateHasChanged();
-        await Task.Delay(1000);
+        await Task.Delay(DELAY_BETWEEN_REFRESH_IN_MS);
       }
     }
   }

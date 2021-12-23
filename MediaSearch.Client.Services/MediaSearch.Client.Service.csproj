@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>MovieSearchClient.Services</RootNamespace>
-    <AssemblyName>MovieSearchClientServices</AssemblyName>
+    <RootNamespace>MediaSearch.Client.Services</RootNamespace>
+    <AssemblyName>MediaSearch.Client.Services</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,6 +1,6 @@
 {
-  "name": "BlazorClient",
-  "short_name": "BlazorClient",
+  "name": "MediaSearch.Client",
+  "short_name": "MediaSearch.Client",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
