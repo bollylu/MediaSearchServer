@@ -1,4 +1,6 @@
-﻿namespace MediaSearch.Server.Services;
+﻿using System.Globalization;
+
+namespace MediaSearch.Server.Services;
 
 public abstract class AMovieCache : ALoggable, IMovieCache {
 
@@ -16,7 +18,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
   protected readonly ReaderWriterLockSlim _LockCache = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
   #endregion --- Internal data storage --------------------------------------------
 
-  public string Storage { get; init; }
+  public string RootStoragePath { get; init; }
 
   #region --- IName --------------------------------------------
   public string Name { get; set; }
@@ -61,7 +63,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
     // Standardize directory separator
     string ProcessedFileItem = item.FullName.NormalizePath();
 
-    RetVal.StorageRoot = Storage.NormalizePath();
+    RetVal.StorageRoot = RootStoragePath.NormalizePath();
     RetVal.StoragePath = ProcessedFileItem.BeforeLast(FOLDER_SEPARATOR).After(RetVal.StorageRoot, System.StringComparison.InvariantCultureIgnoreCase);
 
     RetVal.FileName = item.Name;
@@ -162,13 +164,13 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
     LogDebugEx($"==> GetMoviesPage({startPage}, {pageSize})");
 
     IMoviesPage RetVal = new TMoviesPage() {
-      Source = Storage,
+      Source = RootStoragePath,
       Page = startPage
     };
 
     try {
       _LockCache.EnterReadLock();
-      IEnumerable<IMovie> FilteredMovies = _Items.FilterByName(filter.Name).FilterByDays(filter.DaysBack).OrderedByName();
+      IEnumerable<IMovie> FilteredMovies = _Items.FilterBy(filter).OrderedByName();
       RetVal.AvailableMovies = FilteredMovies.Count();
       RetVal.AvailablePages = (RetVal.AvailableMovies / pageSize) + (RetVal.AvailableMovies % pageSize > 0 ? 1 : 0);
       RetVal.Movies.AddRange(FilteredMovies.Skip(pageSize * (startPage - 1)).Take(pageSize));
@@ -186,11 +188,41 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
 }
 
 public static class MovieExtensions {
-  public static IEnumerable<IMovie> FilterByName(this IEnumerable<IMovie> movies, string filter) {
+
+  public static IEnumerable<IMovie> FilterBy(this IEnumerable<IMovie> movies, RFilter filter) {
+    IEnumerable<IMovie> ByDays = movies.FilterByDays(filter.DaysBack);
+    IEnumerable<IMovie> ByName = filter.KeywordsSelection switch {
+      EFilterKeywords.Any => ByDays.FilterByAnyKeywords(filter.Name),
+      EFilterKeywords.All => ByDays.FilterByAllKeywords(filter.Name),
+      _ => throw new NotImplementedException()
+    };
+
+    return ByName;
+  }
+
+  public static IEnumerable<IMovie> FilterByKeyword(this IEnumerable<IMovie> movies, string filter) {
     if (string.IsNullOrWhiteSpace(filter)) {
       return movies;
     }
     return movies.Where(m => m.Name.Contains(filter, StringComparison.CurrentCultureIgnoreCase));
+  }
+
+  public static IEnumerable<IMovie> FilterByAnyKeywords(this IEnumerable<IMovie> movies, string filter) {
+    if (string.IsNullOrWhiteSpace(filter)) {
+      return movies;
+    }
+    string[] Keywords = filter.Split(" ");
+    CompareInfo CI = CultureInfo.CurrentCulture.CompareInfo;
+    return movies.Where(m => Keywords.Any(k => CI.IndexOf(m.Name, k, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) > -1));
+  }
+
+  public static IEnumerable<IMovie> FilterByAllKeywords(this IEnumerable<IMovie> movies, string filter) {
+    if (string.IsNullOrWhiteSpace(filter)) {
+      return movies;
+    }
+    string[] Keywords = filter.Split(" ");
+    CompareInfo CI = CultureInfo.CurrentCulture.CompareInfo;
+    return movies.Where(m => Keywords.All(k => CI.IndexOf(m.Name, k, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) > -1));
   }
 
   public static IEnumerable<IMovie> FilterByDays(this IEnumerable<IMovie> movies, int daysBack) {

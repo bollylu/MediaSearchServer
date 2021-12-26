@@ -1,4 +1,4 @@
-﻿namespace MediaSearch.Models;
+﻿namespace MediaSearch.Server.Services;
 
 public interface IFileInfo {
 

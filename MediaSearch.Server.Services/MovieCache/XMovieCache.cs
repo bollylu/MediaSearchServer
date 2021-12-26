@@ -8,7 +8,7 @@
     #region --- Constructor(s) ---------------------------------------------------------------------------------
     public XMovieCache() {
       Name = "Demo";
-      Storage = @"\\andromeda.sharenet.priv\Films";
+      RootStoragePath = @"\\andromeda.sharenet.priv\Films";
     }
     #endregion --- Constructor(s) ------------------------------------------------------------------------------
 

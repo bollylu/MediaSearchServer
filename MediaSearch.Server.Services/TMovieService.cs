@@ -37,14 +37,14 @@ public class TMovieService : ALoggable, IMovieService, IName {
   public TMovieService(string storage) {
     _MoviesCache.SetLogger(Logger);
     RootStoragePath = storage;
-    _MoviesCache = new TMovieCache() { Storage = storage };
+    _MoviesCache = new TMovieCache() { RootStoragePath = storage };
     _DataSource = _MoviesCache.FetchFiles();
   }
 
   public TMovieService(IMovieCache movieCache) {
     _MoviesCache = movieCache;
     _MoviesCache.SetLogger(Logger);
-    RootStoragePath = movieCache.Storage;
+    RootStoragePath = movieCache.RootStoragePath;
     _DataSource = _MoviesCache.FetchFiles();
   }
   public TMovieService(IEnumerable<IFileInfo> files, string storage, string storageName = "(anonymous)") {
@@ -109,7 +109,7 @@ public class TMovieService : ALoggable, IMovieService, IName {
   public async ValueTask<int> MoviesCount(RFilter filter) {
     await Initialize().ConfigureAwait(false);
 
-    return _MoviesCache.GetAllMovies().FilterByName(filter.Name).FilterByDays(filter.DaysBack).Count();
+    return _MoviesCache.GetAllMovies().FilterBy(filter).Count();
   }
 
   public async ValueTask<int> PagesCount(int pageSize = IMovieService.DEFAULT_PAGE_SIZE) {

@@ -6,7 +6,7 @@ public class TMovieCache : AMovieCache {
 
   public override IEnumerable<IFileInfo> FetchFiles(CancellationToken token) {
 
-    DirectoryInfo RootFolder = new DirectoryInfo(Storage);
+    DirectoryInfo RootFolder = new DirectoryInfo(RootStoragePath);
 
     foreach ( IFileInfo FileInfoItem in RootFolder.EnumerateFiles("*.*", new EnumerationOptions() { RecurseSubdirectories = true })
                                                  .Where(f => MoviesExtensions.Contains(f.Extension.ToLowerInvariant()))
@@ -23,7 +23,7 @@ public class TMovieCache : AMovieCache {
   public override async Task Parse(IEnumerable<IFileInfo> fileSource, CancellationToken token) {
     Log("Initializing movies cache");
 
-    if ( string.IsNullOrWhiteSpace(Storage) ) {
+    if ( string.IsNullOrWhiteSpace(RootStoragePath) ) {
       throw new ApplicationException("Storage is missing. Cannot process movies");
     }
 

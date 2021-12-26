@@ -47,7 +47,7 @@ public class TMovie : AMovie {
 
         Writer.WriteStartArray(nameof(IMovie.Tags));
         foreach (string TagItem in Tags) {
-          Writer.WriteStringValue(TagItem.Replace("[","").Replace("]",""));
+          Writer.WriteStringValue(TagItem);
         }
         Writer.WriteEndArray();
 

@@ -24,7 +24,7 @@ public class TMovieController : AController {
   /// <param name="items">The items count for the request</param>
   /// <returns>A IMoviesPage object containing the data</returns>
   [HttpGet()]
-  public async Task<ActionResult<IMoviesPage>> Get(string filterName = "", int days = 0, int page = 1, int items = 20) {
+  public async Task<ActionResult<IMoviesPage>> Get(string filterName = "", string keywordsSelection = "Any", int days = 0, int page = 1, int items = 20) {
     Logger?.LogDebug($"Request : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.Id} > {HttpContext.Request.QueryString}");
 
     days = days.WithinLimits(0, int.MaxValue);
@@ -33,8 +33,33 @@ public class TMovieController : AController {
 
     RFilter Filter = new RFilter() {
       Name = string.IsNullOrWhiteSpace(filterName) ? "" : filterName.FromUrl(),
-      DaysBack = days
+      DaysBack = days,
+      KeywordsSelection = Enum.Parse<EFilterKeywords>(keywordsSelection),
     };
+
+    IMoviesPage RetVal = await _MovieService.GetMoviesPage(Filter, page, items).ConfigureAwait(false);
+
+    Logger?.LogDebug($"< {RetVal}");
+    Logger?.LogDebugEx(_PrintMovies(RetVal.Movies));
+
+    return new ActionResult<IMoviesPage>(RetVal);
+  }
+
+  /// <summary>
+  /// Obtain a page of movies with the possibility of filtering
+  /// </summary>
+  /// <param name="filter">A possible filter for the movie names</param>
+  /// <param name="page">The first page (x items count)</param>
+  /// <param name="items">The items count for the request</param>
+  /// <returns>A IMoviesPage object containing the data</returns>
+  [HttpGet("getFiltered")]
+  public async Task<ActionResult<IMoviesPage>> GetFiltered(string filter = "", int page = 1, int items = 20) {
+    Logger?.LogDebug($"Request : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.Id} > {HttpContext.Request.QueryString}");
+    RFilter Filter = string.IsNullOrWhiteSpace(filter) ? new RFilter() : RFilter.FromJson(filter);
+    Logger?.LogDebug($"  Filter : {Filter}");
+
+    page = page.WithinLimits(1, int.MaxValue);
+    items = items.WithinLimits(1, int.MaxValue);
 
     IMoviesPage RetVal = await _MovieService.GetMoviesPage(Filter, page, items).ConfigureAwait(false);
 

@@ -1,6 +1,4 @@
-﻿
-
-<div>
+﻿<div>
   @if (MoviesPage is not null) {
 
     <table class="VideoList col-12 mb-3">
@@ -27,52 +25,50 @@
 
     @switch (ViewType) {
 
-      case EViewType.SmallCard:
-        <div class="VideoList col-12">
-          <div class="row row-cols-2 border-bottom">
+      @case EViewType.SmallCard: {
+          <div class="row row-cols-2">
             @foreach (IMovie MovieItem in MoviesPage.Movies) {
-
               <div class="col">
                 <Video_SmallCard Movie="@MovieItem" />
               </div>
             }
           </div>
+          break;
+        }
 
-        </div>
-        break;
-
-      case EViewType.List:
-        <div class="container">
-          <table class="table table-striped table-hover">
-            <thead class="table-light">
-              <tr>
-                <th scope="col" width="40%">Name</th>
-                <th scope="col" width="8%">Year</th>
-                <th scope="col" width="10%">Size (GB)</th>
-                <th scope="col" width="42%">Path</th>
-              </tr>
-            </thead>
-            <tbody>
-              @foreach (IMovie MovieItem in MoviesPage.Movies) {
-                <tr class="border-bottom" height="64px">
-                  <td scope="row">
-                    @MovieItem.Name
-                  </td>
-                  <td>
-                    <span class="badge rounded-pill bg-danger text-light">@MovieItem.OutputYear</span>
-                  </td>
-                  <td class="text-end">
-                    @_GetSizeForDisplay(MovieItem.Size)
-                  </td>
-                  <td>
-                    @MovieItem.StoragePath.BeforeLast("/")
-                  </td>
+      @case EViewType.List: {
+          <div class="container">
+            <table class="table table-striped table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col" width="40%">Name</th>
+                  <th scope="col" width="8%">Year</th>
+                  <th scope="col" width="10%">Size (GB)</th>
+                  <th scope="col" width="42%">Path</th>
                 </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-        break;
+              </thead>
+              <tbody>
+                @foreach (IMovie MovieItem in MoviesPage.Movies) {
+                  <tr class="border-bottom" height="64px">
+                    <td scope="row">
+                      @MovieItem.Name
+                    </td>
+                    <td>
+                      <span class="badge rounded-pill bg-danger text-light">@MovieItem.OutputYear</span>
+                    </td>
+                    <td class="text-end">
+                      @_GetSizeForDisplay(MovieItem.Size)
+                    </td>
+                    <td>
+                      @MovieItem.StoragePath.BeforeLast("/")
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          break;
+        }
     }
 
   } else {

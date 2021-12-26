@@ -6,7 +6,7 @@ public class TMovieCacheTest {
   [ClassInitialize]
   public static async Task MovieCacheInit(TestContext testContext) {
     if ( Global.MovieCache is null ) {
-      Global.MovieCache = new TMovieCache() { Storage = Global.STORAGE, Logger = new TConsoleLogger() };
+      Global.MovieCache = new TMovieCache() { RootStoragePath = Global.STORAGE, Logger = new TConsoleLogger() };
 
       using ( CancellationTokenSource Timeout = new CancellationTokenSource((int)TimeSpan.FromMinutes(5).TotalMilliseconds) ) {
         IEnumerable<IFileInfo> Source = Global.MovieCache.FetchFiles(Timeout.Token);

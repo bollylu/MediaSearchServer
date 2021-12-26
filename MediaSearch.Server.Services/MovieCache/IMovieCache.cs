@@ -5,7 +5,7 @@ public interface IMovieCache : ILoggable, IName {
   /// <summary>
   /// Path to the storage
   /// </summary>
-  string Storage { get; }
+  string RootStoragePath { get; }
 
   #region --- Cache I/O --------------------------------------------
   /// <summary>
