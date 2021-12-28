@@ -28,6 +28,7 @@ public abstract class AMovie : AMedia, IMovie {
       return _PictureMissingBytes;
     }
   }
+
   private static byte[] _PictureMissingBytes;
   #endregion --- Picture --------------------------------------------
 
@@ -40,8 +41,8 @@ public abstract class AMovie : AMedia, IMovie {
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  protected override void _BuildId() {
-    Id = $"{Name}{OutputYear}".HashToBase64();
+  protected override string _BuildId() {
+    return $"{Name}{OutputYear}".HashToBase64();
   }
   public override string ToString() {
     StringBuilder RetVal = new StringBuilder(base.ToString());
@@ -53,9 +54,8 @@ public abstract class AMovie : AMedia, IMovie {
     return RetVal.ToString();
   }
 
-  public abstract string ToJson();
-  public abstract string ToJson(JsonWriterOptions options);
-
-  public abstract IMovie ParseJson(string source);
-  public abstract IMovie ParseJson(JsonElement source);
+  public abstract override IMovie ParseJson(string source);
+  public override IMovie ParseJson(JsonElement source) {
+    return ParseJson(source.GetRawText());
+  }
 }

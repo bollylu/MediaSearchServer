@@ -157,10 +157,10 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
   }
 
   public IMoviesPage GetMoviesPage(int startPage = DEFAULT_START_PAGE, int pageSize = DEFAULT_PAGE_SIZE) {
-    return GetMoviesPage(RFilter.Empty, startPage, pageSize);
+    return GetMoviesPage(TFilter.Empty, startPage, pageSize);
   }
 
-  public IMoviesPage GetMoviesPage(RFilter filter, int startPage = DEFAULT_START_PAGE, int pageSize = DEFAULT_PAGE_SIZE) {
+  public IMoviesPage GetMoviesPage(TFilter filter, int startPage = DEFAULT_START_PAGE, int pageSize = DEFAULT_PAGE_SIZE) {
     LogDebugEx($"==> GetMoviesPage({startPage}, {pageSize})");
 
     IMoviesPage RetVal = new TMoviesPage() {
@@ -189,7 +189,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
 
 public static class MovieExtensions {
 
-  public static IEnumerable<IMovie> FilterBy(this IEnumerable<IMovie> movies, RFilter filter) {
+  public static IEnumerable<IMovie> FilterBy(this IEnumerable<IMovie> movies, TFilter filter) {
     IEnumerable<IMovie> ByDays = movies.FilterByDays(filter.DaysBack);
     IEnumerable<IMovie> ByName = filter.KeywordsSelection switch {
       EFilterKeywords.Any => ByDays.FilterByAnyKeywords(filter.Name),

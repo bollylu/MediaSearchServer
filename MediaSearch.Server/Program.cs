@@ -13,7 +13,7 @@ public class Program {
   public const string ARG_VERBOSE = "verbose";
   public const string ARG_DATA_SOURCE = "datasource";
 
-  public static readonly Version AppVersion = new Version(0, 0, 11);
+  public static readonly Version AppVersion = new Version(0, 0, 12);
 
   public static ISplitArgs AppArgs { get; private set; }
   public static IConfiguration Configuration { get; private set; }

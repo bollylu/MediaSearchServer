@@ -43,7 +43,7 @@ public interface IMovieService {
   /// </summary>
   /// <param name="filter"></param>
   /// <returns>The quantity of movies in the cache/></returns>
-  ValueTask<int> MoviesCount(RFilter filter);
+  ValueTask<int> MoviesCount(TFilter filter);
 
   /// <summary>
   /// The number of pages given a specific page size (the last page can be incomplete)
@@ -58,7 +58,7 @@ public interface IMovieService {
   /// <param name="filter">The data to check</param>
   /// <param name="pageSize">The quantity of movies in a page (must be >= 1)</param>
   /// <returns>The number of pages including the last one</returns>
-  ValueTask<int> PagesCount(RFilter filter, int pageSize = DEFAULT_PAGE_SIZE);
+  ValueTask<int> PagesCount(TFilter filter, int pageSize = DEFAULT_PAGE_SIZE);
 
   /// <summary>
   /// Get all the movies
@@ -89,7 +89,7 @@ public interface IMovieService {
   /// <param name="startPage">Which page to start with</param>
   /// <param name="pageSize">How many movies on a page</param>
   /// <returns>A page of IMovie</returns>
-  Task<IMoviesPage> GetMoviesPage(RFilter filter, int startPage = 1, int pageSize = DEFAULT_PAGE_SIZE);
+  Task<IMoviesPage> GetMoviesPage(TFilter filter, int startPage = 1, int pageSize = DEFAULT_PAGE_SIZE);
 
   // <summary>
   /// Get a page of movies matching a filter
@@ -98,7 +98,7 @@ public interface IMovieService {
   /// <param name="startPage">Which page to start with</param>
   /// <param name="pageSize">How many movies on a page</param>
   /// <returns>A page of IMovie</returns>
-  Task<IMoviesPage> GetMoviesLastPage(RFilter filter, int pageSize = DEFAULT_PAGE_SIZE);
+  Task<IMoviesPage> GetMoviesLastPage(TFilter filter, int pageSize = DEFAULT_PAGE_SIZE);
 
   /// <summary>
   /// Get a movie based on it's Id

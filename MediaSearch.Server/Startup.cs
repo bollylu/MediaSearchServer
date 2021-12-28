@@ -49,8 +49,9 @@ public class Startup {
     services.AddSingleton<ILogger>(Logger);
 
     services.AddControllers(options => {
-      options.OutputFormatters.Insert(0, new TMovieOutputFormatter());
-      options.OutputFormatters.Insert(0, new TMoviesPageOutputFormatter());
+      options.OutputFormatters.Insert(0, new TJsonOutputFormatter());
+      //options.OutputFormatters.Insert(0, new TMovieOutputFormatter());
+      //options.OutputFormatters.Insert(0, new TMoviesPageOutputFormatter());
     });
 
     TMovieService MovieService = new TMovieService(DataSource);

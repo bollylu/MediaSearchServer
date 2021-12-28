@@ -7,7 +7,7 @@ namespace MediaSearch.Client.Pages {
     public IMovieService MovieService { get; set; }
 
     [Parameter]
-    public RFilter Filter { get; set; }
+    public TFilter Filter { get; set; }
 
     [Parameter]
     public EViewType ViewType { get; set; } = EViewType.List;

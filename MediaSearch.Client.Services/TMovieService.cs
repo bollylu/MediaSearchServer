@@ -65,7 +65,7 @@ public class TMovieService : ALoggable, IMovieService {
   #endregion --- Refresh data --------------------------------------------
 
   #region --- Movie actions --------------------------------------------
-  public async Task<IMoviesPage> GetMoviesPage(RFilter filter, int startPage = 1, int pageSize = 20) {
+  public async Task<IMoviesPage> GetMoviesPage(TFilter filter, int startPage = 1, int pageSize = 20) {
     try {
 
       string RequestUrl = $"movie/getFiltered?filter={filter.ToJson()}&page={startPage}&size={pageSize}";

@@ -21,7 +21,7 @@ if (!await MovieService.ProbeApi()) {
 
 builder.Services.AddSingleton(MovieService);
 
-builder.Services.AddSingleton<IBusService<RFilter>, TBusService<RFilter>>();
+builder.Services.AddSingleton<IBusService<TFilter>, TBusService<TFilter>>();
 builder.Services.AddSingleton<IBusService<string>, TBusService<string>>();
 
 

@@ -15,7 +15,7 @@ public class TMovieSerializationTest {
 
   [TestMethod]
   public async Task SerializeTMovie() {
-    IMovie Source = await _MovieService.GetAllMovies().FirstAsync();
+    TMovie Source = await _MovieService.GetAllMovies().FirstAsync();
 
     string JsonMovie = Source.ToJson();
 
@@ -25,7 +25,7 @@ public class TMovieSerializationTest {
 
   [TestMethod]
   public async Task DeserializeTMovie() {
-    IMovie Source = await _MovieService.GetAllMovies().FirstAsync();
+    TMovie Source = await _MovieService.GetAllMovies().FirstAsync();
 
     string JsonMovie = Source.ToJson();
 
@@ -47,7 +47,7 @@ public class TMovieSerializationTest {
 
     List<IMovie> Source = await _MovieService.GetAllMovies().ToListAsync<IMovie>();
 
-    IMoviesPage Movies = new TMoviesPage() {
+    TMoviesPage Movies = new TMoviesPage() {
       Name = "Sélection",
       Page = 1,
       AvailablePages = 3,
@@ -65,7 +65,7 @@ public class TMovieSerializationTest {
   public async Task DeserializeTMovies() {
     List<IMovie> Source = await _MovieService.GetAllMovies().ToListAsync<IMovie>();
 
-    IMoviesPage Movies = new TMoviesPage() {
+    TMoviesPage Movies = new TMoviesPage() {
       Name = "Sélection",
       Page = 1,
       AvailablePages = 3,

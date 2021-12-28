@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public class TMoviesPage : IMoviesPage {
+public class TMoviesPage : AJson<TMoviesPage>, IMoviesPage {
 
   #region --- Public properties ------------------------------------------------------------------------------
   public string Name { get; set; }
@@ -44,12 +44,7 @@ public class TMoviesPage : IMoviesPage {
     return RetVal.ToString();
   }
 
-  #region --- ToJson --------------------------------------------
-  public string ToJson() {
-    return ToJson(new JsonWriterOptions());
-  }
-
-  public string ToJson(JsonWriterOptions options) {
+  public override string ToJson(JsonWriterOptions options) {
     using (MemoryStream Utf8JsonStream = new()) {
       using (Utf8JsonWriter Writer = new Utf8JsonWriter(Utf8JsonStream, options)) {
 
@@ -62,7 +57,7 @@ public class TMoviesPage : IMoviesPage {
         Writer.WriteNumber(nameof(IMoviesPage.AvailableMovies), AvailableMovies);
 
         Writer.WriteStartArray(nameof(IMoviesPage.Movies));
-        foreach (IMovie MovieItem in Movies) {
+        foreach (IJson MovieItem in Movies.OfType<IJson>()) {
           Writer.WriteRawValue(MovieItem.ToJson(options));
         }
         Writer.WriteEndArray();
@@ -73,10 +68,8 @@ public class TMoviesPage : IMoviesPage {
       return Encoding.UTF8.GetString(Utf8JsonStream.ToArray());
     }
   }
-  #endregion --- ToJson --------------------------------------------
 
-  #region --- ParseJson --------------------------------------------
-  public IMoviesPage ParseJson(string source) {
+  public override TMoviesPage ParseJson(string source) {
     if (string.IsNullOrWhiteSpace(source)) {
       return default;
     }
@@ -96,24 +89,4 @@ public class TMoviesPage : IMoviesPage {
 
     return this;
   }
-
-  public IMoviesPage ParseJson(JsonElement source) {
-    return ParseJson(source.GetRawText());
-  }
-  #endregion --- ParseJson --------------------------------------------
-
-  #region --- Static FromJson --------------------------------------------
-  public static IMoviesPage FromJson(string source) {
-    IMoviesPage Movies = new TMoviesPage();
-    return (IMoviesPage)Movies.ParseJson(source);
-  }
-
-  public static IMoviesPage FromJson(JsonElement source) {
-    if (source.ValueKind != JsonValueKind.Object) {
-      throw new JsonException("Json movies source is not an object");
-    }
-
-    return FromJson(source.GetRawText());
-  }
-  #endregion --- Static FromJson --------------------------------------------
 }

@@ -1,27 +1,16 @@
-﻿using BLTools.Text;
-
-using System.Drawing;
-using System.Drawing.Imaging;
-
-namespace MediaSearch.Models;
+﻿namespace MediaSearch.Models;
 
 /// <summary>
 /// Implement a movie
 /// </summary>
-public class TMovie : AMovie {
+public class TMovie : AMovie, IJson<IMovie> {
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMovie() : base() { }
   public TMovie(IMovie movie) : base(movie) { }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  #region --- ToJson --------------------------------------------
-  public override string ToJson() {
-
-    return ToJson(new JsonWriterOptions());
-
-  }
-
+  #region --- IJson --------------------------------------------
   public override string ToJson(JsonWriterOptions options) {
 
     using (MemoryStream Utf8JsonStream = new()) {
@@ -56,12 +45,6 @@ public class TMovie : AMovie {
 
       return Encoding.UTF8.GetString(Utf8JsonStream.ToArray());
     }
-  }
-  #endregion --- ToJson --------------------------------------------
-
-  #region --- ParseJson --------------------------------------------
-  public override IMovie ParseJson(JsonElement source) {
-    return ParseJson(source.GetRawText());
   }
 
   public override IMovie ParseJson(string source) {
@@ -106,9 +89,7 @@ public class TMovie : AMovie {
 
     return this;
   }
-  #endregion --- ParseJson --------------------------------------------
 
-  #region --- Static FromJson --------------------------------------------
   public static IMovie FromJson(JsonElement source) {
     if (source.ValueKind != JsonValueKind.Object) {
       throw new JsonException("Json movie source is not an object");
@@ -121,6 +102,6 @@ public class TMovie : AMovie {
     TMovie RetVal = new();
     return RetVal.ParseJson(source);
   }
-  #endregion --- Static FromJson --------------------------------------------
 
+  #endregion --- IJson --------------------------------------------
 }

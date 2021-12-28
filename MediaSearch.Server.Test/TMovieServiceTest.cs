@@ -54,7 +54,7 @@ public class TMovieServiceTest {
 
   [TestMethod]
   public async Task Service_GetFilteredFirstPage() {
-    RFilter Filter = new RFilter() { Name = "The" };
+    TFilter Filter = new TFilter() { Name = "The" };
     IMoviesPage Target = await Global.MovieService.GetMoviesPage(Filter, 1, IMovieService.DEFAULT_PAGE_SIZE).ConfigureAwait(false);
     PrintMoviesName(Target.Movies);
     Assert.IsTrue(IMovieService.DEFAULT_PAGE_SIZE >= Target.Movies.Count);
@@ -67,7 +67,7 @@ public class TMovieServiceTest {
 
     Console.WriteLine($"Movies count = {MovieCount}");
     Console.WriteLine($"Last page = {PageCount}");
-    RFilter Filter = new RFilter() { Name = "The" };
+    TFilter Filter = new TFilter() { Name = "The" };
     IMoviesPage Target = await Global.MovieService.GetMoviesPage(Filter, PageCount, IMovieService.DEFAULT_PAGE_SIZE).ConfigureAwait(false);
     PrintMoviesName(Target.Movies);
     Assert.IsTrue(IMovieService.DEFAULT_PAGE_SIZE >= Target.Movies.Count);

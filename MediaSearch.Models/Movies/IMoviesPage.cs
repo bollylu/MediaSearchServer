@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public interface IMoviesPage {
+public interface IMoviesPage : IJson {
 
   string Name { get; }
   string Source { get; }
@@ -12,11 +12,4 @@ public interface IMoviesPage {
   int AvailableMovies { get; set; }
 
   string ToString(bool withDetails);
-
-  string ToJson();
-  string ToJson(JsonWriterOptions options);
-
-  IMoviesPage ParseJson(string source);
-  IMoviesPage ParseJson(JsonElement source);
-
 }

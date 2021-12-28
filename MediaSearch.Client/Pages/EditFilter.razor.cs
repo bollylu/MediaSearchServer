@@ -6,10 +6,10 @@ public partial class EditFilter : ComponentBase {
 
   public const string SVC_NAME = "filter";
 
-  public RFilter Filter { get; set; } = new RFilter();
+  public TFilter Filter { get; set; } = new TFilter();
 
   [Inject]
-  public IBusService<RFilter>? BusService { get; set; }
+  public IBusService<TFilter>? BusService { get; set; }
 
   protected override void OnInitialized() {
     base.OnInitialized();
@@ -20,7 +20,7 @@ public partial class EditFilter : ComponentBase {
       _NotifyMessage(Filter);
   }
 
-  private void _NotifyMessage(RFilter filter) {
+  private void _NotifyMessage(TFilter filter) {
     if (filter is null) {
       return;
     }

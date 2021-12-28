@@ -19,13 +19,13 @@ public class TMovieOutputFormatter : TextOutputFormatter {
   }
 
   protected override bool CanWriteType(Type type) {
-    return typeof(IMovie).IsAssignableFrom(type);
+    return typeof(TMovie).IsAssignableFrom(type);
   }
 
   public override async Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding) {
     HttpContext httpContext = context.HttpContext;
 
-    IMovie Movie = context.Object as IMovie;
+    TMovie Movie = context.Object as TMovie;
     await httpContext.Response.WriteAsync(Movie.ToJson());
   }
   

@@ -31,7 +31,7 @@ public class TMovieController : AController {
     page = page.WithinLimits(1, int.MaxValue);
     items = items.WithinLimits(1, int.MaxValue);
 
-    RFilter Filter = new RFilter() {
+    TFilter Filter = new TFilter() {
       Name = string.IsNullOrWhiteSpace(filterName) ? "" : filterName.FromUrl(),
       DaysBack = days,
       KeywordsSelection = Enum.Parse<EFilterKeywords>(keywordsSelection),
@@ -55,7 +55,7 @@ public class TMovieController : AController {
   [HttpGet("getFiltered")]
   public async Task<ActionResult<IMoviesPage>> GetFiltered(string filter = "", int page = 1, int items = 20) {
     Logger?.LogDebug($"Request : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.Id} > {HttpContext.Request.QueryString}");
-    RFilter Filter = string.IsNullOrWhiteSpace(filter) ? new RFilter() : RFilter.FromJson(filter);
+    TFilter Filter = string.IsNullOrWhiteSpace(filter) ? new TFilter() : TFilter.FromJson(filter);
     Logger?.LogDebug($"  Filter : {Filter}");
 
     page = page.WithinLimits(1, int.MaxValue);
@@ -84,7 +84,7 @@ public class TMovieController : AController {
     page = page.WithinLimits(1, int.MaxValue);
     items = items.WithinLimits(1, int.MaxValue);
 
-    RFilter Filter = new RFilter() {
+    TFilter Filter = new TFilter() {
       DaysBack = days
     };
     IMoviesPage RetVal = await _MovieService.GetMoviesPage(Filter, page, items).ConfigureAwait(false);

@@ -2,14 +2,11 @@
 
 namespace MediaSearch.Models;
 
-public abstract class AMedia : ALoggable, IMedia {
+public abstract class AMedia : ALoggable, IJson<IMedia>, IMedia {
 
   public string Id {
     get {
-      if (_Id is null) {
-        _BuildId();
-      }
-      return _Id;
+      return _Id ??= _BuildId();
     }
     protected set {
       _Id = value;
@@ -17,8 +14,8 @@ public abstract class AMedia : ALoggable, IMedia {
   }
   private string _Id;
 
-  protected virtual void _BuildId() {
-    _Id = Name.HashToBase64();
+  protected virtual string _BuildId() {
+    return Name.HashToBase64();
   }
 
   #region --- IName --------------------------------------------
@@ -97,4 +94,12 @@ public abstract class AMedia : ALoggable, IMedia {
     return RetVal.ToString();
   }
 
+  public abstract IMedia ParseJson(string source);
+  public virtual IMedia ParseJson(JsonElement source) {
+    return ParseJson(source.GetRawText());
+  }
+  public virtual string ToJson() {
+    return ToJson(new JsonWriterOptions());
+  }
+  public abstract string ToJson(JsonWriterOptions options);
 }
