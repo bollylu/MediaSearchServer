@@ -1,0 +1,7 @@
+﻿Server changelog
+
+* Version 0.0.11
+- Added filtering on multiple keywords
+
+* version 0.0.12
+- Added changelog

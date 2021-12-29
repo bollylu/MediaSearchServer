@@ -34,7 +34,7 @@ public class Startup {
 
     Logger = new TFileLogger(LogFile) { SeverityLimit = ESeverity.Debug };
     StringBuilder StartupInfo = new StringBuilder();
-    StartupInfo.AppendLine($"Version {Program.AppVersion}");
+    StartupInfo.AppendLine($"Version {Program.About.CurrentVersion}");
     StartupInfo.AppendLine($"Running for {Environment.UserName}");
     StartupInfo.AppendLine($"Running on {Environment.MachineName}");
     StartupInfo.AppendLine($"Runtime version {Environment.Version}");

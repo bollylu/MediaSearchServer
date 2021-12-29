@@ -45,11 +45,14 @@ public class TAbout : AJson<TAbout> {
   }
   #endregion --- IJson --------------------------------------------
 
-  public void ReadChangeLog(string source) {
-    if (string.IsNullOrWhiteSpace(source)) {
-      Logger?.LogError("Unable to read change log : source is null or invalid");
+  public async Task ReadChangeLog(Stream source) {
+    if (source is null) {
+      Logger?.LogError("Unable to read change log : source is null");
       return;
     }
-    
-  }
+
+    using (TextReader Reader = new StreamReader(stream: source, leaveOpen: true)) {
+      ChangeLog = await Reader.ReadToEndAsync();
+    }
+}
 }
