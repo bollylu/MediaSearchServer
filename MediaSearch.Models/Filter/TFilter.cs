@@ -21,6 +21,13 @@ public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
   public static TFilter Empty => _Empty ??= new TFilter();
   private static TFilter _Empty;
 
+  public TFilter() { }
+  public TFilter(TFilter filter) {
+    Name = filter.Name;
+    KeywordsSelection = filter.KeywordsSelection;
+    DaysBack = filter.DaysBack;
+  }
+
   public override string ToString() {
     StringBuilder RetVal = new StringBuilder();
     RetVal.Append($"Keywords={Name.WithQuotes()}");

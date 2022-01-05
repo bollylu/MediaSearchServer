@@ -1,5 +1,5 @@
 ﻿namespace MediaSearch.Client;
 
 public static class GlobalProperties {
-  public static Version AppVersion => new Version(0, 0, 8);
+  public static Version AppVersion => new Version(0, 0, 9);
 }

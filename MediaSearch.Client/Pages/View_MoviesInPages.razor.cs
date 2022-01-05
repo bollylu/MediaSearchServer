@@ -63,7 +63,7 @@ namespace MediaSearch.Client.Pages {
       Logger.LogDebug("Parameters set async");
       if (_OldPage != CurrentPage || Filter != _OldFilter) {
         _OldPage = CurrentPage;
-        _OldFilter = Filter;
+        _OldFilter = new TFilter(Filter);
         MoviesPage = await MovieService.GetMoviesPage(Filter, CurrentPage);
       }
     }
