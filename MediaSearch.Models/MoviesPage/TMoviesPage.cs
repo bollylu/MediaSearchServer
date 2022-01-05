@@ -89,4 +89,7 @@ public class TMoviesPage : AJson<TMoviesPage>, IMoviesPage {
 
     return this;
   }
+
+  public static IMoviesPage Empty => _Empty ??= new TMoviesPage();
+  private static IMoviesPage _Empty;
 }

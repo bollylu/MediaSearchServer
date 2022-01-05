@@ -1,6 +1,6 @@
 ﻿@page "/news"
 
-<View_VideoList Filter="@Filter" />
+<View_MoviesInPages Filter="@Filter" />
 
 @code {
   public TFilter Filter { get; set; } = new TFilter() { DaysBack = 7 };

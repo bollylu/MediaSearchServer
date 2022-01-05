@@ -1,0 +1,9 @@
+﻿@using MediaSearch.Models;
+
+<div class="row row-cols-2">
+  @foreach (IMovie MovieItem in MoviesPage.Movies) {
+    <div class="col">
+      <Movie_SmallCard Movie="@MovieItem" Page="@MoviesPage.Page"/>
+    </div>
+  }
+</div>

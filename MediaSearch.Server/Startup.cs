@@ -43,7 +43,7 @@ public class Startup {
     //Console.WriteLine("Press any key to continue...");
     //Console.ReadKey();
 
-    Logger.Log("MovieSearchServer startup...");
+    Logger.Log("MediaSearchServer startup...");
     Logger.Log($"Data source is {DataSource}");
 
     services.AddSingleton<ILogger>(Logger);

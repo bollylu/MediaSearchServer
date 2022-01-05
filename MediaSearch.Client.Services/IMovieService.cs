@@ -18,8 +18,8 @@ public interface IMovieService {
   #region --- Movies --------------------------------------------
   //List<string> ExcludedExtensions { get; }
   Task<IMoviesPage> GetMoviesPage(TFilter filter, int startPage = 1, int pageSize = 20);
-  Task<byte[]> GetPicture(string pathname, int w = 128, int h = 160);
-  Task<string> GetPicture64(IMovie movie);
+  Task<byte[]> GetPicture(string pathname, CancellationToken cancelToken, int w = 128, int h = 160);
+  Task<string> GetPicture64(IMovie movie, CancellationToken cancelToken);
   #endregion --- Movies --------------------------------------------
 
   Task StartRefresh();

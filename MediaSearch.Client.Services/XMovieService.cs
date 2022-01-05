@@ -21,11 +21,11 @@ public class XMovieService : IMovieService {
     return Task.FromResult(RetVal);
   }
 
-  public Task<byte[]> GetPicture(string pathname, int w, int h) {
+  public Task<byte[]> GetPicture(string pathname, CancellationToken cancelToken, int w, int h) {
     throw new NotImplementedException();
   }
 
-  public Task<string> GetPicture64(IMovie movie) {
+  public Task<string> GetPicture64(IMovie movie, CancellationToken cancelToken) {
     throw new NotImplementedException();
   }
 

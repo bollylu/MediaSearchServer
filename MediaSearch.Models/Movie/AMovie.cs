@@ -22,10 +22,7 @@ public abstract class AMovie : AMedia, IMovie {
   #region --- Picture --------------------------------------------
   public static byte[] PictureMissing {
     get {
-      if (_PictureMissingBytes is null) {
-        _PictureMissingBytes = Support.GetPicture("missing", ".jpg");
-      }
-      return _PictureMissingBytes;
+      return _PictureMissingBytes ??= Support.GetPicture("missing", ".jpg");
     }
   }
 

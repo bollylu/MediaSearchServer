@@ -10,6 +10,7 @@ public class TMovieService : ALoggable, IMovieService {
 
   #region --- Constants --------------------------------------------
   private int HTTP_TIMEOUT_IN_MS = 10000;
+  private const int LOG_BOX_WIDTH = 160;
   #endregion --- Constants --------------------------------------------
 
   public string ApiBase { get; set; }
@@ -20,7 +21,7 @@ public class TMovieService : ALoggable, IMovieService {
 
   public TMovieService(string apiServer, TImageCache imagesCache, ILogger logger) {
     SetLogger(logger);
-    Logger.SeverityLimit = ESeverity.DebugEx;
+    Logger.SeverityLimit = ESeverity.Debug;
     Log($"Api server = {apiServer}");
     ApiBase = apiServer;
     _Client = new THttpClientEx() { BaseAddress = new Uri(ApiBase) };
@@ -69,15 +70,15 @@ public class TMovieService : ALoggable, IMovieService {
     try {
 
       string RequestUrl = $"movie/getFiltered?filter={filter.ToJson()}&page={startPage}&size={pageSize}";
-      LogDebug($"Requesting movies : {RequestUrl}".BoxFixedWidth($"get movie page request : {RequestUrl}", 80));
+      LogDebug(RequestUrl.BoxFixedWidth($"get movie page request", LOG_BOX_WIDTH));
 
       using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
 
         string JsonMovies = await _Client.GetStringAsync(RequestUrl, Timeout.Token);
-        LogDebugEx(JsonMovies.BoxFixedWidth($"get movie page raw result", 80));
+        LogDebugEx(JsonMovies.BoxFixedWidth($"get movie page raw result", LOG_BOX_WIDTH));
         IMoviesPage Result = TMoviesPage.FromJson(JsonMovies);
 
-        LogDebugEx(Result.ToString().BoxFixedWidth($"IMoviesPage", 80));
+        LogDebugEx(Result.ToString().BoxFixedWidth($"IMoviesPage", LOG_BOX_WIDTH));
         return Result;
 
       }
@@ -93,41 +94,44 @@ public class TMovieService : ALoggable, IMovieService {
   #endregion --- Movie actions --------------------------------------------
 
   #region --- Picture actions --------------------------------------------
-  public async Task<byte[]> GetPicture(string id, int w = 128, int h = 160) {
+  public async Task<byte[]> GetPicture(string id, CancellationToken cancelToken, int w = 128, int h = 160) {
+
+    string RequestUrl = $"movie/getPicture?id={id.ToUrl64()}&width={w}&height={h}";
+    LogDebugEx($"Requesting picture : {RequestUrl}");
+
     try {
-      string RequestUrl = $"movie/getPicture?id={id.ToUrl64()}&width={w}&height={h}";
-      Log($"Requesting picture : {RequestUrl}");
+      LogDebugEx($"starting getpicture {id}");
       using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
-        byte[] Result = await _Client.GetByteArrayAsync(RequestUrl, Timeout.Token);
-        if (Result is null) {
-          return AMovie.PictureMissing;
-        } else {
-          return Result;
-        }
+        return await _Client.GetByteArrayAsync(RequestUrl, Timeout.Token).WithCancellation(cancelToken).ConfigureAwait(false);
       }
+    } catch (TaskCanceledException) {
+      //LogError("Task is cancelled.");
+      return null;
+    } catch (OperationCanceledException) {
+      //LogError("Operation is cancelled.");
+      return null;
     } catch (Exception ex) {
-      LogError($"Unable to get movies data : {ex.Message}");
-      return TMovie.PictureMissing;
+      LogError($"Unable to get picture : {ex.Message}");
+      return null;
+    } finally {
+      //LogDebug("Completed getpicture");
     }
   }
 
-  public async Task<string> GetPicture64(IMovie movie) {
+  public async Task<string> GetPicture64(IMovie movie, CancellationToken cancelToken) {
 
-    byte[] CachedPicture = _ImagesCache.GetImage(movie.Id);
-    byte[] PictureBytes;
-    if (CachedPicture is null) {
-      PictureBytes = await GetPicture(movie.Id);
-      _ImagesCache.AddImage(movie.Id, PictureBytes);
-    } else {
-      PictureBytes = new byte[CachedPicture.Length];
-      CachedPicture.CopyTo(PictureBytes, 0);
+    byte[] PictureBytes = _ImagesCache.GetImage(movie.Id);
+
+    if (PictureBytes is null) {
+      PictureBytes = await GetPicture(movie.Id, cancelToken).ConfigureAwait(false);
+      if (PictureBytes is null) {
+        PictureBytes = AMovie.PictureMissing;
+      } else {
+        _ImagesCache.AddImage(movie.Id, PictureBytes);
+      }
     }
 
-    if (PictureBytes is not null) {
-      return $"data:image/jpg;base64, {Convert.ToBase64String(PictureBytes)}";
-    } else {
-      return "";
-    }
+    return $"data:image/jpg;base64, {Convert.ToBase64String(PictureBytes)}";
   }
   #endregion --- Picture actions --------------------------------------------
 }

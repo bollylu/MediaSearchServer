@@ -1,11 +1,12 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Text.RegularExpressions;
 
 namespace MediaSearch.Models;
 
-public class TFilter : AJson<TFilter> {
+public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
 
-  public string Name { get; set; }
+  public string Name { get; set; } = "";
   public EFilterKeywords KeywordsSelection { get; set; }
   public int DaysBack {
     get {
@@ -26,6 +27,29 @@ public class TFilter : AJson<TFilter> {
     RetVal.Append($", KeywordsSelection={KeywordsSelection}");
     RetVal.Append($", DaysBack={DaysBack}");
     return RetVal.ToString();
+  }
+
+  public bool Equals(TFilter other) {
+    return DaysBack == other.DaysBack && KeywordsSelection == other.KeywordsSelection && Name == other.Name;
+  }
+
+  public override int GetHashCode() {
+    return DaysBack.GetHashCode() | KeywordsSelection.GetHashCode() | Name.GetHashCode();
+  }
+
+  public override bool Equals(object obj) {
+    if (obj is TFilter Other) {
+      return this.Equals(Other);
+    }
+    return false;
+  }
+
+  public static bool operator ==(TFilter a, TFilter b) {
+    return a.Equals(b);
+  }
+
+  public static bool operator !=(TFilter a, TFilter b) {
+    return !a.Equals(b);
   }
 
   #region --- IJson --------------------------------------------
@@ -69,7 +93,11 @@ public class TFilter : AJson<TFilter> {
     }
 
     return this;
-  } 
+  }
+
+
+
+
   #endregion --- IJson --------------------------------------------
 
 }

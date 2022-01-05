@@ -12,24 +12,28 @@ namespace MediaSearch.Server;
 
 public class Program {
 
+  #region --- Parameter names --------------------------------------------
   public const string ARG_HELP = "help";
   public const string ARG_HELP2 = "?";
   public const string ARG_VERBOSE = "verbose";
   public const string ARG_LOGFILE = "log";
   public const string ARG_CHANGELOG = "changelog";
   public const string ARG_DATA_SOURCE = "datasource";
+  #endregion --- Parameter names --------------------------------------------
 
-  //public static readonly Version AppVersion = new Version(0, 0, 12);
-
-  public static ISplitArgs AppArgs { get; private set; }
+  #region --- Global variables --------------------------------------------
+  public static ISplitArgs AppArgs { get; } = new SplitArgs();
   public static IConfiguration Configuration { get; private set; }
 
-  public static TAbout About { get; private set; } = new TAbout() { CurrentVersion = new Version(0,0,12)};
+  public static TAbout About { get; } = new TAbout() {
+    CurrentVersion = new Version(0, 0, 12)
+  }; 
+  #endregion --- Global variables --------------------------------------------
 
   const string DEFAULT_SERVER_NAME = "http://localhost:4567";
 
+  #region -----------------------------------------------
   public static async Task Main(string[] args) {
-    AppArgs = new SplitArgs();
     AppArgs.Parse(args);
 
     if (AppArgs.IsDefined(ARG_HELP) || AppArgs.IsDefined(ARG_HELP2)) {
@@ -54,7 +58,7 @@ public class Program {
     ConfigurationBuilder.AddCommandLine(args);
     Configuration = ConfigurationBuilder.Build();
     #endregion --- Configuration --------------------------------------------
-    
+
     if (AppArgs.IsDefined(ARG_VERBOSE) || Configuration.GetSection(ARG_VERBOSE).Exists()) {
       Console.WriteLine(Configuration.DumpConfig().BoxFixedWidth("From Main", 80));
     }
@@ -64,7 +68,8 @@ public class Program {
     }
 
     CreateHostBuilder(args).Build().Run();
-  }
+  } 
+  #endregion -----------------------------------------------
 
   public static IHostBuilder CreateHostBuilder(string[] args) {
 
