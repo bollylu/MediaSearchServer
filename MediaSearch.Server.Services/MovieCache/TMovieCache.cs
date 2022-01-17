@@ -4,7 +4,7 @@ public class TMovieCache : AMovieCache {
 
   public List<string> MoviesExtensions { get; } = new() { ".mkv", ".avi", ".mp4", ".iso" };
 
-  public override IEnumerable<IFileInfo> FetchFiles(CancellationToken token) {
+  protected override IEnumerable<IFileInfo> _FetchFiles(CancellationToken token) {
 
     DirectoryInfo RootFolder = new DirectoryInfo(RootStoragePath);
 
@@ -20,7 +20,8 @@ public class TMovieCache : AMovieCache {
     }
   }
 
-  public override async Task Parse(IEnumerable<IFileInfo> fileSource, CancellationToken token) {
+  public override async Task Parse(CancellationToken token) {
+
     Log("Initializing movies cache");
 
     if ( string.IsNullOrWhiteSpace(RootStoragePath) ) {
@@ -31,7 +32,7 @@ public class TMovieCache : AMovieCache {
 
     int Progress = 0;
 
-    foreach ( IFileInfo MovieInfoItem in fileSource ) {
+    foreach ( IFileInfo MovieInfoItem in _FetchFiles(token) ) {
       Progress++;
 
       try {

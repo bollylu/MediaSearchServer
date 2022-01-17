@@ -26,11 +26,17 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
   #endregion --- IName --------------------------------------------
 
   #region --- Cache I/O --------------------------------------------
-  public virtual IEnumerable<IFileInfo> FetchFiles() {
-    return FetchFiles(CancellationToken.None);
+  protected virtual IEnumerable<IFileInfo> _FetchFiles() {
+    return _FetchFiles(CancellationToken.None);
   }
 
-  public abstract IEnumerable<IFileInfo> FetchFiles(CancellationToken token);
+  protected virtual IEnumerable<IFileInfo> _FetchFiles(CancellationToken token) {
+    return new List<IFileInfo>();
+  }
+
+  public virtual Task Parse(CancellationToken token) { 
+    return Parse(_FetchFiles(token), token);
+  }
 
   public virtual Task Parse(IEnumerable<IFileInfo> fileSource, CancellationToken token) {
     Log("Initializing movies cache");
@@ -56,6 +62,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
 
     return Task.CompletedTask;
   }
+
   protected virtual IMovie _ParseEntry(IFileInfo item) {
 
     IMovie RetVal = new TMovie();
@@ -187,53 +194,3 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
 
 }
 
-public static class MovieExtensions {
-
-  public static IEnumerable<IMovie> FilterBy(this IEnumerable<IMovie> movies, TFilter filter) {
-    IEnumerable<IMovie> ByDays = movies.FilterByDays(filter.DaysBack);
-    IEnumerable<IMovie> ByName = filter.KeywordsSelection switch {
-      EFilterKeywords.Any => ByDays.FilterByAnyKeywords(filter.Name),
-      EFilterKeywords.All => ByDays.FilterByAllKeywords(filter.Name),
-      _ => throw new NotImplementedException()
-    };
-
-    return ByName;
-  }
-
-  public static IEnumerable<IMovie> FilterByKeyword(this IEnumerable<IMovie> movies, string filter) {
-    if (string.IsNullOrWhiteSpace(filter)) {
-      return movies;
-    }
-    return movies.Where(m => m.Name.Contains(filter, StringComparison.CurrentCultureIgnoreCase));
-  }
-
-  public static IEnumerable<IMovie> FilterByAnyKeywords(this IEnumerable<IMovie> movies, string filter) {
-    if (string.IsNullOrWhiteSpace(filter)) {
-      return movies;
-    }
-    string[] Keywords = filter.Split(" ");
-    CompareInfo CI = CultureInfo.CurrentCulture.CompareInfo;
-    return movies.Where(m => Keywords.Any(k => CI.IndexOf(m.Name, k, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) > -1));
-  }
-
-  public static IEnumerable<IMovie> FilterByAllKeywords(this IEnumerable<IMovie> movies, string filter) {
-    if (string.IsNullOrWhiteSpace(filter)) {
-      return movies;
-    }
-    string[] Keywords = filter.Split(" ");
-    CompareInfo CI = CultureInfo.CurrentCulture.CompareInfo;
-    return movies.Where(m => Keywords.All(k => CI.IndexOf(m.Name, k, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) > -1));
-  }
-
-  public static IEnumerable<IMovie> FilterByDays(this IEnumerable<IMovie> movies, int daysBack) {
-    if (daysBack == 0) {
-      return movies;
-    }
-    DateOnly Limit = DateOnly.FromDateTime(DateTime.Today.AddDays(-daysBack));
-    return movies.Where(m => m.DateAdded >= Limit);
-  }
-
-  public static IEnumerable<IMovie> OrderedByName(this IEnumerable<IMovie> movies) {
-    return movies.OrderBy(m => m.Name).ThenBy(m => m.OutputYear);
-  }
-}

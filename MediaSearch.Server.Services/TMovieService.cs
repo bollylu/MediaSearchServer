@@ -30,7 +30,7 @@ public class TMovieService : ALoggable, IMovieService, IName {
   /// </summary>
   public List<string> MoviesExtensions { get; } = new() { ".mkv", ".avi", ".mp4", ".iso" };
 
-  private readonly IEnumerable<IFileInfo> _DataSource;
+  //private readonly IEnumerable<IFileInfo> _DataSource;
   private readonly IMovieCache _MoviesCache = new TMovieCache();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
@@ -38,21 +38,21 @@ public class TMovieService : ALoggable, IMovieService, IName {
     _MoviesCache.SetLogger(Logger);
     RootStoragePath = storage;
     _MoviesCache = new TMovieCache() { RootStoragePath = storage };
-    _DataSource = _MoviesCache.FetchFiles();
+    //_DataSource = _MoviesCache.FetchFiles();
   }
 
   public TMovieService(IMovieCache movieCache) {
     _MoviesCache = movieCache;
     _MoviesCache.SetLogger(Logger);
     RootStoragePath = movieCache.RootStoragePath;
-    _DataSource = _MoviesCache.FetchFiles();
+    //_DataSource = _MoviesCache.FetchFiles();
   }
-  public TMovieService(IEnumerable<IFileInfo> files, string storage, string storageName = "(anonymous)") {
-    _MoviesCache.SetLogger(Logger);
-    RootStoragePath = storage;
-    Name = storageName;
-    _DataSource = files;
-  }
+  //public TMovieService(IEnumerable<IFileInfo> files, string storage, string storageName = "(anonymous)") {
+  //  _MoviesCache.SetLogger(Logger);
+  //  RootStoragePath = storage;
+  //  Name = storageName;
+  //  //_DataSource = files;
+  //}
 
   private bool _IsInitialized = false;
   private bool _IsInitializing = false;
@@ -73,7 +73,7 @@ public class TMovieService : ALoggable, IMovieService, IName {
 
     Log($"Parsing data source : {RootStoragePath}");
     using (CancellationTokenSource Timeout = new CancellationTokenSource((int)TimeSpan.FromMinutes(5).TotalMilliseconds)) {
-      await _MoviesCache.Parse(_DataSource, Timeout.Token).ConfigureAwait(false);
+      await _MoviesCache.Parse(Timeout.Token).ConfigureAwait(false);
     }
 
     _IsInitialized = true;

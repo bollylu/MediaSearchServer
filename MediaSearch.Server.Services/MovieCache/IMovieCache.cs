@@ -8,26 +8,33 @@ public interface IMovieCache : ILoggable, IName {
   string RootStoragePath { get; }
 
   #region --- Cache I/O --------------------------------------------
-  /// <summary>
-  /// Fetch the files from storage
-  /// </summary>
-  /// <returns>An IEnumerable of FileInfo</returns>
-  IEnumerable<IFileInfo> FetchFiles();
+  ///// <summary>
+  ///// Fetch the files from storage
+  ///// </summary>
+  ///// <returns>An IEnumerable of FileInfo</returns>
+  //IEnumerable<IFileInfo> FetchFiles();
 
-  /// <summary>
-  /// Fetch the files from storage
-  /// </summary>
-  /// <param name="token">A token to cancel operation</param>
-  /// <returns>An IEnumerable of FileInfo</returns>
-  IEnumerable<IFileInfo> FetchFiles(CancellationToken token);
+  ///// <summary>
+  ///// Fetch the files from storage
+  ///// </summary>
+  ///// <param name="token">A token to cancel operation</param>
+  ///// <returns>An IEnumerable of FileInfo</returns>
+  //IEnumerable<IFileInfo> FetchFiles(CancellationToken token);
+
+  ///// <summary>
+  ///// Load the data into the cache (if the storage is available)
+  ///// </summary>
+  ///// <param name="fileSource">The list of files to process</param>
+  ///// <param name="token">A token to cancel operation</param>
+  ///// <returns>A background task</returns>
+  //Task Parse(IEnumerable<IFileInfo> fileSource, CancellationToken token);
 
   /// <summary>
   /// Load the data into the cache (if the storage is available)
   /// </summary>
-  /// <param name="fileSource">The list of files to process</param>
   /// <param name="token">A token to cancel operation</param>
   /// <returns>A background task</returns>
-  Task Parse(IEnumerable<IFileInfo> fileSource, CancellationToken token);
+  Task Parse(CancellationToken token);
   #endregion --- Cache I/O --------------------------------------------
 
   #region --- Cache management --------------------------------------------
