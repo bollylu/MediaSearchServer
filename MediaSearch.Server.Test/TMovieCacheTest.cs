@@ -9,8 +9,7 @@ public class TMovieCacheTest {
       Global.MovieCache = new TMovieCache() { RootStoragePath = Global.STORAGE, Logger = new TConsoleLogger() };
 
       using ( CancellationTokenSource Timeout = new CancellationTokenSource((int)TimeSpan.FromMinutes(5).TotalMilliseconds) ) {
-        IEnumerable<IFileInfo> Source = Global.MovieCache.FetchFiles(Timeout.Token);
-        await Global.MovieCache.Parse(Source, Timeout.Token).ConfigureAwait(false);
+        await Global.MovieCache.Parse(Timeout.Token).ConfigureAwait(false);
       }
 
     }

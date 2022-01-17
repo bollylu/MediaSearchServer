@@ -8,8 +8,7 @@ public class TMovieSerializationTest {
   [TestInitialize]
   public async Task BuildData() {
     IMovieCache Cache = new XMovieCache() { RootStoragePath = @"\\Andromeda.sharenet.priv\films" };
-    IEnumerable<IFileInfo> Files = Cache.FetchFiles();
-    await Cache.Parse(Files, CancellationToken.None);
+    await Cache.Parse(CancellationToken.None);
     _MovieService = new TMovieService(Cache);
   }
 

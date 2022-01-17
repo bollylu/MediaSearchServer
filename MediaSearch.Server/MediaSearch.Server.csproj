@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="ChangeLog.txt" />
+    <EmbeddedResource Include="_Global_\ChangeLog.txt" />
   </ItemGroup>
 
   <ItemGroup>

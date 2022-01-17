@@ -3,9 +3,10 @@ using MediaSearch.Client;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
-
 const string DEFAULT_EXTERNAL_API_ADDRESS = "https://mediasearchapi.sharenet.be/api/";
 const string DEFAULT_API_ADDRESS = "http://mediasearchapi.sharenet.priv/api/";
+
+await GlobalProperties.About.Initialize();
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.Logging.SetMinimumLevel(LogLevel.Information);
