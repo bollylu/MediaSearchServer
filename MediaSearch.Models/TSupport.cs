@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 
+using BLTools.Text;
+
 namespace MediaSearch.Models;
 
 public static class Support {
@@ -8,6 +10,12 @@ public static class Support {
   public static void PrintMoviesName(IEnumerable<IMovie> movies) {
     foreach ( IMovie MovieItem in movies ) {
       Console.WriteLine(MovieItem.Name);
+    }
+  }
+
+  public static void PrintMovies(IEnumerable<IMovie> movies) {
+    foreach (IMovie MovieItem in movies) {
+      Console.WriteLine(MovieItem.ToString().Box());
     }
   }
 
