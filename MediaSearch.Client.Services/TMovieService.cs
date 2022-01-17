@@ -1,5 +1,7 @@
 ﻿using BLTools.Text;
 
+using System.Net.Http.Json;
+
 namespace MediaSearch.Client.Services;
 
 /// <summary>
@@ -66,15 +68,43 @@ public class TMovieService : ALoggable, IMovieService {
   #endregion --- Refresh data --------------------------------------------
 
   #region --- Movie actions --------------------------------------------
+  //public async Task<IMoviesPage> GetMoviesPage(TFilter filter, int startPage = 1, int pageSize = 20) {
+  //  try {
+
+  //    string RequestUrl = $"movie/getFiltered?filter={filter.ToJson()}&page={startPage}&size={pageSize}";
+  //    LogDebug(RequestUrl.BoxFixedWidth($"get movie page request", LOG_BOX_WIDTH));
+
+  //    using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
+
+  //      string JsonMovies = await _Client.GetStringAsync(RequestUrl, Timeout.Token);
+  //      LogDebugEx(JsonMovies.BoxFixedWidth($"get movie page raw result", LOG_BOX_WIDTH));
+  //      IMoviesPage Result = TMoviesPage.FromJson(JsonMovies);
+
+  //      LogDebugEx(Result.ToString().BoxFixedWidth($"IMoviesPage", LOG_BOX_WIDTH));
+  //      return Result;
+
+  //    }
+  //  } catch (Exception ex) {
+  //    LogError($"Unable to get movies data : {ex.Message}");
+  //    if (ex.InnerException is not null) {
+  //      LogError($"  Inner exception : {ex.InnerException.Message}");
+  //      LogError($"  Inner call stack : {ex.InnerException.StackTrace}");
+  //    }
+  //    return null;
+  //  }
+  //}
+
   public async Task<IMoviesPage> GetMoviesPage(TFilter filter, int startPage = 1, int pageSize = 20) {
     try {
 
-      string RequestUrl = $"movie/getFiltered?filter={filter.ToJson()}&page={startPage}&size={pageSize}";
+      string RequestUrl = $"movie/getWithFilter?page={startPage}&size={pageSize}";
+      var Content = JsonContent.Create(filter);
       LogDebug(RequestUrl.BoxFixedWidth($"get movie page request", LOG_BOX_WIDTH));
 
       using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
 
-        string JsonMovies = await _Client.GetStringAsync(RequestUrl, Timeout.Token);
+        HttpResponseMessage Response = await _Client.PostAsync(RequestUrl, Content, Timeout.Token);
+        string JsonMovies = await Response.Content.ReadAsStringAsync();
         LogDebugEx(JsonMovies.BoxFixedWidth($"get movie page raw result", LOG_BOX_WIDTH));
         IMoviesPage Result = TMoviesPage.FromJson(JsonMovies);
 

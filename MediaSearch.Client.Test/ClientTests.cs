@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MediaSearch.Models;
 
 using MediaSearch.Client.Services;
+using BLTools.Text;
 
 namespace MediaSearch.Client.Test {
   [TestClass]
@@ -17,25 +18,24 @@ namespace MediaSearch.Client.Test {
 
     public const int TIMEOUT_IN_MS = 10000;
 
-    [TestInitialize]
-
     [TestMethod]
     public async Task Connect_GetHttpStatus() {
 
       using (HttpClient Client = new() { BaseAddress = new Uri("http://localhost:4567/api/") }) {
 
         try {
-          string RequestUrl = "movie";
+          string RequestUrl = "movie/getWithFilter";
+          TFilter Filter = TFilter.Empty;
+          Console.WriteLine(Filter.ToString().Box("Filter"));
           Console.WriteLine($"Requesting movies : {RequestUrl}");
           using (CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT_IN_MS)) {
 
-            HttpResponseMessage Result = await Client.GetAsync(RequestUrl, Timeout.Token).ConfigureAwait(false);
+            JsonContent Content = JsonContent.Create(Filter);
+            HttpResponseMessage Result = await Client.PostAsync(RequestUrl, Content, Timeout.Token).ConfigureAwait(false);
             IMoviesPage Target = TMoviesPage.FromJson(await Result.Content.ReadAsStringAsync().ConfigureAwait(false));
-
 
             Console.WriteLine(Result.ReasonPhrase);
             Console.WriteLine(Target.ToString());
-            Console.WriteLine($"Result : {Target.Source} - {Target.Movies.Count}");
 
             Assert.IsNotNull(Result);
           }
@@ -44,36 +44,7 @@ namespace MediaSearch.Client.Test {
           if (ex.InnerException is not null) {
             Console.WriteLine($"  Inner : {ex.InnerException.Message}");
           }
-        }
-      }
-    }
-
-    [TestMethod]
-    public async Task Connect_GetHttpStatusEx() {
-
-      using (THttpClientEx Client = new() { BaseAddress = new Uri("http://localhost:4567/api/") }) {
-
-        try {
-          string RequestUrl = "movie";
-          Console.WriteLine($"Requesting movies : {RequestUrl}");
-
-          string Result = await Client.GetStringAsync(RequestUrl, TIMEOUT_IN_MS).ConfigureAwait(false);
-
-          if (Client.LastResponse.IsSuccessStatusCode) {
-            IMoviesPage Target = TMoviesPage.FromJson(Result);
-
-            Console.WriteLine(Result);
-            Console.WriteLine(Target.ToString());
-            Console.WriteLine($"Result : {Target.Source} - {Target.Movies.Count}");
-
-            Assert.IsNotNull(Result);
-          }
-        } catch (Exception ex) {
-          Console.WriteLine($"Unable to get movies data : {ex.Message}");
-          if (ex.InnerException is not null) {
-            Console.WriteLine($"  Inner : {ex.InnerException.Message}");
-          }
-          Console.WriteLine($"Status : {Client.LastResponse}");
+          Assert.Fail(ex.Message);
         }
       }
     }
@@ -84,14 +55,17 @@ namespace MediaSearch.Client.Test {
       using (HttpClient Client = new() { BaseAddress = new Uri("http://localhost:4567/api/") }) {
 
         try {
-          string RequestUrl = $"movie?filter=";
+          string RequestUrl = $"movie/getWithFilter";
           Console.WriteLine($"Requesting movies : {RequestUrl}");
+          TFilter Filter = TFilter.Empty;
+          Console.WriteLine(Filter.ToString().Box("Filter"));
+          JsonContent Content = JsonContent.Create(Filter);
+
           using (CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT_IN_MS)) {
-            string Result = await Client.GetStringAsync(RequestUrl, Timeout.Token).ConfigureAwait(false);
-            IMoviesPage Target = TMoviesPage.FromJson(Result);
+            HttpResponseMessage Result = await Client.PostAsync(RequestUrl, Content, Timeout.Token).ConfigureAwait(false);
+            IMoviesPage Target = TMoviesPage.FromJson(await Result.Content.ReadAsStringAsync().ConfigureAwait(false));
 
             Console.WriteLine(Target.ToString());
-            Console.WriteLine($"Result : {Target.Source} - {Target.Movies.Count}");
 
             Assert.IsNotNull(Result);
             Assert.AreEqual(1, Target.Page);
@@ -101,6 +75,7 @@ namespace MediaSearch.Client.Test {
           if (ex.InnerException is not null) {
             Console.WriteLine($"  Inner : {ex.InnerException.Message}");
           }
+          Assert.Fail(ex.Message);
         }
       }
     }
@@ -111,14 +86,17 @@ namespace MediaSearch.Client.Test {
       using (HttpClient Client = new() { BaseAddress = new Uri("http://localhost:4567/api/") }) {
 
         try {
-          string RequestUrl = $"movie?filter=the";
+          string RequestUrl = $"movie/getWithFilter";
           Console.WriteLine($"Requesting movies : {RequestUrl}");
+          TFilter Filter = new TFilter() { Keywords = "the" };
+          Console.WriteLine(Filter.ToString().Box("Filter"));
+          JsonContent Content = JsonContent.Create(Filter);
+
           using (CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT_IN_MS)) {
-            string Result = await Client.GetStringAsync(RequestUrl, Timeout.Token).ConfigureAwait(false);
-            IMoviesPage Target = TMoviesPage.FromJson(Result);
+            HttpResponseMessage Result = await Client.PostAsync(RequestUrl, Content, Timeout.Token).ConfigureAwait(false);
+            IMoviesPage Target = TMoviesPage.FromJson(await Result.Content.ReadAsStringAsync().ConfigureAwait(false));
 
             Console.WriteLine(Target.ToString());
-            Console.WriteLine($"Result : {Target.Source} - {Target.Movies.Count}");
 
             Assert.IsNotNull(Result);
             Assert.AreEqual(1, Target.Page);
@@ -128,6 +106,7 @@ namespace MediaSearch.Client.Test {
           if (ex.InnerException is not null) {
             Console.WriteLine($"  Inner : {ex.InnerException.Message}");
           }
+          Assert.Fail(ex.Message);
         }
       }
     }

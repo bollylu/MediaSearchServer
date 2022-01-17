@@ -2,14 +2,26 @@
 
 public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
 
+  public const int DEFAULT_PAGE_SIZE = 20;
+
+  /// <summary>
+  /// The number of the page to request. Must be positive.
+  /// </summary>
+  public int Page { get; set; } = 1;
+
+  /// <summary>
+  /// The maximum number of items on the page. Must be positive.
+  /// </summary>
+  public int PageSize { get; set; } = DEFAULT_PAGE_SIZE;
+
   /// <summary>
   /// Keywords to use for the search in the Movie name
   /// </summary>
-  public string Name { get; set; } = "";
+  public string Keywords { get; set; } = "";
   /// <summary>
   /// How to use the keywords for the search
   /// </summary>
-  public EFilterKeywords KeywordsSelection { get; set; }
+  public EFilterType KeywordsSelection { get; set; }
 
   /// <summary>
   /// Tags to be searched for
@@ -18,7 +30,7 @@ public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
   /// <summary>
   /// How to use the tags for the search
   /// </summary>
-  public EFilterKeywords TagSelection { get; set; }
+  public EFilterType TagSelection { get; set; }
 
   /// <summary>
   /// When selecting a movie, how many days in the past of it addition to the library should we look
@@ -57,17 +69,19 @@ public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
       _OutputDateMax = value.WithinLimits(OutputDateMin, int.MaxValue);
     }
   }
-  private int _OutputDateMax = 0;
+  private int _OutputDateMax = DateTime.Now.Year + 1;
 
   #region --- Static instance for an empty filter --------------------------------------------
   public static TFilter Empty => _Empty ??= new TFilter();
-  private static TFilter _Empty; 
+  private static TFilter _Empty;
   #endregion --- Static instance for an empty filter --------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TFilter() { }
   public TFilter(TFilter filter) {
-    Name = filter.Name;
+    Page = filter.Page;
+    PageSize = filter.PageSize;
+    Keywords = filter.Keywords;
     KeywordsSelection = filter.KeywordsSelection;
     Tags = filter.Tags;
     TagSelection = filter.TagSelection;
@@ -80,22 +94,26 @@ public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
   #region --- Converters -------------------------------------------------------------------------------------
   public override string ToString() {
     StringBuilder RetVal = new StringBuilder();
-    RetVal.Append($"Keywords={KeywordsSelection}:{Name.WithQuotes()}");
-    RetVal.Append($", Tags={TagSelection}:{Tags.WithQuotes()}");
-    RetVal.Append($", DaysBack={DaysBack}");
+    RetVal.Append($"{nameof(Keywords)}={KeywordsSelection}:{Keywords.WithQuotes()}");
+    RetVal.Append($", {nameof(Tags)}={TagSelection}:{Tags.WithQuotes()}");
+    RetVal.Append($", {nameof(DaysBack)}={DaysBack}");
     RetVal.Append($", OutputDateRange={OutputDateMin}..{OutputDateMax}");
+    RetVal.Append($", {nameof(Page)}={Page}");
+    RetVal.Append($", {nameof(PageSize)}={PageSize}");
     return RetVal.ToString();
-  } 
+  }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
   #region --- IEquatable<TFilter> --------------------------------------------
   public bool Equals(TFilter other) {
     return
+      Page == other.Page &&
+      PageSize == other.PageSize &&
       DaysBack == other.DaysBack &&
       OutputDateMin == other.OutputDateMin &&
       OutputDateMax == other.OutputDateMax &&
       KeywordsSelection == other.KeywordsSelection &&
-      Name == other.Name &&
+      Keywords == other.Keywords &&
       TagSelection == other.TagSelection &&
       Tags == other.Tags;
   }
@@ -103,11 +121,13 @@ public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
 
   #region --- Equalilty comparison --------------------------------------------
   public override int GetHashCode() {
-    return 
-      DaysBack.GetHashCode() | 
-      KeywordsSelection.GetHashCode() | 
-      Name.GetHashCode() | 
-      Tags.GetHashCode() | 
+    return
+      Page.GetHashCode() |
+      PageSize.GetHashCode() |
+      DaysBack.GetHashCode() |
+      KeywordsSelection.GetHashCode() |
+      Keywords.GetHashCode() |
+      Tags.GetHashCode() |
       TagSelection.GetHashCode() |
       OutputDateMin.GetHashCode() |
       OutputDateMax.GetHashCode();
@@ -137,7 +157,9 @@ public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
 
         Writer.WriteStartObject();
 
-        Writer.WriteString(nameof(Name), Name);
+        Writer.WriteNumber(nameof(Page), Page);
+        Writer.WriteNumber(nameof(PageSize), PageSize);
+        Writer.WriteString(nameof(Keywords), Keywords);
         Writer.WriteString(nameof(KeywordsSelection), KeywordsSelection.ToString());
         Writer.WriteString(nameof(Tags), Tags);
         Writer.WriteString(nameof(TagSelection), TagSelection.ToString());
@@ -165,10 +187,12 @@ public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
 
       //LogDebugEx(Root.GetRawText().BoxFixedWidth("RawText", 80, TextBox.EStringAlignment.Left));
 
-      Name = Root.GetPropertyEx(nameof(Name)).GetString();
-      KeywordsSelection = Enum.Parse<EFilterKeywords>(Root.GetPropertyEx(nameof(KeywordsSelection)).GetString());
+      Page = Root.GetPropertyEx(nameof(Page)).GetInt32();
+      PageSize = Root.GetPropertyEx(nameof(PageSize)).GetInt32();
+      Keywords = Root.GetPropertyEx(nameof(Keywords)).GetString();
+      KeywordsSelection = Enum.Parse<EFilterType>(Root.GetPropertyEx(nameof(KeywordsSelection)).GetString());
       Tags = Root.GetPropertyEx(nameof(Tags)).GetString();
-      TagSelection = Enum.Parse<EFilterKeywords>(Root.GetPropertyEx(nameof(TagSelection)).GetString());
+      TagSelection = Enum.Parse<EFilterType>(Root.GetPropertyEx(nameof(TagSelection)).GetString());
       DaysBack = Root.GetPropertyEx(nameof(DaysBack)).GetInt32();
       OutputDateMin = Root.GetPropertyEx(nameof(OutputDateMin)).GetInt32();
       OutputDateMax = Root.GetPropertyEx(nameof(OutputDateMax)).GetInt32();

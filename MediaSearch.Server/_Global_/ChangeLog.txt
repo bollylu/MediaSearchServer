@@ -5,3 +5,6 @@
 
 * version 0.0.12
 - Added changelog
+
+* version 0.0.13
+- New filter : name, tags, added

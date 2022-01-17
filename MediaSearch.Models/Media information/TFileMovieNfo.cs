@@ -64,9 +64,6 @@ public class TFileMovieNfo : ALoggable, IFileMediaInfo, IToXml {
 
     }
 
-
-
-
   }
   #endregion --- IToXml --------------------------------------------
 }

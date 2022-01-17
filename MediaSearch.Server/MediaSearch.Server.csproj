@@ -8,10 +8,12 @@
 
   <ItemGroup>
     <None Remove="ChangeLog.txt" />
+    <None Remove="_Global_\Version.txt" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="_Global_\ChangeLog.txt" />
+    <EmbeddedResource Include="_Global_\changelog.txt" />
+    <EmbeddedResource Include="_Global_\version.txt" />
   </ItemGroup>
 
   <ItemGroup>

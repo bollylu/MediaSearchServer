@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
-using System.Reflection;
-
 namespace MediaSearch.Server;
 
 public class Program {
@@ -25,9 +23,7 @@ public class Program {
   public static ISplitArgs AppArgs { get; } = new SplitArgs();
   public static IConfiguration Configuration { get; private set; }
 
-  public static TAbout About { get; } = new TAbout() {
-    CurrentVersion = new Version(0, 0, 12)
-  }; 
+  public static TAbout About { get; } = new TAbout();
   #endregion --- Global variables --------------------------------------------
 
   const string DEFAULT_SERVER_NAME = "http://localhost:4567";
@@ -40,10 +36,12 @@ public class Program {
       Usage();
     }
 
-    Assembly Asm = Assembly.GetExecutingAssembly();
-    using (Stream ChangeLogStream = Asm.GetManifestResourceStream("MediaSearch.Server.ChangeLog.txt")) {
-      await About.ReadChangeLog(ChangeLogStream);
-    }
+    await About.Initialize();
+
+    //Assembly Asm = Assembly.GetExecutingAssembly();
+    //using (Stream ChangeLogStream = Asm.GetManifestResourceStream("MediaSearch.Server.ChangeLog.txt")) {
+    //  await About.ReadChangeLog(ChangeLogStream);
+    //}
 
     #region --- Configuration --------------------------------------------
     IConfigurationBuilder ConfigurationBuilder = new ConfigurationBuilder();
@@ -60,6 +58,7 @@ public class Program {
     #endregion --- Configuration --------------------------------------------
 
     if (AppArgs.IsDefined(ARG_VERBOSE) || Configuration.GetSection(ARG_VERBOSE).Exists()) {
+      Console.WriteLine(About.CurrentVersion.ToString().BoxFixedWidth("Version", 80));
       Console.WriteLine(Configuration.DumpConfig().BoxFixedWidth("From Main", 80));
     }
 
@@ -68,7 +67,7 @@ public class Program {
     }
 
     CreateHostBuilder(args).Build().Run();
-  } 
+  }
   #endregion -----------------------------------------------
 
   public static IHostBuilder CreateHostBuilder(string[] args) {

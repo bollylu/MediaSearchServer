@@ -70,21 +70,11 @@ public interface IMovieCache : ILoggable, IName {
   IEnumerable<IMovie> GetAllMovies();
 
   /// <summary>
-  /// Get a page of movies
-  /// </summary>
-  /// <param name="startPage">Which page to start with</param>
-  /// <param name="pageSize">How many movies on a page</param>
-  /// <returns>A list of IMovie</returns>
-  IMoviesPage GetMoviesPage(int startPage = 1, int pageSize = 20);
-
-  /// <summary>
   /// Get a page of movie matching a filter
   /// </summary>
   /// <param name="filter">The data to check against</param>
-  /// <param name="startPage">Which page to start with</param>
-  /// <param name="pageSize">How many movies on a page</param>
   /// <returns>A list of IMovie</returns>
-  IMoviesPage GetMoviesPage(TFilter filter, int startPage = 1, int pageSize = 20);
+  IMoviesPage GetMoviesPage(TFilter filter);
 
   /// <summary>
   /// Get a movie from the cache

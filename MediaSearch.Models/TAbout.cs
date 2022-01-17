@@ -3,7 +3,7 @@
 namespace MediaSearch.Models;
 
 public class TAbout : AJson<TAbout> {
-  public string VersionSource { get; init; }
+  public string VersionSource { get; init; } = "_global_.version.txt";
   public Version CurrentVersion {
     get {
       return _CurrentVersion ?? new Version(0, 0, 0);
@@ -14,7 +14,7 @@ public class TAbout : AJson<TAbout> {
   }
   private Version _CurrentVersion;
 
-  public string ChangeLogSource { get; init; }
+  public string ChangeLogSource { get; init; } = "_global_.changelog.txt";
   public string ChangeLog {
     get {
       return _ChangeLog ?? "";
@@ -123,7 +123,7 @@ public class TAbout : AJson<TAbout> {
 
     try {
       Assembly Asm = Assembly.GetEntryAssembly();
-      using (Stream VersionStream = Asm.GetManifestResourceStream(source)) {
+      using (Stream VersionStream = Asm.GetManifestResourceStream(_GetResourceNameCaseInsensitive(source))) {
         using (TextReader Reader = new StreamReader(VersionStream)) {
           CurrentVersion = Version.Parse(await Reader.ReadToEndAsync());
         }
@@ -156,11 +156,27 @@ public class TAbout : AJson<TAbout> {
     }
     #endregion === Validate parameters ===
 
-    Assembly Asm = Assembly.GetEntryAssembly();
-    using (Stream ChangeLogStream = Asm.GetManifestResourceStream(source)) {
-      using (TextReader Reader = new StreamReader(ChangeLogStream)) {
-        ChangeLog = await Reader.ReadToEndAsync();
+    try {
+      Assembly Asm = Assembly.GetEntryAssembly();
+      using (Stream ChangeLogStream = Asm.GetManifestResourceStream(_GetResourceNameCaseInsensitive(source))) {
+        using (TextReader Reader = new StreamReader(ChangeLogStream)) {
+          ChangeLog = await Reader.ReadToEndAsync();
+        }
       }
+    } catch (Exception ex) {
+      Logger?.LogError($"Unable to read changelog : {ex.Message}");
+      CurrentVersion = new Version(0, 0);
     }
+  }
+
+  private string _GetResourceNameCaseInsensitive(string resourceName) {
+    if (string.IsNullOrWhiteSpace(resourceName)) {
+      return null;
+    }
+    Assembly Asm = Assembly.GetEntryAssembly();
+    string BaseName = Asm.GetName().Name;
+    string FullResourceName = $"{BaseName}.{resourceName}".ToLowerInvariant();
+    string RetVal = Asm.GetManifestResourceNames().FirstOrDefault(x => x.ToLowerInvariant() == FullResourceName);
+    return RetVal;
   }
 }

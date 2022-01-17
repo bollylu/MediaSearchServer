@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace MediaSearch.Models;
@@ -9,6 +10,7 @@ namespace MediaSearch.Models;
 public abstract class AJson<T> : ILoggable, IJson<T> where T : IJson<T>, new() {
 
   #region --- ILoggable --------------------------------------------
+  [JsonIgnore]
   public ILogger Logger { get; set; }
   public void SetLogger(ILogger logger) {
     Logger = ALogger.Create(logger);

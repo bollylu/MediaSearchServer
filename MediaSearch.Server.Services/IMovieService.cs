@@ -48,17 +48,10 @@ public interface IMovieService {
   /// <summary>
   /// The number of pages given a specific page size (the last page can be incomplete)
   /// </summary>
-  /// <param name="pageSize">The quantity of movies in a page (must be >= 1)</param>
-  /// <returns>The number of pages including the last one</returns>
-  ValueTask<int> PagesCount(int pageSize = DEFAULT_PAGE_SIZE);
-
-  /// <summary>
-  /// The number of pages given a specific page size (the last page can be incomplete)
-  /// </summary>
   /// <param name="filter">The data to check</param>
   /// <param name="pageSize">The quantity of movies in a page (must be >= 1)</param>
   /// <returns>The number of pages including the last one</returns>
-  ValueTask<int> PagesCount(TFilter filter, int pageSize = DEFAULT_PAGE_SIZE);
+  ValueTask<int> PagesCount(TFilter filter);
 
   /// <summary>
   /// Get all the movies
@@ -77,19 +70,9 @@ public interface IMovieService {
   /// <summary>
   /// Get a page of movies matching a filter
   /// </summary>
-  /// <param name="startPage">Which page to start with</param>
-  /// <param name="pageSize">How many movies on a page</param>
-  /// <returns>A page of IMovie</returns>
-  Task<IMoviesPage> GetMoviesPage(int startPage = 1, int pageSize = DEFAULT_PAGE_SIZE);
-
-  /// <summary>
-  /// Get a page of movies matching a filter
-  /// </summary>
   /// <param name="filter">The data to check in name and alt. names</param>
-  /// <param name="startPage">Which page to start with</param>
-  /// <param name="pageSize">How many movies on a page</param>
   /// <returns>A page of IMovie</returns>
-  Task<IMoviesPage> GetMoviesPage(TFilter filter, int startPage = 1, int pageSize = DEFAULT_PAGE_SIZE);
+  Task<IMoviesPage> GetMoviesPage(TFilter filter);
 
   // <summary>
   /// Get a page of movies matching a filter
@@ -98,7 +81,7 @@ public interface IMovieService {
   /// <param name="startPage">Which page to start with</param>
   /// <param name="pageSize">How many movies on a page</param>
   /// <returns>A page of IMovie</returns>
-  Task<IMoviesPage> GetMoviesLastPage(TFilter filter, int pageSize = DEFAULT_PAGE_SIZE);
+  Task<IMoviesPage> GetMoviesLastPage(TFilter filter);
 
   /// <summary>
   /// Get a movie based on it's Id

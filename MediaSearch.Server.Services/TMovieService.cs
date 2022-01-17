@@ -1,5 +1,7 @@
 ﻿using SkiaSharp;
 
+using System.Drawing.Printing;
+
 namespace MediaSearch.Server.Services;
 
 // <summary>
@@ -108,17 +110,12 @@ public class TMovieService : ALoggable, IMovieService, IName {
   #region --- Movies --------------------------------------------
   public async ValueTask<int> MoviesCount(TFilter filter) {
     await Initialize().ConfigureAwait(false);
-
-    return _MoviesCache.GetAllMovies().FilterBy(filter).Count();
+    return _MoviesCache.GetAllMovies().WithFilter(filter).Count();
   }
 
-  public async ValueTask<int> PagesCount(int pageSize = IMovieService.DEFAULT_PAGE_SIZE) {
-    return await PagesCount(TFilter.Empty, pageSize).ConfigureAwait(false);
-  }
-
-  public async ValueTask<int> PagesCount(TFilter filter, int pageSize = IMovieService.DEFAULT_PAGE_SIZE) {
+  public async ValueTask<int> PagesCount(TFilter filter) {
     int FilteredMoviesCount = await MoviesCount(filter).ConfigureAwait(false);
-    return (FilteredMoviesCount / pageSize) + (FilteredMoviesCount % pageSize > 0 ? 1 : 0);
+    return (FilteredMoviesCount / filter.PageSize) + (FilteredMoviesCount % filter.PageSize > 0 ? 1 : 0);
   }
 
   public async IAsyncEnumerable<TMovie> GetAllMovies() {
@@ -129,23 +126,29 @@ public class TMovieService : ALoggable, IMovieService, IName {
     }
   }
 
-  public async Task<IMoviesPage> GetMoviesPage(int startPage = 1, int pageSize = IMovieService.DEFAULT_PAGE_SIZE) {
+  //public async Task<IMoviesPage> GetMoviesPage(int startPage = 1, int pageSize = IMovieService.DEFAULT_PAGE_SIZE) {
+  //  await Initialize().ConfigureAwait(false);
+  //  return await GetMoviesPage(TFilter.Empty, startPage, pageSize);
+  //}
+
+  //public async Task<IMoviesPage> GetMoviesPage(TFilter filter, int startPage = 1, int pageSize = 20) {
+  //  await Initialize().ConfigureAwait(false);
+  //  if (startPage > 1) {
+  //    startPage = startPage.WithinLimits(1, await PagesCount(filter, pageSize));
+  //  }
+  //  return _MoviesCache.GetMoviesPage(filter, startPage, pageSize);
+  //}
+
+  public async Task<IMoviesPage> GetMoviesPage(TFilter filter) {
     await Initialize().ConfigureAwait(false);
-    return await GetMoviesPage(TFilter.Empty, startPage, pageSize);
+    return _MoviesCache.GetMoviesPage(filter);
   }
 
-  public async Task<IMoviesPage> GetMoviesPage(TFilter filter, int startPage = 1, int pageSize = 20) {
+  public async Task<IMoviesPage> GetMoviesLastPage(TFilter filter) {
     await Initialize().ConfigureAwait(false);
-    if (startPage > 1) {
-      startPage = startPage.WithinLimits(1, await PagesCount(filter, pageSize));
-    }
-    return _MoviesCache.GetMoviesPage(filter, startPage, pageSize);
-  }
-
-  public async Task<IMoviesPage> GetMoviesLastPage(TFilter filter, int pageSize = 20) {
-    await Initialize().ConfigureAwait(false);
-
-    return _MoviesCache.GetMoviesPage(filter, await PagesCount(filter, pageSize), pageSize);
+    TFilter NewFilter = new TFilter(filter);
+    NewFilter.Page = await PagesCount(filter);
+    return _MoviesCache.GetMoviesPage(NewFilter);
   }
 
   public Task<IMovie> GetMovie(string id) {

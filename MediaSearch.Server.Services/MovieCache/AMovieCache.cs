@@ -163,24 +163,20 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
     }
   }
 
-  public IMoviesPage GetMoviesPage(int startPage = DEFAULT_START_PAGE, int pageSize = DEFAULT_PAGE_SIZE) {
-    return GetMoviesPage(TFilter.Empty, startPage, pageSize);
-  }
-
-  public IMoviesPage GetMoviesPage(TFilter filter, int startPage = DEFAULT_START_PAGE, int pageSize = DEFAULT_PAGE_SIZE) {
-    LogDebugEx($"==> GetMoviesPage({startPage}, {pageSize})");
+  public IMoviesPage GetMoviesPage(TFilter filter) {
+    LogDebugEx($"==> GetMoviesPage({filter.Page}, {filter.PageSize})");
 
     IMoviesPage RetVal = new TMoviesPage() {
       Source = RootStoragePath,
-      Page = startPage
+      Page = filter.Page
     };
 
     try {
       _LockCache.EnterReadLock();
-      IEnumerable<IMovie> FilteredMovies = _Items.FilterBy(filter).OrderedByName();
+      IEnumerable<IMovie> FilteredMovies = _Items.WithFilter(filter).OrderedByName();
       RetVal.AvailableMovies = FilteredMovies.Count();
-      RetVal.AvailablePages = (RetVal.AvailableMovies / pageSize) + (RetVal.AvailableMovies % pageSize > 0 ? 1 : 0);
-      RetVal.Movies.AddRange(FilteredMovies.Skip(pageSize * (startPage - 1)).Take(pageSize));
+      RetVal.AvailablePages = (RetVal.AvailableMovies / filter.PageSize) + (RetVal.AvailableMovies % filter.PageSize > 0 ? 1 : 0);
+      RetVal.Movies.AddRange(FilteredMovies.Skip(filter.PageSize * (filter.Page - 1)).Take(filter.PageSize));
       return RetVal;
     } catch (Exception ex) {
       LogError($"Unable to build a movie page : {ex.Message}");

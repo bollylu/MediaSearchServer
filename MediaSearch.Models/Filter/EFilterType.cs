@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MediaSearch.Models;
 
-public enum EFilterKeywords {
+public enum EFilterType {
   Any,
   All
 }

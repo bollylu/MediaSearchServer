@@ -1,3 +1,5 @@
+using BLTools.Text;
+
 using MediaSearch.Server.Services;
 
 namespace MediaSearch.Models.Test;
@@ -9,7 +11,9 @@ public class IEnumerableMovieExtensionsTests {
   [TestMethod]
   public void FilterByAnyTag_OneTagOnly_ResultOk() {
     IEnumerable<IMovie> Source = Global.MovieCache.GetAllMovies();
-    IEnumerable<IMovie> Target = Source.FilterByAnyTag("science-fiction");
+    TFilter Filter = new TFilter() { Tags = "science-fiction", TagSelection = EFilterType.Any };
+    Console.WriteLine(Filter.ToString().Box("Filter"));
+    IEnumerable<IMovie> Target = Source.FilterByTags(Filter);
     Assert.IsNotNull(Target);
     Assert.IsTrue(Target.Any());
     Assert.AreEqual(3, Target.Count());
@@ -19,7 +23,9 @@ public class IEnumerableMovieExtensionsTests {
   [TestMethod]
   public void FilterByAnyTag_OneTagOnlyButMissing_ResultOk() {
     IEnumerable<IMovie> Source = Global.MovieCache.GetAllMovies();
-    IEnumerable<IMovie> Target = Source.FilterByAnyTag("xxxtotoxxx");
+    TFilter Filter = new TFilter() { Tags = "xxxtotoxxx", TagSelection = EFilterType.Any };
+    Console.WriteLine(Filter.ToString().Box("Filter"));
+    IEnumerable<IMovie> Target = Source.FilterByTags(Filter);
     Assert.IsNotNull(Target);
     Assert.IsTrue(Target.IsEmpty());
   }
@@ -27,7 +33,9 @@ public class IEnumerableMovieExtensionsTests {
   [TestMethod]
   public void FilterByAnyTag_MultipleTags_ResultOk() {
     IEnumerable<IMovie> Source = Global.MovieCache.GetAllMovies();
-    IEnumerable<IMovie> Target = Source.FilterByAnyTag("science-fiction aliens");
+    TFilter Filter = new TFilter() { Tags = "science-fiction aliens", TagSelection = EFilterType.Any };
+    Console.WriteLine(Filter.ToString().Box("Filter"));
+    IEnumerable<IMovie> Target = Source.FilterByTags(Filter);
     Assert.IsNotNull(Target);
     Assert.IsTrue(Target.Any());
     Assert.AreEqual(3, Target.Count());
@@ -39,18 +47,22 @@ public class IEnumerableMovieExtensionsTests {
   [TestMethod]
   public void FilterByAllTag_OneTagOnly_ResultOk() {
     IEnumerable<IMovie> Source = Global.MovieCache.GetAllMovies();
-    IEnumerable<IMovie> Target = Source.FilterByAllTags("science-fiction");
+    TFilter Filter = new TFilter() { Tags = "science-fiction", TagSelection = EFilterType.All };
+    Console.WriteLine(Filter.ToString().Box("Filter"));
+    IEnumerable<IMovie> Target = Source.FilterByTags(Filter);
     Assert.IsNotNull(Target);
     Support.PrintMovies(Target);
     Assert.IsTrue(Target.Any());
     Assert.AreEqual(3, Target.Count());
-    
+
   }
 
   [TestMethod]
   public void FilterByAllTag_OneTagOnlyButMissing_ResultOk() {
     IEnumerable<IMovie> Source = Global.MovieCache.GetAllMovies();
-    IEnumerable<IMovie> Target = Source.FilterByAllTags("xxxtotoxxx");
+    TFilter Filter = new TFilter() { Tags = "xxxtotoxxx", TagSelection = EFilterType.All };
+    Console.WriteLine(Filter.ToString().Box("Filter"));
+    IEnumerable<IMovie> Target = Source.FilterByTags(Filter);
     Assert.IsNotNull(Target);
     Assert.IsTrue(Target.IsEmpty());
   }
@@ -58,11 +70,13 @@ public class IEnumerableMovieExtensionsTests {
   [TestMethod]
   public void FilterByAllTag_MultipleTags_ResultOk() {
     IEnumerable<IMovie> Source = Global.MovieCache.GetAllMovies();
-    IEnumerable<IMovie> Target = Source.FilterByAllTags("science-fiction aliens");
+    TFilter Filter = new TFilter() { Tags = "science-fiction aliens", TagSelection = EFilterType.All };
+    Console.WriteLine(Filter.ToString().Box("Filter"));
+    IEnumerable<IMovie> Target = Source.FilterByTags(Filter);
     Assert.IsNotNull(Target);
     Support.PrintMovies(Target);
     Assert.IsTrue(Target.Any());
     Assert.AreEqual(2, Target.Count());
-  } 
+  }
   #endregion --- All tags --------------------------------------------
 }
