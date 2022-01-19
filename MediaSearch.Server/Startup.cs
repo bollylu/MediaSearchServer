@@ -1,6 +1,4 @@
-using BLTools.Text;
 
-using MediaSearch.Server.Support;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,16 +11,23 @@ namespace MediaSearch.Server;
 
 public class Startup {
 
+  const int BOX_WIDTH = 120;
+
   public static ILogger Logger { get; private set; }
 
   public const string DEFAULT_DATASOURCE = @"\\andromeda.sharenet.priv\multimedia\films\";
-  public const string DEFAULT_LOGFILE_LINUX = "/var/log/MovieSearch/MovieSearchServer.log";
-  public const string DEFAULT_LOGFILE_WINDOWS = @"c:\logs\MovieSearch\MovieSearchServer.log";
 
+  public const string DEFAULT_LOGFILE_LINUX = "/var/log/MediaSearch/MediaSearch.Server.log";
+  public const string DEFAULT_LOGFILE_WINDOWS = @"c:\logs\MediaSearch\MediaSearch.Server.log";
+
+  #region --- Constructor(s) ---------------------------------------------------------------------------------
   public Startup(IConfiguration configuration) {
     Configuration = configuration;
-    Console.WriteLine(Configuration.DumpConfig().BoxFixedWidth("From Startup", 160));
-  }
+    if (Program.AppArgs.IsDefined(Program.ARG_VERBOSE)) {
+      Console.WriteLine(Configuration.DumpConfig().BoxFixedWidth("Configuration in Startup constructor", BOX_WIDTH));
+    }
+  } 
+  #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public IConfiguration Configuration { get; }
 
@@ -33,25 +38,22 @@ public class Startup {
     string LogFile = Program.AppArgs.GetValue("log", OperatingSystem.IsWindows() ? DEFAULT_LOGFILE_WINDOWS : DEFAULT_LOGFILE_LINUX);
 
     Logger = new TFileLogger(LogFile) { SeverityLimit = ESeverity.Debug };
+
     StringBuilder StartupInfo = new StringBuilder();
-    StartupInfo.AppendLine($"Version {Program.About.CurrentVersion}");
+    StartupInfo.AppendLine($"Version {Program.EntryAbout.CurrentVersion}");
     StartupInfo.AppendLine($"Running for {Environment.UserName}");
     StartupInfo.AppendLine($"Running on {Environment.MachineName}");
     StartupInfo.AppendLine($"Runtime version {Environment.Version}");
     StartupInfo.AppendLine($"OS version {Environment.OSVersion}");
     Logger.Log(TextBox.BuildFixedWidth(StartupInfo.ToString(), "Startup info", 80, TextBox.EStringAlignment.Left));
-    //Console.WriteLine("Press any key to continue...");
-    //Console.ReadKey();
 
-    Logger.Log("MediaSearchServer startup...");
+    Logger.Log("MediaSearch.Server startup...");
     Logger.Log($"Data source is {DataSource}");
 
     services.AddSingleton<ILogger>(Logger);
 
     services.AddControllers(options => {
       options.OutputFormatters.Insert(0, new TJsonOutputFormatter());
-      //options.OutputFormatters.Insert(0, new TMovieOutputFormatter());
-      //options.OutputFormatters.Insert(0, new TMoviesPageOutputFormatter());
     });
 
     TMovieService MovieService = new TMovieService(DataSource);
@@ -63,16 +65,16 @@ public class Startup {
 
     services.AddCors(options => {
       options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin()
-                                                    .AllowAnyMethod()
-                                                    .AllowAnyHeader()
+                                                                      .AllowAnyMethod()
+                                                                      .AllowAnyHeader()
                        );
     });
     services.AddControllers();
     services.AddSwaggerGen(c => {
-      c.SwaggerDoc("v1", new OpenApiInfo { Title = "MovieSearchServer", Version = "v1" });
+      c.SwaggerDoc("v1", new OpenApiInfo { Title = "MediaSearch.Server", Version = Program.EntryAbout.CurrentVersion.ToString() });
     });
 
-    Logger.Log("MovieSearchServer startup complete. Running.");
+    Logger.Log($"MediaSearch.Server {Program.EntryAbout.CurrentVersion} startup complete. Running.");
   }
 
   // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -80,16 +82,14 @@ public class Startup {
     if ( env.IsDevelopment() ) {
       app.UseDeveloperExceptionPage();
       app.UseSwagger();
-      app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MovieSearchServer v1"));
+      app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"MediaSearch.Server v{Program.EntryAbout.CurrentVersion}"));
     }
 
     app.UseCors("AllowAll");
 
-    //app.UseHttpsRedirection();
-    
     app.UseRouting();
 
-    app.UseAuthorization();
+    //app.UseAuthorization();
 
     app.UseEndpoints(endpoints => {
       endpoints.MapControllers();

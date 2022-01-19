@@ -5,7 +5,7 @@ public class TMoviesPage : AJson<TMoviesPage>, IMoviesPage {
   #region --- Public properties ------------------------------------------------------------------------------
   public string Name { get; set; }
 
-  public List<IMovie> Movies { get; set; } = new();
+  public List<IMovie> Movies { get; } = new();
 
   public int Page { get; set; }
   public int AvailablePages { get; set; }
@@ -27,6 +27,7 @@ public class TMoviesPage : AJson<TMoviesPage>, IMoviesPage {
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
+  #region --- Converters -------------------------------------------------------------------------------------
   public override string ToString() {
     StringBuilder RetVal = new StringBuilder();
     RetVal.AppendLine($"page {Page}/{AvailablePages} [{Movies.Count} movies on {AvailableMovies}] ");
@@ -42,16 +43,16 @@ public class TMoviesPage : AJson<TMoviesPage>, IMoviesPage {
       }
     }
     return RetVal.ToString();
-  }
+  } 
+  #endregion --- Converters -------------------------------------------------------------------------------------
 
+  #region --- IJson --------------------------------------------
   public override string ToJson(JsonWriterOptions options) {
     using (MemoryStream Utf8JsonStream = new()) {
       using (Utf8JsonWriter Writer = new Utf8JsonWriter(Utf8JsonStream, options)) {
 
         Writer.WriteStartObject();
 
-        //Writer.WriteString(nameof(IMoviesPage.Name), Name);
-        //Writer.WriteString(nameof(IMoviesPage.Source), Source);
         Writer.WriteNumber(nameof(IMoviesPage.Page), Page);
         Writer.WriteNumber(nameof(IMoviesPage.AvailablePages), AvailablePages);
         Writer.WriteNumber(nameof(IMoviesPage.AvailableMovies), AvailableMovies);
@@ -77,8 +78,6 @@ public class TMoviesPage : AJson<TMoviesPage>, IMoviesPage {
     JsonDocument JsonMovies = JsonDocument.Parse(source);
     JsonElement Root = JsonMovies.RootElement;
 
-    //Name = Root.GetPropertyEx(nameof(IMoviesPage.Name)).GetString();
-    //Source = Root.GetPropertyEx(nameof(IMoviesPage.Source)).GetString();
     Page = Root.GetPropertyEx(nameof(IMoviesPage.Page)).GetInt32();
     AvailablePages = Root.GetPropertyEx(nameof(IMoviesPage.AvailablePages)).GetInt32();
     AvailableMovies = Root.GetPropertyEx(nameof(IMoviesPage.AvailableMovies)).GetInt32();
@@ -88,8 +87,11 @@ public class TMoviesPage : AJson<TMoviesPage>, IMoviesPage {
     }
 
     return this;
-  }
+  } 
+  #endregion --- IJson --------------------------------------------
 
+  #region --- Static instance --------------------------------------------
   public static IMoviesPage Empty => _Empty ??= new TMoviesPage();
-  private static IMoviesPage _Empty;
+  private static IMoviesPage _Empty; 
+  #endregion --- Static instance --------------------------------------------
 }

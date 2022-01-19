@@ -7,12 +7,28 @@ public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
   /// <summary>
   /// The number of the page to request. Must be positive.
   /// </summary>
-  public int Page { get; set; } = 1;
+  public int Page {
+    get {
+      return _Page;
+    }
+    set {
+      _Page = value.WithinLimits(1, int.MaxValue);
+    }
+  }
+  private int _Page = 1;
 
   /// <summary>
   /// The maximum number of items on the page. Must be positive.
   /// </summary>
-  public int PageSize { get; set; } = DEFAULT_PAGE_SIZE;
+  public int PageSize {
+    get {
+      return _PageSize;
+    }
+    set {
+      _PageSize = value.WithinLimits(1, int.MaxValue);
+    }
+  }
+  private int _PageSize = DEFAULT_PAGE_SIZE;
 
   /// <summary>
   /// Keywords to use for the search in the Movie name
@@ -66,7 +82,11 @@ public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
       return _OutputDateMax;
     }
     set {
-      _OutputDateMax = value.WithinLimits(OutputDateMin, int.MaxValue);
+      if (value == 0) {
+        _OutputDateMax = DateTime.Now.Year + 1;
+      } else {
+        _OutputDateMax = value.WithinLimits(OutputDateMin, int.MaxValue);
+      }
     }
   }
   private int _OutputDateMax = DateTime.Now.Year + 1;

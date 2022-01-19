@@ -10,7 +10,7 @@ public class AboutController : AController {
   }
 
   [HttpGet()]
-  public ActionResult<TAbout> Index() {
-    return new ActionResult<TAbout>(Program.About);
+  public ActionResult<IAbout> Index() {
+    return new ActionResult<IAbout>(Program.EntryAbout);
   }
 }

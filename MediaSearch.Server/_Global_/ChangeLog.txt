@@ -1,4 +1,4 @@
-﻿#Server changelog
+﻿# Server changelog
 
 * Version 0.0.11
 - Added filtering on multiple keywords
@@ -8,3 +8,7 @@
 
 * version 0.0.13
 - New filter : name, tags, added
+
+* version 0.0.14
+- changelog and version
+- Filter is passed as parameter for request => POST instead of GET

@@ -17,9 +17,9 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "MovieSearchServer": {
+    "MediaSearch.Server": {
       "commandName": "Project",
-      "commandLineArgs": "verbose changelog",
+      "commandLineArgs": "changelog",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {

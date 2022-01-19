@@ -18,10 +18,14 @@
 
   <ItemGroup>
     <None Remove="Pictures\missing.jpg" />
+    <None Remove="_Global_\changelog.txt" />
+    <None Remove="_Global_\version.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Pictures\missing.jpg" />
+    <EmbeddedResource Include="_Global_\changelog.txt" />
+    <EmbeddedResource Include="_Global_\version.txt" />
   </ItemGroup>
 
   <ItemGroup>

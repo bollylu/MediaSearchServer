@@ -1,8 +1,13 @@
-﻿using System.Reflection;
+﻿namespace MediaSearch.Models;
 
-namespace MediaSearch.Models;
+public class TAbout : AJson<TAbout>, IAbout {
 
-public class TAbout : AJson<TAbout> {
+  private readonly Assembly _Assembly;
+
+  public string Name { get; init; }
+  public string Description { get; init; }
+
+  [JsonIgnore]
   public string VersionSource { get; init; } = "_global_.version.txt";
   public Version CurrentVersion {
     get {
@@ -14,6 +19,7 @@ public class TAbout : AJson<TAbout> {
   }
   private Version _CurrentVersion;
 
+  [JsonIgnore]
   public string ChangeLogSource { get; init; } = "_global_.changelog.txt";
   public string ChangeLog {
     get {
@@ -25,10 +31,15 @@ public class TAbout : AJson<TAbout> {
   }
   private string _ChangeLog;
 
-  public TAbout() { }
-  public TAbout(string versionSource, string changeLogSource) {
-    VersionSource = versionSource;
-    ChangeLogSource = changeLogSource;
+  #region --- Constructor(s) ---------------------------------------------------------------------------------
+  public TAbout() {
+    _Assembly = Assembly.GetEntryAssembly();
+    Name = _Assembly.GetName().Name;
+  }
+
+  public TAbout(Assembly assembly) {
+    _Assembly = assembly;
+    Name = _Assembly.GetName().Name;
   }
 
   private bool _IsInitialized = false;
@@ -54,6 +65,7 @@ public class TAbout : AJson<TAbout> {
     _IsInitializing = false;
     _IsInitialized = true;
   }
+  #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   #region --- IJson --------------------------------------------
   public override string ToJson(JsonWriterOptions options) {
@@ -122,8 +134,7 @@ public class TAbout : AJson<TAbout> {
     #endregion === Validate parameters ===
 
     try {
-      Assembly Asm = Assembly.GetEntryAssembly();
-      using (Stream VersionStream = Asm.GetManifestResourceStream(_GetResourceNameCaseInsensitive(source))) {
+      using (Stream VersionStream = _Assembly.GetManifestResourceStream(_GetResourceNameCaseInsensitive(source))) {
         using (TextReader Reader = new StreamReader(VersionStream)) {
           CurrentVersion = Version.Parse(await Reader.ReadToEndAsync());
         }
@@ -157,8 +168,7 @@ public class TAbout : AJson<TAbout> {
     #endregion === Validate parameters ===
 
     try {
-      Assembly Asm = Assembly.GetEntryAssembly();
-      using (Stream ChangeLogStream = Asm.GetManifestResourceStream(_GetResourceNameCaseInsensitive(source))) {
+      using (Stream ChangeLogStream = _Assembly.GetManifestResourceStream(_GetResourceNameCaseInsensitive(source))) {
         using (TextReader Reader = new StreamReader(ChangeLogStream)) {
           ChangeLog = await Reader.ReadToEndAsync();
         }
@@ -173,10 +183,8 @@ public class TAbout : AJson<TAbout> {
     if (string.IsNullOrWhiteSpace(resourceName)) {
       return null;
     }
-    Assembly Asm = Assembly.GetEntryAssembly();
-    string BaseName = Asm.GetName().Name;
-    string FullResourceName = $"{BaseName}.{resourceName}".ToLowerInvariant();
-    string RetVal = Asm.GetManifestResourceNames().FirstOrDefault(x => x.ToLowerInvariant() == FullResourceName);
+    string FullResourceName = $"{Name}.{resourceName}".ToLowerInvariant();
+    string RetVal = _Assembly.GetManifestResourceNames().FirstOrDefault(x => x.ToLowerInvariant() == FullResourceName);
     return RetVal;
   }
 }

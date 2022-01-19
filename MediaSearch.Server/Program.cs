@@ -1,14 +1,14 @@
-using BLTools.Text;
-
-using MediaSearch.Server.Support;
-
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
+using System.Reflection;
+
 namespace MediaSearch.Server;
 
 public class Program {
+
+  const int BOX_WIDTH = 120;
 
   #region --- Parameter names --------------------------------------------
   public const string ARG_HELP = "help";
@@ -23,7 +23,8 @@ public class Program {
   public static ISplitArgs AppArgs { get; } = new SplitArgs();
   public static IConfiguration Configuration { get; private set; }
 
-  public static TAbout About { get; } = new TAbout();
+  public static List<IAbout> About { get; } = new();
+  public static IAbout EntryAbout => About?.FirstOrDefault(a => a.Name.Equals(Assembly.GetEntryAssembly().GetName().Name, StringComparison.InvariantCultureIgnoreCase));
   #endregion --- Global variables --------------------------------------------
 
   const string DEFAULT_SERVER_NAME = "http://localhost:4567";
@@ -36,12 +37,11 @@ public class Program {
       Usage();
     }
 
-    await About.Initialize();
-
-    //Assembly Asm = Assembly.GetExecutingAssembly();
-    //using (Stream ChangeLogStream = Asm.GetManifestResourceStream("MediaSearch.Server.ChangeLog.txt")) {
-    //  await About.ReadChangeLog(ChangeLogStream);
-    //}
+    foreach (Assembly AssemblyItem in AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name.StartsWith("MediaSearch"))) {
+      IAbout AssemblyAbout = new TAbout(AssemblyItem);
+      await AssemblyAbout.Initialize();
+      About.Add(AssemblyAbout);
+    }
 
     #region --- Configuration --------------------------------------------
     IConfigurationBuilder ConfigurationBuilder = new ConfigurationBuilder();
@@ -57,13 +57,15 @@ public class Program {
     Configuration = ConfigurationBuilder.Build();
     #endregion --- Configuration --------------------------------------------
 
-    if (AppArgs.IsDefined(ARG_VERBOSE) || Configuration.GetSection(ARG_VERBOSE).Exists()) {
-      Console.WriteLine(About.CurrentVersion.ToString().BoxFixedWidth("Version", 80));
-      Console.WriteLine(Configuration.DumpConfig().BoxFixedWidth("From Main", 80));
+    foreach (IAbout AboutItem in About) {
+      Console.WriteLine(AboutItem.CurrentVersion.ToString().BoxFixedWidth($"{AboutItem.Name} version #", BOX_WIDTH));
+      if (AppArgs.IsDefined(ARG_CHANGELOG)) {
+        Console.WriteLine(AboutItem.ChangeLog.BoxFixedWidth($"Change log {AboutItem.Name}", BOX_WIDTH));
+      }
     }
 
-    if (AppArgs.IsDefined(ARG_CHANGELOG)) {
-      Console.WriteLine(About.ChangeLog.BoxFixedWidth("Change log", 80));
+    if (AppArgs.IsDefined(ARG_VERBOSE) || Configuration.GetSection(ARG_VERBOSE).Exists()) {
+      Console.WriteLine(Configuration.DumpConfig().BoxFixedWidth("From Main", BOX_WIDTH));
     }
 
     CreateHostBuilder(args).Build().Run();
@@ -101,8 +103,8 @@ public class Program {
       Console.WriteLine(message);
     }
 
-    Console.WriteLine($"MovieSearchServer v{About.CurrentVersion}");
-    Console.WriteLine("Usage : MovieSearchServer [params]");
+    Console.WriteLine($"MediaSearch.Server v{EntryAbout.CurrentVersion}");
+    Console.WriteLine("Usage : ./MediaSearch.Server [params]");
     Console.WriteLine("  [server=<server ip or dns>]");
     Console.WriteLine("  [log=<logfile path and name>]");
     Console.WriteLine("  [datasource=<root data source>]");

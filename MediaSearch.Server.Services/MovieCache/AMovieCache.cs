@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using BLTools.Text;
+
+using System.Globalization;
 
 namespace MediaSearch.Server.Services;
 
@@ -65,16 +67,15 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
 
   protected virtual IMovie _ParseEntry(IFileInfo item) {
 
-    IMovie RetVal = new TMovie();
-
     // Standardize directory separator
     string ProcessedFileItem = item.FullName.NormalizePath();
+
+    IMovie RetVal = new TMovie() { Name = ProcessedFileItem.AfterLast(FOLDER_SEPARATOR).BeforeLast(" (") };
 
     RetVal.StorageRoot = RootStoragePath.NormalizePath();
     RetVal.StoragePath = ProcessedFileItem.BeforeLast(FOLDER_SEPARATOR).After(RetVal.StorageRoot, System.StringComparison.InvariantCultureIgnoreCase);
 
     RetVal.FileName = item.Name;
-    RetVal.Name = ProcessedFileItem.AfterLast(FOLDER_SEPARATOR).BeforeLast(" (");
     RetVal.FileExtension = RetVal.FileName.AfterLast('.').ToLowerInvariant();
 
     string[] Tags = RetVal.StoragePath.BeforeLast(FOLDER_SEPARATOR).Split(FOLDER_SEPARATOR, StringSplitOptions.RemoveEmptyEntries);
@@ -164,7 +165,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
   }
 
   public IMoviesPage GetMoviesPage(TFilter filter) {
-    LogDebugEx($"==> GetMoviesPage({filter.Page}, {filter.PageSize})");
+    LogDebug(filter.ToString().BoxFixedWidth("Filter", 80));
 
     IMoviesPage RetVal = new TMoviesPage() {
       Source = RootStoragePath,
