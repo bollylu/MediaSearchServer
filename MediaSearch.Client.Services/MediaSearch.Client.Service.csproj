@@ -11,6 +11,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="_Global_\changelog.txt" />
+    <None Remove="_Global_\version.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="_Global_\changelog.txt" />
+    <EmbeddedResource Include="_Global_\version.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BLTools" Version="4.5.28" />
     <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
   </ItemGroup>

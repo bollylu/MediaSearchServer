@@ -62,15 +62,16 @@ public partial class EditFilter : ComponentBase {
   public bool ClearTagsDisabled => string.IsNullOrEmpty(Filter.Tags);
 
   private void ClearOutputDate() {
-    Filter.OutputDateMin = 0;
+    Filter.OutputDateMin = TFilter.DEFAULT_OUTPUT_DATE_MIN;
     Filter.OutputDateMax = TFilter.DEFAULT_OUTPUT_DATE_MAX;
   }
 
-  public bool ClearOutputDateDisabled => Filter.OutputDateMin == 0 && Filter.OutputDateMax == TFilter.DEFAULT_OUTPUT_DATE_MAX;
+  public bool ClearOutputDateDisabled => Filter.OutputDateMin == TFilter.DEFAULT_OUTPUT_DATE_MIN && Filter.OutputDateMax == TFilter.DEFAULT_OUTPUT_DATE_MAX;
 
   private void ClearGroup() {
     Filter.Group = "";
     Filter.GroupOnly = false;
+    StateHasChanged();
   }
 
   public bool ClearGroupDisabled => string.IsNullOrEmpty(Filter.Group) && Filter.GroupOnly == false;

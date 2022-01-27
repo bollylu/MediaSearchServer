@@ -6,21 +6,25 @@
 
     <div class="input-group mb-2 mt-2">
       <label class="col-sm-2 col-form-label" for="FilterKewords">Keywords</label>
-      <InputText type="text" @bind-Value="@Filter.Keywords" class="form-control" id="FilterKeywords" placeholder="k1 k2 ..." />
-      <select class="form-select col-sm2 col-2" @bind="@Filter.KeywordsSelection">
-        <option value="All">All</option>
-        <option value="Any">Any</option>
-      </select>
+      <input type="text" @bind="@Filter.Keywords" class="form-control" id="FilterKeywords" placeholder="k1 k2 ..." />
+      <div class="input-group-text p-0">
+        <select class="form-select" @bind="@Filter.KeywordsSelection">
+          <option value="@EFilterType.All">@EFilterType.All</option>
+          <option value="@EFilterType.Any">@EFilterType.Any</option>
+        </select>
+      </div>
       <button class="btn btn-outline-danger" type="button" id="ClearKeywords" @onclick="ClearKeywords" disabled="@ClearKeywordsDisabled">x</button>
     </div>
 
     <div class="input-group mb-2">
       <label class="col-sm-2 col-form-label" for="FilterTags">Tags</label>
-      <InputText type="text" @bind-Value="@Filter.Tags" class="form-control" id="FilterTags" placeholder="t1 t2 ..." />
-      <select class="form-select col-sm2 col-2" @bind="@Filter.TagSelection">
-        <option value="All">All</option>
-        <option value="Any">Any</option>
-      </select>
+      <input type="text" @bind="@Filter.Tags" class="form-control" id="FilterTags" placeholder="t1 t2 ..." />
+      <div class="input-group-text p-0">
+        <select class="form-select" @bind="@Filter.KeywordsSelection">
+          <option value="@EFilterType.All">@EFilterType.All</option>
+          <option value="@EFilterType.Any">@EFilterType.Any</option>
+        </select>
+      </div>
       <button class="btn btn-outline-danger" type="button" id="ClearTags" @onclick="ClearTags" disabled="@ClearTagsDisabled">x</button>
     </div>
 
@@ -49,16 +53,16 @@
       <label class="col-sm-2 col-form-label">Groups</label>
 
       <label class="input-group-text" for="FilterGroup">Group</label>
-      <select class="form-control" style="width:100px;" @bind="@Filter.Group">
+      <select class="form-select" @bind="@Filter.Group" id="FilterGroup">
         <option value="">Select a group ...</option>
         @foreach (string GroupItem in _Groups) {
-          <option value="@GroupItem">@GroupItem</option>
+          <option value="@GroupItem">@GroupItem.TrimEnd(' ','#')</option>
         }
       </select>
 
-      <div class="form-check form-check-inline align-self-center ms-3 me-3">
-        <input type="checkbox" class="form-check-input" data-toggle="toggle" data-onstyle="primary" @bind-value="@Filter.GroupOnly" id="GroupOnly" />
-        <label for="GroupOnly">Groups only</label>
+      <div class="form-check form-switch align-self-center ms-3 me-3">
+        <input type="checkbox" class="form-check-input" role="switch" data-onstyle="primary" @bind="@Filter.GroupOnly" id="GroupOnly" />
+        <label class="form-check-label" for="GroupOnly">Groups only</label>
       </div>
 
       <button class="btn btn-outline-danger" type="button" id="ClearGroup" @onclick="ClearGroup" disabled="@ClearGroupDisabled">x</button>
