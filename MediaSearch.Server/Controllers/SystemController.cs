@@ -20,10 +20,10 @@ public class TSystemController : AController {
   /// </summary>
   /// <returns>A message</returns>
   [HttpGet("startRefreshData")]
-  public async Task<IActionResult> StartRefreshData() {
+  public IActionResult StartRefreshData() {
     Logger?.Log("Request to refresh the data");
     Logger?.Log($"Origin : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.RemotePort}");
-    await _MovieService.RefreshData();
+    Task.Run(async () => await _MovieService.RefreshData()).ConfigureAwait(false);
     return Ok();
   }
 

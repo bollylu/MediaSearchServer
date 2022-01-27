@@ -15,6 +15,10 @@ public abstract class AMovie : AMedia, IMovie {
     };
 
   public string Group { get; set; }
+  public string SubGroup { get; set; }
+
+  public bool IsGroupMember => !string.IsNullOrWhiteSpace(Group);
+
   public long Size { get; set; }
   public int OutputYear { get; set; }
   #endregion --- Public properties ---------------------------------------------------------------------------
@@ -44,7 +48,10 @@ public abstract class AMovie : AMedia, IMovie {
   public override string ToString() {
     StringBuilder RetVal = new StringBuilder(base.ToString());
     RetVal.AppendLine($"{nameof(Extension)} = {Extension}");
-    RetVal.AppendLine($"{nameof(Group)} = {Group}");
+    if (IsGroupMember) {
+      RetVal.AppendLine($"{nameof(Group)} = {Group}");
+      RetVal.AppendLine($", {nameof(SubGroup)} = {SubGroup}");
+    }
     RetVal.AppendLine($"{nameof(Size)} = {Size}");
     RetVal.AppendLine($"{nameof(OutputYear)} = {OutputYear}");
 

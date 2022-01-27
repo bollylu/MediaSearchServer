@@ -73,13 +73,14 @@ public class TMovieController : AController {
   /// Obtain a page of movies with the possibility of filtering
   /// </summary>
   /// <param name="filter">A possible filter for the movie names</param>
-  /// <param name="page">The first page (x items count)</param>
-  /// <param name="items">The items count for the request</param>
   /// <returns>A IMoviesPage object containing the data</returns>
-  [HttpPost("getWithFilter")]
+  [HttpPost()]
   public async Task<ActionResult<IMoviesPage>> GetWithFilter(TFilter filter) {
     Logger?.LogDebug($"Request : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.Id} > {HttpContext.Request.QueryString}");
-    //TFilter Filter = string.IsNullOrWhiteSpace(filter) ? new TFilter() : TFilter.FromJson(filter);
+    if (filter is null) {
+      filter = TFilter.Empty;
+    }
+
     Logger?.LogDebug($"  Filter : {filter}");
 
     IMoviesPage RetVal = await _MovieService.GetMoviesPage(filter).ConfigureAwait(false);
@@ -88,6 +89,34 @@ public class TMovieController : AController {
     Logger?.LogDebugEx(_PrintMovies(RetVal.Movies));
 
     return new ActionResult<IMoviesPage>(RetVal);
+  }
+
+  /// <summary>
+  /// Obtain a page of movies with the possibility of filtering
+  /// </summary>
+  /// <param name="filter">A possible filter for the movie names</param>
+  /// <returns>A list of groups</returns>
+  [HttpGet("getGroups")]
+  public async Task<ActionResult<IList<string>>> GetGroups() {
+    Logger?.LogDebug($"Request : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.Id} > {HttpContext.Request.QueryString}");
+
+    IList<string> RetVal = await _MovieService.GetGroups().ToListAsync().ConfigureAwait(false);
+
+    return new ActionResult<IList<string>>(RetVal);
+  }
+
+  /// <summary>
+  /// Obtain a page of movies with the possibility of filtering
+  /// </summary>
+  /// <param name="filter">A possible filter for the movie names</param>
+  /// <returns>A list of groups</returns>
+  [HttpGet("getSubGroups")]
+  public async Task<ActionResult<IList<string>>> GetSubGroups(string group) {
+    Logger?.LogDebug($"Request : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.Id} > {HttpContext.Request.QueryString}");
+
+    IList<string> RetVal = await _MovieService.GetSubGroups(group ?? "").ToListAsync().ConfigureAwait(false);
+
+    return new ActionResult<IList<string>>(RetVal);
   }
 
   /// <summary>

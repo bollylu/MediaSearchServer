@@ -1,7 +1,15 @@
 ﻿# MediaSearch models changelog
-* 0.1.0
+
+* version 0.1.0
 - Created version and changelog
 - TAbout is now IName
 - TAbout can handle an external lib, not only the main exe
 - Added IAbout
 
+* version 0.1.1
+- Added filter on groups only
+- Added sort order in filter
+- Added group as first tag with " #" at the end, and subgroup as second tag similar. If more than 2, warning is logged
+
+* version 0.1.2
+- Fixed TFilter (wrong copy and comparison)

@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 const string DEFAULT_EXTERNAL_API_ADDRESS = "https://mediasearchapi.sharenet.be/api/";
-//const string DEFAULT_API_ADDRESS = "http://mediasearchapi.sharenet.priv/api/";
-const string DEFAULT_API_ADDRESS = "http://localhost:4567/api/";
+const string DEFAULT_API_ADDRESS = "http://mediasearchapi.sharenet.priv/api/";
+//const string DEFAULT_API_ADDRESS = "http://localhost:4567/api/";
 
 await GlobalProperties.About.Initialize();
 
@@ -16,10 +16,13 @@ builder.Services.AddSingleton<ILogger, TConsoleLogger>();
 builder.Services.AddSingleton<TImageCache>();
 builder.Services.AddLogging();
 
+
 IMovieService MovieService = new TMovieService(DEFAULT_API_ADDRESS, new TImageCache(), new TConsoleLogger());
 if (!await MovieService.ProbeApi()) {
   MovieService = new TMovieService(DEFAULT_EXTERNAL_API_ADDRESS, new TImageCache(), new TConsoleLogger());
 }
+IApiServer ApiServer = new TApiServer(new Uri(MovieService.ApiBase));
+MovieService.ApiServer = ApiServer;
 
 builder.Services.AddSingleton(MovieService);
 

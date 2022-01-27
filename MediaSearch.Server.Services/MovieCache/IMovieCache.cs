@@ -84,4 +84,6 @@ public interface IMovieCache : ILoggable, IName {
   IMovie GetMovie(string id);
   #endregion --- Movies access --------------------------------------------
 
+  IEnumerable<string> GetGroups();
+  IEnumerable<string> GetSubGroups(string group);
 }

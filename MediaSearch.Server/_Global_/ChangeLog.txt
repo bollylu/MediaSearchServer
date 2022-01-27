@@ -12,3 +12,15 @@
 * version 0.0.14
 - changelog and version
 - Filter is passed as parameter for request => POST instead of GET
+
+* version 0.0.15
+- Filter on tags was incorrect when All selected
+- Filter on OutputDate available
+
+* version 0.0.16
+- Added filter on groups only
+- Added sort order in filter
+
+* version 0.0.17
+- accept new filter
+- fixed HTTP I/O

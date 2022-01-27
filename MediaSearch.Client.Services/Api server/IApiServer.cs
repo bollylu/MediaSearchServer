@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Client.Services;
 
-internal interface IApiServer {
+public interface IApiServer {
 
   Task<string> GetStringAsync(string uriRequest, CancellationToken cancellationToken);
   Task<string> GetStringAsync(string uriRequest, string additionalContent, CancellationToken cancellationToken);

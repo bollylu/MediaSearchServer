@@ -3,26 +3,27 @@
 <table class="table table-striped table-hover">
   <thead class="table-light">
     <tr>
+      <th scope="col" width="50px">Year</th>
       <th scope="col" width="40%">Name</th>
-      <th scope="col" width="8%">Year</th>
-      <th scope="col" width="10%">Size (GB)</th>
-      <th scope="col" width="42%">Path</th>
+      <th scope="col" width="130px">Size</th>
+      <th scope="col" >Path</th>
     </tr>
   </thead>
   <tbody>
     @foreach (IMovie MovieItem in (MoviesPage ?? TMoviesPage.Empty).Movies) {
-      <tr class="border-bottom" height="64px">
-        <td scope="row">
-          @MovieItem.Name
-        </td>
-        <td>
+      <tr class="border-bottom" >
+          <td width="50px">
           <span class="badge rounded-pill bg-danger text-light">@MovieItem.OutputYear</span>
         </td>
-        <td class="text-end">
+      
+        <td scope="row" width="40%">
+          <span class="text-truncate">@MovieItem.Name</span>
+        </td>
+        <td class="text-end" width="150px">
           @DisplayConverters.DisplaySizeInUnit(MovieItem.Size)
         </td>
         <td>
-          @MovieItem.StoragePath.BeforeLast("/")
+          <span class="text-truncate">@MovieItem.StoragePath.BeforeLast("/").After("/")</span>
         </td>
       </tr>
     }

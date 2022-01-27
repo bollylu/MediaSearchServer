@@ -21,6 +21,7 @@ public class TMovie : AMovie, IJson<IMovie> {
         Writer.WriteString(nameof(IMovie.Id), Id);
         Writer.WriteString(nameof(IMovie.Name), Name);
         Writer.WriteString(nameof(IMovie.Group), Group);
+        Writer.WriteString(nameof(IMovie.SubGroup), SubGroup);
         Writer.WriteString(nameof(IMovie.StoragePath), StoragePath);
         Writer.WriteString(nameof(IMovie.FileName), FileName);
         Writer.WriteString(nameof(IMovie.FileExtension), FileExtension);
@@ -63,6 +64,7 @@ public class TMovie : AMovie, IJson<IMovie> {
       FileName = Root.GetPropertyEx(nameof(IMovie.FileName)).GetString();
       Name = Root.GetPropertyEx(nameof(IMovie.Name)).GetString();
       Group = Root.GetPropertyEx(nameof(IMovie.Group)).GetString();
+      SubGroup = Root.GetPropertyEx(nameof(IMovie.SubGroup)).GetString();
       StoragePath = Root.GetPropertyEx(nameof(IMovie.StoragePath)).GetString();
       FileExtension = Root.GetPropertyEx(nameof(IMovie.FileExtension)).GetString();
       Size = Root.GetPropertyEx(nameof(IMovie.Size)).GetInt64();

@@ -17,6 +17,8 @@ public class TMovieService : ALoggable, IMovieService, IName {
   /// </summary>
   public string RootStoragePath { get; init; }
 
+  public IDataProvider DataProvider { get; set; }
+
   /// <summary>
   /// The name of the source
   /// </summary>
@@ -32,7 +34,6 @@ public class TMovieService : ALoggable, IMovieService, IName {
   /// </summary>
   public List<string> MoviesExtensions { get; } = new() { ".mkv", ".avi", ".mp4", ".iso" };
 
-  //private readonly IEnumerable<IFileInfo> _DataSource;
   private readonly IMovieCache _MoviesCache = new TMovieCache();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
@@ -88,9 +89,9 @@ public class TMovieService : ALoggable, IMovieService, IName {
     _IsInitialized = false;
   }
 
-  public async Task RefreshData() {
+  public Task RefreshData() {
     Reset();
-    await Initialize();
+    return Task.Run(async () => await Initialize());
   }
 
   public int GetRefreshStatus() {
@@ -126,19 +127,6 @@ public class TMovieService : ALoggable, IMovieService, IName {
     }
   }
 
-  //public async Task<IMoviesPage> GetMoviesPage(int startPage = 1, int pageSize = IMovieService.DEFAULT_PAGE_SIZE) {
-  //  await Initialize().ConfigureAwait(false);
-  //  return await GetMoviesPage(TFilter.Empty, startPage, pageSize);
-  //}
-
-  //public async Task<IMoviesPage> GetMoviesPage(TFilter filter, int startPage = 1, int pageSize = 20) {
-  //  await Initialize().ConfigureAwait(false);
-  //  if (startPage > 1) {
-  //    startPage = startPage.WithinLimits(1, await PagesCount(filter, pageSize));
-  //  }
-  //  return _MoviesCache.GetMoviesPage(filter, startPage, pageSize);
-  //}
-
   public async Task<IMoviesPage> GetMoviesPage(TFilter filter) {
     await Initialize().ConfigureAwait(false);
     return _MoviesCache.GetMoviesPage(filter);
@@ -158,9 +146,24 @@ public class TMovieService : ALoggable, IMovieService, IName {
     }
     IMovie Movie = _MoviesCache.GetMovie(id);
     return Task.FromResult(Movie);
-
   }
   #endregion --- Movies --------------------------------------------
+
+  public async IAsyncEnumerable<string> GetGroups() {
+    await Initialize().ConfigureAwait(false);
+
+    foreach (string GroupItem in _MoviesCache.GetGroups()) {
+      yield return GroupItem;
+    }
+  }
+  public async IAsyncEnumerable<string> GetSubGroups(string group) {
+    await Initialize().ConfigureAwait(false);
+
+    foreach (string GroupItem in _MoviesCache.GetSubGroups(group)) {
+      yield return GroupItem;
+    }
+  }
+
 
   public async Task<byte[]> GetPicture(string id,
                                        string pictureName,

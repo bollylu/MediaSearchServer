@@ -36,7 +36,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
     return new List<IFileInfo>();
   }
 
-  public virtual Task Parse(CancellationToken token) { 
+  public virtual Task Parse(CancellationToken token) {
     return Parse(_FetchFiles(token), token);
   }
 
@@ -79,7 +79,26 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
     RetVal.FileExtension = RetVal.FileName.AfterLast('.').ToLowerInvariant();
 
     string[] Tags = RetVal.StoragePath.BeforeLast(FOLDER_SEPARATOR).Split(FOLDER_SEPARATOR, StringSplitOptions.RemoveEmptyEntries);
-    RetVal.Group = Tags.Any() ? Tags[0] : "(Unknown)";
+    IList<string> GroupTags = Tags.Where(t => t.EndsWith(" #")).ToList();
+    switch (GroupTags.Count) {
+      case 0:
+        RetVal.Group = "";
+        RetVal.SubGroup = "";
+        break;
+      case 1:
+        RetVal.Group = GroupTags[0]; 
+        RetVal.SubGroup = "";
+        break;
+      case 2:
+        RetVal.Group = GroupTags[0];
+        RetVal.SubGroup = GroupTags[1];
+        break;
+      default:
+        RetVal.Group = GroupTags[0];
+        RetVal.SubGroup = GroupTags[1];
+        LogWarning($"Too much groups in path name : {string.Join(" ,", Tags)}");
+        break;
+    }
 
     foreach (string TagItem in Tags) {
       RetVal.Tags.Add(TagItem);
@@ -157,7 +176,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
     try {
       //LogDebugEx($"==> GetAllMovies() from cache");
       _LockCache.EnterReadLock();
-      return _Items.OrderedByName();
+      return _Items.OrderedBy(TFilter.Empty);
     } finally {
       //LogDebugEx($"<== GetAllMovies() from cache");
       _LockCache.ExitReadLock();
@@ -174,8 +193,8 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
 
     try {
       _LockCache.EnterReadLock();
-      IEnumerable<IMovie> FilteredMovies = _Items.WithFilter(filter).OrderedByName();
-      RetVal.AvailableMovies = FilteredMovies.Count();
+      IList<IMovie> FilteredMovies = _Items.WithFilter(filter).OrderedBy(filter).ToList();
+      RetVal.AvailableMovies = FilteredMovies.Count;
       RetVal.AvailablePages = (RetVal.AvailableMovies / filter.PageSize) + (RetVal.AvailableMovies % filter.PageSize > 0 ? 1 : 0);
       RetVal.Movies.AddRange(FilteredMovies.Skip(filter.PageSize * (filter.Page - 1)).Take(filter.PageSize));
       return RetVal;
@@ -186,8 +205,28 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
       _LockCache.ExitReadLock();
     }
   }
-
   #endregion --- Movies access --------------------------------------------
 
+  public IEnumerable<string> GetGroups() {
+    try {
+      //LogDebugEx($"==> GetGroups() from cache");
+      _LockCache.EnterReadLock();
+      return _Items.GetGroups();
+    } finally {
+      //LogDebugEx($"<== GetGroups() from cache");
+      _LockCache.ExitReadLock();
+    }
+  }
+
+  public IEnumerable<string> GetSubGroups(string group) {
+    try {
+      //LogDebugEx($"==> GetSubGroups() from cache");
+      _LockCache.EnterReadLock();
+      return _Items.GetSubGroups(group);
+    } finally {
+      //LogDebugEx($"<== GetSubGroups() from cache");
+      _LockCache.ExitReadLock();
+    }
+  }
 }
 

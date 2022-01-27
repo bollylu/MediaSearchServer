@@ -4,9 +4,6 @@ namespace MediaSearch.Client.Pages;
 
 public partial class Refresh : ComponentBase {
 
-  //[Inject]
-  //public IBusService<string>? BusService { get; set; }
-
   [Inject]
   public IMovieService? MovieService { get; set; }
 
@@ -45,9 +42,7 @@ public partial class Refresh : ComponentBase {
       }
     }
 
-    if (NavManager is not null) {
-      NavManager.NavigateTo("/");
-    }
+    NavManager?.NavigateTo("/");
   }
 
   private async Task<int> _GetRefreshStatus() {

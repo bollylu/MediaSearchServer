@@ -14,11 +14,41 @@ public class TApiServer : ALoggable, IApiServer {
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  public async Task<T> GetJsonAsync<T>(string uriRequest, IJson additionalContent, CancellationToken cancellationToken) where T : IJson<T>, new() {
+  public async Task<T> GetJsonAsync<T>(string uriRequest, CancellationToken cancellationToken) where T : IJson<T>, new() {
     try {
       LogDebug($"Request: {uriRequest}");
 
       HttpRequestMessage RequestMessage = new HttpRequestMessage(HttpMethod.Get, uriRequest);
+      RequestMessage.Headers.Add("Host", Environment.MachineName);
+
+      LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
+
+      LogDebug($"Response: {LastResponse.StatusCode}");
+      if (LastResponse.IsSuccessStatusCode) {
+        string TextContent = await LastResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+        T RetVal = new T();
+        return RetVal.ParseJson(TextContent);
+      } else {
+        return default;
+      }
+    } catch (Exception ex) {
+      Logger?.LogError($"Unable to read string from client : {ex.Message}");
+      if (ex.InnerException is not null) {
+        Logger?.LogError($"  Inner exception : {ex.InnerException.Message}");
+      }
+
+      LastResponse = new HttpResponseMessage(HttpStatusCode.RequestTimeout);
+
+      LogError($"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
+      return default;
+    }
+  }
+
+  public async Task<T> GetJsonAsync<T>(string uriRequest, IJson additionalContent, CancellationToken cancellationToken) where T : IJson<T>, new() {
+    try {
+      LogDebug($"Request: {uriRequest}");
+
+      HttpRequestMessage RequestMessage = new HttpRequestMessage(HttpMethod.Post, uriRequest);
       RequestMessage.Headers.Add("Host", Environment.MachineName);
       RequestMessage.Content = new StringContent(additionalContent.ToJson());
 
@@ -77,7 +107,7 @@ public class TApiServer : ALoggable, IApiServer {
     try {
       LogDebug($"Request: {uriRequest}");
 
-      HttpRequestMessage RequestMessage = new HttpRequestMessage(HttpMethod.Get, uriRequest);
+      HttpRequestMessage RequestMessage = new HttpRequestMessage(HttpMethod.Post, uriRequest);
       RequestMessage.Headers.Add("Host", Environment.MachineName);
       RequestMessage.Content = new StringContent(additionalContent);
 
@@ -106,7 +136,7 @@ public class TApiServer : ALoggable, IApiServer {
     try {
       LogDebug($"Request: {uriRequest}");
 
-      HttpRequestMessage RequestMessage = new HttpRequestMessage(HttpMethod.Get, uriRequest);
+      HttpRequestMessage RequestMessage = new HttpRequestMessage(HttpMethod.Post, uriRequest);
       RequestMessage.Headers.Add("Host", Environment.MachineName);
       RequestMessage.Content = new StringContent(additionalContent.ToJson());
 

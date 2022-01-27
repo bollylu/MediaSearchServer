@@ -4,38 +4,69 @@
 
   <EditForm Model="@Filter" OnSubmit="_ProcessSearch">
 
-    <div class="row m-2">
+    <div class="input-group mb-2 mt-2">
+      <label class="col-sm-2 col-form-label" for="FilterKewords">Keywords</label>
+      <InputText type="text" @bind-Value="@Filter.Keywords" class="form-control" id="FilterKeywords" placeholder="k1 k2 ..." />
+      <select class="form-select col-sm2 col-2" @bind="@Filter.KeywordsSelection">
+        <option value="All">All</option>
+        <option value="Any">Any</option>
+      </select>
+      <button class="btn btn-outline-danger" type="button" id="ClearKeywords" @onclick="ClearKeywords" disabled="@ClearKeywordsDisabled">x</button>
+    </div>
 
-      <div class="col-4 align-self-center">
-        <div class="input-group">
-          <span class="input-group-text">Keywords</span>
-          <InputText type="text" @bind-Value="@Filter.Keywords" class="form-control" />
-        </div>
+    <div class="input-group mb-2">
+      <label class="col-sm-2 col-form-label" for="FilterTags">Tags</label>
+      <InputText type="text" @bind-Value="@Filter.Tags" class="form-control" id="FilterTags" placeholder="t1 t2 ..." />
+      <select class="form-select col-sm2 col-2" @bind="@Filter.TagSelection">
+        <option value="All">All</option>
+        <option value="Any">Any</option>
+      </select>
+      <button class="btn btn-outline-danger" type="button" id="ClearTags" @onclick="ClearTags" disabled="@ClearTagsDisabled">x</button>
+    </div>
+
+    <div class="input-group mb-2">
+      <label class="col-sm-2 col-form-label" for="Added">Added since</label>
+      <select class="form-select" id="Added" @bind="@Filter.DaysBack">
+        <option value="1">yesterday</option>
+        <option value="7">7 days</option>
+        <option value="15">15 days</option>
+        <option value="0">forever</option>
+      </select>
+    </div>
+
+    <div class="input-group mb-2">
+      <label class="col-sm-2 col-form-label" for="Added">Movie date</label>
+      <label class="input-group-text" for="OutputDateMin">Start date</label>
+      <input type="number" @bind-value="@Filter.OutputDateMin" class="form-control" id="OutputDateMin" />
+
+      <label class="input-group-text" for="OutputDateMax">End date</label>
+      <input type="number" @bind-value="@Filter.OutputDateMax" class="form-control" id="OutputDateMax" />
+
+      <button class="btn btn-outline-danger" type="button" id="ClearOutputDate" @onclick="ClearOutputDate" disabled="@ClearOutputDateDisabled">x</button>
+    </div>
+
+    <div class="input-group mb-2">
+      <label class="col-sm-2 col-form-label">Groups</label>
+
+      <label class="input-group-text" for="FilterGroup">Group</label>
+      <select class="form-control" style="width:100px;" @bind="@Filter.Group">
+        <option value="">Select a group ...</option>
+        @foreach (string GroupItem in _Groups) {
+          <option value="@GroupItem">@GroupItem</option>
+        }
+      </select>
+
+      <div class="form-check form-check-inline align-self-center ms-3 me-3">
+        <input type="checkbox" class="form-check-input" data-toggle="toggle" data-onstyle="primary" @bind-value="@Filter.GroupOnly" id="GroupOnly" />
+        <label for="GroupOnly">Groups only</label>
       </div>
 
-      <div class="col-2 align-self-center">
-        <div class="form-check-input" type="radio">
-          <span class="form-check-label">Selection</span>
-          <InputRadioGroup @bind-Value="@Filter.KeywordsSelection" >
-            <InputRadio Value=EFilterType.All class="form-check-input"/> All
-            <InputRadio Value=EFilterType.Any class="form-check-input"/> Any
-          </InputRadioGroup>
-        </div>
-      </div>
+      <button class="btn btn-outline-danger" type="button" id="ClearGroup" @onclick="ClearGroup" disabled="@ClearGroupDisabled">x</button>
+    </div>
 
-      <div class="col-5 align-self-center form-check-inline">
-        <label>Added during </label>
-        <InputRadioGroup @bind-Value="@Filter.DaysBack">
-          <InputRadio Value="7" /> Last 7 days
-          <InputRadio Value="15" /> Last 15 days
-          <InputRadio Value="0" /> All
-        </InputRadioGroup>
-      </div>
-
-      <div class="col align-self-center">
-        <input type="submit" class="btn btn-primary" value="Filter" />
-      </div>
-
+    <div class="d-flex justify-content-between mb-2 mt-4">
+      <input type="button" class="btn btn-secondary ms-5" value="Clear filter" @onclick="ClearFilter" />
+      <input type="submit" class="btn btn-primary me-5" value="Apply filter" />
     </div>
 
   </EditForm>

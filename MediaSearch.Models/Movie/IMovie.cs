@@ -9,9 +9,15 @@ public interface IMovie : IMedia, IJson {
 
   /// <summary>
   /// The group where the movie belongs
-  /// Group components are separated by '/' (eg. Comédie/Aventure)
   /// </summary>
   string Group { get; set; }
+
+  bool IsGroupMember { get; }
+
+  /// <summary>
+  /// The sub group where the movie belongs
+  /// </summary>
+  string SubGroup { get; set; }
 
   /// <summary>
   /// The movie size
@@ -24,5 +30,5 @@ public interface IMovie : IMedia, IJson {
   int OutputYear { get; set; }
 
   const string DEFAULT_PICTURE_NAME = "folder.jpg";
- 
+
 }

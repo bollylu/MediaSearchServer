@@ -1,4 +1,12 @@
-﻿# 0.0.10
+﻿# MediaSearch.Client changelog
+
+* 0.0.10
 - Added changelog
 - Added PageTitle parameter to PageHeader
 
+* 0.0.11
+- New EditFilter
+
+* 0.0.12
+- EditFilter can now filter on a group / groups only
+- EditFilter display is fixed

@@ -13,6 +13,11 @@ public interface IMovieService {
 
   string RootStoragePath { get; }
 
+  /// <summary>
+  /// The source of the data for the service
+  /// </summary>
+  IDataProvider DataProvider { get; }
+
   #region --- Movies --------------------------------------------
   List<string> MoviesExtensions { get; }
 
@@ -90,6 +95,9 @@ public interface IMovieService {
   /// <returns>An movie or null is not found</returns>
   Task<IMovie> GetMovie(string id);
   #endregion --- Movies --------------------------------------------
+
+  IAsyncEnumerable<string> GetGroups();
+  IAsyncEnumerable<string> GetSubGroups(string group);
 
   Task<byte[]> GetPicture(string id,
                           string pictureName,

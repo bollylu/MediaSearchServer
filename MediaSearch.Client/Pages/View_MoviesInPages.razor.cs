@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BLTools.Text;
+
+using Microsoft.AspNetCore.Components;
 
 namespace MediaSearch.Client.Pages {
   public partial class View_MoviesInPages : ComponentBase, ILoggable {
@@ -38,12 +40,12 @@ namespace MediaSearch.Client.Pages {
 
     public string MoviesTitle => $"{(_AvailableMovies)} movies";
 
-    public int CurrentPage { get; set; } = 1;
+    //public int CurrentPage { get; set; } = 1;
 
-    public string Pagination => $"{CurrentPage}/{_AvailablePages}";
+    public string Pagination => $"{Filter.Page}/{_AvailablePages}";
 
-    public bool BackDisabled => CurrentPage == 1;
-    public bool NextDisabled => CurrentPage == _AvailablePages;
+    public bool BackDisabled => Filter.Page == 1;
+    public bool NextDisabled => Filter.Page == _AvailablePages;
 
     #region --- ILoggable --------------------------------------------
     public ILogger Logger { get; set; } = new TConsoleLogger() { SeverityLimit = ESeverity.Debug };
@@ -60,41 +62,41 @@ namespace MediaSearch.Client.Pages {
     }
 
     protected override async Task OnParametersSetAsync() {
-      Logger.LogDebug("Parameters set async");
-      if (_OldPage != CurrentPage || Filter != _OldFilter) {
-        _OldPage = CurrentPage;
+      Logger.LogDebug(Filter.ToString().Box("New filter", 120));
+      if (_OldPage != Filter.Page || Filter != _OldFilter) {
+        _OldPage = Filter.Page;
         _OldFilter = new TFilter(Filter);
-        MoviesPage = await MovieService.GetMoviesPage(Filter, CurrentPage);
+        MoviesPage = await MovieService.GetMoviesPage(Filter);
       }
     }
 
     private async Task RefreshHome() {
-      CurrentPage = 1;
-      MoviesPage = await MovieService.GetMoviesPage(Filter, CurrentPage);
+      Filter.Page = 1;
+      MoviesPage = await MovieService.GetMoviesPage(Filter);
       StateHasChanged();
     }
 
     private async Task RefreshPrevious() {
       Logger.LogDebug("Previous page");
-      if (CurrentPage > 1) {
-        CurrentPage--;
+      if (Filter.Page > 1) {
+        Filter.Page--;
       }
-      MoviesPage = await MovieService.GetMoviesPage(Filter, CurrentPage);
+      MoviesPage = await MovieService.GetMoviesPage(Filter);
       StateHasChanged();
     }
 
     private async Task RefreshNext() {
       Logger.LogDebug("Next page");
-      if (CurrentPage < _AvailablePages) {
-        CurrentPage++;
+      if (Filter.Page < _AvailablePages) {
+        Filter.Page++;
       }
-      MoviesPage = await MovieService.GetMoviesPage(Filter, CurrentPage);
+      MoviesPage = await MovieService.GetMoviesPage(Filter);
       StateHasChanged();
     }
 
     private async Task RefreshEnd() {
-      CurrentPage = _AvailablePages;
-      MoviesPage = await MovieService.GetMoviesPage(Filter, CurrentPage);
+      Filter.Page = _AvailablePages;
+      MoviesPage = await MovieService.GetMoviesPage(Filter);
       StateHasChanged();
     }
 
