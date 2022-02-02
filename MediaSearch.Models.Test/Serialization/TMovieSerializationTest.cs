@@ -7,18 +7,12 @@ namespace MediaSearch.Models.Test;
 [TestClass]
 public class TMovieSerializationTest {
 
-  private IMovieService _MovieService = new TMovieService();
-
-  [TestInitialize]
-  public async Task BuildData() {
-    IMovieCache Cache = new XMovieCache() { Logger = new TConsoleLogger(), DataSource = @"data\movies.json" };
-    await Cache.Parse(CancellationToken.None);
-    _MovieService = new TMovieService(Cache);
-  }
+  internal IMovieService MovieService => _MovieService ??= new XMovieService(new XMovieCache() { DataSource = @"data\movies.json" }) { Logger = new TConsoleLogger() };
+  private IMovieService? _MovieService;
 
   [TestMethod]
   public async Task SerializeTMovie() {
-    TMovie Source = await _MovieService.GetAllMovies().FirstAsync();
+    TMovie Source = await MovieService.GetAllMovies().FirstAsync();
 
     string JsonMovie = Source.ToJson();
 
@@ -28,7 +22,7 @@ public class TMovieSerializationTest {
 
   [TestMethod]
   public async Task DeserializeTMovie() {
-    TMovie Source = await _MovieService.GetAllMovies().FirstAsync();
+    TMovie Source = await MovieService.GetAllMovies().FirstAsync();
 
     string JsonMovie = Source.ToJson();
     Console.WriteLine(JsonMovie.BoxFixedWidth(120));

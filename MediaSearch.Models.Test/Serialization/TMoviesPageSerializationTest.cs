@@ -10,17 +10,10 @@ public class TMoviesPageSerializationTest {
   internal IMovieService MovieService => _MovieService ??= new XMovieService(new XMovieCache() { DataSource = @"data\movies.json" }) { Logger = new TConsoleLogger() };
   private IMovieService? _MovieService;
 
-  [TestInitialize]
-  public async Task BuildData() {
-    IMovieCache Cache = new XMovieCache() { Logger = new TConsoleLogger(), DataSource = @"data\movies.json" };
-    await Cache.Parse(CancellationToken.None).ConfigureAwait(false);
-    _MovieService = new TMovieService(Cache);
-  }
-
   [TestMethod]
   public async Task SerializeTMoviesPageWithConverter() {
 
-    List<IMovie> Source = await _MovieService.GetAllMovies().ToListAsync<IMovie>().ConfigureAwait(false);
+    List<IMovie> Source = await MovieService.GetAllMovies().ToListAsync<IMovie>().ConfigureAwait(false);
 
     TMoviesPage Movies = new TMoviesPage() {
       Name = "Sélection",
@@ -38,7 +31,7 @@ public class TMoviesPageSerializationTest {
 
   [TestMethod]
   public async Task DeserializeTMoviesPageWithConverter() {
-    List<IMovie> Source = await _MovieService.GetAllMovies().ToListAsync<IMovie>().ConfigureAwait(false);
+    List<IMovie> Source = await MovieService.GetAllMovies().ToListAsync<IMovie>().ConfigureAwait(false);
 
     TMoviesPage Movies = new TMoviesPage() {
       Name = "Sélection",
