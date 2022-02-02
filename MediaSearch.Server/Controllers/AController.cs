@@ -18,7 +18,11 @@ public abstract class AController : ControllerBase, ILoggable {
   #endregion --- ILoggable --------------------------------------------
 
   protected AController(ILogger logger) {
-    SetLogger(logger);
+    if (logger is null) {
+      Logger = new TConsoleLogger();
+    } else {
+      Logger = ALogger.Create(logger);
+    }
   }
 
 }

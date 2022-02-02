@@ -17,11 +17,11 @@ public class TFileMovieNfo : ALoggable, IFileMediaInfo, IToXml {
   public Dictionary<ELanguage, string> Titles { get; } = new();
   public Dictionary<ELanguage, string> Descriptions { get; } = new();
   public int Size { get; } = -1;
-  public string Country { get; set; }
+  public string Country { get; set; } = "";
 
   #region --- IName --------------------------------------------
-  public string Name { get; set; }
-  public string Description { get; set; }
+  public string Name { get; set; } = "";
+  public string Description { get; set; } = "";
   #endregion --- IName --------------------------------------------
 
   public bool Export(string newFilename) {

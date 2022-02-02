@@ -3,18 +3,22 @@
 public class TApiServer : ALoggable, IApiServer {
 
   private readonly HttpClient _HttpClient;
-  public HttpResponseMessage LastResponse { get; private set; }
+  public HttpResponseMessage? LastResponse { get; private set; }
 
-  public Uri BaseAddress => _HttpClient.BaseAddress;
+  public Uri BaseAddress => _HttpClient?.BaseAddress ?? new Uri("http://localhost");
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TApiServer(Uri baseAddress) {
-    _HttpClient = new HttpClient() { BaseAddress = baseAddress };
+  public TApiServer() {
+    _HttpClient = new HttpClient();
     SetLogger(new TConsoleLogger());
+  }
+
+  public TApiServer(Uri baseAddress) : this() {
+    _HttpClient.BaseAddress = baseAddress;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  public async Task<T> GetJsonAsync<T>(string uriRequest, CancellationToken cancellationToken) where T : IJson<T>, new() {
+  public async Task<T?> GetJsonAsync<T>(string uriRequest, CancellationToken cancellationToken) where T : IJson<T>, new() {
     try {
       LogDebug($"Request: {uriRequest}");
 
@@ -44,7 +48,7 @@ public class TApiServer : ALoggable, IApiServer {
     }
   }
 
-  public async Task<T> GetJsonAsync<T>(string uriRequest, IJson additionalContent, CancellationToken cancellationToken) where T : IJson<T>, new() {
+  public async Task<T?> GetJsonAsync<T>(string uriRequest, IJson additionalContent, CancellationToken cancellationToken) where T : IJson<T>, new() {
     try {
       LogDebug($"Request: {uriRequest}");
 
@@ -75,7 +79,7 @@ public class TApiServer : ALoggable, IApiServer {
     }
   }
 
-  public async Task<string> GetStringAsync(string uriRequest, CancellationToken cancellationToken) {
+  public async Task<string?> GetStringAsync(string uriRequest, CancellationToken cancellationToken) {
     try {
       LogDebug($"Request: {uriRequest}");
 
@@ -103,7 +107,7 @@ public class TApiServer : ALoggable, IApiServer {
     }
   }
 
-  public async Task<string> GetStringAsync(string uriRequest, string additionalContent, CancellationToken cancellationToken) {
+  public async Task<string?> GetStringAsync(string uriRequest, string additionalContent, CancellationToken cancellationToken) {
     try {
       LogDebug($"Request: {uriRequest}");
 
@@ -132,7 +136,7 @@ public class TApiServer : ALoggable, IApiServer {
     }
   }
 
-  public async Task<string> GetStringAsync(string uriRequest, IJson additionalContent, CancellationToken cancellationToken) {
+  public async Task<string?> GetStringAsync(string uriRequest, IJson additionalContent, CancellationToken cancellationToken) {
     try {
       LogDebug($"Request: {uriRequest}");
 

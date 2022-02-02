@@ -5,6 +5,9 @@ namespace MediaSearch.Models.Test;
 
 internal static class Global {
 
-  internal static readonly IMovieCache MovieCache = XMovieCache.Instance();
-  
+  /// <summary>
+  /// Internal source of data
+  /// </summary>
+  internal static IMovieCache MovieCache => _MovieCache ??= XMovieCache.Instance(@"data\movies.json");
+  private static IMovieCache? _MovieCache;
 }

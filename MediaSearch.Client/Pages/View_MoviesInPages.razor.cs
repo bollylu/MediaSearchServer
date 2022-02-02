@@ -71,7 +71,7 @@ namespace MediaSearch.Client.Pages {
     }
 
     private async Task RefreshHome() {
-      Filter.Page = 1;
+      Filter.FirstPage();
       MoviesPage = await MovieService.GetMoviesPage(Filter);
       StateHasChanged();
     }
@@ -79,7 +79,7 @@ namespace MediaSearch.Client.Pages {
     private async Task RefreshPrevious() {
       Logger.LogDebug("Previous page");
       if (Filter.Page > 1) {
-        Filter.Page--;
+        Filter.PreviousPage();
       }
       MoviesPage = await MovieService.GetMoviesPage(Filter);
       StateHasChanged();
@@ -88,14 +88,14 @@ namespace MediaSearch.Client.Pages {
     private async Task RefreshNext() {
       Logger.LogDebug("Next page");
       if (Filter.Page < _AvailablePages) {
-        Filter.Page++;
+        Filter.NextPage();
       }
       MoviesPage = await MovieService.GetMoviesPage(Filter);
       StateHasChanged();
     }
 
     private async Task RefreshEnd() {
-      Filter.Page = _AvailablePages;
+      Filter.SetPage(_AvailablePages);
       MoviesPage = await MovieService.GetMoviesPage(Filter);
       StateHasChanged();
     }

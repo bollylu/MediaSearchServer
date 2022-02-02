@@ -1,1 +1,10 @@
 ﻿# MediaSearch server services
+
+* 0.0.11
+- Added IDataProvider
+
+* 0.0.12
+- Enabled nullable
+- Enabled preview features (abstract static in interfaces) => breaking changes
+- XMovieCache now reads data from a json file
+- XMovieService uses XMovieCache

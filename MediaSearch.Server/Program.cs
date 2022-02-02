@@ -8,7 +8,7 @@ namespace MediaSearch.Server;
 
 public class Program {
 
-  const int BOX_WIDTH = 120;
+  const int BOX_WIDTH = 80;
 
   #region --- Parameter names --------------------------------------------
   public const string ARG_HELP = "help";
@@ -21,23 +21,28 @@ public class Program {
 
   #region --- Global variables --------------------------------------------
   public static ISplitArgs AppArgs { get; } = new SplitArgs();
-  public static IConfiguration Configuration { get; private set; }
+  public static IConfiguration? Configuration { get; private set; }
 
   public static List<IAbout> About { get; } = new();
-  public static IAbout EntryAbout => About?.FirstOrDefault(a => a.Name.Equals(Assembly.GetEntryAssembly().GetName().Name, StringComparison.InvariantCultureIgnoreCase));
+  public static IAbout EntryAbout => TAbout.Entry;
   #endregion --- Global variables --------------------------------------------
 
   const string DEFAULT_SERVER_NAME = "http://localhost:4567";
 
   #region -----------------------------------------------
   public static async Task Main(string[] args) {
+
+    if (OperatingSystem.IsWindows()) {
+      Console.SetWindowSize(132, 50);
+    }
+
     AppArgs.Parse(args);
 
     if (AppArgs.IsDefined(ARG_HELP) || AppArgs.IsDefined(ARG_HELP2)) {
       Usage();
     }
 
-    foreach (Assembly AssemblyItem in AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name.StartsWith("MediaSearch"))) {
+    foreach (Assembly AssemblyItem in AppDomain.CurrentDomain.GetAssemblies().Where(a => (a.GetName()?.Name ?? "").StartsWith("MediaSearch"))) {
       IAbout AssemblyAbout = new TAbout(AssemblyItem);
       await AssemblyAbout.Initialize();
       About.Add(AssemblyAbout);
@@ -103,7 +108,7 @@ public class Program {
       Console.WriteLine(message);
     }
 
-    Console.WriteLine($"MediaSearch.Server v{EntryAbout.CurrentVersion}");
+    Console.WriteLine($"MediaSearch.Server v{EntryAbout?.CurrentVersion ?? new Version()}");
     Console.WriteLine("Usage : ./MediaSearch.Server [params]");
     Console.WriteLine("  [server=<server ip or dns>]");
     Console.WriteLine("  [log=<logfile path and name>]");

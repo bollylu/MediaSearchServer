@@ -1,8 +1,8 @@
 ﻿namespace MediaSearch.Client.Services;
 
 public class XMovieService : IMovieService {
-  public string ApiBase { get; }
-  public IApiServer ApiServer { get; set; }
+  public string ApiBase { get; } = "";
+  public IApiServer ApiServer { get; set; } = new TApiServer();
 
 
   //public string RootPath { get; }
@@ -15,12 +15,12 @@ public class XMovieService : IMovieService {
   //}
 
 
-  public Task<IMoviesPage> GetMoviesPage(TFilter filter) {
-    IMoviesPage RetVal = new TMoviesPage();
+  public Task<IMoviesPage?> GetMoviesPage(IFilter filter) {
+    IMoviesPage? RetVal = new TMoviesPage();
     RetVal.Movies.Add(new TMovie() { Name = "Le seigneur des anneaux", Group = "Fantasy", StoragePath = "Le seigneur des anneaux 1.mvk", Size = 8_000_000 });
     RetVal.Movies.Add(new TMovie() { Name = "Le seigneur des anneaux 2", Group = "Fantasy", StoragePath = "Le seigneur des anneaux 2.mvk", Size = 8_001_000 });
     RetVal.Movies.Add(new TMovie() { Name = "Le seigneur des anneaux 3", Group = "Fantasy", StoragePath = "Le seigneur des anneaux 3.mvk", Size = 8_002_000 });
-    return Task.FromResult(RetVal);
+    return Task.FromResult<IMoviesPage?>(RetVal);
   }
 
   public Task<byte[]> GetPicture(string pathname, CancellationToken cancelToken, int w, int h) {

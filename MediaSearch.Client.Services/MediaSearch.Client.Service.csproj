@@ -4,6 +4,8 @@
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>MediaSearch.Client.Services</RootNamespace>
     <AssemblyName>MediaSearch.Client.Services</AssemblyName>
+    <Nullable>enable</Nullable>
+    <EnablePreviewFeatures>true</EnablePreviewFeatures>
   </PropertyGroup>
 
   <ItemGroup>

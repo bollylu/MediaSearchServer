@@ -1,45 +1,42 @@
 ﻿namespace MediaSearch.Models;
 
-public class TAbout : AJson<TAbout>, IAbout {
+public class TAbout : ALoggable, IAbout, IJson<TAbout> {
 
-  private readonly Assembly _Assembly;
+  private readonly Assembly? _Assembly;
 
-  public string Name { get; init; }
-  public string Description { get; init; }
+  public string Name => _Assembly?.GetName().Name ?? "";
+
+  public string Description => _Assembly?.GetName().FullName ?? "";
 
   [JsonIgnore]
   public string VersionSource { get; init; } = "_global_.version.txt";
   public Version CurrentVersion {
     get {
-      return _CurrentVersion ?? new Version(0, 0, 0);
+      return _CurrentVersion ??= new Version(0, 0, 0);
     }
     set {
       _CurrentVersion = value;
     }
   }
-  private Version _CurrentVersion;
+  private Version? _CurrentVersion;
 
   [JsonIgnore]
   public string ChangeLogSource { get; init; } = "_global_.changelog.txt";
   public string ChangeLog {
     get {
-      return _ChangeLog ?? "";
+      return _ChangeLog ??= "";
     }
     set {
       _ChangeLog = value;
     }
   }
-  private string _ChangeLog;
+  private string? _ChangeLog;
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TAbout() {
-    _Assembly = Assembly.GetEntryAssembly();
-    Name = _Assembly.GetName().Name;
-  }
+  public TAbout() { }
 
-  public TAbout(Assembly assembly) {
+  public TAbout(Assembly? assembly) {
     _Assembly = assembly;
-    Name = _Assembly.GetName().Name;
   }
 
   private bool _IsInitialized = false;
@@ -68,44 +65,80 @@ public class TAbout : AJson<TAbout>, IAbout {
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   #region --- IJson --------------------------------------------
-  public override string ToJson(JsonWriterOptions options) {
-    using (MemoryStream Utf8JsonStream = new()) {
-      using (Utf8JsonWriter Writer = new Utf8JsonWriter(Utf8JsonStream, options)) {
-        Writer.WriteStartObject();
-        Writer.WriteString(nameof(CurrentVersion), CurrentVersion.ToString());
-        Writer.WriteString(nameof(ChangeLog), ChangeLog);
-        Writer.WriteEndObject();
+  public static JsonSerializerOptions DefaultJsonSerializerOptions {
+    get {
+      lock (_DefaultJsonSerializerOptionsLock) {
+        if (_DefaultJsonSerializerOptions is null) {
+          _DefaultJsonSerializerOptions = new JsonSerializerOptions() {
+            WriteIndented = true,
+            NumberHandling = JsonNumberHandling.Strict
+          };
+        }
+        return _DefaultJsonSerializerOptions;
       }
-      return Encoding.UTF8.GetString(Utf8JsonStream.ToArray());
+    }
+    set {
+      lock (_DefaultJsonSerializerOptionsLock) {
+        _DefaultJsonSerializerOptions = value;
+      }
     }
   }
+  private static JsonSerializerOptions? _DefaultJsonSerializerOptions;
+  private static readonly object _DefaultJsonSerializerOptionsLock = new object();
 
-  public override TAbout ParseJson(string source) {
+  public string ToJson() {
+    return JsonSerializer.Serialize(this, DefaultJsonSerializerOptions);
+  }
+
+  public string ToJson(JsonSerializerOptions options) {
+    return JsonSerializer.Serialize(this, options);
+  }
+
+  public TAbout ParseJson(string source) {
+    return ParseJson(source, DefaultJsonSerializerOptions);
+  }
+
+  public TAbout ParseJson(string source, JsonSerializerOptions options) {
     #region === Validate parameters ===
     if (string.IsNullOrWhiteSpace(source)) {
       throw new JsonException("Json filter source is null");
     }
     #endregion === Validate parameters ===
 
-    try {
-      JsonDocument JsonFilter = JsonDocument.Parse(source);
-      JsonElement Root = JsonFilter.RootElement;
-      //LogDebugEx(Root.GetRawText().BoxFixedWidth("RawText", 120, TextBox.EStringAlignment.Left));
-      CurrentVersion = Version.Parse(Root.GetPropertyEx(nameof(CurrentVersion)).GetString());
-      ChangeLog = Root.GetPropertyEx(nameof(ChangeLog)).GetString();
-    } catch (Exception ex) {
-      Logger?.LogError($"Unable to parse json : {ex.Message}");
+    TAbout? Deserialized = JsonSerializer.Deserialize<TAbout>(source, options);
+    if (Deserialized is null) {
+      string Error = $"Unable to deserialize json string \"{source}\"";
+      LogError(Error);
+      throw new JsonException(Error);
     }
+
+    CurrentVersion = Deserialized.CurrentVersion;
+    ChangeLog = Deserialized.ChangeLog;
+
     return this;
   }
 
-  public static TAbout Parse(string source) {
-    TAbout RetVal = new TAbout();
-    RetVal.ParseJson(source);
-    return RetVal;
+  #region --- Static Deserializer --------------------------------------------
+
+  public static TAbout? FromJson(string source) {
+    if (string.IsNullOrWhiteSpace(source)) {
+      throw new ArgumentNullException(nameof(source));
+    }
+    return JsonSerializer.Deserialize<TAbout>(source, DefaultJsonSerializerOptions);
   }
+
+  public static TAbout? FromJson(string source, JsonSerializerOptions options) {
+    if (string.IsNullOrWhiteSpace(source)) {
+      throw new ArgumentNullException(nameof(source));
+    }
+    return JsonSerializer.Deserialize<TAbout>(source, options);
+  }
+
+
+  #endregion --- Static Deserializer --------------------------------------------
   #endregion --- IJson --------------------------------------------
 
+  #region --- I/O --------------------------------------------
   public async Task ReadVersion(Stream source) {
     #region === Validate parameters ===
     if (source is null) {
@@ -127,6 +160,10 @@ public class TAbout : AJson<TAbout>, IAbout {
 
   public async Task ReadVersion(string source) {
     #region === Validate parameters ===
+    if (_Assembly is null) {
+      throw new InvalidOperationException("Unable to read version : assembly is null");
+    }
+
     if (source is null) {
       Logger?.LogError("Unable to read version : source is null");
       return;
@@ -134,7 +171,14 @@ public class TAbout : AJson<TAbout>, IAbout {
     #endregion === Validate parameters ===
 
     try {
-      using (Stream VersionStream = _Assembly.GetManifestResourceStream(_GetResourceNameCaseInsensitive(source))) {
+      string? ResourceName = _GetResourceNameCaseInsensitive(_Assembly, source);
+      if (ResourceName is null) {
+        return;
+      }
+      using (Stream? VersionStream = _Assembly.GetManifestResourceStream(ResourceName)) {
+        if (VersionStream is null) {
+          return;
+        }
         using (TextReader Reader = new StreamReader(VersionStream)) {
           CurrentVersion = Version.Parse(await Reader.ReadToEndAsync());
         }
@@ -161,6 +205,10 @@ public class TAbout : AJson<TAbout>, IAbout {
 
   public async Task ReadChangeLog(string source) {
     #region === Validate parameters ===
+    if (_Assembly is null) {
+      throw new InvalidOperationException("Unable to read changelog : assembly is null");
+    }
+
     if (source is null) {
       Logger?.LogError("Unable to read change log : source is null");
       return;
@@ -168,7 +216,14 @@ public class TAbout : AJson<TAbout>, IAbout {
     #endregion === Validate parameters ===
 
     try {
-      using (Stream ChangeLogStream = _Assembly.GetManifestResourceStream(_GetResourceNameCaseInsensitive(source))) {
+      string? ResourceName = _GetResourceNameCaseInsensitive(_Assembly, source);
+      if (ResourceName is null) {
+        return;
+      }
+      using (Stream? ChangeLogStream = _Assembly.GetManifestResourceStream(ResourceName)) {
+        if (ChangeLogStream is null) {
+          return;
+        }
         using (TextReader Reader = new StreamReader(ChangeLogStream)) {
           ChangeLog = await Reader.ReadToEndAsync();
         }
@@ -179,12 +234,34 @@ public class TAbout : AJson<TAbout>, IAbout {
     }
   }
 
-  private string _GetResourceNameCaseInsensitive(string resourceName) {
+  private static string? _GetResourceNameCaseInsensitive(Assembly assembly, string resourceName) {
+    if (assembly is null) {
+      throw new InvalidOperationException("Unable to search for resource : assembly is null");
+    }
     if (string.IsNullOrWhiteSpace(resourceName)) {
       return null;
     }
-    string FullResourceName = $"{Name}.{resourceName}".ToLowerInvariant();
-    string RetVal = _Assembly.GetManifestResourceNames().FirstOrDefault(x => x.ToLowerInvariant() == FullResourceName);
+    string FullResourceName = $"{assembly.GetName().Name}.{resourceName}".ToLowerInvariant();
+    string? RetVal = assembly.GetManifestResourceNames().FirstOrDefault(x => x.ToLowerInvariant() == FullResourceName);
     return RetVal;
   }
+  #endregion --- I/O --------------------------------------------
+
+  #region --- Static instances --------------------------------------------
+  [JsonIgnore]
+  public static TAbout Empty => _Empty ??= new TAbout();
+  private static TAbout? _Empty;
+
+  [JsonIgnore]
+  public static TAbout Entry => _Entry ??= new TAbout(Assembly.GetEntryAssembly());
+  private static TAbout? _Entry;
+
+  [JsonIgnore]
+  public static TAbout Executing => _Executing ??= new TAbout(Assembly.GetExecutingAssembly());
+  private static TAbout? _Executing;
+
+  [JsonIgnore]
+  public static TAbout Calling => _Calling ??= new TAbout(Assembly.GetCallingAssembly());
+  private static TAbout? _Calling; 
+  #endregion --- Static instances --------------------------------------------
 }

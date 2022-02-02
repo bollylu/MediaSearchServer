@@ -13,3 +13,13 @@
 
 * version 0.1.2
 - Fixed TFilter (wrong copy and comparison)
+
+* version 0.1.3
+- Enabled nullable
+- Enabled preview features (abstract static in interfaces) => breaking changes
+- All Json conversion are now through JsonConverter
+- New json converters for DateOnly, TFilter, TMovie, TMoviesPage
+- IJson interface splitted in IJson, IJson<T> and IJsonElement<T>
+- TAbout has static constructors with direct reference to Entry, Calling, Executing assembly
+- Removed AJson<T>
+- TFilter needs cleanup regarding Groups

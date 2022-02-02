@@ -20,11 +20,11 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
   protected readonly ReaderWriterLockSlim _LockCache = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
   #endregion --- Internal data storage --------------------------------------------
 
-  public string RootStoragePath { get; init; }
+  public string RootStoragePath { get; init; } = "";
 
   #region --- IName --------------------------------------------
-  public string Name { get; set; }
-  public string Description { get; set; }
+  public string Name { get; set; } = "";
+  public string Description { get; set; } = "";
   #endregion --- IName --------------------------------------------
 
   #region --- Cache I/O --------------------------------------------
@@ -163,7 +163,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
   #endregion --- Cache management --------------------------------------------
 
   #region --- Movies access --------------------------------------------
-  public IMovie GetMovie(string id) {
+  public IMovie? GetMovie(string id) {
     try {
       _LockCache.EnterReadLock();
       return _Items.FirstOrDefault(x => x.Id == id);
@@ -183,10 +183,10 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
     }
   }
 
-  public IMoviesPage GetMoviesPage(TFilter filter) {
+  public TMoviesPage? GetMoviesPage(IFilter filter) {
     LogDebug(filter.ToString().BoxFixedWidth("Filter", 80));
 
-    IMoviesPage RetVal = new TMoviesPage() {
+    TMoviesPage RetVal = new TMoviesPage() {
       Source = RootStoragePath,
       Page = filter.Page
     };

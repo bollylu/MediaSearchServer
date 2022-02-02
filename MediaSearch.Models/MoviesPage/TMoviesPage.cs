@@ -1,97 +1,141 @@
 ﻿namespace MediaSearch.Models;
 
-public class TMoviesPage : AJson<TMoviesPage>, IMoviesPage {
+public class TMoviesPage : ALoggable, IMoviesPage, IJson<IMoviesPage> {
 
   #region --- Public properties ------------------------------------------------------------------------------
-  public string Name { get; set; }
+  public string Name { get; set; } = "";
 
-  public List<IMovie> Movies { get; } = new();
+  public List<IMovie> Movies { get; set; } = new();
 
-  public int Page { get; set; }
-  public int AvailablePages { get; set; }
-  public int AvailableMovies { get; set; }
-  public string Source { get; set; }
+  public int Page { get; set; } = 0;
+  public int AvailablePages { get; set; } = 0;
+  public int AvailableMovies { get; set; } = 0;
+  public string Source { get; set; } = "";
   #endregion --- Public properties ---------------------------------------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMoviesPage() { }
-  public TMoviesPage(IMoviesPage movies) {
-    if (movies is null) {
+  public TMoviesPage(IMoviesPage page) {
+    if (page is null) {
       return;
     }
-    Name = movies.Name;
-    Page = movies.Page;
-    AvailablePages = movies.AvailablePages;
-    Source = movies.Source;
-    Movies.AddRange(movies.Movies);
+    Name = page.Name;
+    Page = page.Page;
+    AvailablePages = page.AvailablePages;
+    AvailableMovies = page.AvailableMovies;
+    Source = page.Source;
+    Movies.AddRange(page.Movies);
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   #region --- Converters -------------------------------------------------------------------------------------
   public override string ToString() {
     StringBuilder RetVal = new StringBuilder();
-    RetVal.AppendLine($"page {Page}/{AvailablePages} [{Movies.Count} movies on {AvailableMovies}] ");
+    RetVal.AppendLine($"{Name} / page {Page}/{AvailablePages} [{Movies.Count} of {AvailableMovies} movies]");
     return RetVal.ToString();
   }
 
   public string ToString(bool withDetails) {
-    StringBuilder RetVal = new StringBuilder();
-    RetVal.AppendLine($"{Name} / page {Page}/{AvailablePages} [{AvailableMovies}] {Movies.Count} movies");
+    StringBuilder RetVal = new StringBuilder(ToString());
     if (withDetails) {
       foreach (IMovie MovieItem in Movies) {
         RetVal.AppendLine($"# {MovieItem}");
       }
     }
     return RetVal.ToString();
-  } 
+  }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
-  #region --- IJson --------------------------------------------
-  public override string ToJson(JsonWriterOptions options) {
-    using (MemoryStream Utf8JsonStream = new()) {
-      using (Utf8JsonWriter Writer = new Utf8JsonWriter(Utf8JsonStream, options)) {
+  #region --- IJson<IMoviesPage> --------------------------------------------
+  public static JsonSerializerOptions DefaultJsonSerializerOptions {
+    get {
+      lock (_DefaultJsonSerializerOptionsLock) {
+        if (_DefaultJsonSerializerOptions is null) {
+          _DefaultJsonSerializerOptions = new JsonSerializerOptions() {
+            WriteIndented = true,
+            NumberHandling = JsonNumberHandling.Strict
+          };
+          _DefaultJsonSerializerOptions.Converters.Add(new TMoviesPageJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TMovieJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TDateOnlyJsonConverter());
 
-        Writer.WriteStartObject();
-
-        Writer.WriteNumber(nameof(IMoviesPage.Page), Page);
-        Writer.WriteNumber(nameof(IMoviesPage.AvailablePages), AvailablePages);
-        Writer.WriteNumber(nameof(IMoviesPage.AvailableMovies), AvailableMovies);
-
-        Writer.WriteStartArray(nameof(IMoviesPage.Movies));
-        foreach (IJson MovieItem in Movies.OfType<IJson>()) {
-          Writer.WriteRawValue(MovieItem.ToJson(options));
         }
-        Writer.WriteEndArray();
-
-        Writer.WriteEndObject();
+        return _DefaultJsonSerializerOptions;
       }
-
-      return Encoding.UTF8.GetString(Utf8JsonStream.ToArray());
+    }
+    set {
+      lock (_DefaultJsonSerializerOptionsLock) {
+        _DefaultJsonSerializerOptions = value;
+      }
     }
   }
+  private static JsonSerializerOptions? _DefaultJsonSerializerOptions;
+  private static readonly object _DefaultJsonSerializerOptionsLock = new object();
 
-  public override TMoviesPage ParseJson(string source) {
+  #region --- Serializer --------------------------------------------
+  public string ToJson() {
+    return ToJson(DefaultJsonSerializerOptions);
+  }
+
+  public string ToJson(JsonSerializerOptions options) {
+    return JsonSerializer.Serialize(this, options);
+  }
+  #endregion --- Serializer --------------------------------------------
+
+  #region --- Deserializer --------------------------------------------
+
+  public IMoviesPage ParseJson(string source) {
+    return ParseJson(source, DefaultJsonSerializerOptions);
+  }
+
+  public IMoviesPage ParseJson(string source, JsonSerializerOptions options) {
+    #region === Validate parameters ===
     if (string.IsNullOrWhiteSpace(source)) {
-      return default;
+      throw new JsonException("Json MoviesPage source is null");
+    }
+    #endregion === Validate parameters ===
+
+    TMoviesPage? Deserialized = JsonSerializer.Deserialize<TMoviesPage>(source, options);
+
+    if (Deserialized is null) {
+      string Error = $"Unable to deserialize json string \"{source}\"";
+      LogError(Error);
+      throw new JsonException(Error);
     }
 
-    JsonDocument JsonMovies = JsonDocument.Parse(source);
-    JsonElement Root = JsonMovies.RootElement;
-
-    Page = Root.GetPropertyEx(nameof(IMoviesPage.Page)).GetInt32();
-    AvailablePages = Root.GetPropertyEx(nameof(IMoviesPage.AvailablePages)).GetInt32();
-    AvailableMovies = Root.GetPropertyEx(nameof(IMoviesPage.AvailableMovies)).GetInt32();
-
-    foreach (JsonElement MovieItem in Root.GetPropertyEx(nameof(IMoviesPage.Movies)).EnumerateArray()) {
-      Movies.Add(TMovie.FromJson(MovieItem));
-    }
+    Name = Deserialized.Name;
+    Source = Deserialized.Source;
+    Page = Deserialized.Page;
+    AvailablePages = Deserialized.AvailablePages;
+    AvailableMovies = Deserialized.AvailableMovies;
+    Movies.AddRange(Deserialized.Movies);
 
     return this;
-  } 
-  #endregion --- IJson --------------------------------------------
+  }
+  #endregion --- Deserializer --------------------------------------------
+
+  #region --- Static Deserializer --------------------------------------------
+  public static IMoviesPage? FromJson(string source) {
+    if (string.IsNullOrWhiteSpace(source)) {
+      throw new ArgumentNullException(nameof(source));
+    }
+    return JsonSerializer.Deserialize<TMoviesPage>(source, DefaultJsonSerializerOptions);
+  }
+
+  public static IMoviesPage? FromJson(string source, JsonSerializerOptions options) {
+    if (string.IsNullOrWhiteSpace(source)) {
+      throw new ArgumentNullException(nameof(source));
+    }
+    return JsonSerializer.Deserialize<TMoviesPage>(source, options);
+  }
+
+
+  #endregion --- Static Deserializer --------------------------------------------
+
+  #endregion --- IJson<IMoviesPage> --------------------------------------------
 
   #region --- Static instance --------------------------------------------
   public static IMoviesPage Empty => _Empty ??= new TMoviesPage();
-  private static IMoviesPage _Empty; 
+  private static IMoviesPage? _Empty;
   #endregion --- Static instance --------------------------------------------
 }

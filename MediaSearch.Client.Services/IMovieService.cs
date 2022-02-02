@@ -19,7 +19,7 @@ public interface IMovieService {
 
   #region --- Movies --------------------------------------------
   //List<string> ExcludedExtensions { get; }
-  Task<IMoviesPage> GetMoviesPage(TFilter filter);
+  Task<IMoviesPage?> GetMoviesPage(IFilter filter);
   Task<byte[]> GetPicture(string pathname, CancellationToken cancelToken, int w = 128, int h = 160);
   Task<string> GetPicture64(IMovie movie, CancellationToken cancelToken);
   #endregion --- Movies --------------------------------------------

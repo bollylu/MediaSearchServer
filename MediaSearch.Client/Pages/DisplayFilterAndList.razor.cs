@@ -4,7 +4,7 @@ namespace MediaSearch.Client.Pages {
   public partial class DisplayFilterAndList {
 
     [Inject]
-    public IBusService<TFilter>? BusService { get; set; }
+    public IBusService<IFilter>? BusService { get; set; }
 
     private TFilter CurrentFilter = new TFilter();
 
@@ -22,11 +22,11 @@ namespace MediaSearch.Client.Pages {
       }
     }
 
-    private void _MessageHandler(string source, TFilter data) {
+    private void _MessageHandler(string source, IFilter data) {
       switch (source) {
 
         case EditFilter.SVC_NAME: {
-            CurrentFilter = data;
+            CurrentFilter = new TFilter(data);
             StateHasChanged();
           }
           break;

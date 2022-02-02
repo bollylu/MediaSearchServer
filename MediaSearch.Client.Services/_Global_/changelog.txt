@@ -1,3 +1,8 @@
 ﻿# MediaSearch client services
 
 * 0.0.10
+- First version
+
+* 0.0.11
+- Enabled nullable
+- Enabled preview features (abstract static in interfaces) => breaking changes

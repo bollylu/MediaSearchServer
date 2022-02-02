@@ -75,7 +75,7 @@ public class TMovieController : AController {
   /// <param name="filter">A possible filter for the movie names</param>
   /// <returns>A IMoviesPage object containing the data</returns>
   [HttpPost()]
-  public async Task<ActionResult<IMoviesPage>> GetWithFilter(TFilter filter) {
+  public async Task<ActionResult<TMoviesPage>> GetWithFilter(TFilter filter) {
     Logger?.LogDebug($"Request : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.Id} > {HttpContext.Request.QueryString}");
     if (filter is null) {
       filter = TFilter.Empty;
@@ -83,12 +83,16 @@ public class TMovieController : AController {
 
     Logger?.LogDebug($"  Filter : {filter}");
 
-    IMoviesPage RetVal = await _MovieService.GetMoviesPage(filter).ConfigureAwait(false);
+    TMoviesPage? RetVal = await _MovieService.GetMoviesPage(filter).ConfigureAwait(false);
+
+    if (RetVal is null) { 
+      return new EmptyResult();
+    }
 
     Logger?.LogDebug($"< {RetVal}");
     Logger?.LogDebugEx(_PrintMovies(RetVal.Movies));
 
-    return new ActionResult<IMoviesPage>(RetVal);
+    return new ActionResult<TMoviesPage>(RetVal);
   }
 
   /// <summary>
@@ -130,11 +134,11 @@ public class TMovieController : AController {
   public async Task<ActionResult<IMoviesPage>> GetNews(TFilter filter) {
     Logger?.LogDebug($"Request : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.Id} > {HttpContext.Request.QueryString}");
 
-    IMoviesPage RetVal = await _MovieService.GetMoviesPage(filter).ConfigureAwait(false);
+    IMoviesPage? RetVal = await _MovieService.GetMoviesPage(filter).ConfigureAwait(false);
 
-    //if (RetVal.AvailablePages < page) {
-    //  return BadRequest();
-    //}
+    if (RetVal is null) {
+      return new EmptyResult();
+    }
 
     Logger?.LogDebug($"< {RetVal}");
     Logger?.LogDebugEx(_PrintMovies(RetVal.Movies));

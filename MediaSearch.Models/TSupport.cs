@@ -27,12 +27,17 @@ public static class Support {
       foreach ( string ResourceItem in Resources ) {
         Console.WriteLine(ResourceItem);
       }
-      using ( BinaryReader reader = new BinaryReader(Asm.GetManifestResourceStream(CompleteName)) ) {
-        return reader.ReadBytes((int)reader.BaseStream.Length);
+      using (Stream? ResourceStream = Asm.GetManifestResourceStream(pictureName)) {
+        if (ResourceStream is null) {
+          return Array.Empty<byte>();
+        }
+        using (BinaryReader reader = new BinaryReader(ResourceStream)) {
+          return reader.ReadBytes((int)reader.BaseStream.Length);
+        }
       }
     } catch ( Exception ex ) {
       Trace.WriteLine($"Unable to get picture {pictureName}{pictureExtension} : {ex.Message}");
-      return null;
+      return Array.Empty<byte>();
     }
   }
 

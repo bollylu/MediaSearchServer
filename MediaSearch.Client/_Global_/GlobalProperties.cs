@@ -5,10 +5,7 @@ namespace MediaSearch.Client;
 public static class GlobalProperties {
   public static TAbout About {
     get {
-      if (_About is null) {
-        _About = new TAbout(Assembly.GetExecutingAssembly());
-      }
-      return _About;
+      return _About ??= new TAbout(Assembly.GetExecutingAssembly());
     }
   }
   private static TAbout? _About = null;

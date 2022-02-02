@@ -8,27 +8,20 @@ public partial class EditFilter : ComponentBase {
 
   public TFilter Filter { get; set; } = new TFilter();
 
-  //public bool AllMovies {
-  //  get {
-  //    return Filter.GroupOnly;
-  //  }
-  //  set {
-  //    Filter.GroupOnly = !value;
-  //  }
-  //}
-
   public List<string> _Groups { get; } = new List<string>();
 
   [Inject]
-  public IMovieService MovieService { get; set; }
+  public IMovieService? MovieService { get; set; }
 
   [Inject]
-  public IBusService<TFilter>? BusService { get; set; }
+  public IBusService<IFilter>? BusService { get; set; }
 
   protected override async Task OnInitializedAsync() {
     await base.OnInitializedAsync();
-    using (CancellationTokenSource cts = new CancellationTokenSource(5000)) {
-      _Groups.AddRange(await MovieService.GetGroups(cts.Token));
+    if (MovieService is not null) {
+      using (CancellationTokenSource cts = new CancellationTokenSource(5000)) {
+        _Groups.AddRange(await MovieService.GetGroups(cts.Token));
+      }
     }
     Filter.KeywordsSelection = EFilterType.All;
     Filter.TagSelection = EFilterType.All;
@@ -40,7 +33,7 @@ public partial class EditFilter : ComponentBase {
     _NotifyMessage(Filter);
   }
 
-  private void _NotifyMessage(TFilter filter) {
+  private void _NotifyMessage(IFilter filter) {
     if (filter is null) {
       return;
     }
@@ -77,16 +70,7 @@ public partial class EditFilter : ComponentBase {
   public bool ClearGroupDisabled => string.IsNullOrEmpty(Filter.Group) && Filter.GroupOnly == false;
 
   private void ClearFilter() {
-    Filter.Keywords = "";
-    Filter.KeywordsSelection = EFilterType.All;
-    Filter.Tags = "";
-    Filter.TagSelection = EFilterType.All;
-    Filter.Group = "";
-    Filter.SubGroup = "";
-    Filter.GroupOnly = false;
-    Filter.OutputDateMin = TFilter.DEFAULT_OUTPUT_DATE_MIN;
-    Filter.OutputDateMax = TFilter.DEFAULT_OUTPUT_DATE_MAX;
-    Filter.DaysBack = 0;
+    Filter.Clear();
   }
 }
 

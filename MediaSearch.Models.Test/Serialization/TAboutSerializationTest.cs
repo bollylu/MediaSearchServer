@@ -1,10 +1,10 @@
-﻿namespace MovieSearch.Models.Test;
+﻿namespace MediaSearch.Models.Test;
 
 [TestClass]
-public class TAJsonTest {
+public class TAboutSerializationTest {
 
   [TestMethod]
-  public void TAJsonSerializeTest() { 
+  public void SerializeAboutWithoutConverter() { 
 
     TAbout About = new TAbout() { CurrentVersion = new Version(0,0,1), ChangeLog="1st version"};
 
@@ -16,11 +16,11 @@ public class TAJsonTest {
   }
 
   [TestMethod]
-  public void TAJsonDeSerializeTest() {
+  public void DeserializeAboutWithoutConverter() {
 
     string Source = "{\"CurrentVersion\":\"0.0.1\", \"ChangeLog\":\"No news\"}";
 
-    TAbout About = TAbout.FromJson(Source);
+    TAbout? About = TAbout.FromJson(Source);
 
     Assert.IsNotNull(About);
     Assert.AreEqual(About.CurrentVersion.ToString(), "0.0.1");

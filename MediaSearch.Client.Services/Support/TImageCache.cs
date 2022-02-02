@@ -18,9 +18,9 @@ public class TImageCache : ALoggable, IDisposable {
     try {
       _LockData.Wait();
       LogDebug("cache: Looking for image");
-      TCachedItem FoundIt = _CachedImages.FirstOrDefault(c => c.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
+      TCachedItem? FoundIt = _CachedImages.FirstOrDefault(c => c.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
       if (FoundIt is null) {
-        return null;
+        return Array.Empty<byte>();
       }
       return FoundIt.Data;
     } finally {
@@ -62,8 +62,8 @@ public class TImageCache : ALoggable, IDisposable {
   }
 }
 
-internal class TCachedItem {
-  internal string Key { get; init; }
+internal record TCachedItem {
+  internal string Key { get; init; } = "";
   internal DateTime AddedTime { get; init; }
-  internal byte[] Data { get; init; }
+  internal byte[] Data { get; init; } = Array.Empty<byte>();
 }

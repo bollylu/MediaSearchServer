@@ -10,3 +10,8 @@
 * 0.0.12
 - EditFilter can now filter on a group / groups only
 - EditFilter display is fixed
+
+* 0.0.13
+- Enabled nullable
+- Enabled preview features (abstract static in interfaces) => breaking changes
+

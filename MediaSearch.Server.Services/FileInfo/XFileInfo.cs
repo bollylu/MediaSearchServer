@@ -8,8 +8,8 @@ public class XFileInfo : IFileInfo {
 
   public string Name => _Data.Name;
   public string FullName => _Data.FullName;
-  public DirectoryInfo Directory => _Data.Directory;
-  public string DirectoryName => _Data.DirectoryName;
+  public DirectoryInfo? Directory => _Data.Directory;
+  public string? DirectoryName => _Data.DirectoryName;
   public bool Exists { get; set; } = true;
   public bool IsReadOnly { get; set; } = true;
   public long Length { get; set; }

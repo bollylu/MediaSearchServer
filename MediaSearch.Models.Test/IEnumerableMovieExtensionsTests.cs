@@ -16,7 +16,7 @@ public class IEnumerableMovieExtensionsTests {
     IEnumerable<IMovie> Target = Source.FilterByTags(Filter);
     Assert.IsNotNull(Target);
     Assert.IsTrue(Target.Any());
-    Assert.AreEqual(3, Target.Count());
+    Assert.IsTrue(Target.Count() > 10);
     Support.PrintMovies(Target);
   }
 
@@ -38,7 +38,7 @@ public class IEnumerableMovieExtensionsTests {
     IEnumerable<IMovie> Target = Source.FilterByTags(Filter);
     Assert.IsNotNull(Target);
     Assert.IsTrue(Target.Any());
-    Assert.AreEqual(3, Target.Count());
+    Assert.IsTrue(Target.Count() > 10);
     Support.PrintMovies(Target);
   }
   #endregion --- Any tag --------------------------------------------
@@ -53,7 +53,7 @@ public class IEnumerableMovieExtensionsTests {
     Assert.IsNotNull(Target);
     Support.PrintMovies(Target);
     Assert.IsTrue(Target.Any());
-    Assert.AreEqual(3, Target.Count());
+    Assert.IsTrue(Target.Count() > 10);
 
   }
 
@@ -76,7 +76,7 @@ public class IEnumerableMovieExtensionsTests {
     Assert.IsNotNull(Target);
     Support.PrintMovies(Target);
     Assert.IsTrue(Target.Any());
-    Assert.AreEqual(2, Target.Count());
+    Assert.IsTrue(Target.Count() > 10);
   }
   #endregion --- All tags --------------------------------------------
 }

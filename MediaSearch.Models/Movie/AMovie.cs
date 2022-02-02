@@ -5,6 +5,7 @@ namespace MediaSearch.Models;
 public abstract class AMovie : AMedia, IMovie {
 
   #region --- Public properties ------------------------------------------------------------------------------
+  [JsonConverter(typeof(JsonStringEnumConverter))]
   public EMovieExtension Extension =>
     FileExtension switch {
       "avi" => EMovieExtension.AVI,
@@ -14,9 +15,10 @@ public abstract class AMovie : AMedia, IMovie {
       _ => EMovieExtension.Unknown,
     };
 
-  public string Group { get; set; }
-  public string SubGroup { get; set; }
+  public string Group { get; set; } = "";
+  public string SubGroup { get; set; } = "";
 
+  [JsonIgnore]
   public bool IsGroupMember => !string.IsNullOrWhiteSpace(Group);
 
   public long Size { get; set; }
@@ -30,7 +32,7 @@ public abstract class AMovie : AMedia, IMovie {
     }
   }
 
-  private static byte[] _PictureMissingBytes;
+  private static byte[]? _PictureMissingBytes;
   #endregion --- Picture --------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
@@ -57,9 +59,5 @@ public abstract class AMovie : AMedia, IMovie {
 
     return RetVal.ToString();
   }
-
-  public abstract override IMovie ParseJson(string source);
-  public override IMovie ParseJson(JsonElement source) {
-    return ParseJson(source.GetRawText());
-  }
+  
 }

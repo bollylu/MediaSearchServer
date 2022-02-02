@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
+public class TFilter : IFilter, IJson<IFilter>, IEquatable<TFilter> {
 
   public const int DEFAULT_PAGE_SIZE = 20;
   public const int DEFAULT_OUTPUT_DATE_MIN = 1900;
@@ -46,6 +46,7 @@ public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
   /// <summary>
   /// How to use the keywords for the search
   /// </summary>
+  [JsonConverter(typeof(JsonStringEnumConverter))]
   public EFilterType KeywordsSelection { get; set; }
   #endregion --- Keywords in movie name --------------------------------------------
 
@@ -57,6 +58,7 @@ public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
   /// <summary>
   /// How to use the tags for the search
   /// </summary>
+  [JsonConverter(typeof(JsonStringEnumConverter))]
   public EFilterType TagSelection { get; set; }
   #endregion --- Tags --------------------------------------------
 
@@ -103,9 +105,10 @@ public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
     }
   }
   private int _OutputDateMax = DateTime.Now.Year + 1;
-  
+
   #endregion --- Output date --------------------------------------------
 
+  [JsonConverter(typeof(JsonStringEnumConverter))]
   public EFilterSortOrder SortOrder { get; set; } = EFilterSortOrder.Name;
 
   #region --- Groups --------------------------------------------
@@ -118,16 +121,21 @@ public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
   /// Sub-group to searched for
   /// </summary>
   public string SubGroup { get; set; } = "";
+
+  public List<string> GroupMemberships { get; set; } = new();
+
+  [JsonConverter(typeof(JsonStringEnumConverter))]
+  public EFilterGroup GroupFilter { get; set; } = EFilterGroup.All;
   #endregion --- Groups --------------------------------------------
 
   #region --- Static instance for an empty filter --------------------------------------------
   public static TFilter Empty => _Empty ??= new TFilter();
-  private static TFilter _Empty;
+  private static TFilter? _Empty;
   #endregion --- Static instance for an empty filter --------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TFilter() { }
-  public TFilter(TFilter filter) {
+  public TFilter(IFilter filter) {
     Page = filter.Page;
     PageSize = filter.PageSize;
     Keywords = filter.Keywords;
@@ -141,6 +149,8 @@ public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
     SubGroup = filter.SubGroup;
     GroupOnly = filter.GroupOnly;
     SortOrder = filter.SortOrder;
+    GroupFilter = filter.GroupFilter;
+    GroupMemberships.AddRange(filter.GroupMemberships);
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
@@ -157,12 +167,24 @@ public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
     RetVal.Append($", {nameof(Group)}={Group}");
     RetVal.Append($", {nameof(SubGroup)}={SubGroup}");
     RetVal.Append($", {nameof(SortOrder)}={SortOrder}");
+    if (GroupMemberships.Any()) {
+      RetVal.Append($", {nameof(GroupMemberships)} [");
+      foreach (string GroupMembershipItem in GroupMemberships) {
+        RetVal.Append($"{GroupMembershipItem}, ");
+      }
+      RetVal.Truncate(2);
+      RetVal.Append(']');
+    }
     return RetVal.ToString();
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
   #region --- IEquatable<TFilter> --------------------------------------------
-  public bool Equals(TFilter other) {
+  public bool Equals(TFilter? other) {
+    if (other is null) {
+      return false;
+    }
+
     return
       Page == other.Page &&
       PageSize == other.PageSize &&
@@ -176,7 +198,8 @@ public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
       Group == other.Group &&
       SubGroup == other.SubGroup &&
       GroupOnly == other.GroupOnly &&
-      SortOrder == other.SortOrder;
+      SortOrder == other.SortOrder &&
+      GroupMemberships.SequenceEqual(other.GroupMemberships);
   }
   #endregion --- IEquatable<TFilter> --------------------------------------------
 
@@ -195,10 +218,11 @@ public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
       GroupOnly.GetHashCode() |
       Group.GetHashCode() |
       SubGroup.GetHashCode() |
-      SortOrder.GetHashCode();
+      SortOrder.GetHashCode() |
+      GroupMemberships.GetHashCode();
   }
 
-  public override bool Equals(object obj) {
+  public override bool Equals(object? obj) {
     if (obj is TFilter Other) {
       return this.Equals(Other);
     }
@@ -214,69 +238,118 @@ public class TFilter : AJson<TFilter>, IEquatable<TFilter> {
   }
   #endregion --- Equality comparison --------------------------------------------
 
-  #region --- IJson --------------------------------------------
-  public override string ToJson(JsonWriterOptions options) {
+  #region --- IJson<IFilter> --------------------------------------------
+  public static JsonSerializerOptions DefaultJsonSerializerOptions {
+    get {
+      lock (_DefaultJsonSerializerOptionsLock) {
+        if (_DefaultJsonSerializerOptions is null) {
+          _DefaultJsonSerializerOptions = new JsonSerializerOptions() {
+            WriteIndented = true,
+            NumberHandling = JsonNumberHandling.Strict
+          };
+          _DefaultJsonSerializerOptions.Converters.Add(new TDateOnlyJsonConverter());
 
-    using (MemoryStream Utf8JsonStream = new()) {
-      using (Utf8JsonWriter Writer = new Utf8JsonWriter(Utf8JsonStream, options)) {
-
-        Writer.WriteStartObject();
-
-        Writer.WriteNumber(nameof(Page), Page);
-        Writer.WriteNumber(nameof(PageSize), PageSize);
-        Writer.WriteString(nameof(Keywords), Keywords);
-        Writer.WriteString(nameof(KeywordsSelection), KeywordsSelection.ToString());
-        Writer.WriteString(nameof(Tags), Tags);
-        Writer.WriteString(nameof(TagSelection), TagSelection.ToString());
-        Writer.WriteNumber(nameof(DaysBack), DaysBack);
-        Writer.WriteNumber(nameof(OutputDateMin), OutputDateMin);
-        Writer.WriteNumber(nameof(OutputDateMax), OutputDateMax);
-        Writer.WriteBoolean(nameof(GroupOnly), GroupOnly);
-        Writer.WriteString(nameof(Group), Group);
-        Writer.WriteString(nameof(SubGroup), SubGroup);
-        Writer.WriteString(nameof(SortOrder), SortOrder.ToString());
-
-        Writer.WriteEndObject();
+        }
+        return _DefaultJsonSerializerOptions;
       }
-
-      return Encoding.UTF8.GetString(Utf8JsonStream.ToArray());
+    }
+    set {
+      lock (_DefaultJsonSerializerOptionsLock) {
+        _DefaultJsonSerializerOptions = value;
+      }
     }
   }
+  private static JsonSerializerOptions? _DefaultJsonSerializerOptions;
+  private static readonly object _DefaultJsonSerializerOptionsLock = new object();
 
-  public override TFilter ParseJson(string source) {
+  public string ToJson() {
+    return ToJson(DefaultJsonSerializerOptions);
+  }
+
+  public string ToJson(JsonSerializerOptions options) {
+    return JsonSerializer.Serialize(this, options);
+  }
+
+  public IFilter ParseJson(string source) {
+    return ParseJson(source, DefaultJsonSerializerOptions);
+  }
+
+  public IFilter ParseJson(string source, JsonSerializerOptions options) {
     #region === Validate parameters ===
     if (string.IsNullOrWhiteSpace(source)) {
       throw new JsonException("Json filter source is null");
     }
     #endregion === Validate parameters ===
 
-    try {
-      JsonDocument JsonFilter = JsonDocument.Parse(source);
-      JsonElement Root = JsonFilter.RootElement;
+    TFilter? Deserialized = JsonSerializer.Deserialize<TFilter>(source, options);
 
-      //LogDebugEx(Root.GetRawText().BoxFixedWidth("RawText", 80, TextBox.EStringAlignment.Left));
-
-      Page = Root.GetPropertyEx(nameof(Page)).GetInt32();
-      int PageSizeFromJson = Root.GetPropertyEx(nameof(PageSize)).GetInt32();
-      PageSize = PageSizeFromJson == 0 ? DEFAULT_PAGE_SIZE : PageSizeFromJson;
-      Keywords = Root.GetPropertyEx(nameof(Keywords)).GetString();
-      KeywordsSelection = Enum.Parse<EFilterType>(Root.GetPropertyEx(nameof(KeywordsSelection)).GetString());
-      Tags = Root.GetPropertyEx(nameof(Tags)).GetString();
-      TagSelection = Enum.Parse<EFilterType>(Root.GetPropertyEx(nameof(TagSelection)).GetString());
-      DaysBack = Root.GetPropertyEx(nameof(DaysBack)).GetInt32();
-      OutputDateMin = Root.GetPropertyEx(nameof(OutputDateMin)).GetInt32();
-      OutputDateMax = Root.GetPropertyEx(nameof(OutputDateMax)).GetInt32();
-      GroupOnly = Root.GetPropertyEx(nameof(GroupOnly)).GetBoolean();
-      Group = Root.GetPropertyEx(nameof(Group)).GetString();
-      SubGroup = Root.GetPropertyEx(nameof(SubGroup)).GetString();
-      SortOrder = Enum.Parse<EFilterSortOrder>(Root.GetPropertyEx(nameof(SortOrder)).GetString());
-
-    } catch (Exception ex) {
-      Logger?.LogError($"Unable to parse json : {ex.Message}");
+    if (Deserialized is not null) {
+      Page = Deserialized.Page;
+      PageSize = Deserialized.PageSize;
+      Keywords = Deserialized.Keywords;
+      KeywordsSelection = Deserialized.KeywordsSelection;
+      Tags = Deserialized.Tags;
+      TagSelection = Deserialized.TagSelection;
+      DaysBack = Deserialized.DaysBack;
+      OutputDateMin = Deserialized.OutputDateMin;
+      OutputDateMax = Deserialized.OutputDateMax;
+      GroupOnly = Deserialized.GroupOnly;
+      Group = Deserialized.Group;
+      SubGroup = Deserialized.SubGroup;
+      SortOrder = Deserialized.SortOrder;
+      GroupFilter = Deserialized.GroupFilter;
+      GroupMemberships.AddRange(Deserialized.GroupMemberships);
     }
-
     return this;
   }
+
+  #region --- Static Deserializer --------------------------------------------
+
+  public static IFilter? FromJson(string source) {
+    if (string.IsNullOrWhiteSpace(source)) {
+      throw new ArgumentNullException(nameof(source));
+    }
+    return JsonSerializer.Deserialize<TFilter>(source, DefaultJsonSerializerOptions);
+  }
+
+  public static IFilter? FromJson(string source, JsonSerializerOptions options) {
+    if (string.IsNullOrWhiteSpace(source)) {
+      throw new ArgumentNullException(nameof(source));
+    }
+    return JsonSerializer.Deserialize<TFilter>(source, options);
+  }
+
+
+  #endregion --- Static Deserializer --------------------------------------------
   #endregion --- IJson --------------------------------------------
+
+  public void Clear() {
+    FirstPage();
+    Keywords = "";
+    KeywordsSelection = EFilterType.All;
+    Tags = "";
+    TagSelection = EFilterType.All;
+    Group = "";
+    SubGroup = "";
+    GroupOnly = false;
+    OutputDateMin = TFilter.DEFAULT_OUTPUT_DATE_MIN;
+    OutputDateMax = TFilter.DEFAULT_OUTPUT_DATE_MAX;
+    DaysBack = 0;
+    GroupFilter = EFilterGroup.All;
+    GroupMemberships.Clear();
+  }
+  public void NextPage() {
+    Page++;
+  }
+  public void PreviousPage() {
+    Page--;
+  }
+  public void FirstPage() {
+    Page = 1;
+  }
+
+  public void SetPage(int pageNumber) {
+    Page = pageNumber.WithinLimits(1, int.MaxValue);
+  }
 
 }

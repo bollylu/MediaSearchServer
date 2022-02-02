@@ -2,7 +2,7 @@
 
 using static MediaSearch.Models.Support;
 
-namespace MovieSearchTest;
+namespace MediaSearch.Server.Services.Test;
 
 [TestClass]
 public class TMovieServiceTest {
@@ -10,14 +10,8 @@ public class TMovieServiceTest {
   #region --- Initialize --------------------------------------------
   [ClassInitialize]
   public static async Task MovieCacheInit(TestContext testContext) {
-    if (Global.MovieService is null) {
-      if (Global.MovieCache is null) {
-        Global.MovieService = new TMovieService(Global.STORAGE) { Logger = new TConsoleLogger() };
-        await Global.MovieService.Initialize().ConfigureAwait(false);
-      } else {
-        Global.MovieService = new TMovieService(Global.MovieCache) { RootStoragePath = Global.STORAGE, Logger = new TConsoleLogger() };
-      }
-    }
+    Global.MovieService = new TMovieService(new XMovieCache() { DataSource = @"data\movies.json" }) { Logger = new TConsoleLogger() };
+    await Global.MovieService.Initialize().ConfigureAwait(false);
   }
   #endregion --- Initialize --------------------------------------------
 
@@ -41,7 +35,8 @@ public class TMovieServiceTest {
       PageSize = AMovieCache.DEFAULT_PAGE_SIZE
     };
     Console.WriteLine(DefaultFilter.ToString().Box("Filter"));
-    IMoviesPage Target = await Global.MovieService.GetMoviesPage(DefaultFilter).ConfigureAwait(false);
+    IMoviesPage? Target = await Global.MovieService.GetMoviesPage(DefaultFilter).ConfigureAwait(false);
+    Assert.IsNotNull(Target);
     PrintMoviesName(Target.Movies);
     Assert.AreEqual(IMovieService.DEFAULT_PAGE_SIZE, Target.Movies.Count);
   }
@@ -54,7 +49,8 @@ public class TMovieServiceTest {
     Console.WriteLine($"Movie count = {MovieCount}");
     Console.WriteLine($"Page count = {PageCount}");
 
-    IMoviesPage Target = await Global.MovieService.GetMoviesLastPage(TFilter.Empty).ConfigureAwait(false);
+    IMoviesPage? Target = await Global.MovieService.GetMoviesLastPage(TFilter.Empty).ConfigureAwait(false);
+    Assert.IsNotNull(Target);
     PrintMoviesName(Target.Movies);
     Assert.IsTrue(IMovieService.DEFAULT_PAGE_SIZE >= Target.Movies.Count);
   }
@@ -63,7 +59,8 @@ public class TMovieServiceTest {
   public async Task Service_GetFilteredFirstPage() {
     TFilter Filter = new TFilter() { Keywords = "The", Page = 1, PageSize = IMovieService.DEFAULT_PAGE_SIZE };
     Console.WriteLine(Filter.ToString().Box("Filter"));
-    IMoviesPage Target = await Global.MovieService.GetMoviesPage(Filter).ConfigureAwait(false);
+    IMoviesPage? Target = await Global.MovieService.GetMoviesPage(Filter).ConfigureAwait(false);
+    Assert.IsNotNull(Target);
     PrintMoviesName(Target.Movies);
     Assert.IsTrue(IMovieService.DEFAULT_PAGE_SIZE >= Target.Movies.Count);
   }
@@ -77,8 +74,9 @@ public class TMovieServiceTest {
     Console.WriteLine(Filter.ToString().Box("Filter"));
     Console.WriteLine($"Movies count = {MovieCount}");
     Console.WriteLine($"Last page = {PageCount}");
-    
-    IMoviesPage Target = await Global.MovieService.GetMoviesLastPage(Filter).ConfigureAwait(false);
+
+    IMoviesPage? Target = await Global.MovieService.GetMoviesLastPage(Filter).ConfigureAwait(false);
+    Assert.IsNotNull(Target);
     PrintMoviesName(Target.Movies);
     Assert.IsTrue(IMovieService.DEFAULT_PAGE_SIZE >= Target.Movies.Count);
   }

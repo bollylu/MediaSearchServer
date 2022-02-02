@@ -2,7 +2,7 @@
 
 namespace MediaSearch.Models;
 
-public abstract class AMedia : ALoggable, IJson<IMedia>, IMedia {
+public abstract class AMedia : ALoggable, IMedia {
 
   public string Id {
     get {
@@ -12,15 +12,15 @@ public abstract class AMedia : ALoggable, IJson<IMedia>, IMedia {
       _Id = value;
     }
   }
-  private string _Id;
+  private string? _Id;
 
   protected virtual string _BuildId() {
     return Name.HashToBase64();
   }
 
   #region --- IName --------------------------------------------
-  public string Name { get; set; }
-  public string Description { get; set; }
+  public string Name { get; set; } = "";
+  public string Description { get; set; } = "";
   #endregion --- IName --------------------------------------------
 
   #region --- IMultiNames --------------------------------------------
@@ -31,10 +31,12 @@ public abstract class AMedia : ALoggable, IJson<IMedia>, IMedia {
   public List<string> Tags { get; } = new();
   #endregion --- ITags --------------------------------------------
 
-  public string StorageRoot { get; set; }
-  public string StoragePath { get; set; }
-  public string FileName { get; set; }
-  public string FileExtension { get; set; }
+  public string StorageRoot { get; set; } = "";
+  public string StoragePath { get; set; } = "";
+  public string FileName { get; set; } = "";
+  public string FileExtension { get; set; } = "";
+
+  [JsonConverter(typeof(TDateOnlyJsonConverter))]
   public DateOnly DateAdded { get; set; }
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
@@ -94,12 +96,5 @@ public abstract class AMedia : ALoggable, IJson<IMedia>, IMedia {
     return RetVal.ToString();
   }
 
-  public abstract IMedia ParseJson(string source);
-  public virtual IMedia ParseJson(JsonElement source) {
-    return ParseJson(source.GetRawText());
-  }
-  public virtual string ToJson() {
-    return ToJson(new JsonWriterOptions());
-  }
-  public abstract string ToJson(JsonWriterOptions options);
+  
 }

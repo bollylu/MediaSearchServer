@@ -1,65 +1,38 @@
 ﻿using SkiaSharp;
 
-using System.Drawing.Printing;
-
 namespace MediaSearch.Server.Services;
 
 // <summary>
 /// Server Movie service. Provides access to groups, movies and pictures from NAS
 /// </summary>
-public class TMovieService : ALoggable, IMovieService, IName {
+public class TMovieService : AMovieService {
   #region --- Constants --------------------------------------------
   public const int TIMEOUT_IN_MS = 500000;
   #endregion --- Constants --------------------------------------------
 
-  /// <summary>
-  /// Root path to look for data
-  /// </summary>
-  public string RootStoragePath { get; init; }
-
-  public IDataProvider DataProvider { get; set; }
-
-  /// <summary>
-  /// The name of the source
-  /// </summary>
-  public string Name { get; set; }
-
-  /// <summary>
-  /// The description of the source
-  /// </summary>
-  public string Description { get; set; }
-
-  /// <summary>
-  /// The extensions of the files of interest
-  /// </summary>
-  public List<string> MoviesExtensions { get; } = new() { ".mkv", ".avi", ".mp4", ".iso" };
-
   private readonly IMovieCache _MoviesCache = new TMovieCache();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
+  public TMovieService() {
+    SetLogger(new TConsoleLogger());
+    _MoviesCache.SetLogger(new TConsoleLogger());
+  }
+  
   public TMovieService(string storage) {
     _MoviesCache.SetLogger(Logger);
     RootStoragePath = storage;
     _MoviesCache = new TMovieCache() { RootStoragePath = storage };
-    //_DataSource = _MoviesCache.FetchFiles();
   }
 
   public TMovieService(IMovieCache movieCache) {
     _MoviesCache = movieCache;
     _MoviesCache.SetLogger(Logger);
     RootStoragePath = movieCache.RootStoragePath;
-    //_DataSource = _MoviesCache.FetchFiles();
   }
-  //public TMovieService(IEnumerable<IFileInfo> files, string storage, string storageName = "(anonymous)") {
-  //  _MoviesCache.SetLogger(Logger);
-  //  RootStoragePath = storage;
-  //  Name = storageName;
-  //  //_DataSource = files;
-  //}
 
   private bool _IsInitialized = false;
   private bool _IsInitializing = false;
-  public async Task Initialize() {
+  public override async Task Initialize() {
     if (_IsInitialized) {
       return;
     }
@@ -84,17 +57,17 @@ public class TMovieService : ALoggable, IMovieService, IName {
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  public void Reset() {
+  public override void Reset() {
     _MoviesCache.Clear();
     _IsInitialized = false;
   }
 
-  public Task RefreshData() {
+  public override Task RefreshData() {
     Reset();
     return Task.Run(async () => await Initialize());
   }
 
-  public int GetRefreshStatus() {
+  public override int GetRefreshStatus() {
     if (_IsInitialized) {
       return -1;
     }
@@ -109,17 +82,17 @@ public class TMovieService : ALoggable, IMovieService, IName {
   #endregion --- ILoggable --------------------------------------------
 
   #region --- Movies --------------------------------------------
-  public async ValueTask<int> MoviesCount(TFilter filter) {
+  public override async ValueTask<int> MoviesCount(IFilter filter) {
     await Initialize().ConfigureAwait(false);
     return _MoviesCache.GetAllMovies().WithFilter(filter).Count();
   }
 
-  public async ValueTask<int> PagesCount(TFilter filter) {
+  public override async ValueTask<int> PagesCount(IFilter filter) {
     int FilteredMoviesCount = await MoviesCount(filter).ConfigureAwait(false);
     return (FilteredMoviesCount / filter.PageSize) + (FilteredMoviesCount % filter.PageSize > 0 ? 1 : 0);
   }
 
-  public async IAsyncEnumerable<TMovie> GetAllMovies() {
+  public override async IAsyncEnumerable<TMovie> GetAllMovies() {
     await Initialize().ConfigureAwait(false);
 
     foreach (TMovie MovieItem in _MoviesCache.GetAllMovies()) {
@@ -127,36 +100,36 @@ public class TMovieService : ALoggable, IMovieService, IName {
     }
   }
 
-  public async Task<IMoviesPage> GetMoviesPage(TFilter filter) {
+  public override async Task<TMoviesPage?> GetMoviesPage(IFilter filter) {
     await Initialize().ConfigureAwait(false);
     return _MoviesCache.GetMoviesPage(filter);
   }
 
-  public async Task<IMoviesPage> GetMoviesLastPage(TFilter filter) {
+  public override async Task<TMoviesPage?> GetMoviesLastPage(IFilter filter) {
     await Initialize().ConfigureAwait(false);
     TFilter NewFilter = new TFilter(filter);
     NewFilter.Page = await PagesCount(filter);
     return _MoviesCache.GetMoviesPage(NewFilter);
   }
 
-  public Task<IMovie> GetMovie(string id) {
+  public override Task<IMovie?> GetMovie(string id) {
     if (string.IsNullOrWhiteSpace(id)) {
       LogWarning("Unable to retrieve movie : id is null or invalid");
-      return null;
+      return Task.FromResult<IMovie?>(null);
     }
-    IMovie Movie = _MoviesCache.GetMovie(id);
-    return Task.FromResult(Movie);
+    IMovie? Movie = _MoviesCache.GetMovie(id);
+    return Task.FromResult<IMovie?>(Movie);
   }
   #endregion --- Movies --------------------------------------------
 
-  public async IAsyncEnumerable<string> GetGroups() {
+  public override async IAsyncEnumerable<string> GetGroups() {
     await Initialize().ConfigureAwait(false);
 
     foreach (string GroupItem in _MoviesCache.GetGroups()) {
       yield return GroupItem;
     }
   }
-  public async IAsyncEnumerable<string> GetSubGroups(string group) {
+  public override async IAsyncEnumerable<string> GetSubGroups(string group) {
     await Initialize().ConfigureAwait(false);
 
     foreach (string GroupItem in _MoviesCache.GetSubGroups(group)) {
@@ -165,7 +138,7 @@ public class TMovieService : ALoggable, IMovieService, IName {
   }
 
 
-  public async Task<byte[]> GetPicture(string id,
+  public override async Task<byte[]> GetPicture(string id,
                                        string pictureName,
                                        int width,
                                        int height) {
@@ -176,15 +149,15 @@ public class TMovieService : ALoggable, IMovieService, IName {
     int ParamHeight = height.WithinLimits(IMovieService.MIN_PICTURE_HEIGHT, IMovieService.MAX_PICTURE_HEIGHT);
     if (string.IsNullOrWhiteSpace(id)) {
       LogError("Unable to fetch picture : id is null or invalid");
-      return null;
+      return Array.Empty<byte>();
     }
     string ParamId = id;
     #endregion === Validate parameters ===
 
-    IMovie Movie = _MoviesCache.GetMovie(ParamId);
+    IMovie? Movie = _MoviesCache.GetMovie(ParamId);
     if (Movie is null) {
       LogError($"Unable to fetch picture id \"{ParamId}\"");
-      return null;
+      return Array.Empty<byte>();
     }
 
     string FullPicturePath = Path.Join(RootStoragePath.NormalizePath(), Movie.StoragePath.NormalizePath(), ParamPictureName);
@@ -192,7 +165,7 @@ public class TMovieService : ALoggable, IMovieService, IName {
     LogDebug($"GetPicture {FullPicturePath} : size({ParamWidth}, {ParamHeight})");
     if (!File.Exists(FullPicturePath)) {
       LogError($"Unable to fetch picture {FullPicturePath} : File is missing or access is denied");
-      return null;
+      return Array.Empty<byte>();
     }
 
     try {
@@ -214,7 +187,7 @@ public class TMovieService : ALoggable, IMovieService, IName {
       if (ex.InnerException is not null) {
         LogError($"  {ex.InnerException.Message}");
       }
-      return null;
+      return Array.Empty<byte>();
     }
   }
 

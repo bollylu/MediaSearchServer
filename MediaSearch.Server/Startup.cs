@@ -13,7 +13,7 @@ public class Startup {
 
   const int BOX_WIDTH = 120;
 
-  public static ILogger Logger { get; private set; }
+  public static ILogger Logger { get; private set; } = new TConsoleLogger();
 
   public const string DEFAULT_DATASOURCE = @"\\andromeda.sharenet.priv\multimedia\films\";
 
@@ -40,7 +40,7 @@ public class Startup {
     Logger = new TFileLogger(LogFile) { SeverityLimit = ESeverity.Debug };
 
     StringBuilder StartupInfo = new StringBuilder();
-    StartupInfo.AppendLine($"Version {Program.EntryAbout.CurrentVersion}");
+    StartupInfo.AppendLine($"Version {Program.EntryAbout?.CurrentVersion ?? new Version()}");
     StartupInfo.AppendLine($"Running for {Environment.UserName}");
     StartupInfo.AppendLine($"Running on {Environment.MachineName}");
     StartupInfo.AppendLine($"Runtime version {Environment.Version}");
@@ -52,9 +52,10 @@ public class Startup {
 
     services.AddSingleton<ILogger>(Logger);
 
-    services.AddControllers(options => {
-      options.OutputFormatters.Insert(0, new TJsonOutputFormatter());
-    });
+    //services.AddControllers(options => {
+    //  options.OutputFormatters.Insert(0, new TJsonOutputFormatter());
+    //  //options.InputFormatters.Insert(0, new TJsonInputFormatter());
+    //});
 
     TMovieService MovieService = new TMovieService(DataSource);
 
@@ -71,10 +72,14 @@ public class Startup {
     });
     services.AddControllers();
     services.AddSwaggerGen(c => {
-      c.SwaggerDoc("v1", new OpenApiInfo { Title = "MediaSearch.Server", Version = Program.EntryAbout.CurrentVersion.ToString() });
+      c.SwaggerDoc("v1", new OpenApiInfo { 
+                                        Title = "MediaSearch.Server", 
+                                        Version = Program.EntryAbout?.CurrentVersion.ToString() 
+                                   }
+                  );
     });
 
-    Logger.Log($"MediaSearch.Server {Program.EntryAbout.CurrentVersion} startup complete. Running.");
+    Logger.Log($"MediaSearch.Server {Program.EntryAbout?.CurrentVersion} startup complete. Running.");
   }
 
   // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

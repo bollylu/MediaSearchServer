@@ -2,7 +2,7 @@
 
 public class THttpClientEx : HttpClient, ILoggable {
 
-  public HttpResponseMessage LastResponse { get; private set; }
+  public HttpResponseMessage? LastResponse { get; private set; }
   public ILogger Logger { get; set; } = new TConsoleLogger();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
@@ -13,7 +13,7 @@ public class THttpClientEx : HttpClient, ILoggable {
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  public async Task<string> GetStringAsync(string request, int timeoutInMs) {
+  public async Task<string?> GetStringAsync(string request, int timeoutInMs) {
 
     try {
       Logger?.LogDebug($"Request: {request}");
