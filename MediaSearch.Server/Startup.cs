@@ -1,11 +1,14 @@
-
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+
+using Swashbuckle.AspNetCore.SwaggerGen;
+
+using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace MediaSearch.Server;
 
@@ -52,10 +55,10 @@ public class Startup {
 
     services.AddSingleton<ILogger>(Logger);
 
-    //services.AddControllers(options => {
-    //  options.OutputFormatters.Insert(0, new TJsonOutputFormatter());
-    //  //options.InputFormatters.Insert(0, new TJsonInputFormatter());
-    //});
+    services.AddControllers(options => {
+      options.OutputFormatters.Insert(0, new TJsonOutputFormatter());
+      //options.InputFormatters.Insert(0, new TJsonInputFormatter());
+    });
 
     TMovieService MovieService = new TMovieService(DataSource);
 
@@ -77,6 +80,7 @@ public class Startup {
                                         Version = Program.EntryAbout?.CurrentVersion.ToString() 
                                    }
                   );
+      //c.SchemaFilter<MySwaggerSchemaFilter>();
     });
 
     Logger.Log($"MediaSearch.Server {Program.EntryAbout?.CurrentVersion} startup complete. Running.");
@@ -101,4 +105,32 @@ public class Startup {
       endpoints.MapFallbackToFile("index.html");
     });
   }
+
+
+  public class MySwaggerSchemaFilter : ISchemaFilter {
+    public void Apply(OpenApiSchema schema, SchemaFilterContext context) {
+      if (schema is null || schema.Properties is null) {
+        return;
+      }
+      
+      //RemoveFromSchema(context.SchemaRepository.Schemas, "ILogger");
+      //RemoveFromSchema(context.SchemaRepository.Schemas, "TraceOptions");
+      //RemoveFromSchema(context.SchemaRepository.Schemas, "TraceListener");
+      //RemoveFromSchema(context.SchemaRepository.Schemas, "TraceFilter");
+      //RemoveFromSchema(context.SchemaRepository.Schemas, "ESeverity");
+      //RemoveFromSchema(context.SchemaRepository.Schemas, "DayOfWeek");
+      //RemoveFromSchema(context.SchemaRepository.Schemas, "DateOnly");
+      //RemoveFromSchema(context.SchemaRepository.Schemas, "Version");
+
+    }
+
+    private void RemoveFromSchema(Dictionary<string, OpenApiSchema> schemas, string key) {
+      if (schemas.ContainsKey(key)) {
+        schemas.Remove(key);
+      }
+    }
+  }
+
+
+
 }
