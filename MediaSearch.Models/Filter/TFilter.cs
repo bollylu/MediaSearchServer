@@ -347,7 +347,6 @@ public class TFilter : IFilter, IJson<IFilter>, IEquatable<TFilter> {
   public void FirstPage() {
     Page = 1;
   }
-
   public void SetPage(int pageNumber) {
     Page = pageNumber.WithinLimits(1, int.MaxValue);
   }

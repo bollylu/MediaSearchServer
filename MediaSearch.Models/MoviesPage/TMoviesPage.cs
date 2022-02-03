@@ -2,6 +2,16 @@
 
 public class TMoviesPage : ALoggable, IMoviesPage, IJson<IMoviesPage> {
 
+  [JsonIgnore]
+  public override ILogger Logger {
+    get {
+      return base.Logger;
+    }
+
+    set {
+      base.Logger = value;
+    }
+  }
   #region --- Public properties ------------------------------------------------------------------------------
   public string Name { get; set; } = "";
 
