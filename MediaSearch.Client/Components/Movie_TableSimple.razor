@@ -23,7 +23,7 @@
           @DisplayConverters.DisplaySizeInUnit(MovieItem.Size)
         </td>
         <td>
-          <span class="text-truncate">@MovieItem.StoragePath.BeforeLast("/").After("/")</span>
+          @DisplayConverters.DisplayPathNormalized(MovieItem.StoragePath)
         </td>
       </tr>
     }
