@@ -6,3 +6,7 @@
 * 0.0.11
 - Enabled nullable
 - Enabled preview features (abstract static in interfaces) => breaking changes
+
+* 0.0.12
+- Improved logging
+- Uses TApiServer for service requests

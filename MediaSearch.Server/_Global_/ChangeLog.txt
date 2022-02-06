@@ -28,3 +28,8 @@
 * version 0.0.18
 - Enabled nullable
 - Enabled preview features (abstract static in interfaces) => breaking changes
+
+* version 0.0.19
+- Improved logging
+- Added InputFormatter for IJson
+- Log requests headers

@@ -23,3 +23,8 @@
 - TAbout has static constructors with direct reference to Entry, Calling, Executing assembly
 - Removed AJson<T>
 - TFilter needs cleanup regarding Groups
+
+* version 0.1.4
+- Improved logging
+- Changes in IJson<T>
+- Fixed serialization of TFilter

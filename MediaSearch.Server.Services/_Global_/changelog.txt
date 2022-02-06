@@ -8,3 +8,6 @@
 - Enabled preview features (abstract static in interfaces) => breaking changes
 - XMovieCache now reads data from a json file
 - XMovieService uses XMovieCache
+
+* 0.0.13
+- Improved logging
