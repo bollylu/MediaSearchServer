@@ -1,4 +1,6 @@
-﻿namespace MediaSearch.Client.Services;
+﻿using System.Net.Http.Json;
+
+namespace MediaSearch.Client.Services;
 
 public class TApiServer : ALoggable, IApiServer {
 
@@ -11,6 +13,7 @@ public class TApiServer : ALoggable, IApiServer {
   public TApiServer() {
     _HttpClient = new HttpClient();
     SetLogger(new TConsoleLogger());
+    Logger.SeverityLimit = ESeverity.Debug;
   }
 
   public TApiServer(Uri baseAddress) : this() {
@@ -54,15 +57,14 @@ public class TApiServer : ALoggable, IApiServer {
 
       HttpRequestMessage RequestMessage = new HttpRequestMessage(HttpMethod.Post, uriRequest);
       RequestMessage.Headers.Add("Host", Environment.MachineName);
-      RequestMessage.Content = new StringContent(additionalContent.ToJson());
+      RequestMessage.Content = JsonContent.Create(additionalContent);
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
 
       LogDebug($"Response: {LastResponse.StatusCode}");
       if (LastResponse.IsSuccessStatusCode) {
         string TextContent = await LastResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-        T RetVal = new T();
-        return RetVal.ParseJson(TextContent);
+        return T.FromJson(TextContent);
       } else {
         return default;
       }
@@ -142,11 +144,12 @@ public class TApiServer : ALoggable, IApiServer {
 
       HttpRequestMessage RequestMessage = new HttpRequestMessage(HttpMethod.Post, uriRequest);
       RequestMessage.Headers.Add("Host", Environment.MachineName);
-      RequestMessage.Content = new StringContent(additionalContent.ToJson());
+      RequestMessage.Content = JsonContent.Create(additionalContent);
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
 
-      LogDebug($"Response: {LastResponse.StatusCode}");
+      LogDebugEx($"ResponseCode: {LastResponse.StatusCode}");
+      LogDebugEx($"ResponseContent: {await LastResponse.Content.ReadAsStringAsync().ConfigureAwait(false)}");
       if (LastResponse.IsSuccessStatusCode) {
         return await LastResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
       } else {

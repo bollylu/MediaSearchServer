@@ -79,17 +79,13 @@ public class TMovieService : ALoggable, IMovieService {
     try {
 
       string RequestUrl = $"movie";
-      var Content = JsonContent.Create(filter);
-      LogDebug(RequestUrl.BoxFixedWidth($"get movie page request", LOG_BOX_WIDTH));
+      LogDebugEx(RequestUrl.BoxFixedWidth($"get movie page request", GlobalSettings.DEBUG_BOX_WIDTH));
 
       using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
 
-        HttpResponseMessage Response = await _Client.PostAsync(RequestUrl, Content, Timeout.Token);
-        string JsonMovies = await Response.Content.ReadAsStringAsync();
-        LogDebugEx(JsonMovies.BoxFixedWidth($"get movie page raw result", LOG_BOX_WIDTH));
-        IMoviesPage? Result = TMoviesPage.FromJson(JsonMovies);
+        TMoviesPage? Result = await ApiServer.GetJsonAsync<TMoviesPage>(RequestUrl, filter, CancellationToken.None).ConfigureAwait(false);
 
-        LogDebugEx(Result?.ToString().BoxFixedWidth($"IMoviesPage", LOG_BOX_WIDTH));
+        LogDebugEx(Result?.ToString().BoxFixedWidth($"IMoviesPage", GlobalSettings.DEBUG_BOX_WIDTH));
         return Result;
 
       }
@@ -102,6 +98,30 @@ public class TMovieService : ALoggable, IMovieService {
       return null;
     }
   }
+
+  //public async Task<IMoviesStats?> GetMoviesStats(IFilter filter) {
+  //  try {
+
+  //    string RequestUrl = $"movie";
+  //    LogDebugEx(RequestUrl.BoxFixedWidth($"get movie page request", GlobalSettings.DEBUG_BOX_WIDTH));
+
+  //    using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
+
+  //      TMoviesPage? Result = await ApiServer.GetJsonAsync<TMoviesPage>(RequestUrl, filter, CancellationToken.None).ConfigureAwait(false);
+
+  //      LogDebugEx(Result?.ToString().BoxFixedWidth($"IMoviesPage", GlobalSettings.DEBUG_BOX_WIDTH));
+  //      return Result;
+
+  //    }
+  //  } catch (Exception ex) {
+  //    LogError($"Unable to get movies data : {ex.Message}");
+  //    if (ex.InnerException is not null) {
+  //      LogError($"  Inner exception : {ex.InnerException.Message}");
+  //      LogError($"  Inner call stack : {ex.InnerException.StackTrace}");
+  //    }
+  //    return null;
+  //  }
+  //}
   #endregion --- Movie actions --------------------------------------------
 
   #region --- Picture actions --------------------------------------------
@@ -150,6 +170,7 @@ public class TMovieService : ALoggable, IMovieService {
     try {
       string RequestUrl = $"movie/getGroups";
       using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
+
         string? GroupsJson = await ApiServer.GetStringAsync(RequestUrl, Timeout.Token).ConfigureAwait(false);
         if (GroupsJson is null) {
           return new List<string>();
@@ -158,6 +179,7 @@ public class TMovieService : ALoggable, IMovieService {
         if (RetVal is null) {
           return new List<string>();
         }
+
         return RetVal;
       }
 

@@ -29,7 +29,12 @@ public static class DisplayConverters {
 
   public static string DisplayPathNormalized(string path) {
 
-    string[] Components = path.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-    return string.Join(" > ", Components);
+    if (path.Contains('/')) {
+      string[] Components = path.BeforeLast('/').Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+      return string.Join(" > ", Components);
+    } else {
+      string[] Components = path.BeforeLast('\\').Split('\\', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+      return string.Join(" > ", Components);
+    }
   }
 }

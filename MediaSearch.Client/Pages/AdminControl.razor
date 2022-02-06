@@ -1,0 +1,13 @@
+﻿@page "/admincontrol"
+
+<PageHeader PageTitle="System control" />
+
+<div class="row">
+  <div class="col">
+    <button class="btn btn-primary" @onclick="@RefreshData" disabled="@IsRefreshRunning">Reload data from data source</button>
+  </div>
+  <div class="col">
+    <span class="text-info">@Message</span>
+  </div>
+</div>
+

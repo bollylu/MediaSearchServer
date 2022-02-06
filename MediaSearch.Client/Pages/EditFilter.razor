@@ -20,7 +20,7 @@
       <label class="col-sm-2 col-form-label" for="FilterTags">Tags</label>
       <input type="text" @bind="@Filter.Tags" class="form-control" id="FilterTags" placeholder="t1 t2 ..." />
       <div class="input-group-text p-0">
-        <select class="form-select" @bind="@Filter.KeywordsSelection">
+        <select class="form-select" @bind="@Filter.TagSelection">
           <option value="@EFilterType.All">@EFilterType.All</option>
           <option value="@EFilterType.Any">@EFilterType.Any</option>
         </select>
@@ -39,11 +39,11 @@
     </div>
 
     <div class="input-group mb-2">
-      <label class="col-sm-2 col-form-label" for="Added">Movie date</label>
-      <label class="input-group-text" for="OutputDateMin">Start date</label>
+      <label class="col-sm-2 col-form-label" for="Added">Movie year</label>
+      <label class="input-group-text" for="OutputDateMin">From year</label>
       <input type="number" @bind-value="@Filter.OutputDateMin" class="form-control" id="OutputDateMin" />
 
-      <label class="input-group-text" for="OutputDateMax">End date</label>
+      <label class="input-group-text" for="OutputDateMax">End year</label>
       <input type="number" @bind-value="@Filter.OutputDateMax" class="form-control" id="OutputDateMax" />
 
       <button class="btn btn-outline-danger" type="button" id="ClearOutputDate" @onclick="ClearOutputDate" disabled="@ClearOutputDateDisabled">x</button>
@@ -59,6 +59,22 @@
           <option value="@GroupItem">@GroupItem.TrimEnd(' ','#')</option>
         }
       </select>
+
+      @*<label class="input-group-text" for="FilterGroup">Membership</label>
+      <select class="selectpicker" id="FilterGroup" multiple @onchange="@GroupMembershipSelectionChanged">
+        <option value="">Select group(s) ...</option>
+        @foreach (string GroupItem in _Groups) {
+          <option value="@GroupItem">@GroupItem.TrimEnd(' ','#')</option>
+        }
+      </select>*@
+
+      @*<div class="input-group-text p-0">
+        <select class="form-select" @bind="@Filter.GroupFilter">
+          <option value="@EFilterGroup.All">@EFilterGroup.All</option>
+          <option value="@EFilterGroup.WithGroup">@EFilterGroup.WithGroup</option>
+          <option value="@EFilterGroup.WithoutGroup">@EFilterGroup.WithoutGroup</option>
+        </select>
+      </div>*@
 
       <div class="form-check form-switch align-self-center ms-3 me-3">
         <input type="checkbox" class="form-check-input" role="switch" data-onstyle="primary" @bind="@Filter.GroupOnly" id="GroupOnly" />

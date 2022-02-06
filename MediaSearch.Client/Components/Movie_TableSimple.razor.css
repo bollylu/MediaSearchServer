@@ -1,0 +1,17 @@
+﻿.movierow {
+}
+
+  .movierow.movierow-primary {
+    background-color: white;
+  }
+  .movierow.movierow-secondary {
+    background-color: aliceblue;
+  }
+  .movierow div.row {
+    border: 1px solid white;
+  }
+
+  .movierow div.row:hover {
+    background-color: lightsteelblue;
+    border: 1px solid blue;
+  }

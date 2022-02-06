@@ -9,6 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Pages\Refresh.razor.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Pages\Refresh.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="_Global_\changelog.txt" />
     <None Remove="_Global_\version.txt" />
   </ItemGroup>

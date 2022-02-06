@@ -15,3 +15,7 @@
 - Enabled nullable
 - Enabled preview features (abstract static in interfaces) => breaking changes
 
+* 0.0.14
+- Added more menu items
+- Moved refresh data in Admin section
+- Cosmetic changes to TableSimple component

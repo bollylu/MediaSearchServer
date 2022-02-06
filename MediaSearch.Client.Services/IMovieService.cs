@@ -29,4 +29,6 @@ public interface IMovieService {
 
   Task<IList<string>> GetGroups(CancellationToken cancelToken);
   Task<IList<string>> GetSubGroups(string group, CancellationToken cancelToken);
+
+  //Task<IMovieStats> GetStats(CancellationToken token);
 }

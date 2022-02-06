@@ -58,12 +58,12 @@ namespace MediaSearch.Client.Pages {
     private int _OldPage = int.MaxValue;
 
     protected override void OnInitialized() {
-      Logger.LogDebug("Initialized");
+      Logger.LogDebugEx("Initialized");
     }
 
     protected override async Task OnParametersSetAsync() {
-      Logger.LogDebug(Filter.ToString().Box("New filter", 120));
       if (_OldPage != Filter.Page || Filter != _OldFilter) {
+        Logger.LogDebugEx(Filter.ToString().BoxFixedWidth("New filter", GlobalSettings.DEBUG_BOX_WIDTH));
         _OldPage = Filter.Page;
         _OldFilter = new TFilter(Filter);
         MoviesPage = await MovieService.GetMoviesPage(Filter);

@@ -25,6 +25,7 @@ public partial class EditFilter : ComponentBase {
     }
     Filter.KeywordsSelection = EFilterType.All;
     Filter.TagSelection = EFilterType.All;
+    Filter.GroupFilter = EFilterGroup.All;
     _NotifyMessage(Filter);
   }
 
@@ -45,32 +46,41 @@ public partial class EditFilter : ComponentBase {
     Filter.KeywordsSelection = EFilterType.All;
   }
 
-  public bool ClearKeywordsDisabled => string.IsNullOrEmpty(Filter.Keywords);
+  private bool ClearKeywordsDisabled => string.IsNullOrEmpty(Filter.Keywords);
 
   private void ClearTags() {
     Filter.Tags = "";
     Filter.TagSelection = EFilterType.All;
   }
 
-  public bool ClearTagsDisabled => string.IsNullOrEmpty(Filter.Tags);
+  private bool ClearTagsDisabled => string.IsNullOrEmpty(Filter.Tags);
 
   private void ClearOutputDate() {
     Filter.OutputDateMin = TFilter.DEFAULT_OUTPUT_DATE_MIN;
     Filter.OutputDateMax = TFilter.DEFAULT_OUTPUT_DATE_MAX;
   }
 
-  public bool ClearOutputDateDisabled => Filter.OutputDateMin == TFilter.DEFAULT_OUTPUT_DATE_MIN && Filter.OutputDateMax == TFilter.DEFAULT_OUTPUT_DATE_MAX;
+  private bool ClearOutputDateDisabled => Filter.OutputDateMin == TFilter.DEFAULT_OUTPUT_DATE_MIN && Filter.OutputDateMax == TFilter.DEFAULT_OUTPUT_DATE_MAX;
 
   private void ClearGroup() {
     Filter.Group = "";
     Filter.GroupOnly = false;
-    StateHasChanged();
+    Filter.GroupMemberships.Clear();
+    Filter.GroupFilter = EFilterGroup.All;
   }
 
-  public bool ClearGroupDisabled => string.IsNullOrEmpty(Filter.Group) && Filter.GroupOnly == false;
+  private bool ClearGroupDisabled => string.IsNullOrEmpty(Filter.Group) && Filter.GroupOnly == false;
 
   private void ClearFilter() {
     Filter.Clear();
+  }
+
+  private void GroupMembershipSelectionChanged(ChangeEventArgs e) {
+    if (e.Value is not string[] GroupMembershipSelection) {
+      return;
+    }
+    Filter.GroupMemberships.Clear();
+    Filter.GroupMemberships.AddRange(GroupMembershipSelection);
   }
 }
 
