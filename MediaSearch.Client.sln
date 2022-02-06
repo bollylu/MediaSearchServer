@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaSearch.Client.Test", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaSearch.Server.Test", "MediaSearch.Server.Test\MediaSearch.Server.Test.csproj", "{A20565DC-81B6-4476-B3F4-C2BBD74C45E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaSearch.Models.Test", "MediaSearch.Models.Test\MediaSearch.Models.Test.csproj", "{E301EA57-A4CC-4BC4-8FD0-07D0C83CBEE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaSearch.Models.Test", "MediaSearch.Models.Test\MediaSearch.Models.Test.csproj", "{E301EA57-A4CC-4BC4-8FD0-07D0C83CBEE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
