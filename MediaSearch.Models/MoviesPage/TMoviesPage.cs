@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public class TMoviesPage : ALoggable, IMoviesPage, IJson<IMoviesPage> {
+public class TMoviesPage : ALoggable, IMoviesPage, IJson<TMoviesPage> {
 
   [JsonIgnore]
   public override ILogger Logger {
@@ -94,11 +94,11 @@ public class TMoviesPage : ALoggable, IMoviesPage, IJson<IMoviesPage> {
 
   #region --- Deserializer --------------------------------------------
 
-  public IMoviesPage ParseJson(string source) {
+  public TMoviesPage ParseJson(string source) {
     return ParseJson(source, DefaultJsonSerializerOptions);
   }
 
-  public IMoviesPage ParseJson(string source, JsonSerializerOptions options) {
+  public TMoviesPage ParseJson(string source, JsonSerializerOptions options) {
     #region === Validate parameters ===
     if (string.IsNullOrWhiteSpace(source)) {
       throw new JsonException("Json MoviesPage source is null");
@@ -125,14 +125,14 @@ public class TMoviesPage : ALoggable, IMoviesPage, IJson<IMoviesPage> {
   #endregion --- Deserializer --------------------------------------------
 
   #region --- Static Deserializer --------------------------------------------
-  public static IMoviesPage? FromJson(string source) {
+  public static TMoviesPage? FromJson(string source) {
     if (string.IsNullOrWhiteSpace(source)) {
       throw new ArgumentNullException(nameof(source));
     }
     return JsonSerializer.Deserialize<TMoviesPage>(source, DefaultJsonSerializerOptions);
   }
 
-  public static IMoviesPage? FromJson(string source, JsonSerializerOptions options) {
+  public static TMoviesPage? FromJson(string source, JsonSerializerOptions options) {
     if (string.IsNullOrWhiteSpace(source)) {
       throw new ArgumentNullException(nameof(source));
     }

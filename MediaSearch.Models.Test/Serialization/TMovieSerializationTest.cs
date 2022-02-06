@@ -17,7 +17,7 @@ public class TMovieSerializationTest {
     string JsonMovie = Source.ToJson();
 
     Assert.IsNotNull(JsonMovie);
-    Console.WriteLine(JsonMovie.ToString().BoxFixedWidth(120));
+    Console.WriteLine(JsonMovie.ToString().BoxFixedWidth("JsonMovie", GlobalSettings.DEBUG_BOX_WIDTH));
   }
 
   [TestMethod]
@@ -25,7 +25,7 @@ public class TMovieSerializationTest {
     TMovie Source = await MovieService.GetAllMovies().FirstAsync();
 
     string JsonMovie = Source.ToJson();
-    Console.WriteLine(JsonMovie.BoxFixedWidth(120));
+    Console.WriteLine(JsonMovie.BoxFixedWidth("JsonMovie", GlobalSettings.DEBUG_BOX_WIDTH));
 
     IMovie? Target = TMovie.FromJson(JsonMovie);
 

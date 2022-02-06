@@ -247,6 +247,8 @@ public class TFilter : IFilter, IJson<IFilter>, IEquatable<TFilter> {
             WriteIndented = true,
             NumberHandling = JsonNumberHandling.Strict
           };
+          _DefaultJsonSerializerOptions.Converters.Add(new TFilterJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TDateOnlyJsonConverter());
 
         }

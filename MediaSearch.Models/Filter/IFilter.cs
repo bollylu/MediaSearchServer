@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public interface IFilter {
+public interface IFilter : IJson {
 
   int Page { get; }
   int PageSize { get; }

@@ -48,7 +48,7 @@ public class TMoviesPageSerializationTest {
     Console.WriteLine(JsonMovies);
 
     IMoviesPage? Target = TMoviesPage.FromJson(JsonMovies);
-    Console.WriteLine(Target?.ToString().BoxFixedWidth(120));
+    Console.WriteLine(Target?.ToString().BoxFixedWidth("Target", GlobalSettings.DEBUG_BOX_WIDTH));
   }
 
 }
