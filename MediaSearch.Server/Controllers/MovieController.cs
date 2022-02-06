@@ -76,16 +76,19 @@ public class TMovieController : AController {
   /// <returns>A IMoviesPage object containing the data</returns>
   [HttpPost()]
   public async Task<ActionResult<TMoviesPage>> GetWithFilter(TFilter filter) {
-    Logger?.LogDebug($"Request : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.Id} > {HttpContext.Request.QueryString}");
+    //Logger?.LogDebug($"Request : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.Id} > {HttpContext.Request.QueryString}");
+
+    Logger?.LogDebug(HttpContext.Request.ListHeaders());
+    
     if (filter is null) {
       filter = TFilter.Empty;
     }
 
-    Logger?.LogDebug($"  Filter : {filter}");
+    //Logger?.LogDebug($"  Filter : {filter}");
 
     TMoviesPage? RetVal = await _MovieService.GetMoviesPage(filter).ConfigureAwait(false);
 
-    if (RetVal is null) { 
+    if (RetVal is null) {
       return new EmptyResult();
     }
 
@@ -102,8 +105,8 @@ public class TMovieController : AController {
   /// <returns>A list of groups</returns>
   [HttpGet("getGroups")]
   public async Task<ActionResult<IList<string>>> GetGroups() {
-    Logger?.LogDebug($"Request : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.Id} > {HttpContext.Request.QueryString}");
-
+    //Logger?.LogDebug($"Request : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.Id} > {HttpContext.Request.QueryString}");
+    Logger?.LogDebug(HttpContext.Request.ListHeaders());
     IList<string> RetVal = await _MovieService.GetGroups().ToListAsync().ConfigureAwait(false);
 
     return new ActionResult<IList<string>>(RetVal);
@@ -116,8 +119,8 @@ public class TMovieController : AController {
   /// <returns>A list of groups</returns>
   [HttpGet("getSubGroups")]
   public async Task<ActionResult<IList<string>>> GetSubGroups(string group) {
-    Logger?.LogDebug($"Request : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.Id} > {HttpContext.Request.QueryString}");
-
+    //Logger?.LogDebug($"Request : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.Id} > {HttpContext.Request.QueryString}");
+    Logger?.LogDebug(HttpContext.Request.ListHeaders());
     IList<string> RetVal = await _MovieService.GetSubGroups(group ?? "").ToListAsync().ConfigureAwait(false);
 
     return new ActionResult<IList<string>>(RetVal);
@@ -132,7 +135,8 @@ public class TMovieController : AController {
   /// <returns>A IMoviesPage object containing the data</returns>
   [HttpPost("getNews")]
   public async Task<ActionResult<IMoviesPage>> GetNews(TFilter filter) {
-    Logger?.LogDebug($"Request : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.Id} > {HttpContext.Request.QueryString}");
+    //Logger?.LogDebug($"Request : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.Id} > {HttpContext.Request.QueryString}");
+    Logger?.LogDebug(HttpContext.Request.ListHeaders());
 
     IMoviesPage? RetVal = await _MovieService.GetMoviesPage(filter).ConfigureAwait(false);
 
@@ -151,6 +155,7 @@ public class TMovieController : AController {
   [HttpGet("getPicture")]
   public async Task<ActionResult> GetPicture(string id, int width, int height) {
     Logger?.LogDebug($"Request for picture {id}, width={width}, height={height}");
+    Logger?.LogDebug(HttpContext.Request.ListHeaders());
     byte[] Result = await _MovieService.GetPicture(id.FromUrl64(),
                                                    "folder.jpg",
                                                    width: width,

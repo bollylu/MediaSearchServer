@@ -96,7 +96,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
       default:
         RetVal.Group = GroupTags[0];
         RetVal.SubGroup = GroupTags[1];
-        LogWarning($"Too much groups in path name : {string.Join(" ,", Tags)}");
+        LogWarning($"Too much groups in path name : {string.Join(" ,", Tags)}".BoxFixedWidth(GlobalSettings.DEBUG_BOX_WIDTH));
         break;
     }
 
@@ -184,7 +184,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
   }
 
   public TMoviesPage? GetMoviesPage(IFilter filter) {
-    LogDebug(filter.ToString().BoxFixedWidth("Filter", 80));
+    LogDebug(filter.ToString().BoxFixedWidth("Filter", GlobalSettings.DEBUG_BOX_WIDTH));
 
     TMoviesPage RetVal = new TMoviesPage() {
       Source = RootStoragePath,

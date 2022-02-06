@@ -8,8 +8,6 @@ namespace MediaSearch.Server;
 
 public class Program {
 
-  const int BOX_WIDTH = 80;
-
   #region --- Parameter names --------------------------------------------
   public const string ARG_HELP = "help";
   public const string ARG_HELP2 = "?";
@@ -48,6 +46,8 @@ public class Program {
       About.Add(AssemblyAbout);
     }
 
+    await EntryAbout.Initialize().ConfigureAwait(false);
+
     #region --- Configuration --------------------------------------------
     IConfigurationBuilder ConfigurationBuilder = new ConfigurationBuilder();
     ConfigurationBuilder.SetBasePath(Directory.GetCurrentDirectory());
@@ -63,14 +63,14 @@ public class Program {
     #endregion --- Configuration --------------------------------------------
 
     foreach (IAbout AboutItem in About) {
-      Console.WriteLine(AboutItem.CurrentVersion.ToString().BoxFixedWidth($"{AboutItem.Name} version #", BOX_WIDTH));
+      Console.WriteLine(AboutItem.CurrentVersion.ToString().BoxFixedWidth($"{AboutItem.Name} version #", GlobalSettings.DEBUG_BOX_WIDTH));
       if (AppArgs.IsDefined(ARG_CHANGELOG)) {
-        Console.WriteLine(AboutItem.ChangeLog.BoxFixedWidth($"Change log {AboutItem.Name}", BOX_WIDTH));
+        Console.WriteLine(AboutItem.ChangeLog.BoxFixedWidth($"Change log {AboutItem.Name}", GlobalSettings.DEBUG_BOX_WIDTH));
       }
     }
 
     if (AppArgs.IsDefined(ARG_VERBOSE) || Configuration.GetSection(ARG_VERBOSE).Exists()) {
-      Console.WriteLine(Configuration.DumpConfig().BoxFixedWidth("From Main", BOX_WIDTH));
+      Console.WriteLine(Configuration.DumpConfig().BoxFixedWidth("From Main", GlobalSettings.DEBUG_BOX_WIDTH));
     }
 
     CreateHostBuilder(args).Build().Run();

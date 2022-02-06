@@ -9,10 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Formatters\TJsonInputFormatter.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="ChangeLog.txt" />
     <None Remove="_Global_\Version.txt" />
   </ItemGroup>

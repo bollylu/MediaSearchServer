@@ -14,8 +14,6 @@ namespace MediaSearch.Server;
 
 public class Startup {
 
-  const int BOX_WIDTH = 120;
-
   public static ILogger Logger { get; private set; } = new TConsoleLogger();
 
   public const string DEFAULT_DATASOURCE = @"\\andromeda.sharenet.priv\multimedia\films\";
@@ -27,7 +25,7 @@ public class Startup {
   public Startup(IConfiguration configuration) {
     Configuration = configuration;
     if (Program.AppArgs.IsDefined(Program.ARG_VERBOSE)) {
-      Console.WriteLine(Configuration.DumpConfig().BoxFixedWidth("Configuration in Startup constructor", BOX_WIDTH));
+      Console.WriteLine(Configuration.DumpConfig().BoxFixedWidth("Configuration in Startup constructor", GlobalSettings.DEBUG_BOX_WIDTH));
     }
   } 
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -57,7 +55,7 @@ public class Startup {
 
     services.AddControllers(options => {
       options.OutputFormatters.Insert(0, new TJsonOutputFormatter());
-      //options.InputFormatters.Insert(0, new TJsonInputFormatter());
+      options.InputFormatters.Insert(0, new TJsonInputFormatter());
     });
 
     TMovieService MovieService = new TMovieService(DataSource);
