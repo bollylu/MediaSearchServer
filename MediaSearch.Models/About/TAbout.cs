@@ -8,7 +8,6 @@ public class TAbout : ALoggable, IAbout, IJson<TAbout> {
 
   public string Description => _Assembly?.GetName().FullName ?? "";
 
-  [JsonIgnore]
   public string VersionSource { get; init; } = "_global_.version.txt";
   public Version CurrentVersion {
     get {
@@ -20,7 +19,6 @@ public class TAbout : ALoggable, IAbout, IJson<TAbout> {
   }
   private Version? _CurrentVersion;
 
-  [JsonIgnore]
   public string ChangeLogSource { get; init; } = "_global_.changelog.txt";
   public string ChangeLog {
     get {
@@ -64,6 +62,14 @@ public class TAbout : ALoggable, IAbout, IJson<TAbout> {
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
+  public override string ToString() {
+    StringBuilder RetVal = new();
+    RetVal.AppendLine($"{nameof(Name)} : {Name}");
+    RetVal.AppendLine($"{nameof(Description)} : {Description}");
+    RetVal.AppendLine($"{nameof(CurrentVersion)} : {CurrentVersion}");
+    RetVal.AppendLine($"{nameof(ChangeLog)} : {ChangeLog}");
+    return RetVal.ToString();
+  }
   #region --- IJson --------------------------------------------
   public static JsonSerializerOptions DefaultJsonSerializerOptions {
     get {
@@ -73,6 +79,7 @@ public class TAbout : ALoggable, IAbout, IJson<TAbout> {
             WriteIndented = true,
             NumberHandling = JsonNumberHandling.Strict
           };
+          _DefaultJsonSerializerOptions.Converters.Add(new TAboutJsonConverter());
         }
         return _DefaultJsonSerializerOptions;
       }
@@ -262,6 +269,6 @@ public class TAbout : ALoggable, IAbout, IJson<TAbout> {
 
   [JsonIgnore]
   public static TAbout Calling => _Calling ??= new TAbout(Assembly.GetCallingAssembly());
-  private static TAbout? _Calling; 
+  private static TAbout? _Calling;
   #endregion --- Static instances --------------------------------------------
 }

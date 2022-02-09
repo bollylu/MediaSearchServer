@@ -10,6 +10,7 @@ public class TFilter : IFilter, IJson<IFilter>, IEquatable<TFilter> {
   /// <summary>
   /// The number of the page to request. Must be positive.
   /// </summary>
+  [JsonPropertyName(nameof(Page))]
   public int Page {
     get {
       return _Page;
@@ -23,6 +24,7 @@ public class TFilter : IFilter, IJson<IFilter>, IEquatable<TFilter> {
   /// <summary>
   /// The maximum number of items on the page. Must be positive.
   /// </summary>
+  [JsonPropertyName(nameof(PageSize))]
   public int PageSize {
     get {
       return _PageSize;
@@ -42,11 +44,13 @@ public class TFilter : IFilter, IJson<IFilter>, IEquatable<TFilter> {
   /// <summary>
   /// Keywords to use for the search in the Movie name
   /// </summary>
+  [JsonPropertyName(nameof(Keywords))]
   public string Keywords { get; set; } = "";
   /// <summary>
   /// How to use the keywords for the search
   /// </summary>
   [JsonConverter(typeof(JsonStringEnumConverter))]
+  [JsonPropertyName(nameof(KeywordsSelection))]
   public EFilterType KeywordsSelection { get; set; }
   #endregion --- Keywords in movie name --------------------------------------------
 
@@ -54,17 +58,20 @@ public class TFilter : IFilter, IJson<IFilter>, IEquatable<TFilter> {
   /// <summary>
   /// Tags to be searched for
   /// </summary>
+  [JsonPropertyName(nameof(Tags))]
   public string Tags { get; set; } = "";
   /// <summary>
   /// How to use the tags for the search
   /// </summary>
   [JsonConverter(typeof(JsonStringEnumConverter))]
+  [JsonPropertyName(nameof(TagSelection))]
   public EFilterType TagSelection { get; set; }
   #endregion --- Tags --------------------------------------------
 
   /// <summary>
   /// When selecting a movie, how many days in the past of it addition to the library should we look
   /// </summary>
+  [JsonPropertyName(nameof(DaysBack))]
   public int DaysBack {
     get {
       return _DaysBack;
@@ -79,6 +86,7 @@ public class TFilter : IFilter, IJson<IFilter>, IEquatable<TFilter> {
   /// <summary>
   /// When selecting a movie, the minimum (included) of the range for the output date
   /// </summary>
+  [JsonPropertyName(nameof(OutputDateMin))]
   public int OutputDateMin {
     get {
       return _OutputDateMin;
@@ -92,6 +100,7 @@ public class TFilter : IFilter, IJson<IFilter>, IEquatable<TFilter> {
   /// <summary>
   /// When selecting a movie, the maximum (included) of the range for the output date
   /// </summary>
+  [JsonPropertyName(nameof(OutputDateMax))]
   public int OutputDateMax {
     get {
       return _OutputDateMax;
@@ -109,22 +118,30 @@ public class TFilter : IFilter, IJson<IFilter>, IEquatable<TFilter> {
   #endregion --- Output date --------------------------------------------
 
   [JsonConverter(typeof(JsonStringEnumConverter))]
+  [JsonPropertyName(nameof(SortOrder))]
   public EFilterSortOrder SortOrder { get; set; } = EFilterSortOrder.Name;
 
   #region --- Groups --------------------------------------------
+  [JsonPropertyName(nameof(GroupOnly))]
   public bool GroupOnly { get; set; } = false;
+  
   /// <summary>
   /// Group to searched for
   /// </summary>
+  [JsonPropertyName(nameof(Group))]
   public string Group { get; set; } = "";
+  
   /// <summary>
   /// Sub-group to searched for
   /// </summary>
+  [JsonPropertyName(nameof(SubGroup))] 
   public string SubGroup { get; set; } = "";
 
+  [JsonPropertyName(nameof(GroupMemberships))]
   public List<string> GroupMemberships { get; set; } = new();
 
   [JsonConverter(typeof(JsonStringEnumConverter))]
+  [JsonPropertyName(nameof(GroupFilter))]
   public EFilterGroup GroupFilter { get; set; } = EFilterGroup.All;
   #endregion --- Groups --------------------------------------------
 
