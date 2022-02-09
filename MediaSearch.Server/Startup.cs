@@ -8,24 +8,21 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 using System.Reflection;
-using System.Runtime.Serialization;
 
 namespace MediaSearch.Server;
 
 public class Startup {
 
-  public static ILogger Logger { get; private set; } = new TConsoleLogger();
-
   public const string DEFAULT_DATASOURCE = @"\\andromeda.sharenet.priv\multimedia\films\";
 
-  public const string DEFAULT_LOGFILE_LINUX = "/var/log/MediaSearch/MediaSearch.Server.log";
-  public const string DEFAULT_LOGFILE_WINDOWS = @"c:\logs\MediaSearch\MediaSearch.Server.log";
+  private readonly ILogger Logger;
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public Startup(IConfiguration configuration) {
+    Logger = ALogger.Create(Program.GlobalSettings.GlobalLogger);
     Configuration = configuration;
-    if (Program.AppArgs.IsDefined(Program.ARG_VERBOSE)) {
-      Console.WriteLine(Configuration.DumpConfig().BoxFixedWidth("Configuration in Startup constructor", GlobalSettings.DEBUG_BOX_WIDTH));
+    if (Program.GlobalSettings.AppArgs.IsDefined(Program.ARG_VERBOSE)) {
+      Console.WriteLine(Configuration.DumpConfig().BoxFixedWidth("Configuration in Startup constructor", TGlobalSettings.DEBUG_BOX_WIDTH));
     }
   } 
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -36,12 +33,9 @@ public class Startup {
   public void ConfigureServices(IServiceCollection services) {
 
     string DataSource = Configuration.GetValue("datasource", DEFAULT_DATASOURCE);
-    string LogFile = Program.AppArgs.GetValue("log", OperatingSystem.IsWindows() ? DEFAULT_LOGFILE_WINDOWS : DEFAULT_LOGFILE_LINUX);
-
-    Logger = new TFileLogger(LogFile) { SeverityLimit = ESeverity.Debug };
 
     StringBuilder StartupInfo = new StringBuilder();
-    StartupInfo.AppendLine($"Version {Program.EntryAbout?.CurrentVersion ?? new Version()}");
+    StartupInfo.AppendLine($"Version {Program.GlobalSettings.EntryAbout?.CurrentVersion ?? new Version()}");
     StartupInfo.AppendLine($"Running for {Environment.UserName}");
     StartupInfo.AppendLine($"Running on {Environment.MachineName}");
     StartupInfo.AppendLine($"Runtime version {Environment.Version}");
@@ -75,13 +69,13 @@ public class Startup {
     services.AddSwaggerGen(c => {
       c.SwaggerDoc("v1", new OpenApiInfo { 
                                         Title = "MediaSearch.Server", 
-                                        Version = Program.EntryAbout?.CurrentVersion.ToString() 
+                                        Version = Program.GlobalSettings.EntryAbout?.CurrentVersion.ToString() 
                                    }
                   );
       //c.SchemaFilter<MySwaggerSchemaFilter>();
     });
 
-    Logger.Log($"MediaSearch.Server {Program.EntryAbout?.CurrentVersion} startup complete. Running.");
+    Logger.Log($"MediaSearch.Server {Program.GlobalSettings.EntryAbout?.CurrentVersion} startup complete. Running.");
   }
 
   // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -89,7 +83,7 @@ public class Startup {
     if ( env.IsDevelopment() ) {
       app.UseDeveloperExceptionPage();
       app.UseSwagger();
-      app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"MediaSearch.Server v{Program.EntryAbout.CurrentVersion}"));
+      app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"MediaSearch.Server v{Program.GlobalSettings.EntryAbout.CurrentVersion}"));
     }
 
     app.UseCors("AllowAll");

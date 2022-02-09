@@ -11,7 +11,7 @@ public class TMovieController : AController {
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMovieController(IMovieService movieService, ILogger logger) : base(logger) {
-    Logger?.LogDebugEx("Building TMovie controller");
+    Logger.LogDebugEx("Building TMovie controller");
     _MovieService = movieService;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -76,15 +76,14 @@ public class TMovieController : AController {
   /// <returns>A IMoviesPage object containing the data</returns>
   [HttpPost()]
   public async Task<ActionResult<TMoviesPage>> GetWithFilter(TFilter filter) {
-    //Logger?.LogDebug($"Request : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.Id} > {HttpContext.Request.QueryString}");
 
-    Logger?.LogDebug(HttpContext.Request.ListHeaders());
-    
+    LogDebug(HttpContext.Request.ListHeaders());
+
     if (filter is null) {
       filter = TFilter.Empty;
     }
 
-    //Logger?.LogDebug($"  Filter : {filter}");
+    LogDebug(filter.ToString().BoxFixedWidth("Filter received in controller", TGlobalSettings.DEBUG_BOX_WIDTH));
 
     TMoviesPage? RetVal = await _MovieService.GetMoviesPage(filter).ConfigureAwait(false);
 
@@ -92,8 +91,8 @@ public class TMovieController : AController {
       return new EmptyResult();
     }
 
-    Logger?.LogDebug($"< {RetVal}");
-    Logger?.LogDebugEx(_PrintMovies(RetVal.Movies));
+    LogDebug(RetVal.ToString().BoxFixedWidth("Returned value", TGlobalSettings.DEBUG_BOX_WIDTH));
+    LogDebugEx(_PrintMovies(RetVal.Movies).BoxFixedWidth("Movies", TGlobalSettings.DEBUG_BOX_WIDTH));
 
     return new ActionResult<TMoviesPage>(RetVal);
   }
@@ -171,7 +170,6 @@ public class TMovieController : AController {
   #region --- Support --------------------------------------------
   private string _PrintMovies(IEnumerable<IMovie> movies) {
     StringBuilder RetVal = new();
-
     foreach (IMovie MovieItem in movies) {
       RetVal.AppendLine($"  {MovieItem.FileName}");
     }

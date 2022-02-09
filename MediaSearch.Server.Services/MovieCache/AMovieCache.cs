@@ -51,7 +51,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
       try {
         IMovie NewMovie = _ParseEntry(FileItem);
 
-        _Items.Add(NewMovie);
+        AddMovie(NewMovie);
       } catch (Exception ex) {
         LogWarning($"Unable to parse movie {FileItem} : {ex.Message}");
         if (ex.InnerException is not null) {
@@ -96,7 +96,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
       default:
         RetVal.Group = GroupTags[0];
         RetVal.SubGroup = GroupTags[1];
-        LogWarning($"Too much groups in path name : {string.Join(" ,", Tags)}".BoxFixedWidth(GlobalSettings.DEBUG_BOX_WIDTH));
+        LogWarning($"Too much groups in path name : {string.Join(", ", Tags)}".BoxFixedWidth(GlobalSettings.DEBUG_BOX_WIDTH));
         break;
     }
 

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 using System.Reflection;
 
@@ -8,21 +9,23 @@ namespace MediaSearch.Server;
 
 public class Program {
 
-  #region --- Parameter names --------------------------------------------
+  #region --- Parameters --------------------------------------------
   public const string ARG_HELP = "help";
   public const string ARG_HELP2 = "?";
   public const string ARG_VERBOSE = "verbose";
   public const string ARG_LOGFILE = "log";
   public const string ARG_CHANGELOG = "changelog";
   public const string ARG_DATA_SOURCE = "datasource";
-  #endregion --- Parameter names --------------------------------------------
+
+  public const string DEFAULT_LOGFILE_LINUX = "/var/log/MediaSearch/MediaSearch.Server.log";
+  public const string DEFAULT_LOGFILE_WINDOWS = @"c:\logs\MediaSearch\MediaSearch.Server.log";
+  #endregion --- Parameters --------------------------------------------
 
   #region --- Global variables --------------------------------------------
-  public static ISplitArgs AppArgs { get; } = new SplitArgs();
+  
   public static IConfiguration? Configuration { get; private set; }
 
-  public static List<IAbout> About { get; } = new();
-  public static IAbout EntryAbout => TAbout.Entry;
+  public static TGlobalSettings GlobalSettings { get; } = new();
   #endregion --- Global variables --------------------------------------------
 
   const string DEFAULT_SERVER_NAME = "http://localhost:4567";
@@ -34,19 +37,19 @@ public class Program {
       Console.SetWindowSize(132, 50);
     }
 
-    AppArgs.Parse(args);
+    GlobalSettings.AppArgs.Parse(args);
 
-    if (AppArgs.IsDefined(ARG_HELP) || AppArgs.IsDefined(ARG_HELP2)) {
+    if (GlobalSettings.AppArgs.IsDefined(ARG_HELP) || GlobalSettings.AppArgs.IsDefined(ARG_HELP2)) {
       Usage();
     }
+    
+    await GlobalSettings.Initialize();
 
-    foreach (Assembly AssemblyItem in AppDomain.CurrentDomain.GetAssemblies().Where(a => (a.GetName()?.Name ?? "").StartsWith("MediaSearch"))) {
-      IAbout AssemblyAbout = new TAbout(AssemblyItem);
-      await AssemblyAbout.Initialize();
-      About.Add(AssemblyAbout);
-    }
+    string LogFile = Program.GlobalSettings.AppArgs.GetValue("log", OperatingSystem.IsWindows() ? DEFAULT_LOGFILE_WINDOWS : DEFAULT_LOGFILE_LINUX);
+    Program.GlobalSettings.GlobalLogger = new TFileLogger(LogFile) { SeverityLimit = ESeverity.Debug };
 
-    await EntryAbout.Initialize().ConfigureAwait(false);
+    MediaSearch.Models.GlobalSettings.GlobalLogger = ALogger.Create(Program.GlobalSettings.GlobalLogger);
+    MediaSearch.Models.GlobalSettings.GlobalLogger.SeverityLimit = ESeverity.DebugEx;
 
     #region --- Configuration --------------------------------------------
     IConfigurationBuilder ConfigurationBuilder = new ConfigurationBuilder();
@@ -62,15 +65,10 @@ public class Program {
     Configuration = ConfigurationBuilder.Build();
     #endregion --- Configuration --------------------------------------------
 
-    foreach (IAbout AboutItem in About) {
-      Console.WriteLine(AboutItem.CurrentVersion.ToString().BoxFixedWidth($"{AboutItem.Name} version #", GlobalSettings.DEBUG_BOX_WIDTH));
-      if (AppArgs.IsDefined(ARG_CHANGELOG)) {
-        Console.WriteLine(AboutItem.ChangeLog.BoxFixedWidth($"Change log {AboutItem.Name}", GlobalSettings.DEBUG_BOX_WIDTH));
-      }
-    }
+    Console.WriteLine(GlobalSettings.ListAbout());
 
-    if (AppArgs.IsDefined(ARG_VERBOSE) || Configuration.GetSection(ARG_VERBOSE).Exists()) {
-      Console.WriteLine(Configuration.DumpConfig().BoxFixedWidth("From Main", GlobalSettings.DEBUG_BOX_WIDTH));
+    if (GlobalSettings.AppArgs.IsDefined(ARG_VERBOSE) || Configuration.GetSection(ARG_VERBOSE).Exists()) {
+      Console.WriteLine(Configuration.DumpConfig().BoxFixedWidth("From Main", TGlobalSettings.DEBUG_BOX_WIDTH));
     }
 
     CreateHostBuilder(args).Build().Run();
@@ -108,7 +106,7 @@ public class Program {
       Console.WriteLine(message);
     }
 
-    Console.WriteLine($"MediaSearch.Server v{EntryAbout?.CurrentVersion ?? new Version()}");
+    Console.WriteLine($"MediaSearch.Server v{GlobalSettings.EntryAbout?.CurrentVersion ?? new Version()}");
     Console.WriteLine("Usage : ./MediaSearch.Server [params]");
     Console.WriteLine("  [server=<server ip or dns>]");
     Console.WriteLine("  [log=<logfile path and name>]");
