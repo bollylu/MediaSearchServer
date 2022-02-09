@@ -41,8 +41,7 @@ public class TMovieService : ALoggable, IMovieService {
   public async Task<bool> ProbeApi() {
     try {
       using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
-        HttpResponseMessage Response = await _Client.GetAsync("about", Timeout.Token);
-        return Response.IsSuccessStatusCode;
+        return await ApiServer.ProbeServerAsync(Timeout.Token);
       }
     } catch {
       return false;
@@ -80,6 +79,7 @@ public class TMovieService : ALoggable, IMovieService {
 
       string RequestUrl = $"movie";
       LogDebugEx(RequestUrl.BoxFixedWidth($"get movie page request", GlobalSettings.DEBUG_BOX_WIDTH));
+      LogDebug(filter.ToString().BoxFixedWidth($"Movies page filter", GlobalSettings.DEBUG_BOX_WIDTH));
 
       using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
 
@@ -98,30 +98,6 @@ public class TMovieService : ALoggable, IMovieService {
       return null;
     }
   }
-
-  //public async Task<IMoviesStats?> GetMoviesStats(IFilter filter) {
-  //  try {
-
-  //    string RequestUrl = $"movie";
-  //    LogDebugEx(RequestUrl.BoxFixedWidth($"get movie page request", GlobalSettings.DEBUG_BOX_WIDTH));
-
-  //    using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
-
-  //      TMoviesPage? Result = await ApiServer.GetJsonAsync<TMoviesPage>(RequestUrl, filter, CancellationToken.None).ConfigureAwait(false);
-
-  //      LogDebugEx(Result?.ToString().BoxFixedWidth($"IMoviesPage", GlobalSettings.DEBUG_BOX_WIDTH));
-  //      return Result;
-
-  //    }
-  //  } catch (Exception ex) {
-  //    LogError($"Unable to get movies data : {ex.Message}");
-  //    if (ex.InnerException is not null) {
-  //      LogError($"  Inner exception : {ex.InnerException.Message}");
-  //      LogError($"  Inner call stack : {ex.InnerException.StackTrace}");
-  //    }
-  //    return null;
-  //  }
-  //}
   #endregion --- Movie actions --------------------------------------------
 
   #region --- Picture actions --------------------------------------------

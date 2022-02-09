@@ -3,10 +3,6 @@ using MediaSearch.Client;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
-const string DEFAULT_EXTERNAL_API_ADDRESS = "https://mediasearchapi.sharenet.be/api/";
-//const string DEFAULT_API_ADDRESS = "http://mediasearchapi.sharenet.priv/api/";
-const string DEFAULT_API_ADDRESS = "http://localhost:4567/api/";
-
 await GlobalProperties.About.Initialize();
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -16,13 +12,28 @@ builder.Services.AddSingleton<ILogger, TConsoleLogger>();
 builder.Services.AddSingleton<TImageCache>();
 builder.Services.AddLogging();
 
-
-IMovieService MovieService = new TMovieService(DEFAULT_API_ADDRESS, new TImageCache(), new TConsoleLogger());
-if (!await MovieService.ProbeApi()) {
-  MovieService = new TMovieService(DEFAULT_EXTERNAL_API_ADDRESS, new TImageCache(), new TConsoleLogger());
+List<string> ApiServerAdresses = new List<string>() {
+  "http://localhost:4567/api/",
+  "http://mediasearchapi.sharenet.priv/api/",
+  "https://mediasearchapi.sharenet.be/api/"
+};
+IApiServer? ApiServer = null;
+foreach(string ApiServerAddressItem in ApiServerAdresses) {
+  ApiServer = new TApiServer(ApiServerAddressItem);
+  using (CancellationTokenSource Timeout = new CancellationTokenSource(5000)) {
+    if (await ApiServer.ProbeServerAsync(Timeout.Token)) {
+      break;
+    } else {
+      ApiServer = null;
+    }
+  }
 }
-IApiServer ApiServer = new TApiServer(new Uri(MovieService.ApiBase));
-MovieService.ApiServer = ApiServer;
+if (ApiServer is null) {
+  new TConsoleLogger().LogFatal("Missing api server");
+  return;
+}
+
+IMovieService MovieService = new TMovieService() { ApiServer = ApiServer };
 
 builder.Services.AddSingleton(MovieService);
 

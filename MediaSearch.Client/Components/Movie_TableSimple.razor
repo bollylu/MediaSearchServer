@@ -36,8 +36,8 @@
 <div class="container-fluid">
   <div class="row border-1 border-dark border-bottom text-black fw-bold">
     <div class="col col-1 text-center">Year</div>
-    <div class="col col-4 text-center">Name</div>
-    <div class="col col-2 text-center">Size</div>
+    <div class="col col-5 text-center">Name</div>
+    <div class="col col-1 text-center">Size</div>
     <div class="col col-5 text-center">Path</div>
   </div>
   @{
@@ -54,11 +54,11 @@
             <span class="badge rounded-pill bg-danger text-light ">@MovieItem.OutputYear</span>
           </div>
 
-          <div class="col col-4">
+          <div class="col col-5">
             <span class="d-block text-truncate">@MovieItem.Name</span>
           </div>
 
-          <div class="col col-2 text-end">
+          <div class="col col-1 text-end">
             @DisplayConverters.DisplaySizeInUnit(MovieItem.Size)
           </div>
 

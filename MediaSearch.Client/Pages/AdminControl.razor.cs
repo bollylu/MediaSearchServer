@@ -20,7 +20,7 @@ public partial class AdminControl : ComponentBase {
   private bool IsRefreshRunning = true;
 
   protected override async Task OnInitializedAsync() {
-   IsRefreshRunning = await CheckRefreshRunning();
+    IsRefreshRunning = await CheckRefreshRunning();
     if (IsRefreshRunning) {
       _ = Task.Run(() => RefreshProgress());
     }
@@ -31,7 +31,7 @@ public partial class AdminControl : ComponentBase {
       return;
     }
 
-    if (!await CheckRefreshRunning() ) {
+    if (!await CheckRefreshRunning()) {
       IsRefreshRunning = true;
       await MovieService.StartRefresh();
       Completed = false;
