@@ -4,9 +4,25 @@ public class TAbout : ALoggable, IAbout, IJson<TAbout> {
 
   private readonly Assembly? _Assembly;
 
-  public string Name => _Assembly?.GetName().Name ?? "";
+  public string Name {
+    get {
+      return string.IsNullOrWhiteSpace(_Name) ? _Name = _Assembly?.GetName().Name ?? "" : _Name;
+    }
+    set {
+      _Name = value;
+    }
+  }
+  private string? _Name;
 
-  public string Description => _Assembly?.GetName().FullName ?? "";
+  public string Description {
+    get {
+      return string.IsNullOrWhiteSpace(_Description) ? _Description = _Assembly?.GetName().FullName ?? "" : _Description;
+    }
+    set {
+      _Description = value;
+    }
+  }
+  private string? _Description;
 
   public string VersionSource { get; init; } = "_global_.version.txt";
   public Version CurrentVersion {

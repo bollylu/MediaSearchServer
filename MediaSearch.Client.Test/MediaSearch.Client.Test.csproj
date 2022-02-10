@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MediaSearch.Client.Services\MediaSearch.Client.Service.csproj" />
+    <ProjectReference Include="..\MediaSearch.Client.Services\MediaSearch.Client.Services.csproj" />
     <ProjectReference Include="..\MediaSearch.Client\MediaSearch.Client.csproj" />
     <ProjectReference Include="..\MediaSearch.Models\MediaSearch.Models.csproj" />
   </ItemGroup>

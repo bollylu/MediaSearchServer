@@ -51,8 +51,11 @@ public class TAboutJsonConverter : JsonConverter<TAbout>, ILoggable {
           switch (Property) {
 
             case nameof(TAbout.Name):
+              RetVal.Name = reader.GetString() ?? "";
+              break;
+
             case nameof(TAbout.Description):
-              string? Dummy = reader.GetString();
+              RetVal.Description = reader.GetString() ?? "";
               break;
 
             case nameof(TAbout.CurrentVersion):
