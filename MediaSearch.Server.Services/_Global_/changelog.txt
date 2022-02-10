@@ -11,3 +11,6 @@
 
 * 0.0.13
 - Improved logging
+
+* 0.0.14
+- Static GlobalSettings

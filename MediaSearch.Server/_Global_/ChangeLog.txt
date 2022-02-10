@@ -1,35 +1,38 @@
 ﻿# Server changelog
 
-* Version 0.0.11
+* 0.0.11
 - Added filtering on multiple keywords
 
-* version 0.0.12
+* 0.0.12
 - Added changelog
 
-* version 0.0.13
+* 0.0.13
 - New filter : name, tags, added
 
-* version 0.0.14
+* 0.0.14
 - changelog and version
 - Filter is passed as parameter for request => POST instead of GET
 
-* version 0.0.15
+* 0.0.15
 - Filter on tags was incorrect when All selected
 - Filter on OutputDate available
 
-* version 0.0.16
+* 0.0.16
 - Added filter on groups only
 - Added sort order in filter
 
-* version 0.0.17
+* 0.0.17
 - accept new filter
 - fixed HTTP I/O
 
-* version 0.0.18
+* 0.0.18
 - Enabled nullable
 - Enabled preview features (abstract static in interfaces) => breaking changes
 
-* version 0.0.19
+* 0.0.19
 - Improved logging
 - Added InputFormatter for IJson
 - Log requests headers
+
+* 0.0.20
+- Static GlobalSettings

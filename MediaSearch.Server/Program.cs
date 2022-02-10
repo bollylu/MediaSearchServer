@@ -22,16 +22,13 @@ public class Program {
   #endregion --- Parameters --------------------------------------------
 
   #region --- Global variables --------------------------------------------
-  
   public static IConfiguration? Configuration { get; private set; }
-
-  public static TGlobalSettings GlobalSettings { get; } = new();
   #endregion --- Global variables --------------------------------------------
 
   const string DEFAULT_SERVER_NAME = "http://localhost:4567";
 
   #region -----------------------------------------------
-  public static async Task Main(string[] args) {
+  public static void Main(string[] args) {
 
     if (OperatingSystem.IsWindows()) {
       Console.SetWindowSize(132, 50);
@@ -42,14 +39,17 @@ public class Program {
     if (GlobalSettings.AppArgs.IsDefined(ARG_HELP) || GlobalSettings.AppArgs.IsDefined(ARG_HELP2)) {
       Usage();
     }
-    
-    await GlobalSettings.Initialize();
 
-    string LogFile = Program.GlobalSettings.AppArgs.GetValue("log", OperatingSystem.IsWindows() ? DEFAULT_LOGFILE_WINDOWS : DEFAULT_LOGFILE_LINUX);
-    Program.GlobalSettings.GlobalLogger = new TFileLogger(LogFile) { SeverityLimit = ESeverity.Debug };
+    #region --- Log configuration --------------------------------------------
+    string LogFile = GlobalSettings.AppArgs.GetValue("log", OperatingSystem.IsWindows() ? DEFAULT_LOGFILE_WINDOWS : DEFAULT_LOGFILE_LINUX);
+    GlobalSettings.GlobalLogger = new TFileLogger(LogFile) { SeverityLimit = ESeverity.Debug };
 
-    MediaSearch.Models.GlobalSettings.GlobalLogger = ALogger.Create(Program.GlobalSettings.GlobalLogger);
+    MediaSearch.Models.GlobalSettings.GlobalLogger = ALogger.Create(GlobalSettings.GlobalLogger);
     MediaSearch.Models.GlobalSettings.GlobalLogger.SeverityLimit = ESeverity.DebugEx;
+
+    MediaSearch.Server.Services.GlobalSettings.GlobalLogger = ALogger.Create(GlobalSettings.GlobalLogger);
+    MediaSearch.Server.Services.GlobalSettings.GlobalLogger.SeverityLimit = ESeverity.DebugEx; 
+    #endregion --- Log configuration --------------------------------------------
 
     #region --- Configuration --------------------------------------------
     IConfigurationBuilder ConfigurationBuilder = new ConfigurationBuilder();
@@ -68,7 +68,7 @@ public class Program {
     Console.WriteLine(GlobalSettings.ListAbout());
 
     if (GlobalSettings.AppArgs.IsDefined(ARG_VERBOSE) || Configuration.GetSection(ARG_VERBOSE).Exists()) {
-      Console.WriteLine(Configuration.DumpConfig().BoxFixedWidth("From Main", TGlobalSettings.DEBUG_BOX_WIDTH));
+      Console.WriteLine(Configuration.DumpConfig().BoxFixedWidth("From Main", GlobalSettings.DEBUG_BOX_WIDTH));
     }
 
     CreateHostBuilder(args).Build().Run();
@@ -83,7 +83,6 @@ public class Program {
       Usage($"Invalid [server] parameter : {Server} is invalid, default to {DEFAULT_SERVER_NAME}");
       Server = DEFAULT_SERVER_NAME;
     }
-
 
     return Host.CreateDefaultBuilder(args)
                .ConfigureAppConfiguration(config => { config.AddConfiguration(Configuration); })

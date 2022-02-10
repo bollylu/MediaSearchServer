@@ -2,19 +2,22 @@
 
 namespace MediaSearch.Server;
 
-public class TGlobalSettings {
+public static class GlobalSettings {
   public const int DEBUG_BOX_WIDTH = 100;
 
-  public ISplitArgs AppArgs { get; } = new SplitArgs();
+  public static ISplitArgs AppArgs { get; } = new SplitArgs();
 
-  public ILogger GlobalLogger { get; set; } = new TConsoleLogger();
+  public static ILogger GlobalLogger { get; set; } = new TConsoleLogger();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TGlobalSettings() { }
+  static GlobalSettings() {
 
-  private bool _IsInitialized = false;
-  private bool _IsInitializing = false;
-  public async Task Initialize() {
+    Initialize().Wait();
+  }
+
+  private static bool _IsInitialized = false;
+  private static bool _IsInitializing = false;
+  public static async Task Initialize() {
     if (_IsInitialized) {
       return;
     }
@@ -36,10 +39,10 @@ public class TGlobalSettings {
   }
 
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
-  public List<IAbout> About { get; } = new();
-  public TAbout EntryAbout => TAbout.Entry;
+  public static List<IAbout> About { get; } = new();
+  public static TAbout EntryAbout => TAbout.Entry;
 
-  public string ListAbout(bool withChangeLog = true) {
+  public static string ListAbout(bool withChangeLog = true) {
     StringBuilder RetVal = new();
     foreach (IAbout AboutItem in About) {
       RetVal.AppendLine(AboutItem.CurrentVersion.ToString().BoxFixedWidth($"{AboutItem.Name} version #", DEBUG_BOX_WIDTH));

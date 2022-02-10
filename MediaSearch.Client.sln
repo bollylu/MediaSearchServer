@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaSearch.Server.Services
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaSearch.Client", "MediaSearch.Client\MediaSearch.Client.csproj", "{51D377F3-79E5-44F6-AE92-1FA42C526D2A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaSearch.Client.Service", "MediaSearch.Client.Services\MediaSearch.Client.Service.csproj", "{40514A92-8F28-4CD3-B886-C147D6BC51B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaSearch.Client.Services", "MediaSearch.Client.Services\MediaSearch.Client.Services.csproj", "{40514A92-8F28-4CD3-B886-C147D6BC51B2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaSearch.Client.Test", "MediaSearch.Client.Test\MediaSearch.Client.Test.csproj", "{7E0094DB-5BD1-4A13-A24D-5834BD9A1EF8}"
 EndProject

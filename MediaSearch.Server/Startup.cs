@@ -15,14 +15,11 @@ public class Startup {
 
   public const string DEFAULT_DATASOURCE = @"\\andromeda.sharenet.priv\multimedia\films\";
 
-  private readonly ILogger Logger;
-
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public Startup(IConfiguration configuration) {
-    Logger = ALogger.Create(Program.GlobalSettings.GlobalLogger);
     Configuration = configuration;
-    if (Program.GlobalSettings.AppArgs.IsDefined(Program.ARG_VERBOSE)) {
-      Console.WriteLine(Configuration.DumpConfig().BoxFixedWidth("Configuration in Startup constructor", TGlobalSettings.DEBUG_BOX_WIDTH));
+    if (GlobalSettings.AppArgs.IsDefined(Program.ARG_VERBOSE)) {
+      Console.WriteLine(Configuration.DumpConfig().BoxFixedWidth("Configuration in Startup constructor", GlobalSettings.DEBUG_BOX_WIDTH));
     }
   } 
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -35,17 +32,17 @@ public class Startup {
     string DataSource = Configuration.GetValue("datasource", DEFAULT_DATASOURCE);
 
     StringBuilder StartupInfo = new StringBuilder();
-    StartupInfo.AppendLine($"Version {Program.GlobalSettings.EntryAbout?.CurrentVersion ?? new Version()}");
+    StartupInfo.AppendLine($"Version {GlobalSettings.EntryAbout.CurrentVersion}");
     StartupInfo.AppendLine($"Running for {Environment.UserName}");
     StartupInfo.AppendLine($"Running on {Environment.MachineName}");
     StartupInfo.AppendLine($"Runtime version {Environment.Version}");
     StartupInfo.AppendLine($"OS version {Environment.OSVersion}");
-    Logger.Log(TextBox.BuildFixedWidth(StartupInfo.ToString(), "Startup info", 80, TextBox.EStringAlignment.Left));
+    GlobalSettings.GlobalLogger.Log(TextBox.BuildFixedWidth(StartupInfo.ToString(), "Startup info", 80, TextBox.EStringAlignment.Left));
 
-    Logger.Log("MediaSearch.Server startup...");
-    Logger.Log($"Data source is {DataSource}");
+    GlobalSettings.GlobalLogger.Log("MediaSearch.Server startup...");
+    GlobalSettings.GlobalLogger.Log($"Data source is {DataSource}");
 
-    services.AddSingleton<ILogger>(Logger);
+    services.AddSingleton<ILogger>(GlobalSettings.GlobalLogger);
 
     services.AddControllers(options => {
       options.OutputFormatters.Insert(0, new TJsonOutputFormatter());
@@ -54,7 +51,7 @@ public class Startup {
 
     TMovieService MovieService = new TMovieService(DataSource);
 
-    MovieService.SetLogger(Logger);
+    MovieService.SetLogger(GlobalSettings.GlobalLogger);
     Task.Run(async () => await MovieService.Initialize());
 
     services.AddSingleton<IMovieService>(MovieService);
@@ -69,13 +66,13 @@ public class Startup {
     services.AddSwaggerGen(c => {
       c.SwaggerDoc("v1", new OpenApiInfo { 
                                         Title = "MediaSearch.Server", 
-                                        Version = Program.GlobalSettings.EntryAbout?.CurrentVersion.ToString() 
+                                        Version = GlobalSettings.EntryAbout.CurrentVersion.ToString() 
                                    }
                   );
       //c.SchemaFilter<MySwaggerSchemaFilter>();
     });
 
-    Logger.Log($"MediaSearch.Server {Program.GlobalSettings.EntryAbout?.CurrentVersion} startup complete. Running.");
+    GlobalSettings.GlobalLogger.Log($"MediaSearch.Server {GlobalSettings.EntryAbout.CurrentVersion} startup complete. Running.");
   }
 
   // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -83,7 +80,7 @@ public class Startup {
     if ( env.IsDevelopment() ) {
       app.UseDeveloperExceptionPage();
       app.UseSwagger();
-      app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"MediaSearch.Server v{Program.GlobalSettings.EntryAbout.CurrentVersion}"));
+      app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"MediaSearch.Server v{GlobalSettings.EntryAbout.CurrentVersion}"));
     }
 
     app.UseCors("AllowAll");
@@ -116,7 +113,7 @@ public class Startup {
 
     }
 
-    private void RemoveFromSchema(Dictionary<string, OpenApiSchema> schemas, string key) {
+    private static void RemoveFromSchema(Dictionary<string, OpenApiSchema> schemas, string key) {
       if (schemas.ContainsKey(key)) {
         schemas.Remove(key);
       }

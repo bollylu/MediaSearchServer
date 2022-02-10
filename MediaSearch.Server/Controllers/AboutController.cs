@@ -10,7 +10,22 @@ public class AboutController : AController {
   }
 
   [HttpGet()]
-  public ActionResult<TAbout> Index() {
-    return new ActionResult<TAbout>(Program.GlobalSettings.EntryAbout);
+  public async Task<ActionResult<TAbout>> GetAbout(string name) {
+
+    switch (name.ToLower()) {
+      case "server": {
+          TAbout About = new TAbout(AppDomain.CurrentDomain.GetAssemblies().Single(a => (a.GetName()?.Name ?? "").Equals("MediaSearch.Server", StringComparison.InvariantCultureIgnoreCase)));
+          await About.Initialize();
+          return new ActionResult<TAbout>(About);
+        }
+      case "serverservices": {
+          TAbout About = new TAbout(AppDomain.CurrentDomain.GetAssemblies().Single(a => (a.GetName()?.Name ?? "").Equals("MediaSearch.Server.Services", StringComparison.InvariantCultureIgnoreCase)));
+          await About.Initialize();
+          return new ActionResult<TAbout>(About);
+        }
+      default: {
+          return new BadRequestResult();
+        }
+    };
   }
 }

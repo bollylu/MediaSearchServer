@@ -83,7 +83,7 @@ public class TMovieController : AController {
       filter = TFilter.Empty;
     }
 
-    LogDebug(filter.ToString().BoxFixedWidth("Filter received in controller", TGlobalSettings.DEBUG_BOX_WIDTH));
+    LogDebug(filter.ToString().BoxFixedWidth("Filter received in controller", GlobalSettings.DEBUG_BOX_WIDTH));
 
     TMoviesPage? RetVal = await _MovieService.GetMoviesPage(filter).ConfigureAwait(false);
 
@@ -91,8 +91,8 @@ public class TMovieController : AController {
       return new EmptyResult();
     }
 
-    LogDebug(RetVal.ToString().BoxFixedWidth("Returned value", TGlobalSettings.DEBUG_BOX_WIDTH));
-    LogDebugEx(_PrintMovies(RetVal.Movies).BoxFixedWidth("Movies", TGlobalSettings.DEBUG_BOX_WIDTH));
+    LogDebug(RetVal.ToString().BoxFixedWidth("Returned value", GlobalSettings.DEBUG_BOX_WIDTH));
+    LogDebugEx(_PrintMovies(RetVal.Movies).BoxFixedWidth("Movies", GlobalSettings.DEBUG_BOX_WIDTH));
 
     return new ActionResult<TMoviesPage>(RetVal);
   }
