@@ -1,0 +1,17 @@
+﻿.changelog {
+  color: blue;
+}
+
+  .changelog.heading {
+    font-size: large;
+  }
+
+  .changelog.version {
+    font-size: medium;
+    font-weight: bold;
+    color: darkblue;
+  }
+
+  .changelog.detail {
+    font-size: medium;
+  }

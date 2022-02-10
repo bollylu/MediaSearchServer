@@ -10,37 +10,25 @@ namespace MediaSearch.Client.Services;
 
 public class TMovieService : ALoggable, IMovieService {
 
-  #region --- Constants --------------------------------------------
-  private int HTTP_TIMEOUT_IN_MS = 1000000;
-  private const int LOG_BOX_WIDTH = 160;
-  #endregion --- Constants --------------------------------------------
-
-  public string ApiBase { get; set; } = "";
-
   public IApiServer ApiServer { get; set; } = new TApiServer();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  private readonly THttpClientEx _Client = new THttpClientEx();
   private readonly TImageCache _ImagesCache = new TImageCache();
 
   public TMovieService() {
-    SetLogger(new TConsoleLogger());
-    Logger.SeverityLimit = ESeverity.Debug;
+    SetLogger(GlobalSettings.GlobalLogger);
   }
 
-  public TMovieService(string apiServer, TImageCache imagesCache, ILogger logger) : this() {
+  public TMovieService(IApiServer apiServer, TImageCache imagesCache, ILogger logger) : this() {
     SetLogger(logger);
-    Logger.SeverityLimit = ESeverity.Debug;
     Log($"Api server = {apiServer}");
-    ApiBase = apiServer;
-    _Client.BaseAddress = new Uri(ApiBase);
     _ImagesCache = imagesCache;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public async Task<bool> ProbeApi() {
     try {
-      using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
+      using (CancellationTokenSource Timeout = new CancellationTokenSource(GlobalSettings.HTTP_TIMEOUT_IN_MS)) {
         return await ApiServer.ProbeServerAsync(Timeout.Token);
       }
     } catch {
@@ -51,18 +39,18 @@ public class TMovieService : ALoggable, IMovieService {
   #region --- Refresh data --------------------------------------------
   public async Task StartRefresh() {
     try {
-      using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
-        HttpResponseMessage Response = await _Client.GetAsync("system/startrefreshdata", Timeout.Token);
+      using (CancellationTokenSource Timeout = new CancellationTokenSource(GlobalSettings.HTTP_TIMEOUT_IN_MS)) {
+        string? Response = await ApiServer.GetStringAsync("system/startrefreshdata", Timeout.Token);
       }
     } catch { }
   }
 
   public async Task<int> GetRefreshStatus() {
     try {
-      using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
-        HttpResponseMessage Response = await _Client.GetAsync("system/getrefreshstatus", Timeout.Token);
-        if (Response.IsSuccessStatusCode) {
-          int RetVal = int.Parse(await Response.Content.ReadAsStringAsync());
+      using (CancellationTokenSource Timeout = new CancellationTokenSource(GlobalSettings.HTTP_TIMEOUT_IN_MS)) {
+        string? Response = await ApiServer.GetStringAsync("system/getrefreshstatus", Timeout.Token);
+        if (Response is not null) {
+          int RetVal = int.Parse(Response);
           return RetVal;
         }
         return 0;
@@ -81,7 +69,7 @@ public class TMovieService : ALoggable, IMovieService {
       LogDebugEx(RequestUrl.BoxFixedWidth($"get movie page request", GlobalSettings.DEBUG_BOX_WIDTH));
       LogDebug(filter.ToString().BoxFixedWidth($"Movies page filter", GlobalSettings.DEBUG_BOX_WIDTH));
 
-      using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
+      using (CancellationTokenSource Timeout = new CancellationTokenSource(GlobalSettings.HTTP_TIMEOUT_IN_MS)) {
 
         TMoviesPage? Result = await ApiServer.GetJsonAsync<TMoviesPage>(RequestUrl, filter, CancellationToken.None).ConfigureAwait(false);
 
@@ -108,8 +96,12 @@ public class TMovieService : ALoggable, IMovieService {
 
     try {
       LogDebugEx($"starting getpicture {id}");
-      using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
-        return await _Client.GetByteArrayAsync(RequestUrl, Timeout.Token).WithCancellation(cancelToken).ConfigureAwait(false);
+      using (CancellationTokenSource Timeout = new CancellationTokenSource(GlobalSettings.HTTP_TIMEOUT_IN_MS)) {
+        byte[]? RetVal = await ApiServer.GetByteArrayAsync(RequestUrl, Timeout.Token).ConfigureAwait(false);
+        if (RetVal is null) {
+          return Array.Empty<byte>();
+        }
+        return RetVal;
       }
     } catch (TaskCanceledException) {
       //LogError("Task is cancelled.");
@@ -145,7 +137,7 @@ public class TMovieService : ALoggable, IMovieService {
   public async Task<IList<string>> GetGroups(CancellationToken cancelToken) {
     try {
       string RequestUrl = $"movie/getGroups";
-      using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
+      using (CancellationTokenSource Timeout = new CancellationTokenSource(GlobalSettings.HTTP_TIMEOUT_IN_MS)) {
 
         string? GroupsJson = await ApiServer.GetStringAsync(RequestUrl, Timeout.Token).ConfigureAwait(false);
         if (GroupsJson is null) {
@@ -171,7 +163,7 @@ public class TMovieService : ALoggable, IMovieService {
   public async Task<IList<string>> GetSubGroups(string group, CancellationToken cancelToken) {
     try {
       string RequestUrl = $"movie/getSubGroups?group={group.ToUrl()}";
-      using (CancellationTokenSource Timeout = new CancellationTokenSource(HTTP_TIMEOUT_IN_MS)) {
+      using (CancellationTokenSource Timeout = new CancellationTokenSource(GlobalSettings.HTTP_TIMEOUT_IN_MS)) {
         string? GroupsJson = await ApiServer.GetStringAsync(RequestUrl, Timeout.Token).ConfigureAwait(false);
         if (GroupsJson is null) {
           return new List<string>();

@@ -3,10 +3,8 @@
 public interface IMovieService {
 
   /// <summary>
-  /// The base address for the api server connection
+  /// The server for the api server connection
   /// </summary>
-  string ApiBase { get; }
-
   IApiServer ApiServer { get; set; }
 
   /// <summary>

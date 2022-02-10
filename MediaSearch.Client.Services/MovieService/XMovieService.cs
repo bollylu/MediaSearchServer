@@ -1,19 +1,9 @@
 ﻿namespace MediaSearch.Client.Services;
 
 public class XMovieService : IMovieService {
+
   public string ApiBase { get; } = "";
   public IApiServer ApiServer { get; set; } = new TApiServer();
-
-
-  //public string RootPath { get; }
-  //public List<string> ExcludedExtensions { get; }
-  //public string CurrentGroup { get; }
-
-  //public Task<IMovieGroups> GetGroups(string group = "", string filter = "") {
-  //  IMovieGroups RetVal = new TMovieGroups() { Name = "Fantasy" };
-  //  return Task.FromResult(RetVal);
-  //}
-
 
   public Task<IMoviesPage?> GetMoviesPage(IFilter filter) {
     IMoviesPage? RetVal = new TMoviesPage();

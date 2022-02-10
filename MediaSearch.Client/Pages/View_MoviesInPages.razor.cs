@@ -9,7 +9,7 @@ namespace MediaSearch.Client.Pages {
     public IMovieService MovieService {
       get {
         if (_MovieService is null) {
-          Logger?.LogFatal("Movie service is missing");
+          Logger.LogFatal("Movie service is missing");
           throw new ApplicationException("MovieService");
         }
         return _MovieService;
@@ -40,15 +40,19 @@ namespace MediaSearch.Client.Pages {
 
     public string MoviesTitle => $"{(_AvailableMovies)} movies";
 
-    //public int CurrentPage { get; set; } = 1;
-
     public string Pagination => $"{Filter.Page}/{_AvailablePages}";
 
     public bool BackDisabled => Filter.Page == 1;
     public bool NextDisabled => Filter.Page == _AvailablePages;
 
+    #region --- Constructor(s) ---------------------------------------------------------------------------------
+    public View_MoviesInPages() : base() {
+      SetLogger(GlobalSettings.GlobalLogger);
+    } 
+    #endregion --- Constructor(s) ------------------------------------------------------------------------------
+
     #region --- ILoggable --------------------------------------------
-    public ILogger Logger { get; set; } = new TConsoleLogger() { SeverityLimit = ESeverity.Debug };
+    public ILogger Logger { get; set; } = GlobalSettings.GlobalLogger;
     public void SetLogger(ILogger logger) {
       Logger = ALogger.Create(logger);
     }
@@ -77,7 +81,7 @@ namespace MediaSearch.Client.Pages {
     }
 
     private async Task RefreshPrevious() {
-      Logger.LogDebug("Previous page");
+      Logger.LogDebugEx("Previous page");
       if (Filter.Page > 1) {
         Filter.PreviousPage();
       }
@@ -86,7 +90,7 @@ namespace MediaSearch.Client.Pages {
     }
 
     private async Task RefreshNext() {
-      Logger.LogDebug("Next page");
+      Logger.LogDebugEx("Next page");
       if (Filter.Page < _AvailablePages) {
         Filter.NextPage();
       }

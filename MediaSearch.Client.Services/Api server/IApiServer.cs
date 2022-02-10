@@ -8,6 +8,9 @@ public interface IApiServer {
   Task<T?> GetJsonAsync<T>(string uriRequest, CancellationToken cancellationToken) where T : IJson<T>;
   Task<T?> GetJsonAsync<T>(string uriRequest, IJson additionalContent, CancellationToken cancellationToken) where T : IJson<T>;
 
+  Task<byte[]?> GetByteArrayAsync(string uriRequest, CancellationToken cancellationToken);
+  Task<Stream> GetStreamAsync(string uriRequest, CancellationToken cancellationToken);
+
   Task<bool> ProbeServerAsync(CancellationToken cancellationToken);
 
 }

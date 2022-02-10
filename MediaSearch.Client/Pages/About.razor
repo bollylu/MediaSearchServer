@@ -1,0 +1,29 @@
+﻿@page "/about"
+
+<PageHeader PageTitle="About" />
+
+<div class="container">
+  <div class="mb-3">
+    <About_Card About="@AboutClient" />
+  </div>
+  <div class="mb-3">
+    <About_Card About="@AboutClientServices" />
+  </div>
+  <div class="mb-3">
+    <About_Card About="@AboutModels" />
+  </div>
+  <div class="mb-3">
+    <About_Card About="@AboutServer" />
+  </div>
+  <div class="mb-3">
+    <About_Card About="@AboutServerServices" />
+  </div>
+
+  @*<div class="text-black border-1">
+    <ul>
+    @foreach (string AssemblyItem in AssembliesList) {
+    <li>@AssemblyItem</li>
+    }
+    </ul>
+    </div>*@
+</div>

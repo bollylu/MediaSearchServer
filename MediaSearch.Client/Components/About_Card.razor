@@ -1,0 +1,53 @@
+﻿<div class="card">
+
+  <div class="card-header">
+    <span>@About.Name</span>
+    <span> v</span>
+    <span>@About.CurrentVersion</span>
+  </div>
+  <div class="card-body changelog">
+    @{
+      using (StringReader Reader = new StringReader(About.ChangeLog)) {
+        string? Line = Reader.ReadLine();
+        while (Line is not null) {
+          if (Line.Trim() == "") {
+            <br />
+            Line = Reader.ReadLine();
+            continue;
+          }
+          switch (Line.First()) {
+            case '#':
+              <div class="changelog changelog.heading">@Line.After("# ")</div>
+              Line = Reader.ReadLine();
+              continue;
+
+            case '*':
+              <div class="changelog changelog.version">@Line.After("* ")</div>
+
+              <ul>
+                @{
+                  Line = Reader.ReadLine();
+                  while (Line is not null) {
+                    if (Line.Length > 0) {
+                      if (Line.First() == '*') {
+                        break;
+                      }
+                      if (Line.First() == '-') {
+                        <li class="changelog changelog.detail">@Line.After("- ")</li>
+                      }
+                    }
+                    Line = Reader.ReadLine();
+                  }
+                }
+              </ul>
+              continue;
+          }
+
+        }
+
+      }
+    }
+  </div>
+</div>
+
+

@@ -22,7 +22,8 @@ namespace MediaSearch.Client.Components {
     private string AltNames {
       get {
         if (Movie.AltNames.IsEmpty()) {
-          return string.Empty; ;
+          return string.Empty;
+          ;
         }
         return string.Join("\n", Movie.AltNames.Select(n => $"{n.Key}:{n.Value}"));
       }
@@ -31,9 +32,22 @@ namespace MediaSearch.Client.Components {
     [Inject]
     public IMovieService? MovieService { get; set; }
 
-    public ILogger Logger { get; set; } = new TConsoleLogger() { SeverityLimit = ESeverity.Debug };
+    [Inject]
+    public ILogger Logger {
+      get {
+        return _Logger ??= new TConsoleLogger();
+      }
+      set {
+        _Logger = value;
+      }
+    }
+    private ILogger? _Logger;
+
     public void SetLogger(ILogger logger) {
-      throw new NotImplementedException();
+      if (logger is null) {
+        return;
+      }
+      Logger = ALogger.Create(logger);
     }
 
     private CancellationTokenSource Cancellation = new CancellationTokenSource();
