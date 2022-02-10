@@ -19,3 +19,6 @@
 - Added more menu items
 - Moved refresh data in Admin section
 - Cosmetic changes to TableSimple component
+
+* 0.0.15
+- Added About page

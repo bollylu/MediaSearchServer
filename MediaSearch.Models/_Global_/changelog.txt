@@ -31,3 +31,7 @@
 
 * 0.1.5
 - Static GlobalSettings
+
+* 0.1.6
+- Fixed TAbout deserialization to read Name and Description
+

@@ -10,3 +10,8 @@
 * 0.0.12
 - Improved logging
 - Uses TApiServer for service requests
+
+* 0.0.13
+- Added TAboutService
+- Added functionalities to TApiServer (Stream, byte[])
+
