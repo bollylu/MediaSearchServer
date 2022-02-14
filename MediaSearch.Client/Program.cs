@@ -15,6 +15,7 @@ List<string> ApiServerAdresses = new List<string>() {
   "http://mediasearchapi.sharenet.priv/api/",
   "https://mediasearchapi.sharenet.be/api/"
 };
+
 TApiServer? ApiServer = null;
 foreach(string ApiServerAddressItem in ApiServerAdresses) {
   ApiServer = new TApiServer(ApiServerAddressItem);
