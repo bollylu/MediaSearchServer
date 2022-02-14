@@ -32,7 +32,7 @@ public static class IEnumerableMovieExtensions {
   }
 
   #region --- Keywords --------------------------------------------
-  public static IEnumerable<IMovie> FilterByKeywords(this IEnumerable<IMovie> movies, IFilter filter) {
+  public static IEnumerable<IMovie> FilterByKeywords(this IEnumerable<IMovie> movies, IFilterKeywords filter) {
     if (string.IsNullOrWhiteSpace(filter.Keywords)) {
       return movies;
     }
@@ -48,7 +48,7 @@ public static class IEnumerableMovieExtensions {
   #endregion --- Keywords --------------------------------------------
 
   #region --- Tags --------------------------------------------
-  public static IEnumerable<IMovie> FilterByTags(this IEnumerable<IMovie> movies, IFilter filter) {
+  public static IEnumerable<IMovie> FilterByTags(this IEnumerable<IMovie> movies, IFilterTags filter) {
     if (string.IsNullOrWhiteSpace(filter.Tags)) {
       return movies;
     }
@@ -77,7 +77,7 @@ public static class IEnumerableMovieExtensions {
   #endregion --- Tags --------------------------------------------
 
   #region --- Days since added --------------------------------------------
-  public static IEnumerable<IMovie> FilterByDays(this IEnumerable<IMovie> movies, IFilter filter) {
+  public static IEnumerable<IMovie> FilterByDays(this IEnumerable<IMovie> movies, IFilterDaysBack filter) {
     if (filter.DaysBack == 0) {
       return movies;
     }
@@ -89,7 +89,7 @@ public static class IEnumerableMovieExtensions {
   #endregion --- Days since added --------------------------------------------
 
   #region --- Output year --------------------------------------------
-  public static IEnumerable<IMovie> FilterByOutputDate(this IEnumerable<IMovie> movies, IFilter filter) {
+  public static IEnumerable<IMovie> FilterByOutputDate(this IEnumerable<IMovie> movies, IFilterOutputDate filter) {
     if (filter.OutputDateMax < filter.OutputDateMin) {
       return movies;
     }
@@ -107,7 +107,7 @@ public static class IEnumerableMovieExtensions {
       return movies;
     }
   }
-  public static IEnumerable<IMovie> FilterByGroup(this IEnumerable<IMovie> movies, IFilter filter) {
+  public static IEnumerable<IMovie> FilterByGroup(this IEnumerable<IMovie> movies, IFilterGroup filter) {
     if (filter is null || string.IsNullOrWhiteSpace(filter.Group)) {
       return movies;
     }
@@ -115,7 +115,7 @@ public static class IEnumerableMovieExtensions {
     return movies.Where(m => m.Group.Equals(filter.Group, StringComparison.CurrentCultureIgnoreCase));
   }
 
-  public static IEnumerable<IMovie> FilterBySubGroup(this IEnumerable<IMovie> movies, IFilter filter) {
+  public static IEnumerable<IMovie> FilterBySubGroup(this IEnumerable<IMovie> movies, IFilterGroup filter) {
     if (filter is null || string.IsNullOrWhiteSpace(filter.SubGroup)) {
       return movies;
     }
