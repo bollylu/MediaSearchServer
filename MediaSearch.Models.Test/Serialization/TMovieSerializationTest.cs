@@ -7,37 +7,44 @@ namespace MediaSearch.Models.Test;
 [TestClass]
 public class TMovieSerializationTest {
 
+  [ClassInitialize]
+  public static async Task ClassInitialize(TestContext context) {
+    await MediaSearch.Models.GlobalSettings.Initialize().ConfigureAwait(false);
+  }
+
   internal IMovieService MovieService => _MovieService ??= new XMovieService(new XMovieCache() { DataSource = @"data\movies.json" }) { Logger = new TConsoleLogger() };
   private IMovieService? _MovieService;
 
   [TestMethod]
   public async Task SerializeTMovie() {
-    TMovie Source = await MovieService.GetAllMovies().FirstAsync();
 
-    string JsonMovie = Source.ToJson();
+    IMovie Source = await MovieService.GetAllMovies().FirstAsync().ConfigureAwait(false);
+    TraceMessage("Source", Source);
 
-    Assert.IsNotNull(JsonMovie);
-    Console.WriteLine(JsonMovie.ToString().BoxFixedWidth("JsonMovie", GlobalSettings.DEBUG_BOX_WIDTH));
+    string Target = Source.ToJson();
+
+    Assert.IsNotNull(Target);
+    TraceMessage("Target", Target);
   }
 
   [TestMethod]
   public async Task DeserializeTMovie() {
-    TMovie Source = await MovieService.GetAllMovies().FirstAsync();
+    IMovie Movie = await MovieService.GetAllMovies().FirstAsync().ConfigureAwait(false);
 
-    string JsonMovie = Source.ToJson();
-    Console.WriteLine(JsonMovie.BoxFixedWidth("JsonMovie", GlobalSettings.DEBUG_BOX_WIDTH));
+    string Source = Movie.ToJson();
+    TraceMessage("Source", Source);
 
-    IMovie? Target = TMovie.FromJson(JsonMovie);
+    IMovie? Target = IJson<TMovie>.FromJson(Source);
 
     Assert.IsNotNull(Target);
-    Assert.AreEqual(Source.Name, Target.Name);
-    Assert.AreEqual(Source.Description, Target.Description);
-    Assert.AreEqual(Source.FileName, Target.FileName);
-    Assert.AreEqual(Source.Size, Target.Size);
-    Assert.AreEqual(Source.Group, Target.Group);
-    Assert.AreEqual(Source.Tags.Count, Target.Tags.Count);
-    Assert.AreEqual(Source.OutputYear, Target.OutputYear);
-    Console.WriteLine(Target.ToString());
+    Assert.AreEqual(Movie.Name, Target.Name);
+    Assert.AreEqual(Movie.Description, Target.Description);
+    Assert.AreEqual(Movie.FileName, Target.FileName);
+    Assert.AreEqual(Movie.Size, Target.Size);
+    Assert.AreEqual(Movie.Group, Target.Group);
+    Assert.AreEqual(Movie.Tags.Count, Target.Tags.Count);
+    Assert.AreEqual(Movie.OutputYear, Target.OutputYear);
+    TraceMessage("Target", Target);
   }
 
 }

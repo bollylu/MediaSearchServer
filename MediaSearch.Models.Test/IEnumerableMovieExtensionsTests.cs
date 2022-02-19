@@ -7,6 +7,11 @@ namespace MediaSearch.Models.Test;
 [TestClass]
 public class IEnumerableMovieExtensionsTests {
 
+  [ClassInitialize]
+  public static async Task ClassInitialize(TestContext context) {
+    await MediaSearch.Models.GlobalSettings.Initialize().ConfigureAwait(false);
+  }
+
   /// <summary>
   /// Internal source of data
   /// </summary>

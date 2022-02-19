@@ -124,7 +124,7 @@ public class TMovieService : ALoggable, IMovieService {
     if (PictureBytes is null) {
       PictureBytes = await GetPicture(movie.Id, cancelToken).ConfigureAwait(false);
       if (PictureBytes is null) {
-        PictureBytes = AMovie.PictureMissing;
+        PictureBytes = TMovie.PictureMissing;
       } else {
         _ImagesCache.AddImage(movie.Id, PictureBytes);
       }

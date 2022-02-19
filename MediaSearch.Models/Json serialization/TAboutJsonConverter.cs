@@ -22,7 +22,7 @@ public class TAboutJsonConverter : JsonConverter<TAbout>, ILoggable {
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public override bool CanConvert(Type typeToConvert) {
-    return typeToConvert.IsAssignableFrom(typeof(TAbout));
+    return typeof(TAbout).IsAssignableFrom(typeToConvert);
   }
 
   public override TAbout Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {

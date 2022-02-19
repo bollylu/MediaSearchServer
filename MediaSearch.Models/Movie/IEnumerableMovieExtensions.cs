@@ -123,11 +123,12 @@ public static class IEnumerableMovieExtensions {
     return movies.Where(m => m.SubGroup.Equals(filter.SubGroup, StringComparison.CurrentCultureIgnoreCase));
   }
 
-  public static IEnumerable<string> GetGroups(this IEnumerable<IMovie> movies) {
+  public static IAsyncEnumerable<string> GetGroups(this IEnumerable<IMovie> movies) {
     return movies.Where(m => m.IsGroupMember)
                  .Select(m => m.Group)
                  .Distinct()
-                 .OrderBy(x => x);
+                 .OrderBy(x => x)
+                 .ToAsyncEnumerable();
   }
 
   public static IEnumerable<string> GetSubGroups(this IEnumerable<IMovie> movies, string group) {

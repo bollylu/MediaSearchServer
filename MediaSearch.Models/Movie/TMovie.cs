@@ -1,106 +1,67 @@
-﻿namespace MediaSearch.Models;
+﻿using BLTools.Encryption;
 
-/// <summary>
-/// Implement a movie
-/// </summary>
-public class TMovie : AMovie, IJson<IMovie> {
+namespace MediaSearch.Models;
+
+public class TMovie : AMedia, IMovie, IJson<TMovie> {
+
+  #region --- Public properties ------------------------------------------------------------------------------
+  [JsonConverter(typeof(JsonStringEnumConverter))]
+  public EMovieExtension Extension =>
+    FileExtension switch {
+      "avi" => EMovieExtension.AVI,
+      "mkv" => EMovieExtension.MKV,
+      "mp4" => EMovieExtension.MP4,
+      "iso" => EMovieExtension.ISO,
+      _ => EMovieExtension.Unknown,
+    };
+
+  public string Group { get; set; } = "";
+  public string SubGroup { get; set; } = "";
+
+  [JsonIgnore]
+  public bool IsGroupMember => !string.IsNullOrWhiteSpace(Group);
+
+  public long Size { get; set; }
+  public int OutputYear { get; set; }
+  #endregion --- Public properties ---------------------------------------------------------------------------
+
+  #region --- Picture --------------------------------------------
+  public static byte[] PictureMissing {
+    get {
+      return _PictureMissingBytes ??= Support.GetPicture("missing", ".jpg");
+    }
+  }
+
+  private static byte[]? _PictureMissingBytes;
+  #endregion --- Picture --------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMovie() : base() { }
-  public TMovie(IMovie movie) : base(movie) { }
+  public TMovie() : base() {
+    SetLogger(GlobalSettings.GlobalLogger);
+  }
+
+  public TMovie(IMovie movie) : base(movie) {
+    SetLogger(GlobalSettings.GlobalLogger);
+    Size = movie.Size;
+    OutputYear = movie.OutputYear;
+    Group = movie.Group;
+  }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  #region --- IJson --------------------------------------------
-  public static JsonSerializerOptions DefaultJsonSerializerOptions {
-    get {
-      lock (_DefaultJsonSerializerOptionsLock) {
-        if (_DefaultJsonSerializerOptions is null) {
-          _DefaultJsonSerializerOptions = new JsonSerializerOptions() {
-            WriteIndented = true,
-            NumberHandling = JsonNumberHandling.Strict
-          };
-          _DefaultJsonSerializerOptions.Converters.Add(new TMovieJsonConverter());
-          _DefaultJsonSerializerOptions.Converters.Add(new TDateOnlyJsonConverter());
-
-        }
-        return _DefaultJsonSerializerOptions;
-      }
-    }
-    set {
-      lock (_DefaultJsonSerializerOptionsLock) {
-        _DefaultJsonSerializerOptions = value;
-      }
-    }
+  protected override string _BuildId() {
+    return $"{Name}{OutputYear}".HashToBase64();
   }
-  private static JsonSerializerOptions? _DefaultJsonSerializerOptions;
-  private static readonly object _DefaultJsonSerializerOptionsLock = new object();
-
-  #region --- Serializer --------------------------------------------
-  public string ToJson() {
-    return ToJson(DefaultJsonSerializerOptions);
-  }
-
-  public string ToJson(JsonSerializerOptions options) {
-    return JsonSerializer.Serialize(this, options);
-  }
-  #endregion --- Serializer --------------------------------------------
-
-  #region --- Deserializer --------------------------------------------
-  public IMovie ParseJson(string source) {
-    return ParseJson(source, DefaultJsonSerializerOptions);
-  }
-
-  public IMovie ParseJson(string source, JsonSerializerOptions options) {
-    #region === Validate parameters ===
-    if (string.IsNullOrWhiteSpace(source)) {
-      throw new JsonException("Json movie source is null");
+  public override string ToString() {
+    StringBuilder RetVal = new StringBuilder(base.ToString());
+    RetVal.AppendLine($"{nameof(Extension)} = {Extension}");
+    if (IsGroupMember) {
+      RetVal.AppendLine($"{nameof(Group)} = {Group}");
+      RetVal.AppendLine($", {nameof(SubGroup)} = {SubGroup}");
     }
-    #endregion === Validate parameters ===
+    RetVal.AppendLine($"{nameof(Size)} = {Size}");
+    RetVal.AppendLine($"{nameof(OutputYear)} = {OutputYear}");
 
-    IMovie? Deserialized = JsonSerializer.Deserialize<TMovie>(source, options);
-
-    if (Deserialized is null) {
-      string Error = $"Unable to deserialize json string \"{source}\"";
-      LogError(Error);
-      throw new JsonException(Error);
-    }
-
-    FileName = Deserialized.FileName;
-    Name = Deserialized.Name;
-    Group = Deserialized.Group;
-    SubGroup = Deserialized.SubGroup;
-    StoragePath = Deserialized.StoragePath;
-    FileExtension = Deserialized.FileExtension;
-    Size = Deserialized.Size;
-    OutputYear = Deserialized.OutputYear;
-    foreach (KeyValuePair<string, string> AltNamesItem in Deserialized.AltNames) {
-      AltNames.Add(AltNamesItem.Key, AltNamesItem.Value);
-    }
-    Tags.AddRange(Deserialized.Tags);
-    DateAdded = Deserialized.DateAdded;
-
-    return this;
+    return RetVal.ToString();
   }
-  #endregion --- Deserializer --------------------------------------------
-
-  #region --- Static Deserializer --------------------------------------------
-
-  public static IMovie? FromJson(string source) {
-    if (string.IsNullOrWhiteSpace(source)) {
-      throw new ArgumentNullException(nameof(source));
-    }
-    return JsonSerializer.Deserialize<TMovie>(source, DefaultJsonSerializerOptions);
-  }
-
-  public static IMovie? FromJson(string source, JsonSerializerOptions options) {
-    if (string.IsNullOrWhiteSpace(source)) {
-      throw new ArgumentNullException(nameof(source));
-    }
-    return JsonSerializer.Deserialize<TMovie>(source, options);
-  }
-
-
-  #endregion --- Static Deserializer --------------------------------------------
-
-  #endregion --- IJson --------------------------------------------
+  
 }

@@ -21,7 +21,7 @@ public class Startup {
     if (GlobalSettings.AppArgs.IsDefined(Program.ARG_VERBOSE)) {
       Console.WriteLine(Configuration.DumpConfig().BoxFixedWidth("Configuration in Startup constructor", GlobalSettings.DEBUG_BOX_WIDTH));
     }
-  } 
+  }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public IConfiguration Configuration { get; }
@@ -31,13 +31,15 @@ public class Startup {
 
     string DataSource = Configuration.GetValue("datasource", DEFAULT_DATASOURCE);
 
+    #region --- Log startup info --------------------------------------------
     StringBuilder StartupInfo = new StringBuilder();
     StartupInfo.AppendLine($"Version {GlobalSettings.EntryAbout.CurrentVersion}");
     StartupInfo.AppendLine($"Running for {Environment.UserName}");
     StartupInfo.AppendLine($"Running on {Environment.MachineName}");
     StartupInfo.AppendLine($"Runtime version {Environment.Version}");
     StartupInfo.AppendLine($"OS version {Environment.OSVersion}");
-    GlobalSettings.GlobalLogger.Log(TextBox.BuildFixedWidth(StartupInfo.ToString(), "Startup info", 80, TextBox.EStringAlignment.Left));
+    GlobalSettings.GlobalLogger.Log(TextBox.BuildFixedWidth(StartupInfo.ToString(), "Startup info", 80, TextBox.EStringAlignment.Left)); 
+    #endregion --- Log startup info --------------------------------------------
 
     GlobalSettings.GlobalLogger.Log("MediaSearch.Server startup...");
     GlobalSettings.GlobalLogger.Log($"Data source is {DataSource}");
@@ -49,12 +51,12 @@ public class Startup {
       options.InputFormatters.Insert(0, new TJsonInputFormatter());
     });
 
-    TMovieService MovieService = new TMovieService(DataSource);
-
-    MovieService.SetLogger(GlobalSettings.GlobalLogger);
+    IMovieService MovieService = new TMovieService(DataSource);
     Task.Run(async () => await MovieService.Initialize());
-
     services.AddSingleton<IMovieService>(MovieService);
+
+    ILoginService LoginService = new TLoginService();
+    services.AddSingleton(LoginService);
 
     services.AddCors(options => {
       options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin()
@@ -64,10 +66,10 @@ public class Startup {
     });
     services.AddControllers();
     services.AddSwaggerGen(c => {
-      c.SwaggerDoc("v1", new OpenApiInfo { 
-                                        Title = "MediaSearch.Server", 
-                                        Version = GlobalSettings.EntryAbout.CurrentVersion.ToString() 
-                                   }
+      c.SwaggerDoc("v1", new OpenApiInfo {
+        Title = "MediaSearch.Server",
+        Version = GlobalSettings.EntryAbout.CurrentVersion.ToString()
+      }
                   );
       //c.SchemaFilter<MySwaggerSchemaFilter>();
     });
@@ -77,8 +79,9 @@ public class Startup {
 
   // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
   public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-    if ( env.IsDevelopment() ) {
+    if (env.IsDevelopment()) {
       app.UseDeveloperExceptionPage();
+      app.UseForwardedHeaders();
       app.UseSwagger();
       app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"MediaSearch.Server v{GlobalSettings.EntryAbout.CurrentVersion}"));
     }
@@ -101,7 +104,7 @@ public class Startup {
       if (schema is null || schema.Properties is null) {
         return;
       }
-      
+
       //RemoveFromSchema(context.SchemaRepository.Schemas, "ILogger");
       //RemoveFromSchema(context.SchemaRepository.Schemas, "TraceOptions");
       //RemoveFromSchema(context.SchemaRepository.Schemas, "TraceListener");

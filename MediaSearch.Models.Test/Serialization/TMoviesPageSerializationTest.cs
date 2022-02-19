@@ -1,11 +1,17 @@
 ﻿using BLTools.Text;
 
 using MediaSearch.Server.Services;
+using MediaSearch.Test.Support;
 
 namespace MediaSearch.Models.Test;
 
 [TestClass]
 public class TMoviesPageSerializationTest {
+
+  [ClassInitialize]
+  public static async Task ClassInitialize(TestContext context) {
+    await MediaSearch.Models.GlobalSettings.Initialize().ConfigureAwait(false);
+  }
 
   internal IMovieService MovieService => _MovieService ??= new XMovieService(new XMovieCache() { DataSource = @"data\movies.json" }) { Logger = new TConsoleLogger() };
   private IMovieService? _MovieService;
@@ -13,42 +19,44 @@ public class TMoviesPageSerializationTest {
   [TestMethod]
   public async Task SerializeTMoviesPageWithConverter() {
 
-    List<IMovie> Source = await MovieService.GetAllMovies().ToListAsync<IMovie>().ConfigureAwait(false);
+    List<IMovie> Movies = await MovieService.GetAllMovies().Take(2).ToListAsync<IMovie>().ConfigureAwait(false);
 
-    TMoviesPage Movies = new TMoviesPage() {
-      Name = "Sélection",
-      Page = 1,
-      AvailablePages = 3,
-      Source = "Andromeda"
-    };
-    Movies.Movies.AddRange(Source);
-
-    string JsonMovies = Movies.ToJson();
-
-    Assert.IsNotNull(JsonMovies);
-    Console.WriteLine(JsonMovies);
-  }
-
-  [TestMethod]
-  public async Task DeserializeTMoviesPageWithConverter() {
-    List<IMovie> Source = await MovieService.GetAllMovies().ToListAsync<IMovie>().ConfigureAwait(false);
-
-    TMoviesPage Movies = new TMoviesPage() {
+    IMoviesPage Source = new TMoviesPage() {
       Name = "Sélection",
       Page = 1,
       AvailablePages = 3,
       AvailableMovies = 3456,
       Source = "Andromeda"
     };
-    Movies.Movies.AddRange(Source);
+    Source.Movies.AddRange(Movies);
 
-    string JsonMovies = Movies.ToJson();
+    TraceMessage("Source", Source);
 
-    Assert.IsNotNull(JsonMovies);
-    Console.WriteLine(JsonMovies);
+    string Target = Source.ToJson();
 
-    IMoviesPage? Target = TMoviesPage.FromJson(JsonMovies);
-    Console.WriteLine(Target?.ToString().BoxFixedWidth("Target", GlobalSettings.DEBUG_BOX_WIDTH));
+    Assert.IsNotNull(Target);
+    TraceMessage("Target", Target);
+  }
+
+  [TestMethod]
+  public async Task DeserializeTMoviesPageWithConverter() {
+    List<IMovie> Movies = await MovieService.GetAllMovies().Take(2).ToListAsync<IMovie>().ConfigureAwait(false);
+
+    IMoviesPage MoviesPage = new TMoviesPage() {
+      Name = "Sélection",
+      Page = 1,
+      AvailablePages = 3,
+      AvailableMovies = 3456,
+      Source = "Andromeda"
+    };
+    MoviesPage.Movies.AddRange(Movies);
+
+    string Source = MoviesPage.ToJson();
+    TraceMessage("Source", Source);
+
+    IMoviesPage? Target = IJson<TMoviesPage>.FromJson(Source);
+    Assert.IsNotNull(Target);
+    TraceMessage("Target", Target);
   }
 
 }

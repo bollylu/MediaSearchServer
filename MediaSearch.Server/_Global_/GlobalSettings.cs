@@ -29,7 +29,7 @@ public static class GlobalSettings {
     foreach (Assembly AssemblyItem in AppDomain.CurrentDomain.GetAssemblies().Where(a => (a.GetName()?.Name ?? "").StartsWith("MediaSearch"))) {
       IAbout AssemblyAbout = new TAbout(AssemblyItem);
       await AssemblyAbout.Initialize();
-      About.Add(AssemblyAbout);
+      Abouts.Add(AssemblyAbout);
     }
 
     await EntryAbout.Initialize().ConfigureAwait(false);
@@ -39,12 +39,20 @@ public static class GlobalSettings {
   }
 
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
-  public static List<IAbout> About { get; } = new();
+  
   public static TAbout EntryAbout => TAbout.Entry;
 
+  public static TAbout ExecutingAbout {
+    get {
+      return _ExecutingAbout ??= new TAbout(AppDomain.CurrentDomain.GetAssemblies().Single(a => a.GetName().Name == "MediaSearch.Server"));
+    }
+  }
+  private static TAbout? _ExecutingAbout;
+
+  public static List<IAbout> Abouts { get; } = new();
   public static string ListAbout(bool withChangeLog = true) {
     StringBuilder RetVal = new();
-    foreach (IAbout AboutItem in About) {
+    foreach (IAbout AboutItem in Abouts) {
       RetVal.AppendLine(AboutItem.CurrentVersion.ToString().BoxFixedWidth($"{AboutItem.Name} version #", DEBUG_BOX_WIDTH));
       if (withChangeLog) {
         RetVal.AppendLine(AboutItem.ChangeLog.BoxFixedWidth($"Change log {AboutItem.Name}", DEBUG_BOX_WIDTH));

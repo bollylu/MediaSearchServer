@@ -3,14 +3,23 @@
 namespace MediaSearch.Server.Controllers;
 
 [ApiController]
-[Route("api/about")]
-public class AboutController : AController {
+[Route("api")]
+public class TAboutController : AController {
 
-  public AboutController(ILogger logger) : base(logger) {
+  public TAboutController(ILogger logger) : base(logger) {
+    Logger.LogDebug("Building About controller");
   }
 
   [HttpGet()]
-  public async Task<ActionResult<TAbout>> GetAbout(string name) {
+  public ActionResult Index() {
+    return Ok();
+  }
+
+  [HttpGet("about")]
+  public async Task<ActionResult<TAbout>> GetAbout(string name = "MediaSearch.Server") {
+
+    LogDebug(HttpContext.Request.ListHeaders());
+    LogDebug(HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Remote ip not found");
 
     switch (name.ToLower()) {
       case "server": {

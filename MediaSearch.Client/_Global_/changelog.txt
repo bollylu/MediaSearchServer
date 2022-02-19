@@ -22,3 +22,6 @@
 
 * 0.0.15
 - Added About page
+
+* 0.0.16
+- Added Login page

@@ -13,3 +13,5 @@ global using BLTools.Diagnostic.Logging;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 global using MediaSearch.Models;
+
+global using static MediaSearch.Test.Support.Display;

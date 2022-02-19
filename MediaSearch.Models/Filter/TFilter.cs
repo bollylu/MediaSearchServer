@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public class TFilter : IFilter, IJson<IFilter>, IEquatable<TFilter> {
+public class TFilter : ADataModel, IFilter, IJson<IFilter>, IEquatable<TFilter> {
 
   public const int DEFAULT_PAGE_SIZE = 20;
   public const int DEFAULT_OUTPUT_DATE_MIN = 1900;
@@ -124,17 +124,17 @@ public class TFilter : IFilter, IJson<IFilter>, IEquatable<TFilter> {
   #region --- Groups --------------------------------------------
   [JsonPropertyName(nameof(GroupOnly))]
   public bool GroupOnly { get; set; } = false;
-  
+
   /// <summary>
   /// Group to searched for
   /// </summary>
   [JsonPropertyName(nameof(Group))]
   public string Group { get; set; } = "";
-  
+
   /// <summary>
   /// Sub-group to searched for
   /// </summary>
-  [JsonPropertyName(nameof(SubGroup))] 
+  [JsonPropertyName(nameof(SubGroup))]
   public string SubGroup { get; set; } = "";
 
   [JsonPropertyName(nameof(GroupMemberships))]
@@ -151,8 +151,10 @@ public class TFilter : IFilter, IJson<IFilter>, IEquatable<TFilter> {
   #endregion --- Static instance for an empty filter --------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TFilter() { }
-  public TFilter(IFilter filter) {
+  public TFilter() {
+    SetLogger(GlobalSettings.GlobalLogger);
+  }
+  public TFilter(IFilter filter) : this() {
     Page = filter.Page;
     PageSize = filter.PageSize;
     Keywords = filter.Keywords;

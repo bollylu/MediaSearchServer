@@ -1,15 +1,9 @@
 ﻿@page "/DisplayFilterAndList"
 
-<div class="container-fluid">
+  <PageHeader PageTitle="List of movies" />
 
-  <header>
-    <PageHeader PageTitle="List of movies" />
-  </header>
-
-  <div class="row mb-3">
+  <div class="mb-3">
     <EditFilter />
   </div>
 
   <View_MoviesInPages Filter=@CurrentFilter />
-
-</div>

@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace MediaSearch.Server.Services;
+﻿namespace MediaSearch.Server.Services;
 
 public static class GlobalSettings {
   public const int DEBUG_BOX_WIDTH = 100;
@@ -31,6 +29,12 @@ public static class GlobalSettings {
 
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  public static TAbout ExecutingAbout => TAbout.Executing;
+  public static TAbout ExecutingAbout {
+    get {
+      return _ExecutingAbout ??= new TAbout(AppDomain.CurrentDomain.GetAssemblies().Single(a => a.GetName().Name == "MediaSearch.Server.Services"));
+    }
+  }
+  private static TAbout? _ExecutingAbout;
+
   public static TAbout CallingAbout => TAbout.Calling;
 }

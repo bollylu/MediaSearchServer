@@ -103,7 +103,7 @@ public class XMovieService : AMovieService {
 
   public override async IAsyncEnumerable<string> GetGroups() {
     await Initialize().ConfigureAwait(false);
-    foreach (string GroupItem in _MoviesCache.GetGroups()) {
+    await foreach (string GroupItem in _MoviesCache.GetGroups()) {
       yield return GroupItem;
     }
   }

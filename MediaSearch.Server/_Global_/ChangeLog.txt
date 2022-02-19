@@ -39,3 +39,6 @@
 
 * 0.0.21
 - Changes in TAbout controllers (server and serverservices)
+
+* 0.0.22
+- Adding authorization

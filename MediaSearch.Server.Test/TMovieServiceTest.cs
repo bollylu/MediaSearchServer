@@ -10,6 +10,7 @@ public class TMovieServiceTest {
   #region --- Initialize --------------------------------------------
   [ClassInitialize]
   public static async Task MovieCacheInit(TestContext testContext) {
+    await MediaSearch.Models.GlobalSettings.Initialize().ConfigureAwait(false);
     Global.MovieService = new TMovieService(new XMovieCache() { DataSource = @"data\movies.json" }) { Logger = new TConsoleLogger() };
     await Global.MovieService.Initialize().ConfigureAwait(false);
   }
@@ -34,7 +35,7 @@ public class TMovieServiceTest {
       Page = 1,
       PageSize = AMovieCache.DEFAULT_PAGE_SIZE
     };
-    Console.WriteLine(DefaultFilter.ToString().Box("Filter"));
+    Console.WriteLine(DefaultFilter.ToString().BoxFixedWidth("Filter", GlobalSettings.DEBUG_BOX_WIDTH));
     IMoviesPage? Target = await Global.MovieService.GetMoviesPage(DefaultFilter).ConfigureAwait(false);
     Assert.IsNotNull(Target);
     PrintMoviesName(Target.Movies);

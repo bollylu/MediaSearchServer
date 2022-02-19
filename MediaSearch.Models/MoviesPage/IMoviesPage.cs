@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public interface IMoviesPage : IJson {
+public interface IMoviesPage : IJson<IMoviesPage> {
 
   string Name { get; }
   string Source { get; }

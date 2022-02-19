@@ -42,6 +42,9 @@ builder.Services.AddSingleton(MovieService);
 IAboutService AboutService = new TAboutService() { ApiServer = ApiServer };
 builder.Services.AddSingleton(AboutService);
 
+ILoginService LoginService = new TLoginService() { ApiServer = ApiServer };
+builder.Services.AddSingleton(LoginService);
+
 builder.Services.AddSingleton<IBusService<IFilter>, TBusService<IFilter>>();
 builder.Services.AddSingleton<IBusService<string>, TBusService<string>>();
 

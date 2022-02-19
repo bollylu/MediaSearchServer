@@ -1,7 +1,5 @@
 ﻿using BLTools.Text;
 
-using System.Globalization;
-
 namespace MediaSearch.Server.Services;
 
 public abstract class AMovieCache : ALoggable, IMovieCache {
@@ -207,11 +205,13 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
   }
   #endregion --- Movies access --------------------------------------------
 
-  public IEnumerable<string> GetGroups() {
+  public async IAsyncEnumerable<string> GetGroups() {
     try {
       //LogDebugEx($"==> GetGroups() from cache");
       _LockCache.EnterReadLock();
-      return _Items.GetGroups();
+      await foreach (string GroupItem in _Items.GetGroups()) {
+        yield return GroupItem;
+      }
     } finally {
       //LogDebugEx($"<== GetGroups() from cache");
       _LockCache.ExitReadLock();

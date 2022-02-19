@@ -32,7 +32,7 @@ namespace MediaSearch.Client.Test {
 
             JsonContent Content = JsonContent.Create(Filter);
             HttpResponseMessage Result = await Client.PostAsync(RequestUrl, Content, Timeout.Token).ConfigureAwait(false);
-            IMoviesPage? Target = TMoviesPage.FromJson(await Result.Content.ReadAsStringAsync().ConfigureAwait(false));
+            IMoviesPage? Target = IJson<TMoviesPage>.FromJson(await Result.Content.ReadAsStringAsync().ConfigureAwait(false));
 
             Console.WriteLine(Result.ReasonPhrase);
             Console.WriteLine(Target?.ToString());
@@ -63,7 +63,7 @@ namespace MediaSearch.Client.Test {
 
           using (CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT_IN_MS)) {
             HttpResponseMessage Result = await Client.PostAsync(RequestUrl, Content, Timeout.Token).ConfigureAwait(false);
-            IMoviesPage? Target = TMoviesPage.FromJson(await Result.Content.ReadAsStringAsync().ConfigureAwait(false));
+            IMoviesPage? Target = IJson<TMoviesPage>.FromJson(await Result.Content.ReadAsStringAsync().ConfigureAwait(false));
 
             Console.WriteLine(Target?.ToString());
 
@@ -94,7 +94,7 @@ namespace MediaSearch.Client.Test {
 
           using (CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT_IN_MS)) {
             HttpResponseMessage Result = await Client.PostAsync(RequestUrl, Content, Timeout.Token).ConfigureAwait(false);
-            IMoviesPage? Target = TMoviesPage.FromJson(await Result.Content.ReadAsStringAsync().ConfigureAwait(false));
+            IMoviesPage? Target = IJson<TMoviesPage>.FromJson(await Result.Content.ReadAsStringAsync().ConfigureAwait(false));
 
             Console.WriteLine(Target?.ToString());
 

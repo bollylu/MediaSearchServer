@@ -6,7 +6,7 @@ public class TDateOnlyJsonConverter : JsonConverter<DateOnly> {
     if (reader.TokenType == JsonTokenType.String) {
       string? Data = reader.GetString();
       if (Data is null || Data.Length != 8) {
-        throw new JsonException($"Invalid Json data for DateOnly : \'{Data}\"");
+        throw new JsonException($"Invalid Json data for DateOnly : \"{Data}\"");
       }
       DateOnly RetVal = new DateOnly(int.Parse(Data.Left(4)), int.Parse(Data.Substring(4, 2)), int.Parse(Data.Right(2)));
       return RetVal;

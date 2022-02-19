@@ -9,13 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="wwwroot\css\bootstrap\**" />
-    <Content Remove="wwwroot\css\bootstrap\**" />
-    <EmbeddedResource Remove="wwwroot\css\bootstrap\**" />
-    <None Remove="wwwroot\css\bootstrap\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Remove="Pages\Refresh.razor.cs" />
   </ItemGroup>
 
@@ -39,8 +32,6 @@
 
   <ItemGroup>
     <PackageReference Include="BLTools" Version="4.5.28" />
-    <PackageReference Include="bootstrap" Version="5.1.3" />
-    <PackageReference Include="FontAwesome" Version="4.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.2" PrivateAssets="all" />
   </ItemGroup>

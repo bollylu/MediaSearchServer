@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 
 namespace MediaSearch.Client.Pages;
 
@@ -26,12 +25,16 @@ public partial class About : ComponentBase, ILoggable {
   }
   private IAboutService? _AboutService;
 
-  string[] AssembliesList = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetName().Name ?? "-").ToArray();
+  [Inject]
+  public NavigationManager? NavigationManager {get; set; }
 
   protected override async Task OnInitializedAsync() {
-    AboutClient = new TAbout(AppDomain.CurrentDomain.GetAssemblies().Single(a => a.GetName().Name == "MediaSearch.Client"));
-    AboutClientServices = new TAbout(AppDomain.CurrentDomain.GetAssemblies().Single(a => a.GetName().Name == "MediaSearch.Client.Services"));
-    AboutModels = new TAbout(AppDomain.CurrentDomain.GetAssemblies().Single(a => a.GetName().Name == "MediaSearch.Models"));
+    if (GlobalSettings.Account is null) {
+      NavigationManager?.NavigateTo("/login", false, true);
+    }
+    AboutClient = MediaSearch.Client.GlobalSettings.ExecutingAbout;
+    AboutClientServices = MediaSearch.Client.Services.GlobalSettings.ExecutingAbout;
+    AboutModels = MediaSearch.Models.GlobalSettings.ExecutingAbout;
     await AboutClient.Initialize();
     await AboutClientServices.Initialize();
     await AboutModels.Initialize();

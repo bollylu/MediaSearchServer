@@ -25,7 +25,11 @@ public class TJsonInputFormatter : TextInputFormatter {
     string Body = await Reader.ReadToEndAsync();
     switch (context.Metadata.ModelType.Name) {
       case nameof(TFilter):
-        return await InputFormatterResult.SuccessAsync(TFilter.FromJson(Body));
+        return await InputFormatterResult.SuccessAsync(IJson<TFilter>.FromJson(Body));
+      case nameof(TUserAccountSecret):
+        return await InputFormatterResult.SuccessAsync(IJson<TUserAccountSecret>.FromJson(Body));
+      case nameof(TUserToken):
+        return await InputFormatterResult.SuccessAsync(IJson<TUserToken>.FromJson(Body));
       default:
         return await InputFormatterResult.FailureAsync();
     }

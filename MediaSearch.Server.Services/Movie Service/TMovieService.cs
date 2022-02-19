@@ -14,19 +14,19 @@ public class TMovieService : AMovieService {
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMovieService() {
-    SetLogger(new TConsoleLogger());
-    _MoviesCache.SetLogger(new TConsoleLogger());
+    SetLogger(GlobalSettings.GlobalLogger);
+    _MoviesCache.SetLogger(GlobalSettings.GlobalLogger);
   }
   
-  public TMovieService(string storage) {
-    _MoviesCache.SetLogger(Logger);
+  public TMovieService(string storage) : this() {
     RootStoragePath = storage;
     _MoviesCache = new TMovieCache() { RootStoragePath = storage };
+    _MoviesCache.SetLogger(GlobalSettings.GlobalLogger);
   }
 
-  public TMovieService(IMovieCache movieCache) {
+  public TMovieService(IMovieCache movieCache) : this() {
     _MoviesCache = movieCache;
-    _MoviesCache.SetLogger(Logger);
+    _MoviesCache.SetLogger(GlobalSettings.GlobalLogger);
     RootStoragePath = movieCache.RootStoragePath;
   }
 
@@ -125,7 +125,7 @@ public class TMovieService : AMovieService {
   public override async IAsyncEnumerable<string> GetGroups() {
     await Initialize().ConfigureAwait(false);
 
-    foreach (string GroupItem in _MoviesCache.GetGroups()) {
+    await foreach(string GroupItem in _MoviesCache.GetGroups().ConfigureAwait(false)) {
       yield return GroupItem;
     }
   }

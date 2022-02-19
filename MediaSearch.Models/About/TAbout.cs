@@ -280,10 +280,6 @@ public class TAbout : ALoggable, IAbout, IJson<TAbout> {
   private static TAbout? _Entry;
 
   [JsonIgnore]
-  public static TAbout Executing => _Executing ??= new TAbout(Assembly.GetExecutingAssembly());
-  private static TAbout? _Executing;
-
-  [JsonIgnore]
   public static TAbout Calling => _Calling ??= new TAbout(Assembly.GetCallingAssembly());
   private static TAbout? _Calling;
   #endregion --- Static instances --------------------------------------------

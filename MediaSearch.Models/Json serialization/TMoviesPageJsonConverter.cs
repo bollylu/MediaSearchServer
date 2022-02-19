@@ -9,7 +9,7 @@ namespace MediaSearch.Models;
 public class TMoviesPageJsonConverter : JsonConverter<TMoviesPage> {
 
   public override bool CanConvert(Type typeToConvert) {
-    return base.CanConvert(typeToConvert);
+   return typeof(TMoviesPage).IsAssignableFrom(typeToConvert);
   }
 
   public override TMoviesPage Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {

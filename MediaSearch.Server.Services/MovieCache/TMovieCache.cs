@@ -20,7 +20,7 @@ public class TMovieCache : AMovieCache {
     }
   }
 
-  public override async Task Parse(CancellationToken token) {
+  public override Task Parse(CancellationToken token) {
 
     Log("Initializing movies cache");
 
@@ -39,7 +39,6 @@ public class TMovieCache : AMovieCache {
         IMovie NewMovie = _ParseEntry(MovieInfoItem);
         NewMovie.DateAdded = DateOnly.FromDateTime(MovieInfoItem.ModificationDate);
         LogDebugEx($"Found {MovieInfoItem.FullName}");
-        await Task.Yield();
         AddMovie(NewMovie);
       } catch ( Exception ex ) {
         LogWarning($"Unable to parse movie {MovieInfoItem} : {ex.Message}");
@@ -56,6 +55,7 @@ public class TMovieCache : AMovieCache {
 
     Log($"Cache initialized successfully : {Progress} movies");
 
+    return Task.CompletedTask;
   }
 
 }

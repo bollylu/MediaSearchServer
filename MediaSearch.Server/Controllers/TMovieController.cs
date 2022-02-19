@@ -53,7 +53,10 @@ public class TMovieController : AController {
   public async Task<ActionResult<IList<string>>> GetGroups() {
     //Logger?.LogDebug($"Request : {HttpContext.Connection.RemoteIpAddress}:{HttpContext.Connection.Id} > {HttpContext.Request.QueryString}");
     Logger?.LogDebug(HttpContext.Request.ListHeaders());
-    IList<string> RetVal = await _MovieService.GetGroups().ToListAsync().ConfigureAwait(false);
+    IList<string> RetVal = new List<string>();
+    await foreach (string GroupItem in _MovieService.GetGroups().ConfigureAwait(false)) {
+      RetVal.Add(GroupItem);
+    }
 
     return new ActionResult<IList<string>>(RetVal);
   }

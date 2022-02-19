@@ -33,7 +33,7 @@ public class XMovieCache : AMovieCache {
     JsonDocument JsonContent = JsonDocument.Parse(DataSourceContent);
     JsonElement JsonMovies = JsonContent.RootElement;
     foreach (JsonElement JsonMovieItem in JsonMovies.GetProperty("movies").EnumerateArray()) {
-      IMovie? Movie = TMovie.FromJson(JsonMovieItem.GetRawText());
+      IMovie? Movie = IJson<TMovie>.FromJson(JsonMovieItem.GetRawText());
       if (Movie is not null) {
         AddMovie(Movie);
       }

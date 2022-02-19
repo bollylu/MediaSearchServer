@@ -2,7 +2,7 @@
 
 namespace MediaSearch.Models;
 
-public abstract class AMedia : ALoggable, IMedia {
+public abstract class AMedia : ADataModel, IMedia {
 
   public string Id {
     get {

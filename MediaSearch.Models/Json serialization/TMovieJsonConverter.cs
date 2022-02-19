@@ -1,15 +1,9 @@
-﻿using System.Drawing;
-using System.Drawing.Printing;
-using System.Text.Json;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
-
-namespace MediaSearch.Models;
+﻿namespace MediaSearch.Models;
 
 public class TMovieJsonConverter : JsonConverter<TMovie> {
 
   public override bool CanConvert(Type typeToConvert) {
-    return base.CanConvert(typeToConvert);
+    return typeof(TMovie).IsAssignableFrom(typeToConvert);
   }
 
   public override TMovie Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
@@ -17,27 +11,6 @@ public class TMovieJsonConverter : JsonConverter<TMovie> {
     if (reader.TokenType != JsonTokenType.StartObject) {
       throw new JsonException();
     }
-
-    Utf8JsonReader TestReader = reader;
-
-    //string MovieId = "";
-    //while (TestReader.Read()) {
-    //  JsonTokenType TokenType = reader.TokenType;
-
-    //  if (TokenType == JsonTokenType.EndObject) {
-    //    break;
-    //  }
-
-    //  if (TokenType == JsonTokenType.PropertyName) {
-
-    //    string Property = reader.GetString();
-    //    reader.Read();
-    //    if (Property == nameof(IMovie.Id)) {
-    //      MovieId = TestReader.GetString();
-    //      break;
-    //    }
-    //  }
-    //}
 
     TMovie RetVal = new TMovie();
 

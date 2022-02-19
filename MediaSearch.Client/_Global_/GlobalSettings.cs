@@ -31,6 +31,13 @@ public static class GlobalSettings {
 
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  public static TAbout ExecutingAbout => TAbout.Executing;
-  public static TAbout CallingAbout => TAbout.Calling;
+  public static TAbout ExecutingAbout {
+    get {
+      return _ExecutingAbout ??= new TAbout(AppDomain.CurrentDomain.GetAssemblies().Single(a => a.GetName().Name == "MediaSearch.Client"));
+    }
+  }
+  private static TAbout? _ExecutingAbout;
+
+  public static IUserAccount? Account {get; set; }
+
 }

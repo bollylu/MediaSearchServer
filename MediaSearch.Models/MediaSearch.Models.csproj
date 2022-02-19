@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Movie\TMovie.cs.old" />
     <None Remove="Pictures\missing.jpg" />
     <None Remove="_Global_\changelog.txt" />
     <None Remove="_Global_\version.txt" />
