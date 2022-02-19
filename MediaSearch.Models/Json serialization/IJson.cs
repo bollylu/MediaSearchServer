@@ -7,18 +7,30 @@ public interface IJson {
   public static JsonSerializerOptions DefaultJsonSerializerOptions {
     get {
       lock (_DefaultJsonSerializerOptionsLock) {
-        _DefaultJsonSerializerOptions ??= new JsonSerializerOptions() {
+        if (_DefaultJsonSerializerOptions is null) {
+          _DefaultJsonSerializerOptions = new JsonSerializerOptions() {
 #if DEBUG
-          WriteIndented = true,
+            WriteIndented = true,
 #else
-          WriteIndented = false,
+            WriteIndented = false,
 #endif
-          NumberHandling = JsonNumberHandling.Strict,
-          DictionaryKeyPolicy = new TIdenticalJsonNamingPolicy(),
-          IgnoreReadOnlyFields = true,
-          IgnoreReadOnlyProperties = true,
-          Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Latin1Supplement)
-        };
+            NumberHandling = JsonNumberHandling.Strict,
+            DictionaryKeyPolicy = new TIdenticalJsonNamingPolicy(),
+            IgnoreReadOnlyFields = true,
+            IgnoreReadOnlyProperties = true,
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Latin1Supplement)
+          };
+          _DefaultJsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TAboutJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TDateOnlyJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TFilterJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TIPAddressJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TMovieJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TMoviesPageJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TUserAccountJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TUserAccountSecretJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TUserTokenJsonConverter());
+        }
         return _DefaultJsonSerializerOptions;
       }
     }
@@ -32,7 +44,9 @@ public interface IJson {
   private static readonly object _DefaultJsonSerializerOptionsLock = new object();
 
   public static void AddJsonConverter(JsonConverter converter) {
-    DefaultJsonSerializerOptions.Converters.Add(converter);
+    lock (_DefaultJsonSerializerOptionsLock) {
+      _DefaultJsonSerializerOptions?.Converters.Add(converter);
+    }
   }
 
   /// <summary>
@@ -40,7 +54,7 @@ public interface IJson {
   /// </summary>
   /// <returns>A Json string</returns>
   public string ToJson() {
-    return JsonSerializer.Serialize(this, this.GetType(), DefaultJsonSerializerOptions);
+    return JsonSerializer.Serialize(this, GetType(), DefaultJsonSerializerOptions);
   }
 
   /// <summary>

@@ -8,10 +8,10 @@ namespace MediaSearch.Models.Test;
 [TestClass]
 public class TMoviesPageSerializationTest {
 
-  [ClassInitialize]
-  public static async Task ClassInitialize(TestContext context) {
-    await MediaSearch.Models.GlobalSettings.Initialize().ConfigureAwait(false);
-  }
+  //[ClassInitialize]
+  //public static async Task ClassInitialize(TestContext context) {
+  //  await MediaSearch.Models.GlobalSettings.Initialize().ConfigureAwait(false);
+  //}
 
   internal IMovieService MovieService => _MovieService ??= new XMovieService(new XMovieCache() { DataSource = @"data\movies.json" }) { Logger = new TConsoleLogger() };
   private IMovieService? _MovieService;

@@ -10,8 +10,6 @@ public class TApiServer : ALoggable, IApiServer {
 
   public Uri BaseAddress => _HttpClient?.BaseAddress ?? new Uri("http://localhost");
 
-  public static string X_CLIENT = $"MediaSearchClient {MediaSearch.Client.Services.GlobalSettings.ExecutingAbout.CurrentVersion}";
-
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TApiServer() {
     _HttpClient = new HttpClient();
@@ -26,7 +24,6 @@ public class TApiServer : ALoggable, IApiServer {
     _HttpClient.BaseAddress = new Uri(baseAddress);
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
-
 
   public override string ToString() {
     StringBuilder RetVal = new StringBuilder();
@@ -63,12 +60,13 @@ public class TApiServer : ALoggable, IApiServer {
     }
   }
 
-  public async Task<T?> GetJsonAsync<T>(string uriRequest, IJson additionalContent, CancellationToken cancellationToken) where T : class, IJson<T> {
+  public async Task<T?> GetJsonAsync<C, T>(string uriRequest, IJson<C> additionalContent, CancellationToken cancellationToken) where T : class, IJson<T> where C : class, IJson<C> {
     try {
       LogDebug($"Request: {uriRequest}");
 
       TMscPostRequestMessage RequestMessage = new TMscPostRequestMessage(uriRequest);
-      RequestMessage.Content = JsonContent.Create(additionalContent, MediaTypeHeaderValue.Parse("application/json"), TFilter.DefaultJsonSerializerOptions);
+      RequestMessage.Content = new StringContent(additionalContent.ToJson());
+      RequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
 

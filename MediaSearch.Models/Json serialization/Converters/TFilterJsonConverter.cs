@@ -22,7 +22,7 @@ public class TFilterJsonConverter : JsonConverter<TFilter>, ILoggable {
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public override bool CanConvert(Type typeToConvert) {
-    return typeof(TFilter).IsAssignableFrom(typeToConvert);
+    return typeof(IFilter).IsAssignableFrom(typeToConvert);
   }
 
   public override TFilter Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {

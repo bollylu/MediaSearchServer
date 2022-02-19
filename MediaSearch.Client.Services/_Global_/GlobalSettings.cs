@@ -1,4 +1,7 @@
 ﻿using System.Reflection;
+using System.Text.Encodings.Web;
+using System.Text.Json.Serialization;
+using System.Text.Unicode;
 
 namespace MediaSearch.Client.Services;
 
@@ -38,4 +41,43 @@ public static class GlobalSettings {
     }
   }
   private static TAbout? _ExecutingAbout;
+
+  public static JsonSerializerOptions DefaultJsonSerializerOptions {
+    get {
+      lock (_DefaultJsonSerializerOptionsLock) {
+        if (_DefaultJsonSerializerOptions is null) {
+          _DefaultJsonSerializerOptions = new JsonSerializerOptions() {
+#if DEBUG
+            WriteIndented = true,
+#else
+            WriteIndented = false,
+#endif
+            NumberHandling = JsonNumberHandling.Strict,
+            DictionaryKeyPolicy = new TIdenticalJsonNamingPolicy(),
+            IgnoreReadOnlyFields = true,
+            IgnoreReadOnlyProperties = true,
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Latin1Supplement)
+          };
+          _DefaultJsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TAboutJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TDateOnlyJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TFilterJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TIPAddressJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TMovieJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TMoviesPageJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TUserAccountJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TUserAccountSecretJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TUserTokenJsonConverter());
+        }
+        return _DefaultJsonSerializerOptions;
+      }
+    }
+    set {
+      lock (_DefaultJsonSerializerOptionsLock) {
+        _DefaultJsonSerializerOptions = value;
+      }
+    }
+  }
+  private static JsonSerializerOptions? _DefaultJsonSerializerOptions;
+  private static readonly object _DefaultJsonSerializerOptionsLock = new object();
 }

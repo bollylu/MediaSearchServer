@@ -14,3 +14,5 @@ global using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 global using MediaSearch.Server.Services;
 global using MediaSearch.Models;
+
+global using static MediaSearch.Test.Support.Display;

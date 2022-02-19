@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public class TFilter : ADataModel, IFilter, IJson<IFilter>, IEquatable<TFilter> {
+public class TFilter : ADataModel, IFilter, IJson<TFilter>, IEquatable<TFilter> {
 
   public const int DEFAULT_PAGE_SIZE = 20;
   public const int DEFAULT_OUTPUT_DATE_MIN = 1900;
@@ -257,92 +257,92 @@ public class TFilter : ADataModel, IFilter, IJson<IFilter>, IEquatable<TFilter> 
   }
   #endregion --- Equality comparison --------------------------------------------
 
-  #region --- IJson<IFilter> --------------------------------------------
-  public static JsonSerializerOptions DefaultJsonSerializerOptions {
-    get {
-      lock (_DefaultJsonSerializerOptionsLock) {
-        if (_DefaultJsonSerializerOptions is null) {
-          _DefaultJsonSerializerOptions = new JsonSerializerOptions() {
-            WriteIndented = true,
-            NumberHandling = JsonNumberHandling.Strict
-          };
-          _DefaultJsonSerializerOptions.Converters.Add(new TFilterJsonConverter());
-          _DefaultJsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-          _DefaultJsonSerializerOptions.Converters.Add(new TDateOnlyJsonConverter());
+  //#region --- IJson<IFilter> --------------------------------------------
+  //public static JsonSerializerOptions DefaultJsonSerializerOptions {
+  //  get {
+  //    lock (_DefaultJsonSerializerOptionsLock) {
+  //      if (_DefaultJsonSerializerOptions is null) {
+  //        _DefaultJsonSerializerOptions = new JsonSerializerOptions() {
+  //          WriteIndented = true,
+  //          NumberHandling = JsonNumberHandling.Strict
+  //        };
+  //        _DefaultJsonSerializerOptions.Converters.Add(new TFilterJsonConverter());
+  //        _DefaultJsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+  //        _DefaultJsonSerializerOptions.Converters.Add(new TDateOnlyJsonConverter());
 
-        }
-        return _DefaultJsonSerializerOptions;
-      }
-    }
-    set {
-      lock (_DefaultJsonSerializerOptionsLock) {
-        _DefaultJsonSerializerOptions = value;
-      }
-    }
-  }
-  private static JsonSerializerOptions? _DefaultJsonSerializerOptions;
-  private static readonly object _DefaultJsonSerializerOptionsLock = new object();
+  //      }
+  //      return _DefaultJsonSerializerOptions;
+  //    }
+  //  }
+  //  set {
+  //    lock (_DefaultJsonSerializerOptionsLock) {
+  //      _DefaultJsonSerializerOptions = value;
+  //    }
+  //  }
+  //}
+  //private static JsonSerializerOptions? _DefaultJsonSerializerOptions;
+  //private static readonly object _DefaultJsonSerializerOptionsLock = new object();
 
-  public string ToJson() {
-    return ToJson(DefaultJsonSerializerOptions);
-  }
+  //public string ToJson() {
+  //  return ToJson(DefaultJsonSerializerOptions);
+  //}
 
-  public string ToJson(JsonSerializerOptions options) {
-    return JsonSerializer.Serialize(this, options);
-  }
+  //public string ToJson(JsonSerializerOptions options) {
+  //  return JsonSerializer.Serialize(this, options);
+  //}
 
-  public IFilter ParseJson(string source) {
-    return ParseJson(source, DefaultJsonSerializerOptions);
-  }
+  //public IFilter ParseJson(string source) {
+  //  return ParseJson(source, DefaultJsonSerializerOptions);
+  //}
 
-  public IFilter ParseJson(string source, JsonSerializerOptions options) {
-    #region === Validate parameters ===
-    if (string.IsNullOrWhiteSpace(source)) {
-      throw new JsonException("Json filter source is null");
-    }
-    #endregion === Validate parameters ===
+  //public IFilter ParseJson(string source, JsonSerializerOptions options) {
+  //  #region === Validate parameters ===
+  //  if (string.IsNullOrWhiteSpace(source)) {
+  //    throw new JsonException("Json filter source is null");
+  //  }
+  //  #endregion === Validate parameters ===
 
-    TFilter? Deserialized = JsonSerializer.Deserialize<TFilter>(source, options);
+  //  TFilter? Deserialized = JsonSerializer.Deserialize<TFilter>(source, options);
 
-    if (Deserialized is not null) {
-      Page = Deserialized.Page;
-      PageSize = Deserialized.PageSize;
-      Keywords = Deserialized.Keywords;
-      KeywordsSelection = Deserialized.KeywordsSelection;
-      Tags = Deserialized.Tags;
-      TagSelection = Deserialized.TagSelection;
-      DaysBack = Deserialized.DaysBack;
-      OutputDateMin = Deserialized.OutputDateMin;
-      OutputDateMax = Deserialized.OutputDateMax;
-      GroupOnly = Deserialized.GroupOnly;
-      Group = Deserialized.Group;
-      SubGroup = Deserialized.SubGroup;
-      SortOrder = Deserialized.SortOrder;
-      GroupFilter = Deserialized.GroupFilter;
-      GroupMemberships.AddRange(Deserialized.GroupMemberships);
-    }
-    return this;
-  }
+  //  if (Deserialized is not null) {
+  //    Page = Deserialized.Page;
+  //    PageSize = Deserialized.PageSize;
+  //    Keywords = Deserialized.Keywords;
+  //    KeywordsSelection = Deserialized.KeywordsSelection;
+  //    Tags = Deserialized.Tags;
+  //    TagSelection = Deserialized.TagSelection;
+  //    DaysBack = Deserialized.DaysBack;
+  //    OutputDateMin = Deserialized.OutputDateMin;
+  //    OutputDateMax = Deserialized.OutputDateMax;
+  //    GroupOnly = Deserialized.GroupOnly;
+  //    Group = Deserialized.Group;
+  //    SubGroup = Deserialized.SubGroup;
+  //    SortOrder = Deserialized.SortOrder;
+  //    GroupFilter = Deserialized.GroupFilter;
+  //    GroupMemberships.AddRange(Deserialized.GroupMemberships);
+  //  }
+  //  return this;
+  //}
 
-  #region --- Static Deserializer --------------------------------------------
+  //#region --- Static Deserializer --------------------------------------------
 
-  public static IFilter? FromJson(string source) {
-    if (string.IsNullOrWhiteSpace(source)) {
-      throw new ArgumentNullException(nameof(source));
-    }
-    return JsonSerializer.Deserialize<TFilter>(source, DefaultJsonSerializerOptions);
-  }
+  //public static IFilter? FromJson(string source) {
+  //  if (string.IsNullOrWhiteSpace(source)) {
+  //    throw new ArgumentNullException(nameof(source));
+  //  }
+  //  return JsonSerializer.Deserialize<TFilter>(source, DefaultJsonSerializerOptions);
+  //}
 
-  public static IFilter? FromJson(string source, JsonSerializerOptions options) {
-    if (string.IsNullOrWhiteSpace(source)) {
-      throw new ArgumentNullException(nameof(source));
-    }
-    return JsonSerializer.Deserialize<TFilter>(source, options);
-  }
+  //public static IFilter? FromJson(string source, JsonSerializerOptions options) {
+  //  if (string.IsNullOrWhiteSpace(source)) {
+  //    throw new ArgumentNullException(nameof(source));
+  //  }
+  //  return JsonSerializer.Deserialize<TFilter>(source, options);
+  //}
 
 
-  #endregion --- Static Deserializer --------------------------------------------
-  #endregion --- IJson --------------------------------------------
+  //#endregion --- Static Deserializer --------------------------------------------
+  //#endregion --- IJson --------------------------------------------
 
   public void Clear() {
     FirstPage();

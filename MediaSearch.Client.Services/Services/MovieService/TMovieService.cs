@@ -71,7 +71,7 @@ public class TMovieService : ALoggable, IMovieService {
 
       using (CancellationTokenSource Timeout = new CancellationTokenSource(GlobalSettings.HTTP_TIMEOUT_IN_MS)) {
 
-        TMoviesPage? Result = await ApiServer.GetJsonAsync<TMoviesPage>(RequestUrl, filter, CancellationToken.None).ConfigureAwait(false);
+        TMoviesPage? Result = await ApiServer.GetJsonAsync<IFilter, TMoviesPage>(RequestUrl, new TFilter(filter), CancellationToken.None).ConfigureAwait(false);
 
         LogDebugEx(Result?.ToString().BoxFixedWidth($"IMoviesPage", GlobalSettings.DEBUG_BOX_WIDTH));
         return Result;

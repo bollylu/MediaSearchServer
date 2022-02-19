@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public interface IAbout : IName {
+public interface IAbout : IName, IJson<IAbout> {
   Version CurrentVersion { get; }
   string ChangeLog { get; }
 

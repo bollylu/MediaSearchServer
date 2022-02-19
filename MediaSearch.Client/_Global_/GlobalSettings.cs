@@ -1,4 +1,7 @@
 ﻿using System.Reflection;
+using System.Text.Encodings.Web;
+using System.Text.Json.Serialization;
+using System.Text.Unicode;
 
 namespace MediaSearch.Client;
 
@@ -40,4 +43,5 @@ public static class GlobalSettings {
 
   public static IUserAccount? Account {get; set; }
 
+  
 }

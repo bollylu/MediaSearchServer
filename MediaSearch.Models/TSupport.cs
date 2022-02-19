@@ -7,27 +7,15 @@ namespace MediaSearch.Models;
 
 public static class Support {
 
-  public static void PrintMoviesName(IEnumerable<IMovie> movies) {
-    foreach ( IMovie MovieItem in movies ) {
-      Console.WriteLine(MovieItem.Name);
-    }
-  }
-
-  public static void PrintMovies(IEnumerable<IMovie> movies) {
-    foreach (IMovie MovieItem in movies) {
-      Console.WriteLine(MovieItem.ToString().Box());
-    }
-  }
-
   public static byte[] GetPicture(string pictureName, string pictureExtension = ".png") {
     try {
       Assembly Asm = Assembly.GetExecutingAssembly();
-      string CompleteName = $"{Asm.GetName().Name}.Pictures.{pictureName}{pictureExtension}";
+      string CompleteName = $"MediaSearch.Models.Pictures.{pictureName}{pictureExtension}";
       string[] Resources = Asm.GetManifestResourceNames();
       foreach ( string ResourceItem in Resources ) {
         Console.WriteLine(ResourceItem);
       }
-      using (Stream? ResourceStream = Asm.GetManifestResourceStream(pictureName)) {
+      using (Stream? ResourceStream = Asm.GetManifestResourceStream(CompleteName)) {
         if (ResourceStream is null) {
           return Array.Empty<byte>();
         }

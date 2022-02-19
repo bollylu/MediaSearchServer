@@ -7,10 +7,10 @@ namespace MediaSearch.Models.Test;
 [TestClass]
 public class IEnumerableMovieExtensionsTests {
 
-  [ClassInitialize]
-  public static async Task ClassInitialize(TestContext context) {
-    await MediaSearch.Models.GlobalSettings.Initialize().ConfigureAwait(false);
-  }
+  //[ClassInitialize]
+  //public static async Task ClassInitialize(TestContext context) {
+  //  await MediaSearch.Models.GlobalSettings.Initialize().ConfigureAwait(false);
+  //}
 
   /// <summary>
   /// Internal source of data
@@ -27,7 +27,7 @@ public class IEnumerableMovieExtensionsTests {
     Assert.IsNotNull(Target);
     Assert.IsTrue(Target.Any());
     Assert.IsTrue(Target.Count() > 10);
-    Support.PrintMovies(Target);
+    TraceMovies(Target);
   }
 
   [TestMethod]
@@ -47,7 +47,7 @@ public class IEnumerableMovieExtensionsTests {
     Assert.IsNotNull(Target);
     Assert.IsTrue(Target.Any());
     Assert.IsTrue(Target.Count() > 10);
-    Support.PrintMovies(Target);
+    TraceMovies(Target);
   }
   #endregion --- Any tag --------------------------------------------
 
@@ -58,7 +58,7 @@ public class IEnumerableMovieExtensionsTests {
     Console.WriteLine(Filter.ToString().Box("Filter"));
     IEnumerable<IMovie> Target = MovieCache.GetAllMovies().FilterByTags(Filter);
     Assert.IsNotNull(Target);
-    Support.PrintMovies(Target);
+    TraceMovies(Target);
     Assert.IsTrue(Target.Any());
     Assert.IsTrue(Target.Count() > 10);
 
@@ -79,7 +79,7 @@ public class IEnumerableMovieExtensionsTests {
     Console.WriteLine(Filter.ToString().Box("Filter"));
     IEnumerable<IMovie> Target = MovieCache.GetAllMovies().FilterByTags(Filter);
     Assert.IsNotNull(Target);
-    Support.PrintMovies(Target);
+    TraceMovies(Target);
     Assert.IsTrue(Target.Any());
     Assert.IsTrue(Target.Count() > 10);
   }

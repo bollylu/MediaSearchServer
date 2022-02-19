@@ -1,5 +1,5 @@
 ﻿namespace MediaSearch.Models;
-public interface IUserToken  {
+public interface IUserToken : IJson<IUserToken>  {
 
   public string Token { get; set; }
   public DateTime Expiration { get; set; }
