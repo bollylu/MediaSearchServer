@@ -2,7 +2,7 @@
 
 namespace MediaSearch.Client.Pages;
 
-public partial class About : ComponentBase, ILoggable {
+public partial class About : ComponentBase, IMediaSearchLoggable<About> {
 
   TAbout? AboutClient { get; set; }
   TAbout? AboutClientServices { get; set; }
@@ -44,9 +44,6 @@ public partial class About : ComponentBase, ILoggable {
   }
 
   #region --- ILoggable --------------------------------------------
-  public ILogger Logger { get; set; } = GlobalSettings.GlobalLogger;
-  public void SetLogger(ILogger logger) {
-    Logger = ALogger.Create(logger);
-  }
+  public IMediaSearchLogger<About> Logger { get;  } = GlobalSettings.LoggerPool.GetLogger<About>();
   #endregion --- ILoggable --------------------------------------------
 }

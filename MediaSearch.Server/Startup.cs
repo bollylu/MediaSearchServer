@@ -15,6 +15,8 @@ public class Startup {
 
   public const string DEFAULT_DATASOURCE = @"\\andromeda.sharenet.priv\multimedia\films\";
 
+  IMediaSearchLogger<Startup> Logger = GlobalSettings.LoggerPool.GetLogger<Startup>();
+
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public Startup(IConfiguration configuration) {
     Configuration = configuration;
@@ -38,13 +40,11 @@ public class Startup {
     StartupInfo.AppendLine($"Running on {Environment.MachineName}");
     StartupInfo.AppendLine($"Runtime version {Environment.Version}");
     StartupInfo.AppendLine($"OS version {Environment.OSVersion}");
-    GlobalSettings.GlobalLogger.Log(TextBox.BuildFixedWidth(StartupInfo.ToString(), "Startup info", 80, TextBox.EStringAlignment.Left)); 
+    Logger.LogBox("Startup info", StartupInfo);
     #endregion --- Log startup info --------------------------------------------
 
-    GlobalSettings.GlobalLogger.Log("MediaSearch.Server startup...");
-    GlobalSettings.GlobalLogger.Log($"Data source is {DataSource}");
-
-    services.AddSingleton<ILogger>(GlobalSettings.GlobalLogger);
+    Logger.Log("MediaSearch.Server startup...");
+    Logger.Log($"Data source is {DataSource}");
 
     services.AddControllers(options => {
       options.OutputFormatters.Insert(0, new TJsonOutputFormatter());
@@ -74,7 +74,7 @@ public class Startup {
       //c.SchemaFilter<MySwaggerSchemaFilter>();
     });
 
-    GlobalSettings.GlobalLogger.Log($"MediaSearch.Server {GlobalSettings.EntryAbout.CurrentVersion} startup complete. Running.");
+    Logger.Log($"MediaSearch.Server {GlobalSettings.EntryAbout.CurrentVersion} startup complete. Running.");
   }
 
   // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

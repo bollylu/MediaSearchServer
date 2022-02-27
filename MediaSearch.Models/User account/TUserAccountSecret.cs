@@ -1,16 +1,37 @@
 ﻿namespace MediaSearch.Models;
-public class TUserAccountSecret : ADataModel, IUserAccountSecret, IJson<TUserAccountSecret> {
+public class TUserAccountSecret : IUserAccountSecret, IJson<TUserAccountSecret> {
 
-  //[JsonPropertyName(nameof(Name))]
   public string Name { get; set; } = "";
 
-  //[JsonPropertyName(nameof(Password))]
   public string Password { get; set; } = "";
 
-  //[JsonPropertyName(nameof(MustChangePassword))]
   public bool MustChangePassword { get; set; } = false;
 
-  //[JsonPropertyName(nameof(Token))]
   public IUserToken Token { get; set; } = TUserToken.ExpiredUserToken;
 
+  #region --- Constructor(s) ---------------------------------------------------------------------------------
+  public TUserAccountSecret() { }
+  public TUserAccountSecret(IUserAccountSecret secret) {
+    Name = secret.Name;
+    Password = secret.Password;
+    MustChangePassword = secret.MustChangePassword;
+    Token = new TUserToken(secret.Token);
+  }
+
+  public TUserAccountSecret(IUserAccount user) {
+    Name = user.Name;
+    Password = user.Secret.Password;
+    MustChangePassword = user.Secret.MustChangePassword;
+    Token = new TUserToken(user.Secret.Token);
+  }
+  #endregion --- Constructor(s) ------------------------------------------------------------------------------
+
+  public override string ToString() {
+    StringBuilder RetVal = new StringBuilder();
+    RetVal.Append($"{nameof(Name)}={Name}");
+    RetVal.Append($", {nameof(Password)}={Password}");
+    RetVal.Append($", {nameof(MustChangePassword)}={MustChangePassword}");
+    RetVal.Append($", {nameof(Token)}={Token}");
+    return RetVal.ToString();
+  }
 }

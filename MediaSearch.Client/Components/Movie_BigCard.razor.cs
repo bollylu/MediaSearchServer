@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MediaSearch.Client.Components {
 
-  public partial class Movie_BigCard : ComponentBase, ILoggable {
+  public partial class Movie_BigCard : ComponentBase, IMediaSearchLoggable<Movie_BigCard> {
 
     [Parameter]
     public IMovie Movie {
@@ -32,23 +32,7 @@ namespace MediaSearch.Client.Components {
     [Inject]
     public IMovieService? MovieService { get; set; }
 
-    [Inject]
-    public ILogger Logger {
-      get {
-        return _Logger ??= new TConsoleLogger();
-      }
-      set {
-        _Logger = value;
-      }
-    }
-    private ILogger? _Logger;
-
-    public void SetLogger(ILogger logger) {
-      if (logger is null) {
-        return;
-      }
-      Logger = ALogger.Create(logger);
-    }
+    public IMediaSearchLogger<Movie_BigCard> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<Movie_BigCard>();
 
     private CancellationTokenSource Cancellation = new CancellationTokenSource();
 

@@ -18,6 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="ADataModel.cs" />
+    <Compile Remove="Interfaces\IDuplicate.cs" />
     <Compile Remove="Json serialization\AJson.cs" />
     <Compile Remove="Movie\TMovieJson.cs" />
   </ItemGroup>

@@ -1,8 +1,9 @@
-﻿using BLTools.Encryption;
+﻿using BLTools.Diagnostic.Logging;
+using BLTools.Encryption;
 
 namespace MediaSearch.Models;
 
-public abstract class AMedia : ADataModel, IMedia {
+public abstract class AMedia : IMedia {
 
   public string Id {
     get {
@@ -41,13 +42,9 @@ public abstract class AMedia : ADataModel, IMedia {
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   protected AMedia() {
-    Logger = new TConsoleLogger();
-    Logger.SeverityLimit = ESeverity.Debug;
   }
 
   protected AMedia(IMedia media) {
-    Logger = new TConsoleLogger();
-    Logger.SeverityLimit = ESeverity.Debug;
 
     Id = media.Id;
     Name = media.Name;

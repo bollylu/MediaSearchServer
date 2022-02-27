@@ -8,7 +8,9 @@ namespace MediaSearch.Client;
 public static class GlobalSettings {
   public const int DEBUG_BOX_WIDTH = 100;
 
-  public static ILogger GlobalLogger { get; set; } = new TConsoleLogger();
+  public static IMediaSearchLogger GlobalLogger { get; set; } = new TMediaSearchLoggerConsole();
+
+  public static TLoggerPool LoggerPool { get; } = new();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   static GlobalSettings() {

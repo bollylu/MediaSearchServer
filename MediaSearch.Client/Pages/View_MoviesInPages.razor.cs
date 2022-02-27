@@ -1,9 +1,10 @@
-﻿using BLTools.Text;
+﻿using BLTools.Diagnostic.Logging;
+using BLTools.Text;
 
 using Microsoft.AspNetCore.Components;
 
 namespace MediaSearch.Client.Pages {
-  public partial class View_MoviesInPages : ComponentBase, ILoggable {
+  public partial class View_MoviesInPages : ComponentBase, IMediaSearchLoggable<View_MoviesInPages> {
 
     [Inject]
     public IMovieService MovieService {
@@ -47,27 +48,24 @@ namespace MediaSearch.Client.Pages {
 
     #region --- Constructor(s) ---------------------------------------------------------------------------------
     public View_MoviesInPages() : base() {
-      SetLogger(GlobalSettings.GlobalLogger);
+      Logger.SeverityLimit = ESeverity.DebugEx;
     } 
     #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
     #region --- ILoggable --------------------------------------------
-    public ILogger Logger { get; set; } = GlobalSettings.GlobalLogger;
-    public void SetLogger(ILogger logger) {
-      Logger = ALogger.Create(logger);
-    }
+    public IMediaSearchLogger<View_MoviesInPages> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<View_MoviesInPages>();
     #endregion --- ILoggable --------------------------------------------
 
     private TFilter _OldFilter = new TFilter();
-    private int _OldPage = int.MaxValue;
+    private int _OldPage = 1;
 
     protected override void OnInitialized() {
-      Logger.LogDebugEx("Initialized");
+      Logger.LogDebug("Initialized");
     }
 
     protected override async Task OnParametersSetAsync() {
       if (_OldPage != Filter.Page || Filter != _OldFilter) {
-        Logger.LogDebugEx(Filter.ToString().BoxFixedWidth("New filter", GlobalSettings.DEBUG_BOX_WIDTH));
+        Logger.LogDebug(Filter.ToString().BoxFixedWidth("New filter", GlobalSettings.DEBUG_BOX_WIDTH), this.GetType().Name);
         _OldPage = Filter.Page;
         _OldFilter = new TFilter(Filter);
         MoviesPage = await MovieService.GetMoviesPage(Filter);

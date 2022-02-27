@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public class TFilter : ADataModel, IFilter, IJson<TFilter>, IEquatable<TFilter> {
+public class TFilter : IFilter, IJson<TFilter>, IEquatable<TFilter> {
 
   public const int DEFAULT_PAGE_SIZE = 20;
   public const int DEFAULT_OUTPUT_DATE_MIN = 1900;
@@ -151,9 +151,7 @@ public class TFilter : ADataModel, IFilter, IJson<TFilter>, IEquatable<TFilter> 
   #endregion --- Static instance for an empty filter --------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TFilter() {
-    SetLogger(GlobalSettings.GlobalLogger);
-  }
+  public TFilter() {}
   public TFilter(IFilter filter) : this() {
     Page = filter.Page;
     PageSize = filter.PageSize;

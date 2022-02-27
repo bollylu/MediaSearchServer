@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\AController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="ChangeLog.txt" />
     <None Remove="_Global_\Version.txt" />
   </ItemGroup>

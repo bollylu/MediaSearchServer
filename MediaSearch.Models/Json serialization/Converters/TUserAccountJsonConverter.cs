@@ -1,23 +1,11 @@
 ﻿using BLTools.Text;
 
 namespace MediaSearch.Models;
-public class TUserAccountJsonConverter : JsonConverter<TUserAccount>, ILoggable {
-  #region --- ILoggable --------------------------------------------
-  public ILogger Logger { get; set; }
-
-  public void SetLogger(ILogger logger) {
-    if (logger is null) {
-      Logger = new TConsoleLogger();
-    } else {
-      Logger = ALogger.Create(logger);
-    }
-  }
-  #endregion --- ILoggable --------------------------------------------
+public class TUserAccountJsonConverter : JsonConverter<TUserAccount>, IMediaSearchLoggable<TUserAccountJsonConverter> {
+  public IMediaSearchLogger<TUserAccountJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger <TUserAccountJsonConverter>();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TUserAccountJsonConverter() {
-    Logger = ALogger.Create(GlobalSettings.GlobalLogger);
-  }
+  public TUserAccountJsonConverter() {}
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public override bool CanConvert(Type typeToConvert) {
@@ -56,16 +44,8 @@ public class TUserAccountJsonConverter : JsonConverter<TUserAccount>, ILoggable 
               RetVal.Description = reader.GetString() ?? "";
               break;
 
-            case nameof(TUserAccount.Password):
-              RetVal.Password = reader.GetString() ?? "";
-              break;
-
-            case nameof(TUserAccount.MustChangePassword):
-              RetVal.MustChangePassword = reader.GetBoolean();
-              break;
-
-            case nameof(TUserAccount.Token):
-              RetVal.Token = JsonSerializer.Deserialize<TUserToken>(ref reader, options) ?? TUserToken.ExpiredUserToken;
+            case nameof(TUserAccount.Secret):
+              RetVal.Secret = JsonSerializer.Deserialize<TUserAccountSecret>(ref reader, options) ?? new TUserAccountSecret();
               break;
 
             default:
@@ -93,10 +73,8 @@ public class TUserAccountJsonConverter : JsonConverter<TUserAccount>, ILoggable 
 
     writer.WriteString(nameof(TUserAccount.Name), value.Name);
     writer.WriteString(nameof(TUserAccount.Description), value.Description);
-    writer.WriteString(nameof(TUserAccount.Password), value.Password);
-    writer.WriteBoolean(nameof(TUserAccount.MustChangePassword), value.MustChangePassword);
-    writer.WritePropertyName(nameof(TUserAccount.Token));
-    JsonSerializer.Serialize(writer, value.Token, options);
+    writer.WritePropertyName(nameof(TUserAccount.Secret));
+    JsonSerializer.Serialize(writer, value.Secret, options);
 
     writer.WriteEndObject();
   }

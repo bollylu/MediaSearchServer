@@ -2,23 +2,11 @@
 
 namespace MediaSearch.Models;
 
-public class TAboutJsonConverter : JsonConverter<TAbout>, ILoggable {
-  #region --- ILoggable --------------------------------------------
-  public ILogger Logger { get; set; }
-
-  public void SetLogger(ILogger logger) {
-    if (logger is null) {
-      Logger = new TConsoleLogger();
-    } else {
-      Logger = ALogger.Create(logger);
-    }
-  }
-  #endregion --- ILoggable --------------------------------------------
+public class TAboutJsonConverter : JsonConverter<TAbout>, IMediaSearchLoggable<TAboutJsonConverter> {
+  public IMediaSearchLogger<TAboutJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TAboutJsonConverter>();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TAboutJsonConverter() {
-    Logger = ALogger.Create(GlobalSettings.GlobalLogger);
-  }
+  public TAboutJsonConverter() {}
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public override bool CanConvert(Type typeToConvert) {

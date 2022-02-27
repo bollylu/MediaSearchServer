@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 
 namespace MediaSearch.Client.Components {
-  public partial class Movie_SmallCard : ComponentBase, ILoggable {
+  public partial class Movie_SmallCard : ComponentBase, IMediaSearchLoggable<Movie_SmallCard> {
 
     [Parameter]
     public IMovie Movie {
@@ -24,7 +24,8 @@ namespace MediaSearch.Client.Components {
     private string AltNames {
       get {
         if (Movie.AltNames.IsEmpty()) {
-          return string.Empty; ;
+          return string.Empty;
+          ;
         }
         return string.Join("\n", Movie.AltNames.Select(n => $"{n.Key}:{n.Value}"));
       }
@@ -33,10 +34,7 @@ namespace MediaSearch.Client.Components {
     [Inject]
     public IMovieService? MovieService { get; set; }
 
-    public ILogger Logger { get; set; } = new TConsoleLogger() { SeverityLimit = ESeverity.Debug };
-    public void SetLogger(ILogger logger) {
-      throw new NotImplementedException();
-    }
+    public IMediaSearchLogger<Movie_SmallCard> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<Movie_SmallCard>();
 
     public string? HeaderText => Movie.Name ?? "";
     public string? BodyTitle => AltNames;
@@ -48,21 +46,24 @@ namespace MediaSearch.Client.Components {
     private List<CancellationTokenSource> _CancellationTokenSources = new();
 
     protected override async Task OnParametersSetAsync() {
-      Logger.LogDebugEx($"{_CancellationTokenSources.Count} tasks awaiting, Page={Page}, LastPage={LastPage}");
+      Logger.LogDebugExBox("Download tasks", $"{_CancellationTokenSources.Count} tasks awaiting, Page={Page}, LastPage={LastPage}");
       if (Page != LastPage) {
         LastPage = Page;
         foreach (CancellationTokenSource CancellationtokenSourceItem in _CancellationTokenSources) {
+
           CancellationtokenSourceItem.Cancel();
         }
         _CancellationTokenSources.Clear();
       }
       IsPictureLoaded = false;
-      if (MovieService is not null) {
-        CancellationTokenSource Cancellation = new CancellationTokenSource();
-        Task GetImageTask = GetImage(Cancellation.Token);
-        _CancellationTokenSources.Add(Cancellation);
-        await GetImageTask.ConfigureAwait(false);
+      if (MovieService is null) {
+        return;
       }
+
+      CancellationTokenSource Cancellation = new CancellationTokenSource();
+      Task GetImageTask = GetImage(Cancellation.Token);
+      _CancellationTokenSources.Add(Cancellation);
+      await GetImageTask.ConfigureAwait(false);
     }
 
     protected override async Task OnInitializedAsync() {
@@ -80,6 +81,7 @@ namespace MediaSearch.Client.Components {
 
     public bool IsPictureLoaded = false;
 
+    
   }
 
 }

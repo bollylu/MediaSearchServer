@@ -43,7 +43,7 @@ public class XMovieCache : AMovieCache {
   }
 
   public static XMovieCache Instance(string dataSource) {
-    XMovieCache RetVal = new XMovieCache() { DataSource = dataSource, Logger = new TConsoleLogger() };
+    XMovieCache RetVal = new XMovieCache() { DataSource = dataSource };
     Task.Run(() => RetVal.Parse(CancellationToken.None)).Wait();
     return RetVal;
   }

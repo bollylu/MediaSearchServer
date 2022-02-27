@@ -63,7 +63,7 @@ public interface IJson {
   /// <param name="options">The options to convert to Json</param>
   /// <returns>A Json string</returns>
   public string ToJson(JsonSerializerOptions options) {
-    return JsonSerializer.Serialize(this, this.GetType(), options);
+    return JsonSerializer.Serialize(this, GetType(), options);
   }
 }
 

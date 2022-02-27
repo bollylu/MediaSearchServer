@@ -13,7 +13,7 @@ public class TMoviesPageSerializationTest {
   //  await MediaSearch.Models.GlobalSettings.Initialize().ConfigureAwait(false);
   //}
 
-  internal IMovieService MovieService => _MovieService ??= new XMovieService(new XMovieCache() { DataSource = @"data\movies.json" }) { Logger = new TConsoleLogger() };
+  internal IMovieService MovieService => _MovieService ??= new XMovieService(new XMovieCache() { DataSource = @"data\movies.json" });
   private IMovieService? _MovieService;
 
   [TestMethod]

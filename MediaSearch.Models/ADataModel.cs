@@ -1,15 +1,7 @@
 ﻿namespace MediaSearch.Models;
-public abstract class ADataModel : ALoggable {
+public abstract class ADataModel : IMediaSearchLoggable {
 
   [JsonIgnore]
-  public override ILogger Logger {
-    get {
-      return base.Logger;
-    }
-
-    set {
-      base.Logger = value;
-    }
-  }
+  public IMediaSearchLogger Logger { get; set; } = AMediaSearchLogger.Create(GlobalSettings.GlobalLogger);
 
 }

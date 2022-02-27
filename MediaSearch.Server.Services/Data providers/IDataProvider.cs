@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Server.Services;
 
-public interface IDataProvider : IName, ILoggable {
+public interface IDataProvider : IName {
 
   string RootStoragePath { get; }
 

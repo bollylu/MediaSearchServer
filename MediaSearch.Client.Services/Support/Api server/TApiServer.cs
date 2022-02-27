@@ -1,19 +1,25 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Diagnostics;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+
+using BLTools.Text;
 
 namespace MediaSearch.Client.Services;
 
-public class TApiServer : ALoggable, IApiServer {
+public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
+
+  public IMediaSearchLogger<TApiServer> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TApiServer>();
 
   private readonly HttpClient _HttpClient;
   public HttpResponseMessage? LastResponse { get; private set; }
 
   public Uri BaseAddress => _HttpClient?.BaseAddress ?? new Uri("http://localhost");
 
+  public int RequestId { get; private set; } = 0;
+
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TApiServer() {
     _HttpClient = new HttpClient();
-    SetLogger(GlobalSettings.GlobalLogger);
   }
 
   public TApiServer(Uri baseAddress) : this() {
@@ -28,64 +34,96 @@ public class TApiServer : ALoggable, IApiServer {
   public override string ToString() {
     StringBuilder RetVal = new StringBuilder();
     RetVal.Append($"ApiServer : {BaseAddress.ToString().WithQuotes()}");
+    RetVal.Append($", Last response : {LastResponse?.StatusCode.ToString() ?? "(none)"}");
     return RetVal.ToString();
   }
 
   #region --- Get Json --------------------------------------------
   public async Task<T?> GetJsonAsync<T>(string uriRequest, CancellationToken cancellationToken) where T : class, IJson<T> {
+    int LocalRequestId = ++RequestId;
+
     try {
-      LogDebug($"Request: {uriRequest}");
 
       TMscGetRequestMessage RequestMessage = new TMscGetRequestMessage(uriRequest);
+      IfDebugMessage($"Request ({LocalRequestId}) : {uriRequest}", "No content");
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
-
-      LogDebug($"Response: {LastResponse.StatusCode}");
-      if (LastResponse.IsSuccessStatusCode) {
-        string TextContent = await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-        return IJson<T>.FromJson(TextContent);
-      } else {
+      if (!LastResponse.IsSuccessStatusCode) {
+        IfDebugMessage($"Response : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
         return default;
       }
+
+      string StringContent = await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+      T? JsonContent = IJson<T>.FromJson(StringContent);
+
+      IfDebugMessage($"Response ({LocalRequestId}) : {LastResponse.StatusCode}", StringContent);
+
+      return JsonContent;
+
     } catch (Exception ex) {
-      Logger?.LogError($"Unable to read string from client : {ex.Message}");
+      Logger.LogErrorBox($"Unable to read string from client", ex);
       if (ex.InnerException is not null) {
-        LogError($"  Inner exception : {ex.InnerException.Message}");
+        Logger.LogError($"  Inner exception : {ex.InnerException.Message}");
       }
 
       LastResponse = new HttpResponseMessage(HttpStatusCode.RequestTimeout);
 
-      LogError($"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
+      Logger.LogError($"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
       return default;
     }
   }
 
   public async Task<T?> GetJsonAsync<C, T>(string uriRequest, IJson<C> additionalContent, CancellationToken cancellationToken) where T : class, IJson<T> where C : class, IJson<C> {
+    int LocalRequestId = ++RequestId;
+
     try {
-      LogDebug($"Request: {uriRequest}");
 
       TMscPostRequestMessage RequestMessage = new TMscPostRequestMessage(uriRequest);
       RequestMessage.Content = new StringContent(additionalContent.ToJson());
       RequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
-      LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
+      IfDebugMessage($"Request ({LocalRequestId}) : {uriRequest} - Content is {additionalContent.GetType().Name}", additionalContent);
 
-      LogDebug($"Response: {LastResponse.StatusCode}");
-      if (LastResponse.IsSuccessStatusCode) {
-        string TextContent = await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-        return IJson<T>.FromJson(TextContent);
-      } else {
+      LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
+      if (!LastResponse.IsSuccessStatusCode) {
+        IfDebugMessage($"Response ({LocalRequestId}) : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
         return default;
       }
-    } catch (Exception ex) {
-      Logger?.LogError($"Unable to read string from client : {ex.Message}");
+
+      string StringContent = await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+      T? JsonContent = IJson<T>.FromJson(StringContent);
+
+      IfDebugMessage($"Response ({LocalRequestId}) : {LastResponse.StatusCode}", StringContent);
+
+      return JsonContent;
+
+    } catch (HttpRequestException ex) {
+      Logger.LogError($"Unable to read string from client ({LocalRequestId}) : {ex.Message}");
+      if (ex.Data is not null) {
+        StringBuilder Data = new();
+        foreach (KeyValuePair item in ex.Data) {
+          Data.Append(item.ToString());
+        }
+        Logger.LogError(Data.ToString().BoxFixedWidth("Data", GlobalSettings.DEBUG_BOX_WIDTH));
+      }
       if (ex.InnerException is not null) {
-        LogError($"  Inner exception : {ex.InnerException.Message}");
+        Logger.LogError($"  Inner exception : {ex.InnerException.Message}");
+      }
+
+      LastResponse = new HttpResponseMessage(HttpStatusCode.NoContent);
+
+      Logger.LogError($"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
+      return default;
+
+    } catch (Exception ex) {
+      Logger.LogError($"Unable to read string from client ({LocalRequestId}) : {ex.Message}");
+      if (ex.InnerException is not null) {
+        Logger.LogError($"  Inner exception : {ex.InnerException.Message}");
       }
 
       LastResponse = new HttpResponseMessage(HttpStatusCode.RequestTimeout);
 
-      LogError($"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
+      Logger.LogError($"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
       return default;
     }
   }
@@ -93,85 +131,76 @@ public class TApiServer : ALoggable, IApiServer {
 
   #region --- Get string --------------------------------------------
   public async Task<string?> GetStringAsync(string uriRequest, CancellationToken cancellationToken) {
+    int LocalRequestId = ++RequestId;
     try {
-      LogDebug($"Request: {uriRequest}");
 
       TMscGetRequestMessage RequestMessage = new TMscGetRequestMessage(uriRequest);
+      IfDebugMessage($"Request ({LocalRequestId}) : {uriRequest}", "No content");
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
 
-      LogDebug($"Response: {LastResponse.StatusCode}");
-      if (LastResponse.IsSuccessStatusCode) {
-        return await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-      } else {
-        return null;
+      if (!LastResponse.IsSuccessStatusCode) {
+        IfDebugMessage($"Response : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+        return default;
       }
+
+      string StringContent = await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+      IfDebugMessage($"Response ({LocalRequestId}) : {LastResponse.StatusCode}", StringContent);
+
+      return StringContent;
     } catch (Exception ex) {
-      LogError($"Unable to read string from client : {ex.Message}");
+      Logger.LogError($"Unable to read string from client : {ex.Message}");
       if (ex.InnerException is not null) {
-        Logger?.LogError($"  Inner exception : {ex.InnerException.Message}");
+        Logger.LogError($"  Inner exception : {ex.InnerException.Message}");
       }
 
       LastResponse = new HttpResponseMessage(HttpStatusCode.RequestTimeout);
 
-      LogError($"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
+      Logger.LogError($"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
       return null;
     }
   }
 
-  public async Task<string?> GetStringAsync(string uriRequest, string additionalContent, CancellationToken cancellationToken) {
-    try {
-      LogDebug($"Request: {uriRequest}");
+  public async Task<string?> GetStringAsync<T>(string uriRequest, T additionalContent, CancellationToken cancellationToken) {
 
-      TMscPostRequestMessage RequestMessage = new TMscPostRequestMessage(uriRequest);
-      RequestMessage.Content = new StringContent(additionalContent);
-
-      LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
-
-      LogDebug($"Response: {LastResponse.StatusCode}");
-      if (LastResponse.IsSuccessStatusCode) {
-        return await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-      } else {
-        return null;
-      }
-    } catch (Exception ex) {
-      LogError($"Unable to read string from client : {ex.Message}");
-      if (ex.InnerException is not null) {
-        Logger?.LogError($"  Inner exception : {ex.InnerException.Message}");
-      }
-
-      LastResponse = new HttpResponseMessage(HttpStatusCode.RequestTimeout);
-
-      LogError($"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
-      return null;
+    if (additionalContent is null) {
+      return default;
     }
-  }
 
-  public async Task<string?> GetStringAsync(string uriRequest, IJson additionalContent, CancellationToken cancellationToken) {
+    int LocalRequestId = ++RequestId;
     try {
-      LogDebug($"Request: {uriRequest}");
 
       TMscPostRequestMessage RequestMessage = new TMscPostRequestMessage(uriRequest);
-      RequestMessage.Content = JsonContent.Create(additionalContent);
+      RequestMessage.Content = additionalContent switch {
+        IJson AdditionalJsonContent => JsonContent.Create(AdditionalJsonContent),
+        string AdditionalStringContent => new StringContent(AdditionalStringContent),
+        _ => new StringContent(additionalContent?.ToString() ?? "")
+      };
+
+      IfDebugMessage($"Request #{LocalRequestId} : {uriRequest} - Content is {additionalContent?.GetType().Name ?? "(null)"}", additionalContent);
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
 
-      LogDebugEx($"ResponseCode: {LastResponse.StatusCode}");
-      LogDebugEx($"ResponseContent: {await LastResponse.Content.ReadAsStringAsync().ConfigureAwait(false)}");
-      if (LastResponse.IsSuccessStatusCode) {
-        return await LastResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-      } else {
-        return null;
+      if (!LastResponse.IsSuccessStatusCode) {
+        IfDebugMessage($"Response : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+        return default;
       }
+
+      string StringContent = await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+      IfDebugMessage($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
+
+      return StringContent;
     } catch (Exception ex) {
-      LogError($"Unable to read string from client : {ex.Message}");
+      Logger.LogError($"Unable to read string from client : {ex.Message}");
       if (ex.InnerException is not null) {
-        Logger?.LogError($"  Inner exception : {ex.InnerException.Message}");
+        Logger.LogError($"  Inner exception : {ex.InnerException.Message}");
       }
 
       LastResponse = new HttpResponseMessage(HttpStatusCode.RequestTimeout);
 
-      LogError($"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
+      Logger.LogError($"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
       return null;
     }
   }
@@ -180,18 +209,18 @@ public class TApiServer : ALoggable, IApiServer {
   #region --- Probe --------------------------------------------
   public async Task<bool> ProbeServerAsync(CancellationToken cancellationToken) {
 
+    int LocalRequestId = ++RequestId;
     try {
-
       TMscGetRequestMessage RequestMessage = new TMscGetRequestMessage();
-      LogDebug($"Probing server at {BaseAddress}");
+      IfDebugMessage($"Probing server #{LocalRequestId}", BaseAddress);
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
 
-      LogDebugEx($"ResponseCode: {LastResponse.StatusCode}");
-      LogDebugEx($"ResponseContent: {await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)}");
+      IfDebugMessage($"Response #{LocalRequestId} : {LastResponse.StatusCode}", $"Probing {BaseAddress}");
+
       return LastResponse.IsSuccessStatusCode;
     } catch (Exception ex) {
-      LogError($"Unable to probe server : {ex.Message}");
+      Logger.LogErrorBox($"Unable to probe server  ({LocalRequestId})", ex, true);
       return false;
     }
 
@@ -200,58 +229,68 @@ public class TApiServer : ALoggable, IApiServer {
 
   public async Task<Stream> GetStreamAsync(string uriRequest, CancellationToken cancellationToken) {
     try {
-      LogDebug($"Request: {uriRequest}");
+      Logger.LogDebug($"Request: {uriRequest}");
 
       TMscGetRequestMessage RequestMessage = new TMscGetRequestMessage(uriRequest);
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
 
-      LogDebug($"Response: {LastResponse.StatusCode}");
       if (!LastResponse.IsSuccessStatusCode) {
         throw new HttpRequestException($"Error loading {uriRequest} : {LastResponse.StatusCode} {LastResponse.ReasonPhrase}");
       }
 
-      return await LastResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+      Stream ContentStream = await LastResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+
+      IfDebugMessage($"Response : {LastResponse.StatusCode}", $"Stream length is {ContentStream.Length} bytes");
+
+      return ContentStream;
 
     } catch (Exception ex) {
-      LogError($"Unable to read stream from client : {ex.Message}");
+      Logger.LogError($"Unable to read stream from client : {ex.Message}");
       if (ex.InnerException is not null) {
-        Logger?.LogError($"  Inner exception : {ex.InnerException.Message}");
+        Logger.LogError($"  Inner exception : {ex.InnerException.Message}");
       }
 
       LastResponse = new HttpResponseMessage(HttpStatusCode.RequestTimeout);
 
-      LogError($"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
+      Logger.LogError($"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
       throw;
     }
   }
 
   public async Task<byte[]?> GetByteArrayAsync(string uriRequest, CancellationToken cancellationToken) {
     try {
-      LogDebug($"Request: {uriRequest}");
+      Logger.LogDebug($"Request: {uriRequest}");
 
       TMscGetRequestMessage RequestMessage = new TMscGetRequestMessage(uriRequest);
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
 
-      LogDebug($"Response: {LastResponse.StatusCode}");
       if (!LastResponse.IsSuccessStatusCode) {
         throw new HttpRequestException($"Error loading {uriRequest} : {LastResponse.StatusCode} {LastResponse.ReasonPhrase}");
       }
+      byte[] BytesContent = await LastResponse.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
 
-      return await LastResponse.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
+      IfDebugMessage($"Response : {LastResponse.StatusCode}", BytesContent.ToHexString());
+
+      return BytesContent;
 
     } catch (Exception ex) {
-      LogError($"Unable to read stream from client : {ex.Message}");
+      Logger.LogError($"Unable to read stream from client : {ex.Message}");
       if (ex.InnerException is not null) {
-        Logger?.LogError($"  Inner exception : {ex.InnerException.Message}");
+        Logger.LogError($"  Inner exception : {ex.InnerException.Message}");
       }
 
       LastResponse = new HttpResponseMessage(HttpStatusCode.RequestTimeout);
 
-      LogError($"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
+      Logger.LogError($"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
       throw;
     }
+  }
+
+  [Conditional("DEBUG")]
+  private void IfDebugMessage(string title, object? message) {
+    Logger.LogDebugBox(title, message ?? "");
   }
 
 }

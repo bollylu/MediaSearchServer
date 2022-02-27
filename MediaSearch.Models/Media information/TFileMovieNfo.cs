@@ -1,6 +1,8 @@
 ﻿namespace MediaSearch.Models.Media_information;
 
-public class TFileMovieNfo : ALoggable, IFileMediaInfo, IToXml {
+public class TFileMovieNfo : IFileMediaInfo, IToXml, IMediaSearchLoggable<TFileMovieNfo> {
+
+  public IMediaSearchLogger<TFileMovieNfo> Logger { get; } = GlobalSettings.LoggerPool.GetLogger <TFileMovieNfo>();
 
   public const string XML_THIS_ELEMENT = "movie";
   public const string XML_ELEMENT_TITLE = "title";
@@ -44,7 +46,7 @@ public class TFileMovieNfo : ALoggable, IFileMediaInfo, IToXml {
 
   public void FromXml(XElement source) {
     if (source is null) {
-      LogError("Unable to convert from Xml : source is null");
+      Logger.LogError("Unable to convert from Xml : source is null");
       return;
     }
 

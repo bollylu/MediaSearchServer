@@ -1,12 +1,20 @@
+using BLTools.Diagnostic.Logging;
+
 using MediaSearch.Client;
 
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
+MediaSearch.Client.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerConsole());
+MediaSearch.Client.Services.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerConsole());
+MediaSearch.Models.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerConsole());
+
+IMediaSearchLogger<Program> Logger = MediaSearch.Client.GlobalSettings.LoggerPool.GetLogger<Program>();
+
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.Logging.SetMinimumLevel(LogLevel.Information);
 
-builder.Services.AddSingleton<ILogger, TConsoleLogger>();
+//builder.Services.AddSingleton<IMediaSearchLogger, AMediaSearchLogger>();
 builder.Services.AddSingleton<TImageCache>();
 builder.Services.AddLogging();
 
@@ -16,10 +24,11 @@ List<string> ApiServerAdresses = new List<string>() {
   "https://mediasearchapi.sharenet.be/api/"
 };
 
+Logger.Log("Probing api server");
+
 TApiServer? ApiServer = null;
 foreach(string ApiServerAddressItem in ApiServerAdresses) {
   ApiServer = new TApiServer(ApiServerAddressItem);
-  ApiServer.SetLogger(MediaSearch.Client.GlobalSettings.GlobalLogger);
   ApiServer.Logger.SeverityLimit = ESeverity.DebugEx;
   using (CancellationTokenSource Timeout = new CancellationTokenSource(5000)) {
     if (await ApiServer.ProbeServerAsync(Timeout.Token)) {
@@ -30,10 +39,10 @@ foreach(string ApiServerAddressItem in ApiServerAdresses) {
   }
 }
 if (ApiServer is null) {
-  MediaSearch.Client.GlobalSettings.GlobalLogger.LogFatal("Missing api server");
+  Logger.LogFatal("Missing api server");
   return;
 } else {
-  MediaSearch.Client.GlobalSettings.GlobalLogger.Log($"ApiServer={ApiServer}");
+  Logger.Log($"ApiServer={ApiServer}");
 }
 
 IMovieService MovieService = new TMovieService() { ApiServer = ApiServer };

@@ -1,20 +1,13 @@
 ﻿namespace MediaSearch.Server.Services;
-public class TLoginService : ILoginService {
+public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> {
 
-  #region --- ILoggable --------------------------------------------
-  public void SetLogger(ILogger logger) {
-    Logger = ALogger.Create(logger);
-  }
-
-  public ILogger Logger { get; set; }
-  #endregion --- ILoggable --------------------------------------------
+  public IMediaSearchLogger<TLoginService> Logger { get; } = GlobalSettings.LoggerPool.GetLogger <TLoginService> ();
 
   private readonly List<IUserAccount> _UserAccounts = new();
   private readonly ReaderWriterLockSlim _LockUserAccounts = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TLoginService() {
-    Logger = ALogger.Create(GlobalSettings.GlobalLogger);
     _Initialize();
   }
 
@@ -30,8 +23,8 @@ public class TLoginService : ILoginService {
     _IsInitializing = true;
 
     _UserAccounts.Clear();
-    _UserAccounts.Add(new TUserAccount() { Name = "bollylu", Description = "Administrator", Password = "xxx" });
-    _UserAccounts.Add(new TUserAccount() { Name = "brilly", Description = "User", Password = "xxx" });
+    _UserAccounts.Add(new TUserAccount() { Name = "bollylu", Description = "Administrator", Secret = new TUserAccountSecret() { Password = "xxx", MustChangePassword = false } });
+    _UserAccounts.Add(new TUserAccount() { Name = "brilly", Description = "standard user", Secret = new TUserAccountSecret() { Password = "xxx", MustChangePassword = false } });
     _IsInitializing = false;
     _IsInitialized = true;
   }
@@ -44,9 +37,9 @@ public class TLoginService : ILoginService {
       if (UserIndex < 0) {
         return null;
       }
-      if (_UserAccounts[UserIndex].Password == user.Password) {
+      if (_UserAccounts[UserIndex].Secret.Password == user.Password) {
         _UserAccounts[UserIndex].LastSuccessfulLogin = DateTime.Now;
-        _UserAccounts[UserIndex].Token = new TUserToken();
+        _UserAccounts[UserIndex].Secret.Token = new TUserToken();
         return _UserAccounts[UserIndex];
       } else {
         _UserAccounts[UserIndex].LastFailedLogin = DateTime.Now;
@@ -61,11 +54,11 @@ public class TLoginService : ILoginService {
   public bool Login(TUserToken token) {
     try {
       _LockUserAccounts.EnterReadLock();
-      IUserAccount? UserAccount = _UserAccounts.SingleOrDefault(u => u.Token.Token == token.Token);
+      IUserAccount? UserAccount = _UserAccounts.SingleOrDefault(u => u.Secret.Token.Token == token.Token);
       if (UserAccount is null) {
         return false;
       }
-      if (UserAccount.Token.IsExpired) {
+      if (UserAccount.Secret.Token.IsExpired) {
         return false;
       }
       return true;

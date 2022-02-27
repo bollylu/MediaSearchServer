@@ -16,8 +16,6 @@ public class XMovieService : AMovieService {
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public XMovieService(IMovieCache movieCache) {
     _MoviesCache = movieCache;
-    SetLogger(new TConsoleLogger());
-    _MoviesCache.SetLogger(new TConsoleLogger());
   }
 
   private bool _IsInitialized = false;
@@ -37,7 +35,7 @@ public class XMovieService : AMovieService {
 
     _IsInitializing = true;
 
-    Log($"Parsing data source : {RootStoragePath}");
+    Logger.Log($"Parsing data source : {RootStoragePath}");
     using (CancellationTokenSource Timeout = new CancellationTokenSource((int)TimeSpan.FromMinutes(5).TotalMilliseconds)) {
       await _MoviesCache.Parse(Timeout.Token).ConfigureAwait(false);
     }
@@ -93,7 +91,7 @@ public class XMovieService : AMovieService {
   public override async Task<IMovie?> GetMovie(string id) {
     await Initialize().ConfigureAwait(false);
     if (string.IsNullOrWhiteSpace(id)) {
-      LogWarning("Unable to retrieve movie : id is null or invalid");
+      Logger.LogWarning("Unable to retrieve movie : id is null or invalid");
       return null;
     }
     IMovie? Movie = _MoviesCache.GetMovie(id);

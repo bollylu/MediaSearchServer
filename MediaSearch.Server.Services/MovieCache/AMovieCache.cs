@@ -2,12 +2,14 @@
 
 namespace MediaSearch.Server.Services;
 
-public abstract class AMovieCache : ALoggable, IMovieCache {
+public abstract class AMovieCache : IMovieCache, IMediaSearchLoggable<TMovieCache> {
 
   public const int DEFAULT_START_PAGE = 1;
   public const int DEFAULT_PAGE_SIZE = 20;
 
   public static char FOLDER_SEPARATOR = Path.DirectorySeparatorChar;
+
+  public IMediaSearchLogger<TMovieCache> Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMovieCache>();
 
   #region --- Internal data storage --------------------------------------------
   /// <summary>
@@ -39,7 +41,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
   }
 
   public virtual Task Parse(IEnumerable<IFileInfo> fileSource, CancellationToken token) {
-    Log("Initializing movies cache");
+    Logger.Log("Initializing movies cache");
     Clear();
 
     foreach (IFileInfo FileItem in fileSource) {
@@ -51,14 +53,14 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
 
         AddMovie(NewMovie);
       } catch (Exception ex) {
-        LogWarning($"Unable to parse movie {FileItem} : {ex.Message}");
+        Logger.LogWarning($"Unable to parse movie {FileItem} : {ex.Message}");
         if (ex.InnerException is not null) {
-          LogWarning($"  {ex.InnerException.Message}");
+          Logger.LogWarning($"  {ex.InnerException.Message}");
         }
       }
     }
 
-    Log("Cache initialized successfully");
+    Logger.Log("Cache initialized successfully");
 
     return Task.CompletedTask;
   }
@@ -94,7 +96,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
       default:
         RetVal.Group = GroupTags[0];
         RetVal.SubGroup = GroupTags[1];
-        LogWarning($"Too much groups in path name : {string.Join(", ", Tags)}".BoxFixedWidth(GlobalSettings.DEBUG_BOX_WIDTH));
+        Logger.LogWarning($"Too much groups in path name : {string.Join(", ", Tags)}".BoxFixedWidth(GlobalSettings.DEBUG_BOX_WIDTH));
         break;
     }
 
@@ -105,7 +107,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
     try {
       RetVal.OutputYear = int.Parse(RetVal.FileName.AfterLast('(').BeforeLast(')'));
     } catch (FormatException ex) {
-      LogWarning($"Unable to find output year : {ex.Message} : {item.FullName}");
+      Logger.LogWarning($"Unable to find output year : {ex.Message} : {item.FullName}");
       RetVal.OutputYear = 0;
     }
 
@@ -182,7 +184,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
   }
 
   public TMoviesPage? GetMoviesPage(IFilter filter) {
-    LogDebug(filter.ToString().BoxFixedWidth("Filter", GlobalSettings.DEBUG_BOX_WIDTH));
+    Logger.LogDebug(filter.ToString().BoxFixedWidth("Filter", GlobalSettings.DEBUG_BOX_WIDTH));
 
     TMoviesPage RetVal = new TMoviesPage() {
       Source = RootStoragePath,
@@ -197,7 +199,7 @@ public abstract class AMovieCache : ALoggable, IMovieCache {
       RetVal.Movies.AddRange(FilteredMovies.Skip(filter.PageSize * (filter.Page - 1)).Take(filter.PageSize));
       return RetVal;
     } catch (Exception ex) {
-      LogError($"Unable to build a movie page : {ex.Message}");
+      Logger.LogError($"Unable to build a movie page : {ex.Message}");
       return null;
     } finally {
       _LockCache.ExitReadLock();

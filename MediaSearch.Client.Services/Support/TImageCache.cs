@@ -1,23 +1,24 @@
 ﻿namespace MediaSearch.Client.Services;
 
-public class TImageCache : ALoggable, IDisposable {
+public class TImageCache : IDisposable, IMediaSearchLoggable<TImageCache> {
 
   public static int MAX_ITEMS = 250;
 
   private readonly List<TCachedItem> _CachedImages = new();
   private readonly ReaderWriterLockSlim _LockData = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
+  public IMediaSearchLogger<TImageCache> Logger { get; } = GlobalSettings.LoggerPool.GetLogger <TImageCache>();
+
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TImageCache() {
-    SetLogger(GlobalSettings.GlobalLogger);
-    LogDebug("Creating cache");
+    Logger.LogDebug("Creating cache");
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public byte[] GetImage(string key) {
     try {
       _LockData.EnterReadLock();
-      LogDebug("cache: Looking for image");
+      Logger.LogDebug("cache: Looking for image");
       TCachedItem? FoundIt = _CachedImages.FirstOrDefault(c => c.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
       if (FoundIt is null) {
         return Array.Empty<byte>();
@@ -36,7 +37,7 @@ public class TImageCache : ALoggable, IDisposable {
       }
 
       // If cache count already at maximum, remove the oldest image prior to add the new one
-      LogDebugEx($"Cache count : {_CachedImages.Count}");
+      Logger.LogDebugEx($"Cache count : {_CachedImages.Count}");
       if (_CachedImages.Count > MAX_ITEMS) {
         DateTime Latest = DateTime.MaxValue;
         int Index = 0;
@@ -46,11 +47,11 @@ public class TImageCache : ALoggable, IDisposable {
             Index = i;
           }
         }
-        LogDebug($"Remove from cache [{_CachedImages[Index].Key}]");
+        Logger.LogDebug($"Remove from cache [{_CachedImages[Index].Key}]");
         _CachedImages.RemoveAt(Index);
       }
 
-      LogDebugEx($"Add to cache [{key}]");
+      Logger.LogDebugEx($"Add to cache [{key}]");
 
       _CachedImages.Add(new TCachedItem() { Key = key, AddedTime = DateTime.Now, Data = image });
     } finally {

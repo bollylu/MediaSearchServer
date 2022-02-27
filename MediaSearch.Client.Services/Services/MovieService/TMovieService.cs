@@ -8,20 +8,19 @@ namespace MediaSearch.Client.Services;
 /// Client Movie service. Provides access to groups, movies and pictures from a REST server
 /// </summary>
 
-public class TMovieService : ALoggable, IMovieService {
+public class TMovieService : IMovieService, IMediaSearchLoggable<TMovieService> {
 
   public IApiServer ApiServer { get; set; } = new TApiServer();
+  public IMediaSearchLogger<TMovieService> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovieService>();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   private readonly TImageCache _ImagesCache = new TImageCache();
 
-  public TMovieService() {
-    SetLogger(GlobalSettings.GlobalLogger);
-  }
+  public TMovieService() {}
 
-  public TMovieService(IApiServer apiServer, TImageCache imagesCache, ILogger logger) : this() {
-    SetLogger(logger);
-    Log($"Api server = {apiServer}");
+  public TMovieService(IApiServer apiServer, TImageCache imagesCache, IMediaSearchLogger logger) : this() {
+    //Logger = TMediaSearchLogger.Create(logger);
+    Logger.Log($"Api server = {apiServer}");
     _ImagesCache = imagesCache;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -66,22 +65,24 @@ public class TMovieService : ALoggable, IMovieService {
     try {
 
       string RequestUrl = $"movie";
-      LogDebugEx(RequestUrl.BoxFixedWidth($"get movie page request", GlobalSettings.DEBUG_BOX_WIDTH));
-      LogDebug(filter.ToString().BoxFixedWidth($"Movies page filter", GlobalSettings.DEBUG_BOX_WIDTH));
+      Logger.LogDebugEx(RequestUrl.BoxFixedWidth($"get movie page request", GlobalSettings.DEBUG_BOX_WIDTH));
+      Logger.LogDebug(filter.ToString().BoxFixedWidth($"Movies page filter", GlobalSettings.DEBUG_BOX_WIDTH));
 
       using (CancellationTokenSource Timeout = new CancellationTokenSource(GlobalSettings.HTTP_TIMEOUT_IN_MS)) {
 
         TMoviesPage? Result = await ApiServer.GetJsonAsync<IFilter, TMoviesPage>(RequestUrl, new TFilter(filter), CancellationToken.None).ConfigureAwait(false);
-
-        LogDebugEx(Result?.ToString().BoxFixedWidth($"IMoviesPage", GlobalSettings.DEBUG_BOX_WIDTH));
+        if (Result is null) {
+          return null;
+        }
+        Logger.LogDebugExBox("TMoviePage", Result);
         return Result;
 
       }
     } catch (Exception ex) {
-      LogError($"Unable to get movies data : {ex.Message}");
+      Logger.LogError($"Unable to get movies data : {ex.Message}");
       if (ex.InnerException is not null) {
-        LogError($"  Inner exception : {ex.InnerException.Message}");
-        LogError($"  Inner call stack : {ex.InnerException.StackTrace}");
+        Logger.LogError($"  Inner exception : {ex.InnerException.Message}");
+        Logger.LogError($"  Inner call stack : {ex.InnerException.StackTrace}");
       }
       return null;
     }
@@ -92,10 +93,10 @@ public class TMovieService : ALoggable, IMovieService {
   public async Task<byte[]> GetPicture(string id, CancellationToken cancelToken, int w = 128, int h = 160) {
 
     string RequestUrl = $"movie/getPicture?id={id.ToUrl64()}&width={w}&height={h}";
-    LogDebugEx($"Requesting picture : {RequestUrl}");
+    Logger.LogDebugEx($"Requesting picture : {RequestUrl}");
 
     try {
-      LogDebugEx($"starting getpicture {id}");
+      Logger.LogDebugEx($"starting getpicture {id}");
       using (CancellationTokenSource Timeout = new CancellationTokenSource(GlobalSettings.HTTP_TIMEOUT_IN_MS)) {
         byte[]? RetVal = await ApiServer.GetByteArrayAsync(RequestUrl, Timeout.Token).ConfigureAwait(false);
         if (RetVal is null) {
@@ -110,7 +111,7 @@ public class TMovieService : ALoggable, IMovieService {
       //LogError("Operation is cancelled.");
       return Array.Empty<byte>();
     } catch (Exception ex) {
-      LogError($"Unable to get picture : {ex.Message}");
+      Logger.LogError($"Unable to get picture : {ex.Message}");
       return Array.Empty<byte>();
     } finally {
       //LogDebug("Completed getpicture");
@@ -152,10 +153,10 @@ public class TMovieService : ALoggable, IMovieService {
       }
 
     } catch (Exception ex) {
-      LogError($"Unable to get movies data : {ex.Message}");
+      Logger.LogError($"Unable to get movies data : {ex.Message}");
       if (ex.InnerException is not null) {
-        LogError($"  Inner exception : {ex.InnerException.Message}");
-        LogError($"  Inner call stack : {ex.InnerException.StackTrace}");
+        Logger.LogError($"  Inner exception : {ex.InnerException.Message}");
+        Logger.LogError($"  Inner call stack : {ex.InnerException.StackTrace}");
       }
       return new List<string>();
     }
@@ -176,10 +177,10 @@ public class TMovieService : ALoggable, IMovieService {
       }
 
     } catch (Exception ex) {
-      LogError($"Unable to get movies data : {ex.Message}");
+      Logger.LogError($"Unable to get movies data : {ex.Message}");
       if (ex.InnerException is not null) {
-        LogError($"  Inner exception : {ex.InnerException.Message}");
-        LogError($"  Inner call stack : {ex.InnerException.StackTrace}");
+        Logger.LogError($"  Inner exception : {ex.InnerException.Message}");
+        Logger.LogError($"  Inner call stack : {ex.InnerException.StackTrace}");
       }
       return new List<string>();
     }

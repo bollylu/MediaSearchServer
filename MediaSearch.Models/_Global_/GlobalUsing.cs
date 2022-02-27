@@ -11,4 +11,6 @@ global using System.Text.Json.Serialization;
 global using System.Xml.Linq;
 
 global using BLTools;
-global using BLTools.Diagnostic.Logging;
+//global using BLTools.Diagnostic.Logging;
+
+global using MediaSearch.Models.Logging;

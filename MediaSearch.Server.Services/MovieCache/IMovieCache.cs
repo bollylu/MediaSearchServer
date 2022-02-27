@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Server.Services;
 
-public interface IMovieCache : ILoggable, IName {
+public interface IMovieCache : IName {
 
   /// <summary>
   /// Path to the storage

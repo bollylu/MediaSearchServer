@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Server.Services;
 
-public abstract class AMovieService : ALoggable, IMovieService, IName {
+public abstract class AMovieService : IMovieService, IName, IMediaSearchLoggable<AMovieService> {
 
   /// <summary>
   /// Root path to look for data
@@ -8,6 +8,8 @@ public abstract class AMovieService : ALoggable, IMovieService, IName {
   public string RootStoragePath { get; init; } = "";
 
   public IDataProvider DataProvider { get; protected set; } = new TDataProvider();
+
+  public IMediaSearchLogger<AMovieService> Logger { get; } = GlobalSettings.LoggerPool.GetLogger <AMovieService>();
 
   #region --- IName --------------------------------------------
   /// <summary>

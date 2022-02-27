@@ -5,12 +5,14 @@ namespace MediaSearch.Server.Controllers;
 
 [ApiController]
 [Route("api/system")]
-public class TSystemController : AController {
+public class TSystemController : ControllerBase, IMediaSearchLoggable<TSystemController> {
 
   private readonly IMovieService _MovieService;
 
+  public IMediaSearchLogger<TSystemController> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TSystemController>();
+
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TSystemController(IMovieService movieService, ILogger logger) : base(logger) {
+  public TSystemController(IMovieService movieService) {
     _MovieService = movieService;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -36,4 +38,6 @@ public class TSystemController : AController {
     int RetVal = _MovieService.GetRefreshStatus();
     return new ActionResult<int>(RetVal);
   }
+
+
 }

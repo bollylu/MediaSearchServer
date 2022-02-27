@@ -1,31 +1,23 @@
 ﻿namespace MediaSearch.Models;
 
-public class TMoviesPage : ADataModel, IMoviesPage, IJson<TMoviesPage> {
+public class TMoviesPage : IMoviesPage, IJson<TMoviesPage> {
 
   #region --- Public properties ------------------------------------------------------------------------------
-  [JsonPropertyName(nameof(Name))]
   public string Name { get; set; } = "";
 
-  [JsonPropertyName(nameof(Movies))]
   public List<IMovie> Movies { get; set; } = new();
 
-  [JsonPropertyName(nameof(Page))]
   public int Page { get; set; } = 0;
 
-  [JsonPropertyName(nameof(AvailablePages))]
   public int AvailablePages { get; set; } = 0;
 
-  [JsonPropertyName(nameof(AvailableMovies))]
   public int AvailableMovies { get; set; } = 0;
 
-  [JsonPropertyName(nameof(Source))]
   public string Source { get; set; } = "";
   #endregion --- Public properties ---------------------------------------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMoviesPage() {
-    SetLogger(GlobalSettings.GlobalLogger);
-  }
+  public TMoviesPage() {}
   public TMoviesPage(IMoviesPage page) : this() {
     if (page is null) {
       return;

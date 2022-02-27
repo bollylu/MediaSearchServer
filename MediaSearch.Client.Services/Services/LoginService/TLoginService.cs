@@ -1,14 +1,14 @@
 ﻿using BLTools.Text;
 
 namespace MediaSearch.Client.Services;
-public class TLoginService : ALoggable, ILoginService {
+public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> {
 
   public IApiServer ApiServer { get; set; } = new TApiServer();
 
+  public IMediaSearchLogger<TLoginService> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TLoginService>();
+
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TLoginService() {
-    SetLogger(GlobalSettings.GlobalLogger);
-  } 
+  public TLoginService() { }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public async Task<bool> Login(IUserAccountSecret user) {
@@ -23,17 +23,19 @@ public class TLoginService : ALoggable, ILoginService {
 
       using (CancellationTokenSource Timeout = new CancellationTokenSource(GlobalSettings.HTTP_TIMEOUT_IN_MS)) {
 
-        string? Result = await ApiServer.GetStringAsync(RequestUrl, user.ToJson(), CancellationToken.None).ConfigureAwait(false);
-
-        LogDebugEx(Result?.ToString().BoxFixedWidth($"Login result", GlobalSettings.DEBUG_BOX_WIDTH));
+        string? Result = await ApiServer.GetStringAsync(RequestUrl, user, CancellationToken.None).ConfigureAwait(false);
+        if (Result is null) {
+          return false;
+        }
+        Logger.LogDebugExBox("Login result", Result);
         return true;
 
       }
     } catch (Exception ex) {
-      LogError($"Unable to log in server : {ex.Message}");
+      Logger.LogError($"Unable to log in server : {ex.Message}");
       if (ex.InnerException is not null) {
-        LogError($"  Inner exception : {ex.InnerException.Message}");
-        LogError($"  Inner call stack : {ex.InnerException.StackTrace}");
+        Logger.LogError($"  Inner exception : {ex.InnerException.Message}");
+        Logger.LogError($"  Inner call stack : {ex.InnerException.StackTrace}");
       }
       return false;
     }

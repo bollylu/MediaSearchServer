@@ -2,23 +2,11 @@
 
 namespace MediaSearch.Models;
 
-public class TFilterJsonConverter : JsonConverter<TFilter>, ILoggable {
-  #region --- ILoggable --------------------------------------------
-  public ILogger Logger { get; set; }
-
-  public void SetLogger(ILogger logger) {
-    if (logger is null) {
-      Logger = new TConsoleLogger();
-    } else {
-      Logger = ALogger.Create(logger);
-    }
-  }
-  #endregion --- ILoggable --------------------------------------------
+public class TFilterJsonConverter : JsonConverter<TFilter>, IMediaSearchLoggable<TFilterJsonConverter> {
+  public IMediaSearchLogger<TFilterJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TFilterJsonConverter>();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TFilterJsonConverter() {
-    Logger = ALogger.Create(GlobalSettings.GlobalLogger);
-  }
+  public TFilterJsonConverter() { }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public override bool CanConvert(Type typeToConvert) {

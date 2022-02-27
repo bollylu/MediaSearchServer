@@ -1,8 +1,9 @@
-﻿using BLTools.Encryption;
+﻿using BLTools;
+using BLTools.Encryption;
 
 namespace MediaSearch.Models;
 
-public class TUserToken : ADataModel, IUserToken, IJson<TUserToken> {
+public class TUserToken : IUserToken, IJson<TUserToken> {
   public const int SESSION_DURATION_IN_MIN = 15;
 
   [JsonPropertyName(nameof(Token))]
@@ -29,73 +30,13 @@ public class TUserToken : ADataModel, IUserToken, IJson<TUserToken> {
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  //public string ToJson() {
-  //  return JsonSerializer.Serialize(this, DefaultJsonSerializerOptions);
-  //}
 
-  //public string ToJson(JsonSerializerOptions options) {
-  //  return JsonSerializer.Serialize(this, options);
-  //}
-
-  //public static JsonSerializerOptions DefaultJsonSerializerOptions {
-  //  get {
-  //    lock (_DefaultJsonSerializerOptionsLock) {
-  //      if (_DefaultJsonSerializerOptions is null) {
-  //        _DefaultJsonSerializerOptions = new JsonSerializerOptions() {
-  //          WriteIndented = true,
-  //          NumberHandling = JsonNumberHandling.Strict
-  //        };
-  //        _DefaultJsonSerializerOptions.Converters.Add(new TUserTokenJsonConverter());
-  //      }
-  //      return _DefaultJsonSerializerOptions;
-  //    }
-  //  }
-  //  set {
-  //    lock (_DefaultJsonSerializerOptionsLock) {
-  //      _DefaultJsonSerializerOptions = value;
-  //    }
-  //  }
-  //}
-  //private static JsonSerializerOptions? _DefaultJsonSerializerOptions;
-  //private static readonly object _DefaultJsonSerializerOptionsLock = new object();
-
-  //public TUserToken ParseJson(string source) {
-  //  return ParseJson(source, DefaultJsonSerializerOptions);
-  //}
-
-//  public TUserToken ParseJson(string source, JsonSerializerOptions options) {
-//    #region === Validate parameters ===
-//    if (string.IsNullOrWhiteSpace(source)) {
-//      throw new JsonException("Json source is null");
-//    }
-//    #endregion === Validate parameters ===
-
-//    TUserToken? Deserialized = JsonSerializer.Deserialize<TUserToken>(source, options);
-//    if (Deserialized is null) {
-//      string Error = $"Unable to deserialize json string \"{source}\"";
-//      LogError(Error);
-//      throw new JsonException(Error);
-//}
-
-//    Token = Deserialized.Token;
-//    Expiration  = Deserialized.Expiration;
-
-//    return this;
-//  }
-
-  //public static TUserToken? FromJson(string source) {
-  //  if (string.IsNullOrWhiteSpace(source)) {
-  //    throw new ArgumentNullException(nameof(source));
-  //  }
-  //  return JsonSerializer.Deserialize<TUserToken>(source, DefaultJsonSerializerOptions);
-  //}
-
-  //public static TUserToken? FromJson(string source, JsonSerializerOptions options) {
-  //  if (string.IsNullOrWhiteSpace(source)) {
-  //    throw new ArgumentNullException(nameof(source));
-  //  }
-  //  return JsonSerializer.Deserialize<TUserToken>(source, options);
-  //}
+  public override string ToString() {
+    StringBuilder RetVal = new StringBuilder();
+    RetVal.Append($"{nameof(Token)} = {Token}");
+    RetVal.Append($", {nameof(Expiration)} = {Expiration.ToYMDHMS()}");
+    return RetVal.ToString();
+  }
 
   public static TUserToken ExpiredUserToken => new TUserToken("", DateTime.MinValue);
 }

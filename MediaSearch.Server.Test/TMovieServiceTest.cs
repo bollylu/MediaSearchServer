@@ -11,7 +11,7 @@ public class TMovieServiceTest {
   [ClassInitialize]
   public static async Task MovieCacheInit(TestContext testContext) {
     //await MediaSearch.Models.GlobalSettings.Initialize().ConfigureAwait(false);
-    Global.MovieService = new TMovieService(new XMovieCache() { DataSource = @"data\movies.json" }) { Logger = new TConsoleLogger() };
+    Global.MovieService = new TMovieService(new XMovieCache() { DataSource = @"data\movies.json" });
     await Global.MovieService.Initialize().ConfigureAwait(false);
   }
   #endregion --- Initialize --------------------------------------------

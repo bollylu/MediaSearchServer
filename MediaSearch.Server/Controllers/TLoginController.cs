@@ -4,26 +4,27 @@ namespace MediaSearch.Server.Controllers;
 
 [ApiController]
 [Route("api")]
-public class TLoginController : AController {
+public class TLoginController : ControllerBase, IMediaSearchLoggable<TLoginController> {
 
   private readonly ILoginService _LoginService;
 
-  public TLoginController(ILoginService loginService, ILogger logger) : base(logger) {
+  public IMediaSearchLogger<TLoginController> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TLoginController>();
+
+  public TLoginController(ILoginService loginService) {
     Logger.LogDebugEx("Building Login controller");
     _LoginService = loginService;
-    _LoginService.SetLogger(logger);
   }
 
   [HttpPost("login")]
   public async Task<ActionResult<IUserAccount>> Login(TUserAccountSecret user) {
 
-    LogDebug(HttpContext.Request.ListHeaders());
-    LogDebug(HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Remote ip not found");
+    Logger.LogDebug(HttpContext.Request.ListHeaders());
+    Logger.LogDebug(HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Remote ip not found");
 
     await Task.Yield();
 
     if (user is null) {
-      LogWarning("Invalid request");
+      Logger.LogWarning("Invalid request");
       return BadRequest();
     }
     
@@ -38,4 +39,6 @@ public class TLoginController : AController {
 
     return new UnauthorizedResult();
   }
+
+  
 }

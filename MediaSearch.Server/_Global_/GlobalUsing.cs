@@ -8,11 +8,12 @@ global using System.Threading.Tasks;
 global using System.Text.Json;
 
 global using BLTools;
-global using BLTools.Diagnostic.Logging;
+//global using BLTools.Diagnostic.Logging;
 global using BLTools.Text;
 
 global using MediaSearch.Server.Services;
 global using MediaSearch.Server.Support;
 global using MediaSearch.Models;
+global using MediaSearch.Models.Logging;
 
-global using ILogger = BLTools.Diagnostic.Logging.ILogger;
+//global using ILogger = BLTools.Diagnostic.Logging.ILogger;

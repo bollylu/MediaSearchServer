@@ -29,6 +29,10 @@ public class TMovieJsonConverter : JsonConverter<TMovie> {
 
         switch (Property) {
 
+          case nameof(TMovie.Id):
+            reader.GetString();
+            break;
+
           case nameof(IMovie.Name):
             RetVal.Name = reader.GetString() ?? "";
             break;

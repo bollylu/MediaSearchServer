@@ -22,7 +22,7 @@ public class TMovieCache : AMovieCache {
 
   public override Task Parse(CancellationToken token) {
 
-    Log("Initializing movies cache");
+    Logger.Log("Initializing movies cache");
 
     if ( string.IsNullOrWhiteSpace(RootStoragePath) ) {
       throw new ApplicationException("Storage is missing. Cannot process movies");
@@ -38,22 +38,22 @@ public class TMovieCache : AMovieCache {
       try {
         IMovie NewMovie = _ParseEntry(MovieInfoItem);
         NewMovie.DateAdded = DateOnly.FromDateTime(MovieInfoItem.ModificationDate);
-        LogDebugEx($"Found {MovieInfoItem.FullName}");
+        Logger.LogDebugEx($"Found {MovieInfoItem.FullName}");
         AddMovie(NewMovie);
       } catch ( Exception ex ) {
-        LogWarning($"Unable to parse movie {MovieInfoItem} : {ex.Message}");
+        Logger.LogWarning($"Unable to parse movie {MovieInfoItem} : {ex.Message}");
         if ( ex.InnerException is not null ) {
-          LogWarning($"  {ex.InnerException.Message}");
+          Logger.LogWarning($"  {ex.InnerException.Message}");
         }
       }
 
       if ( Progress % 250 == 0 ) {
-        Log($"Processed {Progress} movies...");
+        Logger.Log($"Processed {Progress} movies...");
       }
 
     }
 
-    Log($"Cache initialized successfully : {Progress} movies");
+    Logger.Log($"Cache initialized successfully : {Progress} movies");
 
     return Task.CompletedTask;
   }

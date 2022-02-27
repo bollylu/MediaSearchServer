@@ -1,5 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public interface IUserAccount : IUserAccountInfo, IUserAccountSecret {
+public interface IUserAccount : IUserAccountInfo {
 
+  TUserAccountSecret Secret { get; set; }
 }

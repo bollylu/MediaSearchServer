@@ -6,27 +6,25 @@ namespace MediaSearch.Server.Services;
 /// Server Movie service. Provides access to groups, movies and pictures from NAS
 /// </summary>
 public class TMovieService : AMovieService {
+
   #region --- Constants --------------------------------------------
-  public const int TIMEOUT_IN_MS = 500000;
+  public static int TIMEOUT_TO_SCAN_FILES_IN_MS = (int)TimeSpan.FromMinutes(5).TotalMilliseconds;
+  public static int TIMEOUT_TO_CONVERT_IN_MS = 5000;
   #endregion --- Constants --------------------------------------------
 
   private readonly IMovieCache _MoviesCache = new TMovieCache();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMovieService() {
-    SetLogger(GlobalSettings.GlobalLogger);
-    _MoviesCache.SetLogger(GlobalSettings.GlobalLogger);
   }
   
   public TMovieService(string storage) : this() {
     RootStoragePath = storage;
     _MoviesCache = new TMovieCache() { RootStoragePath = storage };
-    _MoviesCache.SetLogger(GlobalSettings.GlobalLogger);
   }
 
   public TMovieService(IMovieCache movieCache) : this() {
     _MoviesCache = movieCache;
-    _MoviesCache.SetLogger(GlobalSettings.GlobalLogger);
     RootStoragePath = movieCache.RootStoragePath;
   }
 
@@ -47,8 +45,8 @@ public class TMovieService : AMovieService {
 
     _IsInitializing = true;
 
-    Log($"Parsing data source : {RootStoragePath}");
-    using (CancellationTokenSource Timeout = new CancellationTokenSource((int)TimeSpan.FromMinutes(5).TotalMilliseconds)) {
+    Logger.Log($"Parsing data source : {RootStoragePath}");
+    using (CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT_TO_SCAN_FILES_IN_MS)) {
       await _MoviesCache.Parse(Timeout.Token).ConfigureAwait(false);
     }
 
@@ -73,13 +71,6 @@ public class TMovieService : AMovieService {
     }
     return _MoviesCache.Count();
   }
-
-  #region --- ILoggable --------------------------------------------
-  public override void SetLogger(ILogger logger) {
-    base.SetLogger(logger);
-    _MoviesCache.SetLogger(logger);
-  }
-  #endregion --- ILoggable --------------------------------------------
 
   #region --- Movies --------------------------------------------
   public override async ValueTask<int> MoviesCount(IFilter filter) {
@@ -114,7 +105,7 @@ public class TMovieService : AMovieService {
 
   public override Task<IMovie?> GetMovie(string id) {
     if (string.IsNullOrWhiteSpace(id)) {
-      LogWarning("Unable to retrieve movie : id is null or invalid");
+      Logger.LogWarning("Unable to retrieve movie : id is null or invalid");
       return Task.FromResult<IMovie?>(null);
     }
     IMovie? Movie = _MoviesCache.GetMovie(id);
@@ -138,7 +129,7 @@ public class TMovieService : AMovieService {
   }
 
 
-  public override async Task<byte[]> GetPicture(string id,
+  public override async Task<byte[]> GetPicture(string movieId,
                                        string pictureName,
                                        int width,
                                        int height) {
@@ -147,29 +138,28 @@ public class TMovieService : AMovieService {
     string ParamPictureName = pictureName ?? IMovieService.DEFAULT_PICTURE_NAME;
     int ParamWidth = width.WithinLimits(IMovieService.MIN_PICTURE_WIDTH, IMovieService.MAX_PICTURE_WIDTH);
     int ParamHeight = height.WithinLimits(IMovieService.MIN_PICTURE_HEIGHT, IMovieService.MAX_PICTURE_HEIGHT);
-    if (string.IsNullOrWhiteSpace(id)) {
-      LogError("Unable to fetch picture : id is null or invalid");
+    if (string.IsNullOrWhiteSpace(movieId)) {
+      Logger.LogError("Unable to fetch picture : id is null or invalid");
       return Array.Empty<byte>();
     }
-    string ParamId = id;
     #endregion === Validate parameters ===
 
-    IMovie? Movie = _MoviesCache.GetMovie(ParamId);
+    IMovie? Movie = _MoviesCache.GetMovie(movieId);
     if (Movie is null) {
-      LogError($"Unable to fetch picture id \"{ParamId}\"");
+      Logger.LogError($"Unable to fetch picture id \"{movieId}\"");
       return Array.Empty<byte>();
     }
 
     string FullPicturePath = Path.Join(RootStoragePath.NormalizePath(), Movie.StoragePath.NormalizePath(), ParamPictureName);
 
-    LogDebug($"GetPicture {FullPicturePath} : size({ParamWidth}, {ParamHeight})");
+    Logger.LogDebug($"GetPicture {FullPicturePath} : size({ParamWidth}, {ParamHeight})");
     if (!File.Exists(FullPicturePath)) {
-      LogError($"Unable to fetch picture {FullPicturePath} : File is missing or access is denied");
+      Logger.LogError($"Unable to fetch picture {FullPicturePath} : File is missing or access is denied");
       return Array.Empty<byte>();
     }
 
     try {
-      using CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT_IN_MS);
+      using CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT_TO_CONVERT_IN_MS);
       using FileStream SourceStream = new FileStream(FullPicturePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
       using MemoryStream PictureStream = new MemoryStream();
       await SourceStream.CopyToAsync(PictureStream, Timeout.Token);
@@ -183,9 +173,9 @@ public class TMovieService : AMovieService {
         return OutputStream.ToArray();
       }
     } catch (Exception ex) {
-      LogError($"Unable to fetch picture {FullPicturePath} : {ex.Message}");
+      Logger.LogError($"Unable to fetch picture {FullPicturePath} : {ex.Message}");
       if (ex.InnerException is not null) {
-        LogError($"  {ex.InnerException.Message}");
+        Logger.LogError($"  {ex.InnerException.Message}");
       }
       return Array.Empty<byte>();
     }

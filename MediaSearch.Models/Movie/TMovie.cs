@@ -36,12 +36,9 @@ public class TMovie : AMedia, IMovie, IJson<TMovie> {
   #endregion --- Picture --------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMovie() : base() {
-    SetLogger(GlobalSettings.GlobalLogger);
-  }
+  public TMovie() : base() {}
 
   public TMovie(IMovie movie) : base(movie) {
-    SetLogger(GlobalSettings.GlobalLogger);
     Size = movie.Size;
     OutputYear = movie.OutputYear;
     Group = movie.Group;
@@ -52,7 +49,7 @@ public class TMovie : AMedia, IMovie, IJson<TMovie> {
     return $"{Name}{OutputYear}".HashToBase64();
   }
   public override string ToString() {
-    StringBuilder RetVal = new StringBuilder(base.ToString());
+    StringBuilder RetVal = new StringBuilder();
     RetVal.AppendLine($"{nameof(Extension)} = {Extension}");
     if (IsGroupMember) {
       RetVal.AppendLine($"{nameof(Group)} = {Group}");

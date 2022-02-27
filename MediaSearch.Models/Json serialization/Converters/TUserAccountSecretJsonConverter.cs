@@ -1,23 +1,11 @@
 ﻿using BLTools.Text;
 
 namespace MediaSearch.Models;
-public class TUserAccountSecretJsonConverter : JsonConverter<TUserAccountSecret>, ILoggable {
-  #region --- ILoggable --------------------------------------------
-  public ILogger Logger { get; set; }
-
-  public void SetLogger(ILogger logger) {
-    if (logger is null) {
-      Logger = new TConsoleLogger();
-    } else {
-      Logger = ALogger.Create(logger);
-    }
-  }
-  #endregion --- ILoggable --------------------------------------------
+public class TUserAccountSecretJsonConverter : JsonConverter<TUserAccountSecret>, IMediaSearchLoggable<TUserAccountSecretJsonConverter> {
+  public IMediaSearchLogger<TUserAccountSecretJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TUserAccountSecretJsonConverter>();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TUserAccountSecretJsonConverter() {
-    Logger = ALogger.Create(GlobalSettings.GlobalLogger);
-  }
+  public TUserAccountSecretJsonConverter() { }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public override bool CanConvert(Type typeToConvert) {

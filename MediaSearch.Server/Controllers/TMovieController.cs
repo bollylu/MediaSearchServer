@@ -7,12 +7,14 @@ namespace MediaSearch.Server.Controllers;
 [ApiController]
 [Route("api/movie")]
 [Produces("application/json")]
-public class TMovieController : AController {
+public class TMovieController : ControllerBase, IMediaSearchLoggable<TMovieController> {
 
   private readonly IMovieService _MovieService;
 
+  public IMediaSearchLogger<TMovieController> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovieController>();
+
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMovieController(IMovieService movieService, ILogger logger) : base(logger) {
+  public TMovieController(IMovieService movieService) {
     Logger.LogDebugEx("Building TMovie controller");
     _MovieService = movieService;
   }
@@ -26,13 +28,13 @@ public class TMovieController : AController {
   [HttpPost()]
   public async Task<ActionResult<TMoviesPage>> GetWithFilter(TFilter filter) {
 
-    LogDebugBox("Headers", HttpContext.Request.Headers);
+    Logger.LogDebugBox("Headers", HttpContext.Request.Headers);
 
     if (filter is null) {
       filter = TFilter.Empty;
     }
 
-    LogDebugBox("Filter received in controller", filter);
+    Logger.LogDebugBox("Filter received in controller", filter);
 
     TMoviesPage? RetVal = await _MovieService.GetMoviesPage(filter).ConfigureAwait(false);
 
@@ -40,9 +42,9 @@ public class TMovieController : AController {
       return new EmptyResult();
     }
 
-    LogDebugBox("Returned value", RetVal);
+    Logger.LogDebugBox("Returned value", RetVal);
 
-    LogDebugExBox("Movies", RetVal.Movies);
+    Logger.LogDebugExBox("Movies", RetVal.Movies);
 
     return new ActionResult<TMoviesPage>(RetVal);
   }
@@ -54,7 +56,7 @@ public class TMovieController : AController {
   /// <returns>A list of groups</returns>
   [HttpGet("getGroups")]
   public async Task<ActionResult<IList<string>>> GetGroups() {
-    LogDebug(HttpContext.Request.ListHeaders());
+    Logger.LogDebug(HttpContext.Request.ListHeaders());
     IList<string> RetVal = new List<string>();
     await foreach (string GroupItem in _MovieService.GetGroups().ConfigureAwait(false)) {
       RetVal.Add(GroupItem);
@@ -70,7 +72,7 @@ public class TMovieController : AController {
   /// <returns>A list of groups</returns>
   [HttpGet("getSubGroups")]
   public async Task<ActionResult<IList<string>>> GetSubGroups(string group) {
-    LogDebug(HttpContext.Request.ListHeaders());
+    Logger.LogDebug(HttpContext.Request.ListHeaders());
     IList<string> RetVal = await _MovieService.GetSubGroups(group ?? "").ToListAsync().ConfigureAwait(false);
 
     return new ActionResult<IList<string>>(RetVal);
@@ -85,7 +87,7 @@ public class TMovieController : AController {
   /// <returns>A IMoviesPage object containing the data</returns>
   [HttpPost("getNews")]
   public async Task<ActionResult<IMoviesPage>> GetNews(TFilter filter) {
-    LogDebug(HttpContext.Request.ListHeaders());
+    Logger.LogDebug(HttpContext.Request.ListHeaders());
 
     IMoviesPage? RetVal = await _MovieService.GetMoviesPage(filter).ConfigureAwait(false);
 
@@ -93,8 +95,8 @@ public class TMovieController : AController {
       return new EmptyResult();
     }
 
-    LogDebug($"< {RetVal}");
-    LogDebugEx(_PrintMovies(RetVal.Movies));
+    Logger.LogDebug($"< {RetVal}");
+    Logger.LogDebugEx(_PrintMovies(RetVal.Movies));
 
     return new ActionResult<IMoviesPage>(RetVal);
   }
@@ -102,25 +104,24 @@ public class TMovieController : AController {
 
 
   [HttpGet("getPicture")]
-  public async Task<ActionResult> GetPicture(string id, int width, int height) {
-    LogDebug($"Request for picture {id}, width={width}, height={height}");
-    LogDebug(HttpContext.Request.ListHeaders());
+  public async Task<ActionResult> GetPicture(string movieId, int width, int height) {
+    Logger.LogDebug($"Request for picture {movieId}, width={width}, height={height}");
+    Logger.LogDebug(HttpContext.Request.ListHeaders());
 
     try {
-      string PictureId = id.FromUrl64();
-      byte[] Result = await _MovieService.GetPicture(id.FromUrl64(),
-                                                   "folder.jpg",
-                                                   width: width,
-                                                   height: height).ConfigureAwait(false);
+      string MovieId = movieId.FromUrl64();
+      
+      byte[]? Result = await _MovieService.GetPicture(MovieId, "folder.jpg", width, height).ConfigureAwait(false);
       if (Result is null || Result.IsEmpty()) {
-        LogWarning($"Picture {id} not found");
+        Logger.LogWarning($"Picture {movieId} not found");
         byte[] MissingPicture = MediaSearch.Models.Support.GetPicture("missing", ".jpg");
-        return new NotFoundObjectResult(MissingPicture);
-      } else {
-        return File(Result, "image/jpeg");
+        return File(MissingPicture, "image/jpeg");
       }
+      
+      return File(Result, "image/jpeg");
+
     } catch (Exception ex) {
-      LogWarning($"Invalid picture id : {id} : {ex.Message}");
+      Logger.LogWarning($"Invalid picture id : {movieId} : {ex.Message}");
       return new NotFoundObjectResult(MediaSearch.Models.Support.GetPicture("missing"));
     }
 

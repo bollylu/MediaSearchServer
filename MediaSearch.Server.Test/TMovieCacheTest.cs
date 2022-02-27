@@ -6,7 +6,7 @@ public class TMovieCacheTest {
   [ClassInitialize]
   public static async Task MovieCacheInit(TestContext testContext) {
     //await MediaSearch.Models.GlobalSettings.Initialize().ConfigureAwait(false);
-    Global.MovieCache = new XMovieCache() { Logger = new TConsoleLogger(), DataSource = @"data\movies.json" };
+    Global.MovieCache = new XMovieCache() { DataSource = @"data\movies.json" };
     await Global.MovieCache.Parse(CancellationToken.None).ConfigureAwait(false);
   }
 
