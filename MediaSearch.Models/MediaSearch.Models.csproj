@@ -21,6 +21,8 @@
     <Compile Remove="ADataModel.cs" />
     <Compile Remove="Interfaces\IDuplicate.cs" />
     <Compile Remove="Json serialization\AJson.cs" />
+    <Compile Remove="Logging\AMediaSearchLoggable.cs" />
+    <Compile Remove="Logging\AMediaSearchLogger.cs" />
     <Compile Remove="Movie\TMovieJson.cs" />
   </ItemGroup>
 

@@ -16,7 +16,9 @@ public class TMediaSearchLoggerConsole : TConsoleLogger, IMediaSearchLogger {
 public class TMediaSearchLoggerConsole<T> : TConsoleLogger, IMediaSearchLogger<T> {
 
   public TMediaSearchLoggerConsole() { }
-  public TMediaSearchLoggerConsole(TConsoleLogger logger) : base(logger) { }
+  public TMediaSearchLoggerConsole(TConsoleLogger logger) : base(logger) {
+    SeverityLimit = logger.SeverityLimit;
+  }
 
   public object Clone() {
     return (TMediaSearchLoggerConsole<T>)Clone();

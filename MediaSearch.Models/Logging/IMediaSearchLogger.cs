@@ -31,31 +31,28 @@ public interface IMediaSearchLogger : ILogger, IName {
 
   #region --- LogWarning --------------------------------------------
   public void LogWarning(string message, Type? callerType = default, [CallerMemberName] string callerName = "", ESeverity severity = ESeverity.Warning) {
-    if (SeverityLimit < ESeverity.Warning) {
+    if (SeverityLimit > ESeverity.Warning) {
       return;
     }
     Log(message, _BuildCaller(callerType, callerName), ESeverity.Warning);
   }
 
   public void LogWarningBox(string? title, string message, Type? callerType = default, [CallerMemberName] string callerName = "") {
-    if (SeverityLimit < ESeverity.Warning) {
+    if (SeverityLimit > ESeverity.Warning) {
       return;
     }
     Log(_BuildBox(title, message), _BuildCaller(callerType, callerName), ESeverity.Warning);
   }
 
   public void LogWarningBox(string? title, object message, Type? callerType = default, [CallerMemberName] string callerName = "") {
-    if (SeverityLimit < ESeverity.Warning) {
+    if (SeverityLimit > ESeverity.Warning) {
       return;
     }
     Log(_BuildBox(title, message), _BuildCaller(callerType, callerName), ESeverity.Warning);
   }
 
   public void LogWarningBox(string? title, IEnumerable<object> objects, Type? callerType = default, [CallerMemberName] string callerName = "") {
-    if (SeverityLimit < ESeverity.Warning) {
-      return;
-    }
-    if (SeverityLimit < ESeverity.Warning) {
+    if (SeverityLimit > ESeverity.Warning) {
       return;
     }
     Log(_BuildBoxMessageFromEnumerable(title, objects), _BuildCaller(callerType, callerName), ESeverity.Warning);
@@ -64,34 +61,34 @@ public interface IMediaSearchLogger : ILogger, IName {
 
   #region --- LogError --------------------------------------------
   public void LogError(string message, Type? callerType = default, [CallerMemberName] string callerName = "", ESeverity severity = ESeverity.Error) {
-    if (SeverityLimit < ESeverity.Error) {
+    if (SeverityLimit > ESeverity.Error) {
       return;
     }
     Log(message, _BuildCaller(callerType, callerName), ESeverity.Error);
   }
 
   public void LogErrorBox(string? title, string message, Type? callerType = default, [CallerMemberName] string callerName = "") {
-    if (SeverityLimit < ESeverity.Error) {
+    if (SeverityLimit > ESeverity.Error) {
       return;
     }
     Log(_BuildBox(title, message), _BuildCaller(callerType, callerName), ESeverity.Error);
   }
 
   public void LogErrorBox(string? title, object message, Type? callerType = default, [CallerMemberName] string callerName = "") {
-    if (SeverityLimit < ESeverity.Error) {
+    if (SeverityLimit > ESeverity.Error) {
       return;
     }
     Log(_BuildBox(title, message), _BuildCaller(callerType, callerName), ESeverity.Error);
   }
 
   public void LogErrorBox(string? title, IEnumerable<object> objects, Type? callerType = default, [CallerMemberName] string callerName = "") {
-    if (SeverityLimit < ESeverity.Error) {
+    if (SeverityLimit > ESeverity.Error) {
       return;
     }
     Log(_BuildBoxMessageFromEnumerable(title, objects), _BuildCaller(callerType, callerName), ESeverity.Error);
   }
   public void LogErrorBox(string? title, Exception ex, bool withStackTrace = false, Type? callerType = default, [CallerMemberName] string callerName = "") {
-    if (SeverityLimit < ESeverity.Error) {
+    if (SeverityLimit > ESeverity.Error) {
       return;
     }
     Log(_BuildBoxMessageFromException(title, ex, withStackTrace), _BuildCaller(callerType, callerName), ESeverity.Error);
@@ -100,27 +97,27 @@ public interface IMediaSearchLogger : ILogger, IName {
 
   #region --- LogDebug --------------------------------------------
   public void LogDebug(string message, Type? callerType = default, [CallerMemberName] string callerName = "", ESeverity severity = ESeverity.Debug) {
-    if (SeverityLimit < ESeverity.Debug) {
+    if (SeverityLimit > ESeverity.Debug) {
       return;
     }
     Log(message, _BuildCaller(callerType, callerName), ESeverity.Debug);
   }
   public void LogDebugBox(string? title, string message, Type? callerType = default, [CallerMemberName] string callerName = "") {
-    if (SeverityLimit < ESeverity.Debug) {
+    if (SeverityLimit > ESeverity.Debug) {
       return;
     }
     Log(_BuildBox(title, message), _BuildCaller(callerType, callerName), ESeverity.Debug);
   }
 
   public void LogDebugBox(string? title, object message, Type? callerType = default, [CallerMemberName] string callerName = "") {
-    if (SeverityLimit < ESeverity.Debug) {
+    if (SeverityLimit > ESeverity.Debug) {
       return;
     }
     Log(_BuildBox(title, message), _BuildCaller(callerType, callerName), ESeverity.Debug);
   }
 
   public void LogDebugBox(string? title, IEnumerable<object> objects, Type? callerType = default, [CallerMemberName] string callerName = "") {
-    if (SeverityLimit < ESeverity.Debug) {
+    if (SeverityLimit > ESeverity.Debug) {
       return;
     }
     Log(_BuildBoxMessageFromEnumerable(title, objects), _BuildCaller(callerType, callerName), ESeverity.Debug);
@@ -129,28 +126,28 @@ public interface IMediaSearchLogger : ILogger, IName {
 
   #region --- LogDebugEx --------------------------------------------
   public void LogDebugEx(string message, Type? callerType = default, [CallerMemberName] string callerName = "", ESeverity severity = ESeverity.DebugEx) {
-    if (SeverityLimit < ESeverity.DebugEx) {
+    if (SeverityLimit > ESeverity.DebugEx) {
       return;
     }
     Log(message, _BuildCaller(callerType, callerName), ESeverity.DebugEx);
   }
 
   public void LogDebugExBox(string? title, string message, Type? callerType = default, [CallerMemberName] string callerName = "") {
-    if (SeverityLimit < ESeverity.DebugEx) {
+    if (SeverityLimit > ESeverity.DebugEx) {
       return;
     }
     Log(_BuildBox(title, message), _BuildCaller(callerType, callerName), ESeverity.DebugEx);
   }
 
   public void LogDebugExBox(string? title, object message, Type? callerType = default, [CallerMemberName] string callerName = "") {
-    if (SeverityLimit < ESeverity.DebugEx) {
+    if (SeverityLimit > ESeverity.DebugEx) {
       return;
     }
     Log(_BuildBox(title, message), _BuildCaller(callerType, callerName), ESeverity.DebugEx);
   }
 
   public void LogDebugExBox(string? title, IEnumerable<object> objects, Type? callerType = default, [CallerMemberName] string callerName = "") {
-    if (SeverityLimit < ESeverity.DebugEx) {
+    if (SeverityLimit > ESeverity.DebugEx) {
       return;
     }
     Log(_BuildBoxMessageFromEnumerable(title, objects), _BuildCaller(callerType, callerName), ESeverity.DebugEx);
@@ -159,28 +156,28 @@ public interface IMediaSearchLogger : ILogger, IName {
 
   #region --- LogFatal --------------------------------------------
   public void LogFatal(string message, Type? callerType = default, [CallerMemberName] string callerName = "", ESeverity severity = ESeverity.Fatal) {
-    if (SeverityLimit < ESeverity.Fatal) {
+    if (SeverityLimit > ESeverity.Fatal) {
       return;
     }
     Log(message, _BuildCaller(callerType, callerName), ESeverity.Fatal);
   }
 
   public void LogFatalBox(string? title, string message, Type? callerType = default, [CallerMemberName] string callerName = "") {
-    if (SeverityLimit < ESeverity.Fatal) {
+    if (SeverityLimit > ESeverity.Fatal) {
       return;
     }
     Log(_BuildBox(title, message), _BuildCaller(callerType, callerName), ESeverity.Fatal);
   }
 
   public void LogFatalBox(string? title, object message, Type? callerType = default, [CallerMemberName] string callerName = "") {
-    if (SeverityLimit < ESeverity.Fatal) {
+    if (SeverityLimit > ESeverity.Fatal) {
       return;
     }
     Log(_BuildBox(title, message), _BuildCaller(callerType, callerName), ESeverity.Fatal);
   }
 
   public void LogFatalBox(string? title, IEnumerable<object> objects, Type? callerType = default, [CallerMemberName] string callerName = "") {
-    if (SeverityLimit < ESeverity.Fatal) {
+    if (SeverityLimit > ESeverity.Fatal) {
       return;
     }
     Log(_BuildBoxMessageFromEnumerable(title, objects), _BuildCaller(callerType, callerName), ESeverity.Fatal);
@@ -266,28 +263,28 @@ public interface IMediaSearchLogger<T> : IMediaSearchLogger, ICloneable {
 
   #region --- LogWarning --------------------------------------------
   public void LogWarning(string message, [CallerMemberName] string caller = "", ESeverity severity = ESeverity.Warning) {
-    if (SeverityLimit < ESeverity.Warning) {
+    if (SeverityLimit > ESeverity.Warning) {
       return;
     }
     Log(message, _BuildCaller(typeof(T), caller), ESeverity.Warning);
   }
 
   public void LogWarningBox(string? title, string message, [CallerMemberName] string caller = "") {
-    if (SeverityLimit < ESeverity.Warning) {
+    if (SeverityLimit > ESeverity.Warning) {
       return;
     }
     Log(_BuildBox(title, message), _BuildCaller(typeof(T), caller), ESeverity.Warning);
   }
 
   public void LogWarningBox(string? title, object message, [CallerMemberName] string caller = "") {
-    if (SeverityLimit < ESeverity.Warning) {
+    if (SeverityLimit > ESeverity.Warning) {
       return;
     }
     Log(_BuildBox(title, message), _BuildCaller(typeof(T), caller), ESeverity.Warning);
   }
 
   public void LogWarningBox(string? title, IEnumerable<object> objects, [CallerMemberName] string caller = "") {
-    if (SeverityLimit < ESeverity.Warning) {
+    if (SeverityLimit > ESeverity.Warning) {
       return;
     }
     Log(_BuildBoxMessageFromEnumerable(title, objects), _BuildCaller(typeof(T), caller), ESeverity.Warning);
@@ -296,35 +293,35 @@ public interface IMediaSearchLogger<T> : IMediaSearchLogger, ICloneable {
 
   #region --- LogError --------------------------------------------
   public void LogError(string message, [CallerMemberName] string caller = "", ESeverity severity = ESeverity.Error) {
-    if (SeverityLimit < ESeverity.Error) {
+    if (SeverityLimit > ESeverity.Error) {
       return;
     }
     Log(message, _BuildCaller(typeof(T), caller), ESeverity.Error);
   }
 
   public void LogErrorBox(string? title, string message, [CallerMemberName] string caller = "") {
-    if (SeverityLimit < ESeverity.Error) {
+    if (SeverityLimit > ESeverity.Error) {
       return;
     }
     Log(_BuildBox(title, message), _BuildCaller(typeof(T), caller), ESeverity.Error);
   }
 
   public void LogErrorBox(string? title, object message, [CallerMemberName] string caller = "") {
-    if (SeverityLimit < ESeverity.Error) {
+    if (SeverityLimit > ESeverity.Error) {
       return;
     }
     Log(_BuildBox(title, message), _BuildCaller(typeof(T), caller), ESeverity.Error);
   }
 
   public void LogErrorBox(string? title, IEnumerable<object> objects, [CallerMemberName] string caller = "") {
-    if (SeverityLimit < ESeverity.Error) {
+    if (SeverityLimit > ESeverity.Error) {
       return;
     }
     Log(_BuildBoxMessageFromEnumerable(title, objects), _BuildCaller(typeof(T), caller), ESeverity.Error);
   }
 
   public void LogErrorBox(string? title, Exception ex, bool withStackTrace = false, [CallerMemberName] string caller = "") {
-    if (SeverityLimit < ESeverity.Error) {
+    if (SeverityLimit > ESeverity.Error) {
       return;
     }
     Log(_BuildBoxMessageFromException(title, ex, withStackTrace), _BuildCaller(typeof(T), caller), ESeverity.Error);
@@ -333,27 +330,27 @@ public interface IMediaSearchLogger<T> : IMediaSearchLogger, ICloneable {
 
   #region --- LogDebug --------------------------------------------
   public void LogDebug(string message, [CallerMemberName] string caller = "", ESeverity severity = ESeverity.Debug) {
-    if (SeverityLimit < ESeverity.Debug) {
+    if (SeverityLimit > ESeverity.Debug) {
       return;
     }
     Log(message, _BuildCaller(typeof(T), caller), ESeverity.Debug);
   }
   public void LogDebugBox(string? title, string message, [CallerMemberName] string caller = "") {
-    if (SeverityLimit < ESeverity.Debug) {
+    if (SeverityLimit > ESeverity.Debug) {
       return;
     }
     Log(_BuildBox(title, message), _BuildCaller(typeof(T), caller), ESeverity.Debug);
   }
 
   public void LogDebugBox(string? title, object message, [CallerMemberName] string caller = "") {
-    if (SeverityLimit < ESeverity.Debug) {
+    if (SeverityLimit > ESeverity.Debug) {
       return;
     }
     Log(_BuildBox(title, message), _BuildCaller(typeof(T), caller), ESeverity.Debug);
   }
 
   public void LogDebugBox(string? title, IEnumerable<object> objects, [CallerMemberName] string caller = "") {
-    if (SeverityLimit < ESeverity.Debug) {
+    if (SeverityLimit > ESeverity.Debug) {
       return;
     }
     Log(_BuildBoxMessageFromEnumerable(title, objects), _BuildCaller(typeof(T), caller), ESeverity.Debug);
@@ -362,28 +359,28 @@ public interface IMediaSearchLogger<T> : IMediaSearchLogger, ICloneable {
 
   #region --- LogDebugEx --------------------------------------------
   public void LogDebugEx(string message, [CallerMemberName] string caller = "", ESeverity severity = ESeverity.DebugEx) {
-    if (SeverityLimit < ESeverity.DebugEx) {
+    if (SeverityLimit > ESeverity.DebugEx) {
       return;
     }
     Log(message, _BuildCaller(typeof(T), caller), ESeverity.DebugEx);
   }
 
   public void LogDebugExBox(string? title, string message, [CallerMemberName] string caller = "") {
-    if (SeverityLimit < ESeverity.DebugEx) {
+    if (SeverityLimit > ESeverity.DebugEx) {
       return;
     }
     Log(_BuildBox(title, message), _BuildCaller(typeof(T), caller), ESeverity.DebugEx);
   }
 
   public void LogDebugExBox(string? title, object message, [CallerMemberName] string caller = "") {
-    if (SeverityLimit < ESeverity.DebugEx) {
+    if (SeverityLimit > ESeverity.DebugEx) {
       return;
     }
     Log(_BuildBox(title, message), _BuildCaller(typeof(T), caller), ESeverity.DebugEx);
   }
 
   public void LogDebugExBox(string? title, IEnumerable<object> objects, [CallerMemberName] string caller = "") {
-    if (SeverityLimit < ESeverity.DebugEx) {
+    if (SeverityLimit > ESeverity.DebugEx) {
       return;
     }
     Log(_BuildBoxMessageFromEnumerable(title, objects), _BuildCaller(typeof(T), caller), ESeverity.DebugEx);
@@ -392,85 +389,32 @@ public interface IMediaSearchLogger<T> : IMediaSearchLogger, ICloneable {
 
   #region --- LogFatal --------------------------------------------
   public void LogFatal(string message, [CallerMemberName] string caller = "", ESeverity severity = ESeverity.Fatal) {
-    if (SeverityLimit < ESeverity.Fatal) {
+    if (SeverityLimit > ESeverity.Fatal) {
       return;
     }
     Log(message, _BuildCaller(typeof(T), caller), ESeverity.Fatal);
   }
 
   public void LogFatalBox(string? title, string message, [CallerMemberName] string caller = "") {
-    if (SeverityLimit < ESeverity.Fatal) {
+    if (SeverityLimit > ESeverity.Fatal) {
       return;
     }
     Log(_BuildBox(title, message), _BuildCaller(typeof(T), caller), ESeverity.Fatal);
   }
 
   public void LogFatalBox(string? title, object message, [CallerMemberName] string caller = "") {
-    if (SeverityLimit < ESeverity.Fatal) {
+    if (SeverityLimit > ESeverity.Fatal) {
       return;
     }
     Log(_BuildBox(title, message), _BuildCaller(typeof(T), caller), ESeverity.Fatal);
   }
 
   public void LogFatalBox(string? title, IEnumerable<object> objects, [CallerMemberName] string caller = "") {
-    if (SeverityLimit < ESeverity.Fatal) {
+    if (SeverityLimit > ESeverity.Fatal) {
       return;
     }
     Log(_BuildBoxMessageFromEnumerable(title, objects), _BuildCaller(typeof(T), caller), ESeverity.Fatal);
   }
   #endregion --- LogFatal --------------------------------------------
-
-  //#region --- Protected members --------------------------------------------
-  //protected string _BuildBoxMessageFromEnumerable(string? title, IEnumerable<object> objects) {
-
-  //  if (objects is null) {
-  //    return _BuildBox(title, "IEnumerable objects is null");
-  //  }
-
-  //  if (objects.IsEmpty()) {
-  //    return _BuildBox(title, $"{objects.GetType().Name} is empty");
-  //  }
-
-  //  StringBuilder RetVal = new();
-  //  foreach (object ObjectItem in objects) {
-  //    RetVal.AppendLine(ObjectItem.ToString());
-  //  }
-  //  return _BuildBox(title, RetVal.ToString());
-  //}
-
-  //protected string _BuildBoxMessageFromException(string? title, Exception ex, bool withStackTrace) {
-
-  //  if (ex is null) {
-  //    return _BuildBox(title, "Exception is null");
-  //  }
-
-  //  StringBuilder sb = new();
-  //  sb.AppendLine($"Exception source : {ex.Source}");
-  //  sb.AppendLine($"Message: {ex.Message}");
-  //  sb.AppendLine($"TargetSite : {ex.TargetSite?.ToString()}");
-  //  if (withStackTrace) {
-  //    sb.AppendLine(ex.StackTrace);
-  //  }
-  //  return sb.ToString().BoxFixedWidth(title ?? "", GlobalSettings.DEBUG_BOX_WIDTH);
-  //}
-
-  //protected string _BuildCaller(Type? callerType, string callerMethod) {
-  //  if (callerType is not null) {
-  //    return $"{callerType.Name}.{callerMethod}";
-  //  } else {
-  //    return $"(unknown type).{callerMethod}";
-  //  }
-  //}
-
-  //protected string _BuildBox(string? title = "", string message = "") {
-  //  return message.BoxFixedWidth(title, GlobalSettings.DEBUG_BOX_WIDTH);
-  //}
-
-  //protected string _BuildBox(string? title, object? message) {
-  //  title ??= "";
-  //  string? ProcessedMessage = message is null ? "(null)" : message.ToString();
-  //  return ProcessedMessage.BoxFixedWidth(title, GlobalSettings.DEBUG_BOX_WIDTH);
-  //}
-  //#endregion --- Protected members --------------------------------------------
 
 }

@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
 
 using BLTools.Text;
 
@@ -19,14 +20,17 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TApiServer() {
+    Logger.LogDebugEx("New TApiServer");
     _HttpClient = new HttpClient();
   }
 
   public TApiServer(Uri baseAddress) : this() {
+    Logger.LogDebugEx($"New TApiServer {baseAddress}");
     _HttpClient.BaseAddress = baseAddress;
   }
 
   public TApiServer(string baseAddress) : this() {
+    Logger.LogDebugEx($"New TApiServer {baseAddress}");
     _HttpClient.BaseAddress = new Uri(baseAddress);
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -211,8 +215,9 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
 
     int LocalRequestId = ++RequestId;
     try {
-      TMscGetRequestMessage RequestMessage = new TMscGetRequestMessage();
       IfDebugMessage($"Probing server #{LocalRequestId}", BaseAddress);
+
+      TMscGetRequestMessage RequestMessage = new TMscGetRequestMessage();
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
 
@@ -228,6 +233,7 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
   #endregion --- Probe --------------------------------------------
 
   public async Task<Stream> GetStreamAsync(string uriRequest, CancellationToken cancellationToken) {
+    int LocalRequestId = ++RequestId;
     try {
       Logger.LogDebug($"Request: {uriRequest}");
 
@@ -259,6 +265,7 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
   }
 
   public async Task<byte[]?> GetByteArrayAsync(string uriRequest, CancellationToken cancellationToken) {
+    int LocalRequestId = ++RequestId;
     try {
       Logger.LogDebug($"Request: {uriRequest}");
 
@@ -289,8 +296,8 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
   }
 
   [Conditional("DEBUG")]
-  private void IfDebugMessage(string title, object? message) {
-    Logger.LogDebugBox(title, message ?? "");
+  private void IfDebugMessage(string title, object? message, [CallerMemberName] string CallerName = "") {
+    Logger.LogDebugBox(title, message?.ToString() ?? "", CallerName);
   }
 
 }
