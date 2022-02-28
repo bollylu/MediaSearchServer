@@ -5,9 +5,9 @@ using MediaSearch.Client;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
-MediaSearch.Client.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerConsole());
-MediaSearch.Client.Services.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerConsole());
-MediaSearch.Models.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerConsole());
+MediaSearch.Client.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerConsole() { SeverityLimit = ESeverity.Debug });
+MediaSearch.Client.Services.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerConsole() { SeverityLimit = ESeverity.DebugEx });
+MediaSearch.Models.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerConsole() { SeverityLimit = ESeverity.Debug });
 
 IMediaSearchLogger<Program> Logger = MediaSearch.Client.GlobalSettings.LoggerPool.GetLogger<Program>();
 
@@ -27,7 +27,7 @@ List<string> ApiServerAdresses = new List<string>() {
 Logger.Log("Probing api server");
 
 TApiServer? ApiServer = null;
-foreach(string ApiServerAddressItem in ApiServerAdresses) {
+foreach (string ApiServerAddressItem in ApiServerAdresses) {
   ApiServer = new TApiServer(ApiServerAddressItem);
   ApiServer.Logger.SeverityLimit = ESeverity.DebugEx;
   using (CancellationTokenSource Timeout = new CancellationTokenSource(5000)) {
