@@ -176,11 +176,22 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
     try {
 
       TMscPostRequestMessage RequestMessage = new TMscPostRequestMessage(uriRequest);
-      RequestMessage.Content = additionalContent switch {
-        IJson AdditionalJsonContent => JsonContent.Create(AdditionalJsonContent),
-        string AdditionalStringContent => new StringContent(AdditionalStringContent),
-        _ => new StringContent(additionalContent?.ToString() ?? "")
-      };
+
+      switch (additionalContent) {
+        case IJson AdditionalJsonContent: {
+            RequestMessage.Content = new StringContent(AdditionalJsonContent.ToJson());
+            RequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+            break;
+          }
+        case string AdditionalStringContent: {
+            RequestMessage.Content = new StringContent(AdditionalStringContent);
+            break;
+          }
+        default: {
+            RequestMessage.Content = new StringContent(additionalContent?.ToString() ?? "");
+            break;
+          }
+      }
 
       IfDebugMessage($"Request #{LocalRequestId} : {uriRequest} - Content is {additionalContent?.GetType().Name ?? "(null)"}", additionalContent);
 

@@ -15,3 +15,6 @@
 - Added TAboutService
 - Added functionalities to TApiServer (Stream, byte[])
 
+* 0.0.14
+- using new logging system
+
