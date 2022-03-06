@@ -16,10 +16,10 @@ public class TLoginController : ControllerBase, IMediaSearchLoggable<TLoginContr
   }
 
   [HttpPost("login")]
-  public async Task<ActionResult<IUserAccount>> Login(TUserAccountSecret user) {
+  public async Task<ActionResult<TUserAccount>> Login(TUserAccountSecret user) {
 
     Logger.LogDebug(HttpContext.Request.ListHeaders());
-    Logger.LogDebug(HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Remote ip not found");
+    Logger.LogDebugBox("Remote ip", HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Remote ip not found");
 
     await Task.Yield();
 
@@ -33,7 +33,7 @@ public class TLoginController : ControllerBase, IMediaSearchLoggable<TLoginContr
       if (TestLogin is null) {
         return new UnauthorizedResult();
       } else {
-        return new ActionResult<IUserAccount>(TestLogin);
+        return new ActionResult<TUserAccount>(new TUserAccount(TestLogin));
       }
     }
 

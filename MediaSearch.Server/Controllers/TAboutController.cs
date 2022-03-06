@@ -8,10 +8,6 @@ public class TAboutController : ControllerBase, IMediaSearchLoggable<TAboutContr
 
   public IMediaSearchLogger<TAboutController> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TAboutController>();
 
-  public TAboutController() {
-    Logger.LogDebug("Building About controller");
-  }
-
   [HttpGet()]
   public ActionResult Index() {
     return Ok();
@@ -20,8 +16,8 @@ public class TAboutController : ControllerBase, IMediaSearchLoggable<TAboutContr
   [HttpGet("about")]
   public async Task<ActionResult<TAbout>> GetAbout(string name = "MediaSearch.Server") {
 
-    Logger.LogDebug(HttpContext.Request.ListHeaders());
-    Logger.LogDebug(HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Remote ip not found");
+    Logger.LogDebugEx(HttpContext.Request.ListHeaders());
+    Logger.LogDebugBox("Remote IP", HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Remote ip not found");
 
     switch (name.ToLower()) {
       case "server": {
