@@ -9,6 +9,9 @@ public partial class AdminControl : ComponentBase {
 
   [Inject]
   public IMovieService? MovieService { get; set; }
+  
+  [Inject]
+  public NavigationManager? NavigationManager { get; set; }
 
   public int Progress { get; set; } = 0;
   public bool Completed { get; set; } = false;
@@ -20,6 +23,11 @@ public partial class AdminControl : ComponentBase {
   private bool IsRefreshRunning = true;
 
   protected override async Task OnInitializedAsync() {
+    if (GlobalSettings.Account is null) {
+      NavigationManager?.NavigateTo("/login", false, true);
+      return;
+    }
+
     IsRefreshRunning = await CheckRefreshRunning();
     if (IsRefreshRunning) {
       _ = Task.Run(() => RefreshProgress());

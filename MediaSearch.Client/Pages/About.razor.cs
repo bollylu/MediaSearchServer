@@ -26,12 +26,14 @@ public partial class About : ComponentBase, IMediaSearchLoggable<About> {
   private IAboutService? _AboutService;
 
   [Inject]
-  public NavigationManager? NavigationManager {get; set; }
+  public NavigationManager? NavigationManager { get; set; }
 
   protected override async Task OnInitializedAsync() {
     if (GlobalSettings.Account is null) {
       NavigationManager?.NavigateTo("/login", false, true);
+      return;
     }
+
     AboutClient = MediaSearch.Client.GlobalSettings.ExecutingAbout;
     AboutClientServices = MediaSearch.Client.Services.GlobalSettings.ExecutingAbout;
     AboutModels = MediaSearch.Models.GlobalSettings.ExecutingAbout;
@@ -44,6 +46,6 @@ public partial class About : ComponentBase, IMediaSearchLoggable<About> {
   }
 
   #region --- ILoggable --------------------------------------------
-  public IMediaSearchLogger<About> Logger { get;  } = GlobalSettings.LoggerPool.GetLogger<About>();
+  public IMediaSearchLogger<About> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<About>();
   #endregion --- ILoggable --------------------------------------------
 }

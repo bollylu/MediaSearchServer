@@ -2,21 +2,21 @@
 
 <PageHeader PageTitle="About" />
 
-<div class="container">
+<div class="accordion" id="About">
   <div class="mb-3">
     <About_Card About="@AboutClient" />
   </div>
   <div class="mb-3">
-    <About_Card About="@AboutClientServices" />
+    <About_Card About="@AboutClientServices" Parent="About" />
   </div>
   <div class="mb-3">
-    <About_Card About="@AboutModels" />
+    <About_Card About="@AboutModels" Parent="About" />
   </div>
   <div class="mb-3">
-    <About_Card About="@AboutServer" />
+    <About_Card About="@AboutServer" Parent="About" />
   </div>
   <div class="mb-3">
-    <About_Card About="@AboutServerServices" />
+    <About_Card About="@AboutServerServices" Parent="About" />
   </div>
 
   @*<div class="text-black border-1">

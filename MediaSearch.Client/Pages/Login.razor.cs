@@ -15,14 +15,16 @@ public partial class Login : ComponentBase {
   }
   private ILoginService? _LoginService;
 
-  public TUserAccountSecret UserAccountSecret { get; set; } = new TUserAccountSecret();
+  public TUserAccountSecret UserAccountSecret { get; } = new TUserAccountSecret();
 
   private async Task DoLogin() {
-    if (UserAccountSecret is null) {
+    if (string.IsNullOrWhiteSpace(UserAccountSecret.Name)) {
       return;
     }
     if (await LoginService.Login(UserAccountSecret)) {
       GlobalSettings.Account = new TUserAccount(UserAccountSecret);
+    } else {
+      GlobalSettings.Account = null;
     }
   }
 }
