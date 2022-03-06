@@ -19,13 +19,11 @@ public class TUserAccount : IUserAccount, IJson<TUserAccount> {
   #endregion --- IUserAccountInfo --------------------------------------------
 
   #region --- IUserAccountSecret --------------------------------------------
-  public TUserAccountSecret Secret { get; set; }
+  public IUserAccountSecret Secret { get; } = new TUserAccountSecret();
   #endregion --- IUserAccountSecret --------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TUserAccount() {
-    Secret = new TUserAccountSecret();
-  }
+  public TUserAccount() {}
 
   public TUserAccount(IUserAccountSecret secret) {
     Secret = new TUserAccountSecret(secret);

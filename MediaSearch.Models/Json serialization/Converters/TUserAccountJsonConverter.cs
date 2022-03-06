@@ -45,7 +45,8 @@ public class TUserAccountJsonConverter : JsonConverter<TUserAccount>, IMediaSear
               break;
 
             case nameof(TUserAccount.Secret):
-              RetVal.Secret = JsonSerializer.Deserialize<TUserAccountSecret>(ref reader, options) ?? new TUserAccountSecret();
+              IUserAccountSecret Secret = JsonSerializer.Deserialize<TUserAccountSecret>(ref reader, options) ?? new TUserAccountSecret();
+              RetVal.Secret.Duplicate(Secret);
               break;
 
             default:

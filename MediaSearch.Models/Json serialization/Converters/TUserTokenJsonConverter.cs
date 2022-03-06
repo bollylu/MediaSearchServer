@@ -36,8 +36,8 @@ public class TUserTokenJsonConverter : JsonConverter<TUserToken>, IMediaSearchLo
 
           switch (Property) {
 
-            case nameof(TUserToken.Token):
-              RetVal.Token = reader.GetString() ?? "";
+            case nameof(TUserToken.TokenId):
+              RetVal.TokenId = reader.GetString() ?? "";
               break;
 
             case nameof(TUserToken.Expiration):
@@ -67,7 +67,7 @@ public class TUserTokenJsonConverter : JsonConverter<TUserToken>, IMediaSearchLo
     }
     writer.WriteStartObject();
 
-    writer.WriteString(nameof(TUserToken.Token), value.Token);
+    writer.WriteString(nameof(TUserToken.TokenId), value.TokenId);
     writer.WriteString(nameof(TUserToken.Expiration), value.Expiration.ToDMYHMS());
 
     writer.WriteEndObject();

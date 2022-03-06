@@ -6,26 +6,31 @@ namespace MediaSearch.Models;
 public class TUserToken : IUserToken, IJson<TUserToken> {
   public const int SESSION_DURATION_IN_MIN = 15;
 
-  [JsonPropertyName(nameof(Token))]
-  public string Token { get; set; } = "";
+  [JsonPropertyName(nameof(TokenId))]
+  public string TokenId { get; set; } = "";
 
   [JsonPropertyName(nameof(Expiration))]
   public DateTime Expiration { get; set; } = DateTime.MaxValue;
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TUserToken() { 
-    Token = Random.Shared.NextInt64().ToString().HashToBase64();
+    TokenId = Random.Shared.NextInt64().ToString().HashToBase64();
     Expiration = DateTime.UtcNow.AddMinutes(SESSION_DURATION_IN_MIN);
   }
   public TUserToken(string token) {
-    Token = token;
+    TokenId = token;
   }
   public TUserToken(string token, DateTime expiration) {
-    Token = token;
+    TokenId = token;
     Expiration = expiration;
   }
   public TUserToken(IUserToken userToken) {
-    Token = userToken.Token;
+    TokenId = userToken.TokenId;
+    Expiration = userToken.Expiration;
+  }
+
+  public void Duplicate(IUserToken userToken) {
+    TokenId = userToken.TokenId;
     Expiration = userToken.Expiration;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -33,7 +38,7 @@ public class TUserToken : IUserToken, IJson<TUserToken> {
 
   public override string ToString() {
     StringBuilder RetVal = new StringBuilder();
-    RetVal.Append($"{nameof(Token)} = {Token}");
+    RetVal.Append($"{nameof(TokenId)} = {TokenId}");
     RetVal.Append($", {nameof(Expiration)} = {Expiration.ToYMDHMS()}");
     return RetVal.ToString();
   }

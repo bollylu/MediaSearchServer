@@ -24,6 +24,13 @@ public class TUserAccountSecret : IUserAccountSecret, IJson<TUserAccountSecret> 
     MustChangePassword = user.Secret.MustChangePassword;
     Token = new TUserToken(user.Secret.Token);
   }
+
+  public void Duplicate(IUserAccountSecret secret) {
+    Name = secret.Name;
+    Password = secret.Password;
+    MustChangePassword = secret.MustChangePassword;
+    Token.Duplicate(secret.Token);
+  }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public override string ToString() {

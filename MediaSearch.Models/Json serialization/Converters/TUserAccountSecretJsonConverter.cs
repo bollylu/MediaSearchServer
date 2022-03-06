@@ -25,7 +25,7 @@ public class TUserAccountSecretJsonConverter : JsonConverter<TUserAccountSecret>
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndObject) {
-          Logger.LogDebug(RetVal.ToString().BoxFixedWidth("Converted UserAccountSecret", GlobalSettings.DEBUG_BOX_WIDTH));
+          Logger.LogDebugBox("Converted UserAccountSecret", RetVal);
           return RetVal;
         }
 

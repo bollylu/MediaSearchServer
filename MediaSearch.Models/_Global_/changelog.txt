@@ -35,3 +35,7 @@
 * 0.1.6
 - Fixed TAbout deserialization to read Name and Description
 
+* 0.1.7
+- Lot of improvements in logging system
+- Some cleanup and small refactoring
+

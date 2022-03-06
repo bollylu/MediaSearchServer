@@ -2,5 +2,5 @@
 
 public interface IUserAccount : IUserAccountInfo {
 
-  TUserAccountSecret Secret { get; set; }
+  IUserAccountSecret Secret { get; }
 }
