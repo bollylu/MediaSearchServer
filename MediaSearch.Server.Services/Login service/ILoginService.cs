@@ -7,6 +7,6 @@ public interface ILoginService {
   bool IsUserLoggedIn(TUserAccountSecret user);
 
   TUserToken GetToken(TUserAccountSecret user);
-  TUserToken RenewToken(TUserAccountSecret user);
+  IUserToken RenewToken(IUserToken userToken);
 
 }

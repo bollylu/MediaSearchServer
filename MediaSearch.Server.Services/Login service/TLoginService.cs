@@ -1,7 +1,7 @@
 ﻿namespace MediaSearch.Server.Services;
 public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> {
 
-  public IMediaSearchLogger<TLoginService> Logger { get; } = GlobalSettings.LoggerPool.GetLogger <TLoginService> ();
+  public IMediaSearchLogger<TLoginService> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TLoginService>();
 
   private readonly List<IUserAccount> _UserAccounts = new();
   private readonly ReaderWriterLockSlim _LockUserAccounts = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
@@ -23,8 +23,14 @@ public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> 
     _IsInitializing = true;
 
     _UserAccounts.Clear();
-    _UserAccounts.Add(new TUserAccount() { Name = "bollylu", Description = "Administrator", Secret = new TUserAccountSecret() { Password = "xxx", MustChangePassword = false } });
-    _UserAccounts.Add(new TUserAccount() { Name = "brilly", Description = "standard user", Secret = new TUserAccountSecret() { Password = "xxx", MustChangePassword = false } });
+
+    IUserAccountSecret UserSecret = new TUserAccountSecret() { Name = "bollylu", Password = "xxx", MustChangePassword = false };
+    IUserAccount User1 = new TUserAccount() { Name = "bollylu", Description = "Administrator" };
+    User1.Secret.Duplicate(UserSecret);
+    IUserAccount User2 = new TUserAccount() { Name = "brilly", Description = "standard user" };
+    User2.Secret.Duplicate(UserSecret);
+    _UserAccounts.Add(User1);
+    _UserAccounts.Add(User2);
     _IsInitializing = false;
     _IsInitialized = true;
   }
@@ -33,7 +39,7 @@ public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> 
   public IUserAccount? Login(TUserAccountSecret user) {
     try {
       _LockUserAccounts.EnterWriteLock();
-      int UserIndex = _UserAccounts.FindIndex(u => ((IUserAccountSecret)u).Name == user.Name);
+      int UserIndex = _UserAccounts.FindIndex(u => u.Name == user.Name);
       if (UserIndex < 0) {
         return null;
       }
@@ -51,10 +57,10 @@ public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> 
     }
   }
 
-  public bool Login(TUserToken token) {
+  public bool Login(IUserToken token) {
     try {
       _LockUserAccounts.EnterReadLock();
-      IUserAccount? UserAccount = _UserAccounts.SingleOrDefault(u => u.Secret.Token.Token == token.Token);
+      IUserAccount? UserAccount = _UserAccounts.SingleOrDefault(u => u.Secret.Token.TokenId == token.TokenId);
       if (UserAccount is null) {
         return false;
       }
@@ -78,8 +84,21 @@ public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> 
     throw new NotImplementedException();
   }
 
-  public TUserToken RenewToken(TUserAccountSecret user) {
-    throw new NotImplementedException();
+  public IUserToken RenewToken(IUserToken token) {
+    try {
+      _LockUserAccounts.EnterReadLock();
+      IUserAccount? UserAccount = _UserAccounts.SingleOrDefault(u => u.Secret.Token.TokenId == token.TokenId);
+      if (UserAccount is null) {
+        return TUserToken.ExpiredUserToken;
+      }
+      if (UserAccount.Secret.Token.IsExpired) {
+        return TUserToken.ExpiredUserToken;
+      }
+      UserAccount.Secret.Token.Duplicate(new TUserToken() { Expiration = DateTime.UtcNow.AddMinutes(20) });
+      return UserAccount.Secret.Token;
+    } finally {
+      _LockUserAccounts.ExitReadLock();
+    }
   }
 
 }
