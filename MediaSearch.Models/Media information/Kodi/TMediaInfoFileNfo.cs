@@ -1,8 +1,8 @@
-﻿namespace MediaSearch.Models.Media_information;
+﻿namespace MediaSearch.Models;
 
-public class TFileMovieNfo : IFileMediaInfo, IToXml, IMediaSearchLoggable<TFileMovieNfo> {
+public class TMediaInfoFileNfo : IMediaInfoFile, IToXml, IMediaSearchLoggable<TMediaInfoFileNfo> {
 
-  public IMediaSearchLogger<TFileMovieNfo> Logger { get; } = GlobalSettings.LoggerPool.GetLogger <TFileMovieNfo>();
+  public IMediaSearchLogger<TMediaInfoFileNfo> Logger { get; } = GlobalSettings.LoggerPool.GetLogger <TMediaInfoFileNfo>();
 
   public const string XML_THIS_ELEMENT = "movie";
   public const string XML_ELEMENT_TITLE = "title";
@@ -15,10 +15,12 @@ public class TFileMovieNfo : IFileMediaInfo, IToXml, IMediaSearchLoggable<TFileM
   public const string XML_ELEMENT_COUNTRY = "country";
   public const string XML_ELEMENT_PREMIERED = "premiered";
 
+  public string StoragePath { get; set; } = "";
+  public string StorageName { get; set; } = "";
+
   #region --- IFileMediaInfo --------------------------------------------
-  public Dictionary<ELanguage, string> Titles { get; } = new();
-  public Dictionary<ELanguage, string> Descriptions { get; } = new();
-  public int Size { get; } = -1;
+  public IMediaInfoContent Content { get; } = new TMediaInfoContentNfo();
+  
   public string Country { get; set; } = "";
 
   #region --- IName --------------------------------------------
@@ -54,18 +56,26 @@ public class TFileMovieNfo : IFileMediaInfo, IToXml, IMediaSearchLoggable<TFileM
     switch (Country) {
       
       case "FR": {
-          Titles.Add(ELanguage.French, source.SafeReadElementValue(XML_ELEMENT_TITLE, ""));
+          Content.Titles.Add(ELanguage.French, source.SafeReadElementValue(XML_ELEMENT_TITLE, ""));
           break;
         }
 
       default:
       case "US": {
-          Titles.Add(ELanguage.English, source.SafeReadElementValue(XML_ELEMENT_TITLE, ""));
+          Content.Titles.Add(ELanguage.English, source.SafeReadElementValue(XML_ELEMENT_TITLE, ""));
           break;
         }
 
     }
 
   }
+
+  
+
+  public bool Exists() {
+    throw new NotImplementedException();
+  }
+
+  
   #endregion --- IToXml --------------------------------------------
 }

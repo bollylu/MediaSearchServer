@@ -21,6 +21,7 @@ public interface IJson {
             Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Latin1Supplement)
           };
           _DefaultJsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TLanguageDictionaryStringConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TAboutJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TDateOnlyJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TFilterJsonConverter());
@@ -30,6 +31,7 @@ public interface IJson {
           _DefaultJsonSerializerOptions.Converters.Add(new TUserAccountJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TUserAccountSecretJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TUserTokenJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TMediaInfoContentMetaConverter());
         }
         return _DefaultJsonSerializerOptions;
       }

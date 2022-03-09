@@ -39,3 +39,6 @@
 - Lot of improvements in logging system
 - Some cleanup and small refactoring
 
+* 0.1.8
+- Added language system and dictionary
+- Media info file and content

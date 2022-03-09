@@ -452,8 +452,8 @@ public interface IMediaSearchLogger<T> : IMediaSearchLogger, ICloneable {
     Log(_BuildBox(title, message), _BuildCaller(typeof(T), caller), ESeverity.DebugEx);
   }
 
-  public void LogDebugBoxEx(string? title, IDictionary<object, object> dictionary, [CallerMemberName] string caller = "") {
-    if (SeverityLimit > ESeverity.Debug) {
+  public void LogDebugExBox(string? title, IDictionary<object, object> dictionary, [CallerMemberName] string caller = "") {
+    if (SeverityLimit > ESeverity.DebugEx) {
       return;
     }
     Log(_BuildBoxMessageFromDictionary(title, dictionary), _BuildCaller(typeof(T), caller), ESeverity.DebugEx);
