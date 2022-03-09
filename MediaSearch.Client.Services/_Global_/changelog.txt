@@ -19,5 +19,11 @@
 - using new logging system
 
 * 0.0.15
-- Set priority to DebugEx for some messages in TApiServer
+- Set log severity to DebugEx for some messages in TApiServer
+
+* 0.0.16
+- Default log severity is back to Debug for TApiServer
+- Use of [Conditional("DEBUG")] to avoid calls to log when in prod
+- Fixed Uri for getPicture
+- Fixed picture cache
 

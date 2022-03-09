@@ -1,6 +1,8 @@
 ﻿using BLTools.Text;
 
+using System.Diagnostics;
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
 
 namespace MediaSearch.Client.Services;
 
@@ -16,10 +18,9 @@ public class TMovieService : IMovieService, IMediaSearchLoggable<TMovieService> 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   private readonly TImageCache _ImagesCache = new TImageCache();
 
-  public TMovieService() {}
+  public TMovieService() { }
 
-  public TMovieService(IApiServer apiServer, TImageCache imagesCache, IMediaSearchLogger logger) : this() {
-    //Logger = TMediaSearchLogger.Create(logger);
+  public TMovieService(IApiServer apiServer, TImageCache imagesCache) : this() {
     Logger.Log($"Api server = {apiServer}");
     _ImagesCache = imagesCache;
   }
@@ -92,11 +93,10 @@ public class TMovieService : IMovieService, IMediaSearchLoggable<TMovieService> 
   #region --- Picture actions --------------------------------------------
   public async Task<byte[]> GetPicture(string id, CancellationToken cancelToken, int w = 128, int h = 160) {
 
-    string RequestUrl = $"movie/getPicture?id={id.ToUrl64()}&width={w}&height={h}";
-    Logger.LogDebugEx($"Requesting picture : {RequestUrl}");
+    string RequestUrl = $"movie/getPicture?movieId={id.ToUrl64()}&width={w}&height={h}";
+    IfDebugMessageEx("Requesting picture", RequestUrl);
 
     try {
-      Logger.LogDebugEx($"starting getpicture {id}");
       using (CancellationTokenSource Timeout = new CancellationTokenSource(GlobalSettings.HTTP_TIMEOUT_IN_MS)) {
         byte[]? RetVal = await ApiServer.GetByteArrayAsync(RequestUrl, Timeout.Token).ConfigureAwait(false);
         if (RetVal is null) {
@@ -105,10 +105,10 @@ public class TMovieService : IMovieService, IMediaSearchLoggable<TMovieService> 
         return RetVal;
       }
     } catch (TaskCanceledException) {
-      //LogError("Task is cancelled.");
+      Logger.LogError("Task is cancelled.");
       return Array.Empty<byte>();
     } catch (OperationCanceledException) {
-      //LogError("Operation is cancelled.");
+      Logger.LogError("Operation is cancelled.");
       return Array.Empty<byte>();
     } catch (Exception ex) {
       Logger.LogError($"Unable to get picture : {ex.Message}");
@@ -122,7 +122,7 @@ public class TMovieService : IMovieService, IMediaSearchLoggable<TMovieService> 
 
     byte[] PictureBytes = _ImagesCache.GetImage(movie.Id);
 
-    if (PictureBytes is null) {
+    if (PictureBytes is null || PictureBytes.IsEmpty()) {
       PictureBytes = await GetPicture(movie.Id, cancelToken).ConfigureAwait(false);
       if (PictureBytes is null) {
         PictureBytes = TMovie.PictureMissing;
@@ -185,4 +185,15 @@ public class TMovieService : IMovieService, IMediaSearchLoggable<TMovieService> 
       return new List<string>();
     }
   }
+
+  [Conditional("DEBUG")]
+  private void IfDebugMessage(string title, object? message, [CallerMemberName] string CallerName = "") {
+    Logger.LogDebugBox(title, message?.ToString() ?? "", CallerName);
+  }
+
+  [Conditional("DEBUG")]
+  private void IfDebugMessageEx(string title, object? message, [CallerMemberName] string CallerName = "") {
+    Logger.LogDebugExBox(title, message?.ToString() ?? "", CallerName);
+  }
+
 }

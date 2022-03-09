@@ -19,17 +19,17 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TApiServer() {
-    Logger.LogDebugEx("New TApiServer");
+    IfDebugMessageEx("New TApiServer", "");
     _HttpClient = new HttpClient();
   }
 
   public TApiServer(Uri baseAddress) : this() {
-    Logger.LogDebugEx($"New TApiServer {baseAddress}");
+    IfDebugMessageEx("New TApiServer", baseAddress);
     _HttpClient.BaseAddress = baseAddress;
   }
 
   public TApiServer(string baseAddress) : this() {
-    Logger.LogDebugEx($"New TApiServer {baseAddress}");
+    IfDebugMessageEx("New TApiServer", baseAddress);
     _HttpClient.BaseAddress = new Uri(baseAddress);
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -277,30 +277,41 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
   public async Task<byte[]?> GetByteArrayAsync(string uriRequest, CancellationToken cancellationToken) {
     int LocalRequestId = ++RequestId;
     try {
-      Logger.LogDebug($"Request: {uriRequest}");
+      IfDebugMessageEx($"Request #{LocalRequestId}", uriRequest);
 
       TMscGetRequestMessage RequestMessage = new TMscGetRequestMessage(uriRequest);
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
+      IfDebugMessageEx($"Response #{LocalRequestId}",$"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
 
       if (!LastResponse.IsSuccessStatusCode) {
         throw new HttpRequestException($"Error loading {uriRequest} : {LastResponse.StatusCode} {LastResponse.ReasonPhrase}");
       }
+
       byte[] BytesContent = await LastResponse.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
 
-      IfDebugMessage($"Response : {LastResponse.StatusCode}", BytesContent.ToHexString());
+      IfDebugMessageEx($"Response #{LocalRequestId} content", BytesContent.ToHexString());
 
       return BytesContent;
 
-    } catch (Exception ex) {
-      Logger.LogError($"Unable to read stream from client : {ex.Message}");
+    } catch (HttpRequestException ex) {
+      Logger.LogErrorBox($"Response #{LocalRequestId} : Unable to read byte[] from client", ex);
       if (ex.InnerException is not null) {
-        Logger.LogError($"  Inner exception : {ex.InnerException.Message}");
+        Logger.LogErrorBox("  Inner exception", ex.InnerException);
       }
-
+      throw;
+    } catch (TaskCanceledException ex) {
+      Logger.LogErrorBox($"Response #{LocalRequestId} : Unable to read byte[] from client", ex);
+      if (ex.InnerException is not null) {
+        Logger.LogErrorBox("  Inner exception", ex.InnerException);
+      }
       LastResponse = new HttpResponseMessage(HttpStatusCode.RequestTimeout);
-
-      Logger.LogError($"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
+      throw;
+    } catch (Exception ex) {
+      Logger.LogErrorBox($"Response #{LocalRequestId} : Unable to read byte[] from client", ex);
+      if (ex.InnerException is not null) {
+        Logger.LogErrorBox("  Inner exception", ex.InnerException);
+      }
       throw;
     }
   }
