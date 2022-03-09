@@ -5,11 +5,6 @@ namespace MediaSearch.Models.Test;
 [TestClass]
 public class TFilterSerializationTest {
 
-  //[ClassInitialize]
-  //public static async Task ClassInitialize(TestContext context) {
-  //  await MediaSearch.Models.GlobalSettings.Initialize().ConfigureAwait(false);
-  //}
-
   [TestMethod]
   public void SerializeFilterWithConverters() {
     IFilter Source = new TFilter() {
