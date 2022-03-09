@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 
 using BLTools.Text;
@@ -139,18 +138,18 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
     try {
 
       TMscGetRequestMessage RequestMessage = new TMscGetRequestMessage(uriRequest);
-      IfDebugMessage($"Request ({LocalRequestId}) : {uriRequest}", "No content");
+      IfDebugMessageEx($"Request ({LocalRequestId}) : {uriRequest}", "No content");
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
 
       if (!LastResponse.IsSuccessStatusCode) {
-        IfDebugMessage($"Response : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+        IfDebugMessageEx($"Response : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
         return default;
       }
 
       string StringContent = await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
-      IfDebugMessage($"Response ({LocalRequestId}) : {LastResponse.StatusCode}", StringContent);
+      IfDebugMessageEx($"Response ({LocalRequestId}) : {LastResponse.StatusCode}", StringContent);
 
       return StringContent;
     } catch (Exception ex) {
@@ -193,18 +192,18 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
           }
       }
 
-      IfDebugMessage($"Request #{LocalRequestId} : {uriRequest} - Content is {additionalContent?.GetType().Name ?? "(null)"}", additionalContent);
+      IfDebugMessageEx($"Request #{LocalRequestId} : {uriRequest} - Content is {additionalContent?.GetType().Name ?? "(null)"}", additionalContent);
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
 
       if (!LastResponse.IsSuccessStatusCode) {
-        IfDebugMessage($"Response : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+        IfDebugMessageEx($"Response : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
         return default;
       }
 
       string StringContent = await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
-      IfDebugMessage($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
+      IfDebugMessageEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
 
       return StringContent;
     } catch (Exception ex) {
@@ -309,6 +308,11 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
   [Conditional("DEBUG")]
   private void IfDebugMessage(string title, object? message, [CallerMemberName] string CallerName = "") {
     Logger.LogDebugBox(title, message?.ToString() ?? "", CallerName);
+  }
+
+  [Conditional("DEBUG")]
+  private void IfDebugMessageEx(string title, object? message, [CallerMemberName] string CallerName = "") {
+    Logger.LogDebugExBox(title, message?.ToString() ?? "", CallerName);
   }
 
 }
