@@ -105,7 +105,7 @@ public class TMovieController : ControllerBase, IMediaSearchLoggable<TMovieContr
 
   [HttpGet("getPicture")]
   public async Task<ActionResult> GetPicture(string movieId, int width, int height) {
-    Logger.LogDebug($"Request for picture {movieId}, width={width}, height={height}");
+    Logger.LogDebug($"Request for picture {movieId.FromUrl64()}, width={width}, height={height}");
     Logger.LogDebug(HttpContext.Request.ListHeaders());
 
     try {
