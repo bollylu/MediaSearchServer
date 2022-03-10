@@ -55,7 +55,7 @@
       <label class="input-group-text" for="FilterGroup">Group</label>
       <select class="form-select" @bind="@Filter.Group" id="FilterGroup">
         <option value="">Select a group ...</option>
-        @foreach (string GroupItem in _Groups) {
+        @foreach (string GroupItem in Groups) {
           <option value="@GroupItem">@GroupItem.TrimEnd(' ','#')</option>
         }
       </select>

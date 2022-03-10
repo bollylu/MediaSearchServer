@@ -1,9 +1,9 @@
 ﻿@page "/DisplayFilterAndList"
 
-  <PageHeader PageTitle="List of movies" />
+<PageHeader PageTitle="List of movies" WithSpinner="@IsRefreshRuning" />
 
-  <div class="mb-3">
-    <EditFilter />
-  </div>
+<div class="mb-3">
+  <EditFilter />
+</div>
 
-  <View_MoviesInPages Filter=@CurrentFilter />
+<View_MoviesInPages Filter=@CurrentFilter />

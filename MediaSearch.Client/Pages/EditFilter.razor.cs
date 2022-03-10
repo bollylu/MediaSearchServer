@@ -2,31 +2,47 @@
 
 namespace MediaSearch.Client.Pages;
 
-public partial class EditFilter : ComponentBase {
+public partial class EditFilter : ComponentBase, IDisposable {
 
   public const string SVC_NAME = "filter";
 
   public TFilter Filter { get; set; } = new TFilter();
 
-  public List<string> _Groups { get; } = new List<string>();
+  public List<string> Groups { get; } = new List<string>();
 
   [Inject]
   public IMovieService? MovieService { get; set; }
 
   [Inject]
-  public IBusService<IFilter>? BusService { get; set; }
+  public IBusService<IFilter>? BusServiceFilter { get; set; }
+  
+  [Inject]
+  public IBusService<string>? BusServiceAction { get; set; }
 
   protected override async Task OnInitializedAsync() {
     await base.OnInitializedAsync();
-    if (MovieService is not null) {
-      using (CancellationTokenSource cts = new CancellationTokenSource(5000)) {
-        _Groups.AddRange(await MovieService.GetGroups(cts.Token));
-      }
-    }
     Filter.KeywordsSelection = EFilterType.All;
     Filter.TagSelection = EFilterType.All;
     Filter.GroupFilter = EFilterGroup.All;
     _NotifyMessage(Filter);
+
+    if (BusServiceAction is not null) {
+      BusServiceAction.OnMessage += _MessageHandler;
+    }
+
+    if (MovieService is not null) {
+      using (CancellationTokenSource cts = new CancellationTokenSource(5000)) {
+        Groups.Clear();
+        Groups.AddRange(await MovieService.GetGroups(cts.Token));
+      }
+    }
+  }
+
+  public void Dispose() {
+    // unsubscribe from OnMessage event
+    if (BusServiceAction is not null) {
+      BusServiceAction.OnMessage -= _MessageHandler;
+    }
   }
 
   private void _ProcessSearch() {
@@ -38,7 +54,7 @@ public partial class EditFilter : ComponentBase {
     if (filter is null) {
       return;
     }
-    BusService?.SendMessage(SVC_NAME, filter);
+    BusServiceFilter?.SendMessage(SVC_NAME, filter);
   }
 
   private void ClearKeywords() {
@@ -81,6 +97,27 @@ public partial class EditFilter : ComponentBase {
     }
     Filter.GroupMemberships.Clear();
     Filter.GroupMemberships.AddRange(GroupMembershipSelection);
+  }
+
+  private async void _MessageHandler(string source, string data) {
+    switch (source) {
+
+      case AdminControl.SVC_NAME when data == AdminControl.ACTION_REFRESH_COMPLETED: {
+          if (MovieService is not null) {
+            using (CancellationTokenSource cts = new CancellationTokenSource(5000)) {
+              Groups.Clear();
+              Groups.AddRange(await MovieService.GetGroups(cts.Token));
+            }
+          }
+          StateHasChanged();
+          break;
+        }
+
+      default: {
+          break;
+        }
+    }
+    StateHasChanged();
   }
 }
 

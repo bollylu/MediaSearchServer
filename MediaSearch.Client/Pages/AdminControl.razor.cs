@@ -1,17 +1,22 @@
 ﻿using Microsoft.AspNetCore.Components;
 
-using System;
-using System.Diagnostics;
-
 namespace MediaSearch.Client.Pages;
 
 public partial class AdminControl : ComponentBase {
+
+  public const string SVC_NAME = "admin";
+
+  public const string ACTION_REFRESH_RUNNING = "RefreshRunning";
+  public const string ACTION_REFRESH_COMPLETED = "RefreshCompleted";
 
   [Inject]
   public IMovieService? MovieService { get; set; }
   
   [Inject]
   public NavigationManager? NavigationManager { get; set; }
+
+  [Inject]
+  public IBusService<string>? BusServiceAction { get; set; }
 
   public int Progress { get; set; } = 0;
   public bool Completed { get; set; } = false;
@@ -62,10 +67,12 @@ public partial class AdminControl : ComponentBase {
         Completed = true;
         Message = "Refresh completed successfully.";
         IsRefreshRunning = false;
+        BusServiceAction?.SendMessage(SVC_NAME, ACTION_REFRESH_COMPLETED);
         StateHasChanged();
       } else {
         Progress = Status;
         Message = $"Refresh in progress : found {Progress} movies";
+        BusServiceAction?.SendMessage(SVC_NAME, ACTION_REFRESH_RUNNING);
         StateHasChanged();
         await Task.Delay(DELAY_BETWEEN_REFRESH_IN_MS);
       }

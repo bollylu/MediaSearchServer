@@ -1,5 +1,14 @@
-﻿
+﻿@if (WithSpinner) {
+  <div class="mb-3 text-primary p-2 border bg-primary bg-opacity-50 text-white">
+    <div class="d-flex align-items-center">
+      <span class="fs-4">@PageTitle</span>
+      <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+    </div>
+  </div>
+} else {
   <div class="mb-3 text-primary p-2 border bg-primary bg-opacity-50 text-white">
     <span class="fs-4">@PageTitle</span>
   </div>
+}
+
 

@@ -28,3 +28,8 @@
 - using new logging system
 - Changes in client libs (bootstrap, etc)
 - Login required for Settings, System and About
+
+* 0.0.17
+- Changes in notification of refresh
+- Groups are now reloaded after one data refresh
+- Bus service is moved to Client instead of Services

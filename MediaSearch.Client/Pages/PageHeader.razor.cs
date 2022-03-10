@@ -6,5 +6,7 @@ namespace MediaSearch.Client.Pages {
     [Parameter]
     public string PageTitle { get; set; } = "";
 
+    [Parameter]
+    public bool WithSpinner { get; set; } = false;
   }
 }

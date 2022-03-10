@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 MediaSearch.Client.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerConsole() { SeverityLimit = ESeverity.Debug });
-MediaSearch.Client.Services.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerConsole() { SeverityLimit = ESeverity.DebugEx });
+MediaSearch.Client.Services.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerConsole() { SeverityLimit = ESeverity.Debug });
+MediaSearch.Client.Services.GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerConsole<TApiServer>() { SeverityLimit = ESeverity.Debug });
 MediaSearch.Models.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerConsole() { SeverityLimit = ESeverity.Debug });
 
 IMediaSearchLogger<Program> Logger = MediaSearch.Client.GlobalSettings.LoggerPool.GetLogger<Program>();
@@ -29,7 +30,6 @@ Logger.Log("Probing api server");
 TApiServer? ApiServer = null;
 foreach (string ApiServerAddressItem in ApiServerAdresses) {
   ApiServer = new TApiServer(ApiServerAddressItem);
-  ApiServer.Logger.SeverityLimit = ESeverity.DebugEx;
   using (CancellationTokenSource Timeout = new CancellationTokenSource(5000)) {
     if (await ApiServer.ProbeServerAsync(Timeout.Token)) {
       break;
@@ -54,8 +54,10 @@ builder.Services.AddSingleton(AboutService);
 ILoginService LoginService = new TLoginService() { ApiServer = ApiServer };
 builder.Services.AddSingleton(LoginService);
 
+#region --- Bus --------------------------------------------
 builder.Services.AddSingleton<IBusService<IFilter>, TBusService<IFilter>>();
 builder.Services.AddSingleton<IBusService<string>, TBusService<string>>();
+#endregion --- Bus --------------------------------------------
 
 
 builder.RootComponents.Add<App>("#app");
