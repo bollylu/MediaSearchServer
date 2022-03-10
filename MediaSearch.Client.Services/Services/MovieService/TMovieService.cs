@@ -153,10 +153,9 @@ public class TMovieService : IMovieService, IMediaSearchLoggable<TMovieService> 
       }
 
     } catch (Exception ex) {
-      Logger.LogError($"Unable to get movies data : {ex.Message}");
+      Logger.LogErrorBox($"Unable to get groups data", ex);
       if (ex.InnerException is not null) {
-        Logger.LogError($"  Inner exception : {ex.InnerException.Message}");
-        Logger.LogError($"  Inner call stack : {ex.InnerException.StackTrace}");
+        Logger.LogErrorBox($"  Inner exception", ex.InnerException);
       }
       return new List<string>();
     }
@@ -177,10 +176,9 @@ public class TMovieService : IMovieService, IMediaSearchLoggable<TMovieService> 
       }
 
     } catch (Exception ex) {
-      Logger.LogError($"Unable to get movies data : {ex.Message}");
+      Logger.LogErrorBox($"Unable to get subgroups data", ex);
       if (ex.InnerException is not null) {
-        Logger.LogError($"  Inner exception : {ex.InnerException.Message}");
-        Logger.LogError($"  Inner call stack : {ex.InnerException.StackTrace}");
+        Logger.LogErrorBox($"  Inner exception", ex.InnerException);
       }
       return new List<string>();
     }
