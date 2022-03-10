@@ -21,6 +21,9 @@ namespace MediaSearch.Client.Pages {
     }
     private IMovieService? _MovieService;
 
+    [Inject]
+    public IBusService<string>? BusServiceAction { get; set; }
+
     [Parameter]
     public TFilter Filter {
       get {
@@ -49,7 +52,14 @@ namespace MediaSearch.Client.Pages {
     #region --- Constructor(s) ---------------------------------------------------------------------------------
     public View_MoviesInPages() : base() {
       Logger.SeverityLimit = ESeverity.DebugEx;
-    } 
+    }
+
+    protected override void OnInitialized() {
+      base.OnInitialized();
+      if (BusServiceAction is not null) {
+        BusServiceAction.OnMessage += _MessageHandler;
+      }
+    }
     #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
     #region --- ILoggable --------------------------------------------
@@ -59,13 +69,9 @@ namespace MediaSearch.Client.Pages {
     private TFilter _OldFilter = new TFilter();
     private int _OldPage = 1;
 
-    protected override void OnInitialized() {
-      Logger.LogDebug("Initialized");
-    }
-
     protected override async Task OnParametersSetAsync() {
       if (_OldPage != Filter.Page || Filter != _OldFilter) {
-        Logger.LogDebug(Filter.ToString().BoxFixedWidth("New filter", GlobalSettings.DEBUG_BOX_WIDTH), this.GetType().Name);
+        Logger.LogDebugBox("New filter", Filter);
         _OldPage = Filter.Page;
         _OldFilter = new TFilter(Filter);
         MoviesPage = await MovieService.GetMoviesPage(Filter);
@@ -112,6 +118,21 @@ namespace MediaSearch.Client.Pages {
       StateHasChanged();
     }
 
+    private async void _MessageHandler(string source, string data) {
+      switch (source) {
+
+        case AdminControl.SVC_NAME when data == AdminControl.ACTION_REFRESH_COMPLETED: {
+            MoviesPage = await MovieService.GetMoviesPage(Filter);
+            StateHasChanged();
+            break;
+          }
+
+        default: {
+            break;
+          }
+      }
+      StateHasChanged();
+    }
 
   }
 }

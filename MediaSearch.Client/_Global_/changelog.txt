@@ -31,5 +31,5 @@
 
 * 0.0.17
 - Changes in notification of refresh
-- Groups are now reloaded after one data refresh
+- Groups and movies are now reloaded after one data refresh
 - Bus service is moved to Client instead of Services

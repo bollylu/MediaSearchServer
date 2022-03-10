@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
+
+using Microsoft.AspNetCore.Components;
 
 namespace MediaSearch.Client.Components {
   public partial class Movie_SmallCard : ComponentBase, IMediaSearchLoggable<Movie_SmallCard> {
@@ -46,11 +49,10 @@ namespace MediaSearch.Client.Components {
     private List<CancellationTokenSource> _CancellationTokenSources = new();
 
     protected override async Task OnParametersSetAsync() {
-      Logger.LogDebugExBox("Download tasks", $"{_CancellationTokenSources.Count} tasks awaiting, Page={Page}, LastPage={LastPage}");
+      IfDebugMessageEx("Download tasks", $"{_CancellationTokenSources.Count} tasks awaiting, Page={Page}, LastPage={LastPage}");
       if (Page != LastPage) {
         LastPage = Page;
         foreach (CancellationTokenSource CancellationtokenSourceItem in _CancellationTokenSources) {
-
           CancellationtokenSourceItem.Cancel();
         }
         _CancellationTokenSources.Clear();
@@ -81,7 +83,15 @@ namespace MediaSearch.Client.Components {
 
     public bool IsPictureLoaded = false;
 
-    
+    [Conditional("DEBUG")]
+    private void IfDebugMessage(string title, object? message, [CallerMemberName] string CallerName = "") {
+      Logger.LogDebugBox(title, message?.ToString() ?? "", CallerName);
+    }
+
+    [Conditional("DEBUG")]
+    private void IfDebugMessageEx(string title, object? message, [CallerMemberName] string CallerName = "") {
+      Logger.LogDebugExBox(title, message?.ToString() ?? "", CallerName);
+    }
   }
 
 }

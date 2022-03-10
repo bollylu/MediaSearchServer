@@ -1,4 +1,7 @@
-﻿using BLTools.Text;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
+
+using BLTools.Text;
 
 namespace MediaSearch.Client.Services;
 public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> {
@@ -63,5 +66,15 @@ public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> 
 
   public Task<bool> ExpireToken(string token) {
     throw new NotImplementedException();
+  }
+
+  [Conditional("DEBUG")]
+  private void IfDebugMessage(string title, object? message, [CallerMemberName] string CallerName = "") {
+    Logger.LogDebugBox(title, message?.ToString() ?? "", CallerName);
+  }
+
+  [Conditional("DEBUG")]
+  private void IfDebugMessageEx(string title, object? message, [CallerMemberName] string CallerName = "") {
+    Logger.LogDebugExBox(title, message?.ToString() ?? "", CallerName);
   }
 }
