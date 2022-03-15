@@ -1,2 +1,5 @@
 ﻿* 0.1.0
 - Added tests about TMediaInfoContent
+
+* 0.1.1
+- Normalize tests for serialization
