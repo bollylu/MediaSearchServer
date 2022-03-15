@@ -2,21 +2,16 @@
 
 using MediaSearch.Server.Services;
 
-namespace MediaSearch.Models.Test;
+namespace MediaSearch.Models.Serialization.Test;
 
 [TestClass]
 public class TMovieSerializationTest {
-
-  //[ClassInitialize]
-  //public static async Task ClassInitialize(TestContext context) {
-  //  await MediaSearch.Models.GlobalSettings.Initialize().ConfigureAwait(false);
-  //}
 
   internal IMovieService MovieService => _MovieService ??= new XMovieService(new XMovieCache() { DataSource = @"data\movies.json" });
   private IMovieService? _MovieService;
 
   [TestMethod]
-  public async Task SerializeTMovie() {
+  public async Task Serialize() {
 
     IMovie Source = await MovieService.GetAllMovies().FirstAsync().ConfigureAwait(false);
     TraceMessage("Source", Source);
@@ -28,7 +23,7 @@ public class TMovieSerializationTest {
   }
 
   [TestMethod]
-  public async Task DeserializeTMovie() {
+  public async Task Deserialize() {
     IMovie Movie = await MovieService.GetAllMovies().FirstAsync().ConfigureAwait(false);
 
     string Source = Movie.ToJson();

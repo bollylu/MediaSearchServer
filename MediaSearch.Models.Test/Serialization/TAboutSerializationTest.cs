@@ -1,17 +1,10 @@
-﻿using BLTools.Text;
-
-namespace MediaSearch.Models.Test;
+﻿namespace MediaSearch.Models.Serialization.Test;
 
 [TestClass]
 public class TAboutSerializationTest {
 
-  //[ClassInitialize]
-  //public static async Task ClassInitialize(TestContext context) {
-  //  await MediaSearch.Models.GlobalSettings.Initialize().ConfigureAwait(false);
-  //}
-
   [TestMethod]
-  public void SerializeAboutWithoutConverter() {
+  public void Serialize() {
 
     IAbout Source = new TAbout() {
       Name = "LibTest",
@@ -31,7 +24,7 @@ public class TAboutSerializationTest {
   }
 
   [TestMethod]
-  public void DeserializeAboutWithoutConverter() {
+  public void Deserialize() {
 
     string Source = "{" +
       "\"Name\":\"libtest\"," +

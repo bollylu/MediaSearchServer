@@ -1,23 +1,15 @@
-﻿using BLTools.Text;
+﻿using MediaSearch.Server.Services;
 
-using MediaSearch.Server.Services;
-using MediaSearch.Test.Support;
-
-namespace MediaSearch.Models.Test;
+namespace MediaSearch.Models.Serialization.Test;
 
 [TestClass]
 public class TMoviesPageSerializationTest {
-
-  //[ClassInitialize]
-  //public static async Task ClassInitialize(TestContext context) {
-  //  await MediaSearch.Models.GlobalSettings.Initialize().ConfigureAwait(false);
-  //}
 
   internal IMovieService MovieService => _MovieService ??= new XMovieService(new XMovieCache() { DataSource = @"data\movies.json" });
   private IMovieService? _MovieService;
 
   [TestMethod]
-  public async Task SerializeTMoviesPageWithConverter() {
+  public async Task Serialize() {
 
     List<IMovie> Movies = await MovieService.GetAllMovies().Take(2).ToListAsync<IMovie>().ConfigureAwait(false);
 
@@ -39,7 +31,7 @@ public class TMoviesPageSerializationTest {
   }
 
   [TestMethod]
-  public async Task DeserializeTMoviesPageWithConverter() {
+  public async Task Deserialize() {
     List<IMovie> Movies = await MovieService.GetAllMovies().Take(2).ToListAsync<IMovie>().ConfigureAwait(false);
 
     IMoviesPage MoviesPage = new TMoviesPage() {

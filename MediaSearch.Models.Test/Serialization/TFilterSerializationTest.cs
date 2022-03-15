@@ -1,12 +1,12 @@
 ﻿using BLTools.Text;
 
-namespace MediaSearch.Models.Test;
+namespace MediaSearch.Models.Serialization.Test;
 
 [TestClass]
 public class TFilterSerializationTest {
 
   [TestMethod]
-  public void SerializeFilterWithConverters() {
+  public void Serialize() {
     IFilter Source = new TFilter() {
       DaysBack = 7,
       GroupOnly = false,
@@ -32,7 +32,7 @@ public class TFilterSerializationTest {
   }
 
   [TestMethod]
-  public void DeserializeFilterWithConverters() {
+  public void Deserialize() {
     IFilter Source = new TFilter() {
       DaysBack = 7,
       GroupOnly = false,
@@ -44,12 +44,12 @@ public class TFilterSerializationTest {
     Source.GroupMemberships.Add("Group 1");
     Source.GroupMemberships.Add("Group 2");
     string JsonSource = Source.ToJson();
-    Console.WriteLine(JsonSource.BoxFixedWidth("Source", GlobalSettings.DEBUG_BOX_WIDTH));
+    TraceMessage("Source", Source);
 
     IFilter? Target = IJson<TFilter>.FromJson(JsonSource);
-    Console.WriteLine(Target?.ToString().BoxFixedWidth("Deserialized", GlobalSettings.DEBUG_BOX_WIDTH));
-
     Assert.IsNotNull(Target);
+
+    TraceMessage("Target", Target);
     Assert.AreEqual(2, Target.GroupMemberships.Count);
   }
 

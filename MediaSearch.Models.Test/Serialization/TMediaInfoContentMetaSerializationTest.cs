@@ -1,7 +1,7 @@
-﻿namespace MediaSearch.Models.Test;
+﻿namespace MediaSearch.Models.Serialization.Test;
 
 [TestClass]
-public class TMediaInfoContentMetaTest {
+public class TMediaInfoContentMetaSerializationTest {
 
   [TestMethod]
   public void Serialize() {
