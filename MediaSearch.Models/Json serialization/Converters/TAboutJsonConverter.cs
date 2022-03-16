@@ -1,16 +1,12 @@
-﻿using BLTools.Text;
+﻿using static MediaSearch.Models.JsonConverterResources;
 
 namespace MediaSearch.Models;
 
 public class TAboutJsonConverter : JsonConverter<TAbout>, IMediaSearchLoggable<TAboutJsonConverter> {
   public IMediaSearchLogger<TAboutJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TAboutJsonConverter>();
 
-  #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TAboutJsonConverter() {}
-  #endregion --- Constructor(s) ------------------------------------------------------------------------------
-
   public override bool CanConvert(Type typeToConvert) {
-    return typeof(TAbout).IsAssignableFrom(typeToConvert);
+    return typeToConvert == typeof(TAbout);
   }
 
   public override TAbout Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
@@ -27,13 +23,13 @@ public class TAboutJsonConverter : JsonConverter<TAbout>, IMediaSearchLoggable<T
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndObject) {
-          Logger.LogDebug(RetVal.ToString().BoxFixedWidth("Converted about", GlobalSettings.DEBUG_BOX_WIDTH));
+          Logger.IfDebugMessageEx("Converted about", RetVal);
           return RetVal;
         }
 
         if (TokenType == JsonTokenType.PropertyName) {
 
-          string? Property = reader.GetString();
+          string Property = reader.GetString() ?? "";
           reader.Read();
 
           switch (Property) {
@@ -48,26 +44,26 @@ public class TAboutJsonConverter : JsonConverter<TAbout>, IMediaSearchLoggable<T
 
             case nameof(TAbout.CurrentVersion):
               RetVal.CurrentVersion = Version.Parse(reader.GetString() ?? "0.0");
-              Logger.LogDebugEx($"Found {nameof(RetVal.CurrentVersion)} = {RetVal.CurrentVersion}", GetType().Name);
+              Logger.IfDebugMessageEx($"Found {nameof(RetVal.CurrentVersion)}", RetVal.CurrentVersion);
               break;
 
             case nameof(TAbout.ChangeLog):
               RetVal.ChangeLog = reader.GetString() ?? "";
-              Logger.LogDebugEx($"Found {nameof(RetVal.ChangeLog)} = {RetVal.ChangeLog}", GetType().Name);
+              Logger.IfDebugMessageEx($"Found {nameof(RetVal.ChangeLog)}", RetVal.ChangeLog);
               break;
 
             default:
-              Logger.LogWarning($"Invalid Json property name : {Property}", GetType().Name);
+              Logger.LogWarningBox(ERROR_INVALID_PROPERTY, Property);
               break;
           }
         }
       }
 
-      Logger.LogDebug(RetVal.ToString().BoxFixedWidth("Converted about", GlobalSettings.DEBUG_BOX_WIDTH));
+      Logger.IfDebugMessageEx("Converted about", RetVal);
       return RetVal;
 
     } catch (Exception ex) {
-      Logger.LogError($"Problem during Json conversion : {ex.Message}");
+      Logger.LogErrorBox(ERROR_CONVERSION, ex);
       throw;
     }
 

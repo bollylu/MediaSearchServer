@@ -1,15 +1,15 @@
-﻿using BLTools.Text;
+﻿using static MediaSearch.Models.JsonConverterResources;
 
 namespace MediaSearch.Models;
 public class TLanguageDictionaryStringConverter : JsonConverter<TLanguageDictionary<string>>, IMediaSearchLoggable<TLanguageDictionaryStringConverter> {
+
+  public const string PROPERTY_KEY = "key";
+  public const string PROPERTY_VALUE = "value";
+
   public IMediaSearchLogger<TLanguageDictionaryStringConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TLanguageDictionaryStringConverter>();
 
-  #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TLanguageDictionaryStringConverter() { }
-  #endregion --- Constructor(s) ------------------------------------------------------------------------------
-
   public override bool CanConvert(Type typeToConvert) {
-    return typeof(ILanguageDictionary).IsAssignableFrom(typeToConvert);
+    return typeToConvert == typeof(TLanguageDictionary<string>);
   }
 
   public override TLanguageDictionary<string> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
@@ -25,7 +25,7 @@ public class TLanguageDictionaryStringConverter : JsonConverter<TLanguageDiction
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndArray) {
-          Logger.LogDebugExBox("Converted TLanguageDictionary", RetVal);
+          Logger.IfDebugMessageEx("Converted TLanguageDictionary", RetVal);
           return RetVal;
         }
 
@@ -37,16 +37,20 @@ public class TLanguageDictionaryStringConverter : JsonConverter<TLanguageDiction
           while (reader.Read() && reader.TokenType != JsonTokenType.EndObject) {
 
             if (reader.TokenType == JsonTokenType.PropertyName) {
-              string? Property = reader.GetString();
+              string Property = reader.GetString() ?? "";
               reader.Read();
 
               switch (Property) {
-                case "key":
+                case PROPERTY_KEY:
                   Language = JsonSerializer.Deserialize<ELanguage>(ref reader, options);
                   break;
 
-                case "value":
+                case PROPERTY_VALUE:
                   Text = reader.GetString() ?? string.Empty;
+                  break;
+
+                default:
+                  Logger.LogWarningBox(ERROR_INVALID_PROPERTY, Property);
                   break;
               }
             }
@@ -55,11 +59,11 @@ public class TLanguageDictionaryStringConverter : JsonConverter<TLanguageDiction
         }
       }
 
-      Logger.LogDebugExBox("Converted TLanguageDictionary", RetVal);
+      Logger.IfDebugMessageEx("Converted TLanguageDictionary", RetVal);
       return RetVal;
 
     } catch (Exception ex) {
-      Logger.LogErrorBox($"Problem during Json conversion", ex);
+      Logger.LogErrorBox(ERROR_CONVERSION, ex);
       throw;
     }
   }
@@ -73,8 +77,8 @@ public class TLanguageDictionaryStringConverter : JsonConverter<TLanguageDiction
 
     foreach (KeyValuePair<ELanguage, string> KvpItem in value) {
       writer.WriteStartObject();
-      writer.WriteString("key", KvpItem.Key.ToString());
-      writer.WriteString("value", KvpItem.Value.ToString());
+      writer.WriteString(PROPERTY_KEY, KvpItem.Key.ToString());
+      writer.WriteString(PROPERTY_VALUE, KvpItem.Value.ToString());
       writer.WriteEndObject();
     }
 

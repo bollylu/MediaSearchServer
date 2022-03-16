@@ -1,15 +1,11 @@
-﻿using BLTools.Text;
+﻿using static MediaSearch.Models.JsonConverterResources;
 
 namespace MediaSearch.Models;
 public class TMediaInfoContentMetaConverter : JsonConverter<TMediaInfoContentMeta>, IMediaSearchLoggable<TMediaInfoContentMetaConverter> {
   public IMediaSearchLogger<TMediaInfoContentMetaConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMediaInfoContentMetaConverter>();
 
-  #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMediaInfoContentMetaConverter() { }
-  #endregion --- Constructor(s) ------------------------------------------------------------------------------
-
   public override bool CanConvert(Type typeToConvert) {
-    return typeof(TMediaInfoContentMeta).IsAssignableFrom(typeToConvert);
+    return typeToConvert == typeof(TMediaInfoContentMeta);
   }
 
   public override TMediaInfoContentMeta Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
@@ -25,13 +21,13 @@ public class TMediaInfoContentMetaConverter : JsonConverter<TMediaInfoContentMet
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndObject && reader.CurrentDepth == 1) {
-          Logger.LogDebugExBox("Converted TMediaInfoContentMeta", RetVal);
+          Logger.IfDebugMessageEx("Converted TMediaInfoContentMeta", RetVal);
           return RetVal;
         }
 
         if (TokenType == JsonTokenType.PropertyName) {
 
-          string? Property = reader.GetString();
+          string Property = reader.GetString() ?? "";
           reader.Read();
 
           switch (Property) {
@@ -59,17 +55,17 @@ public class TMediaInfoContentMetaConverter : JsonConverter<TMediaInfoContentMet
               break;
 
             default:
-              Logger.LogWarning($"Invalid Json property name : {Property}", GetType().Name);
+              Logger.LogWarningBox(ERROR_INVALID_PROPERTY, Property);
               break;
           }
         }
       }
 
-      Logger.LogDebugExBox("Converted TMediaInfoContentMeta", RetVal);
+      Logger.IfDebugMessageEx("Converted TMediaInfoContentMeta", RetVal);
       return RetVal;
 
     } catch (Exception ex) {
-      Logger.LogErrorBox("Problem during Json conversion", ex);
+      Logger.LogErrorBox(ERROR_CONVERSION, ex);
       throw;
     }
   }

@@ -1,15 +1,11 @@
-﻿using BLTools.Text;
+﻿using static MediaSearch.Models.JsonConverterResources;
 
 namespace MediaSearch.Models;
 public class TUserTokenJsonConverter : JsonConverter<TUserToken>, IMediaSearchLoggable<TUserTokenJsonConverter> {
   public IMediaSearchLogger<TUserTokenJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TUserTokenJsonConverter>();
 
-  #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TUserTokenJsonConverter() { }
-  #endregion --- Constructor(s) ------------------------------------------------------------------------------
-
   public override bool CanConvert(Type typeToConvert) {
-    return typeof(TUserToken).IsAssignableFrom(typeToConvert);
+    return typeToConvert == typeof(TUserToken);
   }
 
   public override TUserToken Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
@@ -25,13 +21,13 @@ public class TUserTokenJsonConverter : JsonConverter<TUserToken>, IMediaSearchLo
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndObject) {
-          Logger.LogDebug(RetVal.ToString().BoxFixedWidth("Converted UserToken", GlobalSettings.DEBUG_BOX_WIDTH));
+          Logger.IfDebugMessageEx($"Converted {nameof(TUserToken)}", RetVal);
           return RetVal;
         }
 
         if (TokenType == JsonTokenType.PropertyName) {
 
-          string? Property = reader.GetString();
+          string Property = reader.GetString() ?? "";
           reader.Read();
 
           switch (Property) {
@@ -41,21 +37,21 @@ public class TUserTokenJsonConverter : JsonConverter<TUserToken>, IMediaSearchLo
               break;
 
             case nameof(TUserToken.Expiration):
-              RetVal.Expiration = DateTime.Parse(reader.GetString() ?? DateTime.Now.ToDMYHMS());
+              RetVal.Expiration = DateTime.Parse(reader.GetString() ?? DateTime.MinValue.ToYMDHMS());
               break;
 
             default:
-              Logger.LogWarning($"Invalid Json property name : {Property}", GetType().Name);
+              Logger.LogWarningBox(ERROR_INVALID_PROPERTY, Property);
               break;
           }
         }
       }
 
-      Logger.LogDebug(RetVal.ToString().BoxFixedWidth("Converted UserToken", GlobalSettings.DEBUG_BOX_WIDTH));
+      Logger.IfDebugMessageEx("Converted UserToken", RetVal);
       return RetVal;
 
     } catch (Exception ex) {
-      Logger.LogError($"Problem during Json conversion : {ex.Message}");
+      Logger.LogErrorBox(ERROR_CONVERSION, ex);
       throw;
     }
   }
@@ -68,7 +64,7 @@ public class TUserTokenJsonConverter : JsonConverter<TUserToken>, IMediaSearchLo
     writer.WriteStartObject();
 
     writer.WriteString(nameof(TUserToken.TokenId), value.TokenId);
-    writer.WriteString(nameof(TUserToken.Expiration), value.Expiration.ToDMYHMS());
+    writer.WriteString(nameof(TUserToken.Expiration), value.Expiration.ToYMDHMS());
 
     writer.WriteEndObject();
   }

@@ -1,15 +1,13 @@
-﻿using BLTools.Text;
+﻿using static MediaSearch.Models.JsonConverterResources;
 
 namespace MediaSearch.Models;
 public class TUserAccountSecretJsonConverter : JsonConverter<TUserAccountSecret>, IMediaSearchLoggable<TUserAccountSecretJsonConverter> {
   public IMediaSearchLogger<TUserAccountSecretJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TUserAccountSecretJsonConverter>();
 
-  #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TUserAccountSecretJsonConverter() { }
-  #endregion --- Constructor(s) ------------------------------------------------------------------------------
+  public const string SecurityKey = "bla bla bla";
 
   public override bool CanConvert(Type typeToConvert) {
-    return typeof(TUserAccountSecret).IsAssignableFrom(typeToConvert);
+    return typeToConvert == typeof(TUserAccountSecret);
   }
 
   public override TUserAccountSecret Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
@@ -25,13 +23,13 @@ public class TUserAccountSecretJsonConverter : JsonConverter<TUserAccountSecret>
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndObject) {
-          Logger.LogDebugBox("Converted UserAccountSecret", RetVal);
+          Logger.IfDebugMessageEx("Converted UserAccountSecret", RetVal);
           return RetVal;
         }
 
         if (TokenType == JsonTokenType.PropertyName) {
 
-          string? Property = reader.GetString();
+          string Property = reader.GetString() ?? "";
           reader.Read();
 
           switch (Property) {
@@ -40,8 +38,8 @@ public class TUserAccountSecretJsonConverter : JsonConverter<TUserAccountSecret>
               RetVal.Name = reader.GetString() ?? "";
               break;
 
-            case nameof(TUserAccountSecret.Password):
-              RetVal.Password = reader.GetString() ?? "";
+            case nameof(TUserAccountSecret.PasswordHash):
+              RetVal.PasswordHash = DecryptPassword(reader.GetString() ?? "");
               break;
 
             case nameof(TUserAccountSecret.MustChangePassword):
@@ -53,17 +51,17 @@ public class TUserAccountSecretJsonConverter : JsonConverter<TUserAccountSecret>
               break;
 
             default:
-              Logger.LogWarning($"Invalid Json property name : {Property}", GetType().Name);
+              Logger.LogWarningBox(ERROR_INVALID_PROPERTY, Property);
               break;
           }
         }
       }
 
-      Logger.LogDebug(RetVal.ToString().BoxFixedWidth("Converted UserAccountSecret", GlobalSettings.DEBUG_BOX_WIDTH));
+      Logger.IfDebugMessageEx("Converted UserAccountSecret", RetVal);
       return RetVal;
 
     } catch (Exception ex) {
-      Logger.LogError($"Problem during Json conversion : {ex.Message}");
+      Logger.LogErrorBox(ERROR_CONVERSION, ex);
       throw;
     }
   }
@@ -76,11 +74,18 @@ public class TUserAccountSecretJsonConverter : JsonConverter<TUserAccountSecret>
     writer.WriteStartObject();
 
     writer.WriteString(nameof(TUserAccountSecret.Name), value.Name);
-    writer.WriteString(nameof(TUserAccountSecret.Password), value.Password);
+    writer.WriteString(nameof(TUserAccountSecret.PasswordHash), EncryptPassword(value.PasswordHash));
     writer.WriteBoolean(nameof(TUserAccountSecret.MustChangePassword), value.MustChangePassword);
     writer.WritePropertyName(nameof(TUserAccountSecret.Token));
     JsonSerializer.Serialize(writer, value.Token, options);
 
     writer.WriteEndObject();
+  }
+
+  private string EncryptPassword(string source) {
+    return Convert.ToBase64String(Encoding.UTF8.GetBytes(source));
+  }
+  private string DecryptPassword(string source) {
+    return Encoding.UTF8.GetString(Convert.FromBase64String(source));
   }
 }

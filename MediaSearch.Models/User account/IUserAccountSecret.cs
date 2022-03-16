@@ -4,7 +4,7 @@ public interface IUserAccountSecret : IJson<IUserAccountSecret> {
 
   string Name { get; set; }
 
-  string Password { get; set; }
+  string PasswordHash { get; set; }
 
   bool MustChangePassword { get; set; }
 

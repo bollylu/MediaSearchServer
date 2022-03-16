@@ -28,9 +28,11 @@ public interface IJson {
           _DefaultJsonSerializerOptions.Converters.Add(new TIPAddressJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TMovieJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TMoviesPageJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TUserAccountInfoJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TUserAccountJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TUserAccountSecretJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TUserTokenJsonConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TMovieInfoContentMetaConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TMediaInfoContentMetaConverter());
         }
         return _DefaultJsonSerializerOptions;

@@ -5,9 +5,10 @@ namespace MediaSearch.Models;
 
 public class TUserToken : IUserToken, IJson<TUserToken> {
   public const int SESSION_DURATION_IN_MIN = 15;
+  public const string TOKEN_NONE = "(none)";
 
   [JsonPropertyName(nameof(TokenId))]
-  public string TokenId { get; set; } = "";
+  public string TokenId { get; set; } = TOKEN_NONE;
 
   [JsonPropertyName(nameof(Expiration))]
   public DateTime Expiration { get; set; } = DateTime.MaxValue;
@@ -38,10 +39,10 @@ public class TUserToken : IUserToken, IJson<TUserToken> {
 
   public override string ToString() {
     StringBuilder RetVal = new StringBuilder();
-    RetVal.Append($"{nameof(TokenId)} = {TokenId}");
-    RetVal.Append($", {nameof(Expiration)} = {Expiration.ToYMDHMS()}");
+    RetVal.Append($"{nameof(TokenId)}={TokenId}");
+    RetVal.Append($", {nameof(Expiration)}={Expiration.ToYMDHMS()}");
     return RetVal.ToString();
   }
 
-  public static TUserToken ExpiredUserToken => new TUserToken("", DateTime.MinValue);
+  public static TUserToken ExpiredUserToken => new TUserToken(TOKEN_NONE, DateTime.MinValue);
 }

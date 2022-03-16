@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics;
-using System.Reflection;
-
-using BLTools.Text;
+using System.Runtime.CompilerServices;
 
 namespace MediaSearch.Models;
 
@@ -27,6 +25,16 @@ public static class Support {
       Trace.WriteLine($"Unable to get picture {pictureName}{pictureExtension} : {ex.Message}");
       return Array.Empty<byte>();
     }
+  }
+
+  [Conditional("DEBUG")]
+  public static void IfDebugMessage<T>(this IMediaSearchLogger<T> logger, string title, object? message, [CallerMemberName] string CallerName = "") {
+    logger.LogDebugBox(title, message?.ToString() ?? "(null)", CallerName);
+  }
+
+  [Conditional("DEBUG")]
+  public static void IfDebugMessageEx<T>(this IMediaSearchLogger<T> logger, string title, object? message, [CallerMemberName] string CallerName = "") {
+    logger.LogDebugExBox(title, message?.ToString() ?? "(null)", CallerName);
   }
 
 }

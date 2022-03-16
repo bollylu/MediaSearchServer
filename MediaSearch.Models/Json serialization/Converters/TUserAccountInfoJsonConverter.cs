@@ -3,19 +3,19 @@
 using static MediaSearch.Models.JsonConverterResources;
 
 namespace MediaSearch.Models;
-public class TUserAccountJsonConverter : JsonConverter<TUserAccount>, IMediaSearchLoggable<TUserAccountJsonConverter> {
-  public IMediaSearchLogger<TUserAccountJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TUserAccountJsonConverter>();
+public class TUserAccountInfoJsonConverter : JsonConverter<TUserAccountInfo>, IMediaSearchLoggable<TUserAccountInfoJsonConverter> {
+  public IMediaSearchLogger<TUserAccountInfoJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TUserAccountInfoJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
-    return typeToConvert == typeof(TUserAccount) || typeToConvert.GetInterfaces().Any(x => x == typeof(IUserAccount));
+    return typeToConvert == typeof(TUserAccountInfo);
   }
 
-  public override TUserAccount Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+  public override TUserAccountInfo Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
     if (reader.TokenType != JsonTokenType.StartObject) {
       throw new JsonException();
     }
 
-    TUserAccount RetVal = new();
+    TUserAccountInfo RetVal = new();
 
     try {
       while (reader.Read()) {
@@ -23,7 +23,7 @@ public class TUserAccountJsonConverter : JsonConverter<TUserAccount>, IMediaSear
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndObject) {
-          Logger.IfDebugMessageEx("Converted UserAccount", RetVal);
+          Logger.IfDebugMessageEx("Converted UserAccountInfo", RetVal);
           return RetVal;
         }
 
@@ -34,11 +34,11 @@ public class TUserAccountJsonConverter : JsonConverter<TUserAccount>, IMediaSear
 
           switch (Property) {
 
-            case nameof(TUserAccount.Name):
+            case nameof(TUserAccountInfo.Name):
               RetVal.Name = reader.GetString() ?? "";
               break;
 
-            case nameof(TUserAccount.Description):
+            case nameof(TUserAccountInfo.Description):
               RetVal.Description = reader.GetString() ?? "";
               break;
 
@@ -57,19 +57,14 @@ public class TUserAccountJsonConverter : JsonConverter<TUserAccount>, IMediaSear
               RetVal.LastFailedLogin = DateTime.Parse(reader.GetString() ?? DateTime.MinValue.ToYMDHMS()).FromUTC();
               break;
 
-            case nameof(TUserAccount.Secret):
-              IUserAccountSecret Secret = JsonSerializer.Deserialize<TUserAccountSecret>(ref reader, options) ?? new TUserAccountSecret();
-              RetVal.Secret.Duplicate(Secret);
-              break;
-
             default:
-              Logger.LogWarning(ERROR_INVALID_PROPERTY, Property);
+              Logger.LogWarningBox(ERROR_INVALID_PROPERTY, Property);
               break;
           }
         }
       }
 
-      Logger.IfDebugMessageEx("Converted UserAccount", RetVal);
+      Logger.IfDebugMessageEx("Converted UserAccountInfo", RetVal);
       return RetVal;
 
     } catch (Exception ex) {
@@ -78,21 +73,19 @@ public class TUserAccountJsonConverter : JsonConverter<TUserAccount>, IMediaSear
     }
   }
 
-  public override void Write(Utf8JsonWriter writer, TUserAccount value, JsonSerializerOptions options) {
+  public override void Write(Utf8JsonWriter writer, TUserAccountInfo value, JsonSerializerOptions options) {
     if (value is null) {
       writer.WriteNullValue();
       return;
     }
     writer.WriteStartObject();
 
-    writer.WriteString(nameof(TUserAccount.Name), value.Name);
-    writer.WriteString(nameof(TUserAccount.Description), value.Description);
+    writer.WriteString(nameof(TUserAccountInfo.Name), value.Name);
+    writer.WriteString(nameof(TUserAccountInfo.Description), value.Description);
     writer.WritePropertyName(nameof(TUserAccountInfo.RemoteIp));
     JsonSerializer.Serialize(writer, value.RemoteIp, options);
-    writer.WriteString(nameof(TUserAccountInfo.LastSuccessfulLogin), value.LastSuccessfulLogin.ToUniversalTime().ToDMYHMS());
-    writer.WriteString(nameof(TUserAccountInfo.LastFailedLogin), value.LastFailedLogin.ToUniversalTime().ToDMYHMS());
-    writer.WritePropertyName(nameof(TUserAccount.Secret));
-    JsonSerializer.Serialize(writer, value.Secret, options);
+    writer.WriteString(nameof(TUserAccountInfo.LastSuccessfulLogin), value.LastSuccessfulLogin.ToUniversalTime().ToYMDHMS());
+    writer.WriteString(nameof(TUserAccountInfo.LastFailedLogin), value.LastFailedLogin.ToUniversalTime().ToYMDHMS());
 
     writer.WriteEndObject();
   }

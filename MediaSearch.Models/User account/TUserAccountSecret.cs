@@ -3,7 +3,7 @@ public class TUserAccountSecret : IUserAccountSecret, IJson<TUserAccountSecret> 
 
   public string Name { get; set; } = "";
 
-  public string Password { get; set; } = "";
+  public string PasswordHash { get; set; } = "";
 
   public bool MustChangePassword { get; set; } = false;
 
@@ -13,21 +13,21 @@ public class TUserAccountSecret : IUserAccountSecret, IJson<TUserAccountSecret> 
   public TUserAccountSecret() { }
   public TUserAccountSecret(IUserAccountSecret secret) {
     Name = secret.Name;
-    Password = secret.Password;
+    PasswordHash = secret.PasswordHash;
     MustChangePassword = secret.MustChangePassword;
     Token = new TUserToken(secret.Token);
   }
 
   public TUserAccountSecret(IUserAccount user) {
     Name = user.Name;
-    Password = user.Secret.Password;
+    PasswordHash = user.Secret.PasswordHash;
     MustChangePassword = user.Secret.MustChangePassword;
     Token = new TUserToken(user.Secret.Token);
   }
 
   public void Duplicate(IUserAccountSecret secret) {
     Name = secret.Name;
-    Password = secret.Password;
+    PasswordHash = secret.PasswordHash;
     MustChangePassword = secret.MustChangePassword;
     Token.Duplicate(secret.Token);
   }
@@ -36,9 +36,9 @@ public class TUserAccountSecret : IUserAccountSecret, IJson<TUserAccountSecret> 
   public override string ToString() {
     StringBuilder RetVal = new StringBuilder();
     RetVal.Append($"{nameof(Name)}={Name}");
-    RetVal.Append($", {nameof(Password)}={Password}");
+    RetVal.Append($", {nameof(PasswordHash)}={PasswordHash}");
     RetVal.Append($", {nameof(MustChangePassword)}={MustChangePassword}");
-    RetVal.Append($", {nameof(Token)}={Token}");
+    RetVal.Append($", {nameof(Token)}={{{Token}}}");
     return RetVal.ToString();
   }
 }

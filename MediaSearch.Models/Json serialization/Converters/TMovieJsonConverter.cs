@@ -1,9 +1,12 @@
 ﻿namespace MediaSearch.Models;
+using static MediaSearch.Models.JsonConverterResources;
 
 public class TMovieJsonConverter : JsonConverter<TMovie> {
 
+  public IMediaSearchLogger<TMovieJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovieJsonConverter>();
+
   public override bool CanConvert(Type typeToConvert) {
-    return typeof(TMovie).IsAssignableFrom(typeToConvert);
+    return typeToConvert == typeof(TMovie);
   }
 
   public override TMovie Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
@@ -14,78 +17,88 @@ public class TMovieJsonConverter : JsonConverter<TMovie> {
 
     TMovie RetVal = new TMovie();
 
-    while (reader.Read()) {
+    try {
+      while (reader.Read()) {
 
-      JsonTokenType TokenType = reader.TokenType;
+        JsonTokenType TokenType = reader.TokenType;
 
-      if (TokenType == JsonTokenType.EndObject) {
-        return RetVal;
-      }
+        if (TokenType == JsonTokenType.EndObject) {
+          return RetVal;
+        }
 
-      if (TokenType == JsonTokenType.PropertyName) {
+        if (TokenType == JsonTokenType.PropertyName) {
 
-        string? Property = reader.GetString();
-        reader.Read();
+          string Property = reader.GetString() ?? "";
+          reader.Read();
 
-        switch (Property) {
+          switch (Property) {
 
-          case nameof(TMovie.Id):
-            reader.GetString();
-            break;
+            case nameof(TMovie.Id):
+              reader.GetString();
+              break;
 
-          case nameof(IMovie.Name):
-            RetVal.Name = reader.GetString() ?? "";
-            break;
+            case nameof(IMovie.Name):
+              RetVal.Name = reader.GetString() ?? "";
+              break;
 
-          case nameof(IMovie.Group):
-            RetVal.Group = reader.GetString() ?? "";
-            break;
+            case nameof(IMovie.Group):
+              RetVal.Group = reader.GetString() ?? "";
+              break;
 
-          case nameof(IMovie.SubGroup):
-            RetVal.SubGroup = reader.GetString() ?? "";
-            break;
+            case nameof(IMovie.SubGroup):
+              RetVal.SubGroup = reader.GetString() ?? "";
+              break;
 
-          case nameof(IMovie.StoragePath):
-            RetVal.StoragePath = reader.GetString() ?? "";
-            break;
+            case nameof(IMovie.StoragePath):
+              RetVal.StoragePath = reader.GetString() ?? "";
+              break;
 
-          case nameof(IMovie.FileName):
-            RetVal.FileName = reader.GetString() ?? "";
-            break;
+            case nameof(IMovie.FileName):
+              RetVal.FileName = reader.GetString() ?? "";
+              break;
 
-          case nameof(IMovie.FileExtension):
-            RetVal.FileExtension = reader.GetString() ?? "";
-            break;
+            case nameof(IMovie.FileExtension):
+              RetVal.FileExtension = reader.GetString() ?? "";
+              break;
 
-          case nameof(IMovie.Size):
-            RetVal.Size = reader.GetInt64();
-            break;
+            case nameof(IMovie.Size):
+              RetVal.Size = reader.GetInt64();
+              break;
 
-          case nameof(IMovie.OutputYear):
-            RetVal.OutputYear = reader.GetInt32();
-            break;
+            case nameof(IMovie.OutputYear):
+              RetVal.OutputYear = reader.GetInt32();
+              break;
 
-          case nameof(IMovie.DateAdded):
-            RetVal.DateAdded = JsonSerializer.Deserialize<DateOnly>(ref reader, options);
-            break;
+            case nameof(IMovie.DateAdded):
+              RetVal.DateAdded = JsonSerializer.Deserialize<DateOnly>(ref reader, options);
+              break;
 
-          case nameof(IMovie.AltNames):
-            while (reader.Read() && reader.TokenType != JsonTokenType.EndArray) {
-              string AltNameItem = reader.GetString() ?? "";
-              RetVal.AltNames.Add(AltNameItem.Before('|'), AltNameItem.After('|'));
-            }
-            break;
+            case nameof(IMovie.AltNames):
+              while (reader.Read() && reader.TokenType != JsonTokenType.EndArray) {
+                string AltNameItem = reader.GetString() ?? "";
+                RetVal.AltNames.Add(AltNameItem.Before('|'), AltNameItem.After('|'));
+              }
+              break;
 
-          case nameof(IMovie.Tags):
-            while (reader.Read() && reader.TokenType != JsonTokenType.EndArray) {
-              RetVal.Tags.Add(reader.GetString() ?? "");
-            }
-            break;
+            case nameof(IMovie.Tags):
+              while (reader.Read() && reader.TokenType != JsonTokenType.EndArray) {
+                RetVal.Tags.Add(reader.GetString() ?? "");
+              }
+              break;
+
+            default:
+              Logger.LogWarningBox(ERROR_INVALID_PROPERTY, Property);
+              break;
+          }
         }
       }
-    }
 
-    return RetVal;
+      return RetVal;
+
+    } catch (Exception ex) {
+      Logger.LogErrorBox(ERROR_CONVERSION, ex);
+      throw;
+    }
 
   }
 

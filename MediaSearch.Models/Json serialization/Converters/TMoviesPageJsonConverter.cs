@@ -1,15 +1,13 @@
-﻿using System.Drawing;
-using System.Drawing.Printing;
-using System.Text.Json;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
+﻿using static MediaSearch.Models.JsonConverterResources;
 
 namespace MediaSearch.Models;
 
 public class TMoviesPageJsonConverter : JsonConverter<TMoviesPage> {
 
+  public IMediaSearchLogger<TMoviesPageJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMoviesPageJsonConverter>();
+
   public override bool CanConvert(Type typeToConvert) {
-   return typeof(TMoviesPage).IsAssignableFrom(typeToConvert);
+    return typeToConvert == typeof(TMoviesPage);
   }
 
   public override TMoviesPage Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
@@ -20,54 +18,64 @@ public class TMoviesPageJsonConverter : JsonConverter<TMoviesPage> {
 
     TMoviesPage RetVal = new TMoviesPage();
 
-    while (reader.Read()) {
+    try {
+      while (reader.Read()) {
 
-      JsonTokenType TokenType = reader.TokenType;
+        JsonTokenType TokenType = reader.TokenType;
 
-      if (TokenType == JsonTokenType.EndObject) {
-        return RetVal;
-      }
+        if (TokenType == JsonTokenType.EndObject) {
+          return RetVal;
+        }
 
-      if (TokenType == JsonTokenType.PropertyName) {
+        if (TokenType == JsonTokenType.PropertyName) {
 
-        string? Property = reader.GetString();
-        reader.Read();
+          string Property = reader.GetString() ?? "";
+          reader.Read();
 
-        switch (Property) {
+          switch (Property) {
 
-          case nameof(TMoviesPage.Name):
-            RetVal.Name = reader.GetString()??"";
-            break;
+            case nameof(TMoviesPage.Name):
+              RetVal.Name = reader.GetString() ?? "";
+              break;
 
-          case nameof(TMoviesPage.Source):
-            RetVal.Source = reader.GetString()??"";
-            break;
+            case nameof(TMoviesPage.Source):
+              RetVal.Source = reader.GetString() ?? "";
+              break;
 
-          case nameof(TMoviesPage.Page):
-            RetVal.Page = reader.GetInt32();
-            break;
+            case nameof(TMoviesPage.Page):
+              RetVal.Page = reader.GetInt32();
+              break;
 
-          case nameof(TMoviesPage.AvailablePages):
-            RetVal.AvailablePages = reader.GetInt32();
-            break;
+            case nameof(TMoviesPage.AvailablePages):
+              RetVal.AvailablePages = reader.GetInt32();
+              break;
 
-          case nameof(TMoviesPage.AvailableMovies):
-            RetVal.AvailableMovies = reader.GetInt32();
-            break;
+            case nameof(TMoviesPage.AvailableMovies):
+              RetVal.AvailableMovies = reader.GetInt32();
+              break;
 
-          case nameof(TMoviesPage.Movies):
-            while (reader.Read() && reader.TokenType != JsonTokenType.EndArray) {
-              TMovie? MovieItem = JsonSerializer.Deserialize<TMovie>(ref reader, options);
-              if (MovieItem is not null) {
-                RetVal.Movies.Add(MovieItem);
+            case nameof(TMoviesPage.Movies):
+              while (reader.Read() && reader.TokenType != JsonTokenType.EndArray) {
+                TMovie? MovieItem = JsonSerializer.Deserialize<TMovie>(ref reader, options);
+                if (MovieItem is not null) {
+                  RetVal.Movies.Add(MovieItem);
+                }
               }
-            }
-            break;
+              break;
+
+            default:
+              Logger.LogWarningBox(ERROR_INVALID_PROPERTY, Property);
+              break;
+          }
         }
       }
-    }
 
-    return RetVal;
+      return RetVal;
+
+    } catch (Exception ex) {
+      Logger.LogErrorBox(ERROR_CONVERSION, ex);
+      throw;
+    }
 
   }
 
