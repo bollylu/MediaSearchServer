@@ -45,3 +45,13 @@
 
 * 0.0.23
 - using new logging system
+
+* 0.0.24
+- Use light encryption on password
+- Returns IUserAccountInfo instead of IUserAccount when login is ok
+
+* 0.0.25
+- Added Audit
+- Password is now hash
+- Refactor TLoginController
+

@@ -11,7 +11,6 @@ public static class GlobalSettings {
 
   public static TLoggerPool LoggerPool { get; } = new ();
 
-
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   static GlobalSettings() {
     Initialize().Wait();
@@ -62,4 +61,6 @@ public static class GlobalSettings {
     }
     return RetVal.ToString();
   }
+
+  public static IAuditService AuditService {get; set;}
 }

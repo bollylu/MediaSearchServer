@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Net;
+
+using Microsoft.AspNetCore.Mvc;
 
 namespace MediaSearch.Server.Controllers;
 
@@ -7,6 +9,7 @@ namespace MediaSearch.Server.Controllers;
 public class TLoginController : ControllerBase, IMediaSearchLoggable<TLoginController> {
 
   private readonly ILoginService _LoginService;
+  private readonly IAuditService _AuditService = GlobalSettings.AuditService;
 
   public IMediaSearchLogger<TLoginController> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TLoginController>();
 
@@ -16,29 +19,32 @@ public class TLoginController : ControllerBase, IMediaSearchLoggable<TLoginContr
   }
 
   [HttpPost("login")]
-  public async Task<ActionResult<TUserAccount>> Login(TUserAccountSecret user) {
+  public async Task<ActionResult<TUserAccountInfo>> Login(TUserAccountSecret user) {
 
-    Logger.LogDebug(HttpContext.Request.ListHeaders());
-    Logger.LogDebugBox("Remote ip", HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Remote ip not found");
+    Logger.IfDebugMessage("Headers", HttpContext.Request.GetHeaders());
+    IPAddress RemoteIP = IPAddress.Parse(HttpContext.Request.Headers["X-Real-IP"].SingleOrDefault() ?? "127.0.0.1") ?? IPAddress.Loopback;
+    Logger.IfDebugMessage("Remote ip", RemoteIP);
+
+    _AuditService.Audit(user.Name, $"Login request from {RemoteIP}");
 
     await Task.Yield();
 
     if (user is null) {
-      Logger.LogWarning("Invalid request");
+      Logger.LogWarningBox($"Invalid request : {HttpContext.Request.ContentType ?? "(no ContentType)"}", HttpContext.Request.GetHeaders());
       return BadRequest();
     }
-    
-    if (!string.IsNullOrWhiteSpace(user.Password)) {
-      IUserAccount? TestLogin = _LoginService.Login(user);
-      if (TestLogin is null) {
-        return new UnauthorizedResult();
-      } else {
-        return new ActionResult<TUserAccount>(new TUserAccount(TestLogin));
+
+    if (!string.IsNullOrWhiteSpace(user.PasswordHash)) {
+      IUserAccountInfo? TestLogin = await _LoginService.Login(user);
+      if (TestLogin is not null) {
+        TUserAccountInfo UserAccountInfo = new TUserAccountInfo(TestLogin);
+        UserAccountInfo.RemoteIp = RemoteIP;
+        return new ActionResult<TUserAccountInfo>(UserAccountInfo);
       }
     }
 
     return new UnauthorizedResult();
   }
 
-  
+
 }

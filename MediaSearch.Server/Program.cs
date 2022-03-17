@@ -20,9 +20,13 @@ public class Program {
   public const string ARG_LOGFILE = "log";
   public const string ARG_CHANGELOG = "changelog";
   public const string ARG_DATA_SOURCE = "datasource";
+  public const string ARG_AUDITFILE = "audit";
 
   public const string DEFAULT_LOGFILE_LINUX = "/var/log/MediaSearch/MediaSearch.Server.log";
   public const string DEFAULT_LOGFILE_WINDOWS = @"c:\logs\MediaSearch\MediaSearch.Server.log";
+
+  public const string DEFAULT_AUDITFILE_LINUX = "/var/log/MediaSearch/MediaSearch.Server.audit";
+  public const string DEFAULT_AUDITFILE_WINDOWS = @"c:\logs\MediaSearch\MediaSearch.Server.audit";
   #endregion --- Parameters --------------------------------------------
 
   #region --- Global variables --------------------------------------------
@@ -62,8 +66,14 @@ public class Program {
     MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<TLoginService>(LogFile) { SeverityLimit = ESeverity.Debug });
     MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<TMovieService>(LogFile) { SeverityLimit = ESeverity.Debug });
     MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<TMovieCache>(LogFile) { SeverityLimit = ESeverity.Debug });
-
     #endregion --- Log configuration --------------------------------------------
+
+    string AuditFile = GlobalSettings.AppArgs.GetValue("audit", OperatingSystem.IsWindows() ? DEFAULT_AUDITFILE_WINDOWS : DEFAULT_AUDITFILE_LINUX);
+    IAuditService AuditService = new TAuditServiceFile(Path.GetDirectoryName(Path.GetFullPath(AuditFile)) ?? "./", Path.GetFileName(AuditFile));
+    MediaSearch.Server.GlobalSettings.AuditService = AuditService;
+    MediaSearch.Server.Services.GlobalSettings.AuditService = AuditService;
+
+    GlobalSettings.AuditService.Audit("", "Server startup");
 
     #region --- Configuration --------------------------------------------
     IConfigurationBuilder ConfigurationBuilder = new ConfigurationBuilder();
@@ -88,6 +98,8 @@ public class Program {
     }
 
     CreateHostBuilder(args).Build().Run();
+
+    GlobalSettings.AuditService.Audit("", "Server stopped gracefully.");
   }
   #endregion -----------------------------------------------
 
@@ -125,6 +137,7 @@ public class Program {
     Console.WriteLine("Usage : ./MediaSearch.Server [params]");
     Console.WriteLine("  [server=<server ip or dns>]");
     Console.WriteLine("  [log=<logfile path and name>]");
+    Console.WriteLine("  [audit=<auditfile path and name>]");
     Console.WriteLine("  [datasource=<root data source>]");
 
     Environment.Exit(1);
