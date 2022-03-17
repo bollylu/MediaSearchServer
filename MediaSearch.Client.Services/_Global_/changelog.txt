@@ -29,3 +29,6 @@
 
 * 0.0.17
 - Use light encryption for password
+- Password is not sent, only a hash
+- TLoginService.Login returns now IUserAccountInfo or null when failed
+
