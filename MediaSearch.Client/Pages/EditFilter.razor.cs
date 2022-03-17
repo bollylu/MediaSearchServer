@@ -24,7 +24,7 @@ public partial class EditFilter : ComponentBase, IDisposable {
     Filter.KeywordsSelection = EFilterType.All;
     Filter.TagSelection = EFilterType.All;
     Filter.GroupFilter = EFilterGroup.All;
-    _NotifyMessage(Filter);
+    
 
     if (BusServiceAction is not null) {
       BusServiceAction.OnMessage += _MessageHandler;
@@ -36,6 +36,8 @@ public partial class EditFilter : ComponentBase, IDisposable {
         Groups.AddRange(await MovieService.GetGroups(cts.Token));
       }
     }
+
+    _NotifyMessage(Filter);
   }
 
   public void Dispose() {
@@ -89,14 +91,7 @@ public partial class EditFilter : ComponentBase, IDisposable {
 
   private void ClearFilter() {
     Filter.Clear();
-  }
-
-  private void GroupMembershipSelectionChanged(ChangeEventArgs e) {
-    if (e.Value is not string[] GroupMembershipSelection) {
-      return;
-    }
-    Filter.GroupMemberships.Clear();
-    Filter.GroupMemberships.AddRange(GroupMembershipSelection);
+    _NotifyMessage(Filter);
   }
 
   private async void _MessageHandler(string source, string data) {

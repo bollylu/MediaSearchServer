@@ -29,7 +29,7 @@ public partial class AdminControl : ComponentBase {
 
   protected override async Task OnInitializedAsync() {
     if (GlobalSettings.Account is null) {
-      NavigationManager?.NavigateTo("/login", false, true);
+      NavigationManager?.NavigateTo($"/login?{Login.PARAM_ORIGIN}={Login.ORIGIN_ADMIN}", false, true);
       return;
     }
 

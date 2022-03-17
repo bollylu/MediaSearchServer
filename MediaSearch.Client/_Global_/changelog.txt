@@ -33,3 +33,7 @@
 - Changes in notification of refresh
 - Groups and movies are now reloaded after one data refresh
 - Bus service is moved to Client instead of Services
+
+* 0.0.18
+- When redirected to the login page, returns to the origin page if login successful
+- Display information about user, ip, server, requests

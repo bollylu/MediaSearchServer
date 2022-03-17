@@ -8,7 +8,7 @@ public partial class Settings : ComponentBase {
 
   protected override void OnInitialized() {
     if (GlobalSettings.Account is null) {
-      NavigationManager?.NavigateTo("/login", false, true);
+      NavigationManager?.NavigateTo($"/login?{Login.PARAM_ORIGIN}={Login.ORIGIN_SETTINGS}", false, true);
       return;
     }
   }

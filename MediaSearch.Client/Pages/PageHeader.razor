@@ -3,11 +3,16 @@
     <div class="d-flex align-items-center">
       <span class="fs-4">@PageTitle</span>
       <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+      <span class="ms-auto fe-4">@UserConnectionDisplay</span>
     </div>
   </div>
 } else {
   <div class="mb-3 text-primary p-2 border bg-primary bg-opacity-50 text-white">
-    <span class="fs-4">@PageTitle</span>
+    <div class="d-flex align-items-center">
+      <span class="fs-4">@PageTitle</span>
+      <span class="ms-auto fe-4">@ServerConnectionDisplay</span>
+      <span class="ms-auto fe-4">@UserConnectionDisplay</span>
+    </div>
   </div>
 }
 

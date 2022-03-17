@@ -43,7 +43,7 @@ public static class GlobalSettings {
   }
   private static TAbout? _ExecutingAbout;
 
-  public static IUserAccount? Account {get; set; }
+  public static IUserAccountInfo? Account {get; set; }
 
-  
+  public static IApiServer? ApiServer { get; set; }
 }

@@ -32,6 +32,7 @@ foreach (string ApiServerAddressItem in ApiServerAdresses) {
   ApiServer = new TApiServer(ApiServerAddressItem);
   using (CancellationTokenSource Timeout = new CancellationTokenSource(5000)) {
     if (await ApiServer.ProbeServerAsync(Timeout.Token)) {
+      MediaSearch.Client.GlobalSettings.ApiServer = ApiServer;
       break;
     } else {
       ApiServer = null;
