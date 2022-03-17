@@ -45,3 +45,4 @@ public class TUserAccountInfo : IUserAccountInfo, IJson<TUserAccountInfo> {
     return RetVal.ToString();
   }
 }
+   

@@ -10,7 +10,7 @@ public static class Support {
       Assembly Asm = Assembly.GetExecutingAssembly();
       string CompleteName = $"MediaSearch.Models.Pictures.{pictureName}{pictureExtension}";
       string[] Resources = Asm.GetManifestResourceNames();
-      foreach ( string ResourceItem in Resources ) {
+      foreach (string ResourceItem in Resources) {
         Console.WriteLine(ResourceItem);
       }
       using (Stream? ResourceStream = Asm.GetManifestResourceStream(CompleteName)) {
@@ -21,7 +21,7 @@ public static class Support {
           return reader.ReadBytes((int)reader.BaseStream.Length);
         }
       }
-    } catch ( Exception ex ) {
+    } catch (Exception ex) {
       Trace.WriteLine($"Unable to get picture {pictureName}{pictureExtension} : {ex.Message}");
       return Array.Empty<byte>();
     }
@@ -29,12 +29,12 @@ public static class Support {
 
   [Conditional("DEBUG")]
   public static void IfDebugMessage<T>(this IMediaSearchLogger<T> logger, string title, object? message, [CallerMemberName] string CallerName = "") {
-    logger.LogDebugBox(title, message?.ToString() ?? "(null)", CallerName);
+    logger.LogDebugBox(title, message ?? "(null)", CallerName);
   }
 
   [Conditional("DEBUG")]
   public static void IfDebugMessageEx<T>(this IMediaSearchLogger<T> logger, string title, object? message, [CallerMemberName] string CallerName = "") {
-    logger.LogDebugExBox(title, message?.ToString() ?? "(null)", CallerName);
+    logger.LogDebugExBox(title, message ?? "(null)", CallerName);
   }
 
 }
