@@ -39,4 +39,6 @@ public static class GlobalSettings {
   private static TAbout? _ExecutingAbout;
 
   public static TAbout CallingAbout => TAbout.Calling;
+
+  public static IAuditService AuditService { get; set; }
 }

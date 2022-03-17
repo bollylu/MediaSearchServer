@@ -1,10 +1,14 @@
-﻿namespace MediaSearch.Server.Services;
+﻿using BLTools.Encryption;
+
+namespace MediaSearch.Server.Services;
 public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> {
 
   public IMediaSearchLogger<TLoginService> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TLoginService>();
 
   private readonly List<IUserAccount> _UserAccounts = new();
   private readonly ReaderWriterLockSlim _LockUserAccounts = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+
+  private readonly IAuditService _AuditService = GlobalSettings.AuditService;
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TLoginService() {
@@ -24,7 +28,7 @@ public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> 
 
     _UserAccounts.Clear();
 
-    IUserAccountSecret UserSecret = new TUserAccountSecret() { Name = "bollylu", Password = "xxx", MustChangePassword = false };
+    IUserAccountSecret UserSecret = new TUserAccountSecret() { Name = "bollylu", PasswordHash = "xxx".HashToBase64(EHashingMethods.SHA512), MustChangePassword = false };
     IUserAccount User1 = new TUserAccount() { Name = "bollylu", Description = "Administrator" };
     User1.Secret.Duplicate(UserSecret);
     IUserAccount User2 = new TUserAccount() { Name = "brilly", Description = "standard user" };
@@ -36,20 +40,23 @@ public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> 
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  public IUserAccount? Login(TUserAccountSecret user) {
+  public Task<IUserAccountInfo?> Login(TUserAccountSecret user) {
     try {
       _LockUserAccounts.EnterWriteLock();
       int UserIndex = _UserAccounts.FindIndex(u => u.Name == user.Name);
       if (UserIndex < 0) {
-        return null;
+        _AuditService.Audit(user.Name, "Failed login : user unknown");
+        return Task.FromResult<IUserAccountInfo?>(null);
       }
-      if (_UserAccounts[UserIndex].Secret.Password == user.Password) {
+      if (_UserAccounts[UserIndex].Secret.PasswordHash == user.PasswordHash) {
         _UserAccounts[UserIndex].LastSuccessfulLogin = DateTime.Now;
         _UserAccounts[UserIndex].Secret.Token = new TUserToken();
-        return _UserAccounts[UserIndex];
+        _AuditService.Audit(user.Name, "Successful login");
+        return Task.FromResult<IUserAccountInfo?>(new TUserAccountInfo(_UserAccounts[UserIndex]));
       } else {
         _UserAccounts[UserIndex].LastFailedLogin = DateTime.Now;
-        return null;
+        _AuditService.Audit(user.Name, $"Failed login : wrong password : {user.PasswordHash}");
+        return Task.FromResult<IUserAccountInfo?>(null);
       }
 
     } finally {

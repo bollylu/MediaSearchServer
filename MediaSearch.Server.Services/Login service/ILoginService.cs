@@ -1,7 +1,7 @@
 ﻿namespace MediaSearch.Server.Services;
 public interface ILoginService {
 
-  IUserAccount? Login(TUserAccountSecret user);
+  Task<IUserAccountInfo?> Login(TUserAccountSecret user);
   bool Logout(TUserAccountSecret user);
 
   bool IsUserLoggedIn(TUserAccountSecret user);

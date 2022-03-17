@@ -16,4 +16,10 @@
 - Static GlobalSettings
 
 * 0.0.15
-- using new logging system
+- Using new logging system
+
+* 0.0.16
+- Added audit service
+- TLoginService is now Task based for login and use audit
+
+
