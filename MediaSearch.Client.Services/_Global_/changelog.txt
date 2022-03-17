@@ -27,3 +27,5 @@
 - Fixed Uri for getPicture
 - Fixed picture cache
 
+* 0.0.17
+- Use light encryption for password

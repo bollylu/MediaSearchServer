@@ -135,6 +135,7 @@ public class TMovieService : IMovieService, IMediaSearchLoggable<TMovieService> 
   }
   #endregion --- Picture actions --------------------------------------------
 
+  #region --- Groups --------------------------------------------
   public async Task<IList<string>> GetGroups(CancellationToken cancelToken) {
     try {
       string RequestUrl = $"movie/getGroups";
@@ -182,7 +183,8 @@ public class TMovieService : IMovieService, IMediaSearchLoggable<TMovieService> 
       }
       return new List<string>();
     }
-  }
+  } 
+  #endregion --- Groups --------------------------------------------
 
   [Conditional("DEBUG")]
   private void IfDebugMessage(string title, object? message, [CallerMemberName] string CallerName = "") {

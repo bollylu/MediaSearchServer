@@ -2,6 +2,9 @@
 
 public interface IApiServer  {
 
+  Uri BaseAddress { get; }
+  int RequestId { get; }
+
   Task<string?> GetStringAsync(string uriRequest, CancellationToken cancellationToken);
   Task<string?> GetStringAsync<T>(string uriRequest, T additionalContent, CancellationToken cancellationToken);
   //Task<string?> GetStringAsync(string uriRequest, IJson additionalContent, CancellationToken cancellationToken);

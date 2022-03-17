@@ -14,10 +14,10 @@ public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> 
   public TLoginService() { }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  public async Task<bool> Login(IUserAccountSecret user) {
+  public async Task<IUserAccountInfo?> Login(IUserAccountSecret user) {
 
     if (user is null) {
-      return false;
+      return null;
     }
 
     try {
@@ -26,12 +26,13 @@ public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> 
 
       using (CancellationTokenSource Timeout = new CancellationTokenSource(GlobalSettings.HTTP_TIMEOUT_IN_MS)) {
 
-        string? Result = await ApiServer.GetStringAsync(RequestUrl, user, CancellationToken.None).ConfigureAwait(false);
+        TUserAccountInfo? Result = await ApiServer.GetJsonAsync<IUserAccountSecret, TUserAccountInfo>(RequestUrl, user, CancellationToken.None).ConfigureAwait(false);
         if (Result is null) {
-          return false;
+          return null;
         }
         Logger.LogDebugExBox("Login result", Result);
-        return true;
+
+        return Result;
 
       }
     } catch (Exception ex) {
@@ -40,7 +41,7 @@ public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> 
         Logger.LogError($"  Inner exception : {ex.InnerException.Message}");
         Logger.LogError($"  Inner call stack : {ex.InnerException.StackTrace}");
       }
-      return false;
+      return null;
     }
   }
 
