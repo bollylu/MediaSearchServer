@@ -44,7 +44,7 @@ public class TFilterSerializationTest {
     Source.GroupMemberships.Add("Group 1");
     Source.GroupMemberships.Add("Group 2");
     string JsonSource = Source.ToJson();
-    TraceMessage("Source", Source);
+    TraceMessage("Source", JsonSource);
 
     IFilter? Target = IJson<TFilter>.FromJson(JsonSource);
     Assert.IsNotNull(Target);
