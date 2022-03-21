@@ -12,4 +12,10 @@ public class TLanguageDictionary<T> : Dictionary<ELanguage, T>, ILanguageDiction
     return RetVal.ToString();
   }
 
+  public static TLanguageDictionary<T> Empty {
+    get {
+      return _Empty ??= new TLanguageDictionary<T>();
+    }
+  }
+  private static TLanguageDictionary<T>? _Empty;
 }

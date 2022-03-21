@@ -4,10 +4,12 @@ public interface IMediaInfoFile {
   string StoragePath { get; }
   string StorageName { get; }
 
-  IMediaInfoContent Content { get; }
+  Task<bool> Exists();
+  Task<bool> Read();
+  Task<bool> Write();
+  Task<bool> Export(string newFilename);
 
-  bool Exists();
-  bool Read();
-  bool Write();
-  bool Export(string newFilename);
+  IMediaInfoContent? Content { get; set; }
+  ILanguageDictionary<string> GetTitles();
+  ILanguageDictionary<string> GetDescription();
 }

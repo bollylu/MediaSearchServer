@@ -1,19 +1,19 @@
 ﻿using static MediaSearch.Models.JsonConverterResources;
 
 namespace MediaSearch.Models;
-public class TMediaInfoContentMetaConverter : JsonConverter<TMediaInfoContentMeta>, IMediaSearchLoggable<TMediaInfoContentMetaConverter> {
-  public IMediaSearchLogger<TMediaInfoContentMetaConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMediaInfoContentMetaConverter>();
+public class TMovieInfoContentMetaConverter : JsonConverter<TMovieInfoContentMeta>, IMediaSearchLoggable<TMovieInfoContentMetaConverter> {
+  public IMediaSearchLogger<TMovieInfoContentMetaConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovieInfoContentMetaConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
-    return typeToConvert == typeof(TMediaInfoContentMeta);
+    return typeToConvert == typeof(TMovieInfoContentMeta);
   }
 
-  public override TMediaInfoContentMeta Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+  public override TMovieInfoContentMeta Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
     if (reader.TokenType != JsonTokenType.StartObject) {
       throw new JsonException();
     }
 
-    TMediaInfoContentMeta RetVal = new TMediaInfoContentMeta();
+    TMovieInfoContentMeta RetVal = new TMovieInfoContentMeta();
 
     try {
       while (reader.Read()) {
@@ -32,11 +32,11 @@ public class TMediaInfoContentMetaConverter : JsonConverter<TMediaInfoContentMet
 
           switch (Property) {
 
-            case nameof(TMediaInfoContentMeta.Size):
+            case nameof(TMovieInfoContentMeta.Size):
               RetVal.Size = reader.GetInt32();
               break;
 
-            case nameof(TMediaInfoContentMeta.Titles):
+            case nameof(TMovieInfoContentMeta.Titles):
               TLanguageDictionary<string>? Titles = JsonSerializer.Deserialize<TLanguageDictionary<string>>(ref reader, options);
               if (Titles is not null) {
                 foreach (KeyValuePair<ELanguage, string> TitleItem in Titles) {
@@ -45,7 +45,7 @@ public class TMediaInfoContentMetaConverter : JsonConverter<TMediaInfoContentMet
               }
               break;
 
-            case nameof(TMediaInfoContentMeta.Descriptions):
+            case nameof(TMovieInfoContentMeta.Descriptions):
               TLanguageDictionary<string>? Descriptions = JsonSerializer.Deserialize<TLanguageDictionary<string>>(ref reader, options);
               if (Descriptions is not null) {
                 foreach (KeyValuePair<ELanguage, string> DescriptionItem in Descriptions) {
@@ -70,20 +70,20 @@ public class TMediaInfoContentMetaConverter : JsonConverter<TMediaInfoContentMet
     }
   }
 
-  public override void Write(Utf8JsonWriter writer, TMediaInfoContentMeta value, JsonSerializerOptions options) {
+  public override void Write(Utf8JsonWriter writer, TMovieInfoContentMeta value, JsonSerializerOptions options) {
     if (value is null) {
       writer.WriteNullValue();
       return;
     }
     writer.WriteStartObject();
 
-    writer.WritePropertyName(nameof(TMediaInfoContentMeta.Titles));
+    writer.WritePropertyName(nameof(TMovieInfoContentMeta.Titles));
     JsonSerializer.Serialize(writer, value.Titles, options);
 
-    writer.WritePropertyName(nameof(TMediaInfoContentMeta.Descriptions));
+    writer.WritePropertyName(nameof(TMovieInfoContentMeta.Descriptions));
     JsonSerializer.Serialize(writer, value.Descriptions, options);
 
-    writer.WriteNumber(nameof(TMediaInfoContentMeta.Size), value.Size);
+    writer.WriteNumber(nameof(TMovieInfoContentMeta.Size), value.Size);
 
     writer.WriteEndObject();
   }

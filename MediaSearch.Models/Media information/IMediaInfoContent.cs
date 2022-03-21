@@ -1,9 +1,7 @@
 ﻿namespace MediaSearch.Models;
 
-public interface IMediaInfoContent : IJson<IMediaInfoContent> {
+public interface IMediaInfoContent : IMediaInfoContentTitles, IMediaInfoContentDescriptions, IJson<IMediaInfoContent> {
 
-  ILanguageDictionary<string> Titles { get; }
-  ILanguageDictionary<string> Descriptions { get; }
-  int Size { get; }
+  long Size { get; }
 
 }

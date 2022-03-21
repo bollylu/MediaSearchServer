@@ -31,4 +31,6 @@ public interface IMovie : IMedia, IJson<IMovie> {
 
   const string DEFAULT_PICTURE_NAME = "folder.jpg";
 
+  IMovieInfoContent MovieInfoContent { get; }
+
 }

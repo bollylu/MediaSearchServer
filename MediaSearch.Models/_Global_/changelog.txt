@@ -46,3 +46,6 @@
 * 0.1.9
 - Refactor JsonConverter for more clarity and speed
 - Added Conditional("DEBUG") to support
+
+* 0.1.10
+

@@ -5,7 +5,6 @@ namespace MediaSearch.Models;
 public class TMovie : AMedia, IMovie, IJson<TMovie> {
 
   #region --- Public properties ------------------------------------------------------------------------------
-  [JsonConverter(typeof(JsonStringEnumConverter))]
   public EMovieExtension Extension =>
     FileExtension switch {
       "avi" => EMovieExtension.AVI,
@@ -18,11 +17,13 @@ public class TMovie : AMedia, IMovie, IJson<TMovie> {
   public string Group { get; set; } = "";
   public string SubGroup { get; set; } = "";
 
-  [JsonIgnore]
   public bool IsGroupMember => !string.IsNullOrWhiteSpace(Group);
 
   public long Size { get; set; }
   public int OutputYear { get; set; }
+
+  public IMovieInfoContent MovieInfoContent { get; } = new TMovieInfoContentMeta();
+  public TMovieInfoContentMeta MovieInfoContentMeta => MovieInfoContent as TMovieInfoContentMeta ?? new TMovieInfoContentMeta();
   #endregion --- Public properties ---------------------------------------------------------------------------
 
   #region --- Picture --------------------------------------------
@@ -48,6 +49,8 @@ public class TMovie : AMedia, IMovie, IJson<TMovie> {
   protected override string _BuildId() {
     return $"{Name}{OutputYear}".HashToBase64();
   }
+
+  #region --- Converters -------------------------------------------------------------------------------------
   public override string ToString() {
     StringBuilder RetVal = new StringBuilder();
     RetVal.AppendLine($"{nameof(Extension)} = {Extension}");
@@ -59,6 +62,7 @@ public class TMovie : AMedia, IMovie, IJson<TMovie> {
     RetVal.AppendLine($"{nameof(OutputYear)} = {OutputYear}");
 
     return RetVal.ToString();
-  }
-  
+  } 
+  #endregion --- Converters ----------------------------------------------------------------------------------
+
 }

@@ -7,5 +7,5 @@ public class TMediaInfoContentNfo : IMediaInfoContent {
 
   public ILanguageDictionary<string> Titles { get; } = new TLanguageDictionary<string>();
   public ILanguageDictionary<string> Descriptions { get; } = new TLanguageDictionary<string>();
-  public int Size { get; } = -1;
+  public long Size { get; } = -1;
 }

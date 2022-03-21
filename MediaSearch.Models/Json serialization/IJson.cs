@@ -33,7 +33,6 @@ public interface IJson {
           _DefaultJsonSerializerOptions.Converters.Add(new TUserAccountSecretJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TUserTokenJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TMovieInfoContentMetaConverter());
-          _DefaultJsonSerializerOptions.Converters.Add(new TMediaInfoContentMetaConverter());
         }
         return _DefaultJsonSerializerOptions;
       }
@@ -69,6 +68,7 @@ public interface IJson {
   public string ToJson(JsonSerializerOptions options) {
     return JsonSerializer.Serialize(this, GetType(), options);
   }
+
 }
 
 public interface IJson<T> : IJson where T : class {

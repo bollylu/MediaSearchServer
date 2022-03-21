@@ -34,7 +34,7 @@ public class TMovieInfoContentMetaConverter : JsonConverter<TMovieInfoContentMet
           switch (Property) {
 
             case nameof(TMovieInfoContentMeta.Size):
-              RetVal.Size = reader.GetInt32();
+              RetVal.Size = reader.GetInt64();
               break;
 
             case nameof(TMovieInfoContentMeta.Titles):

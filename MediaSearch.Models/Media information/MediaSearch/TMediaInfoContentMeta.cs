@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public class TMediaInfoContentMeta : IMediaInfoContent, IJson<TMediaInfoContentMeta> {
+public class TMediaInfoContentMeta : IMediaInfoContent, IJson<TMediaInfoContentMeta>, IMediaSearchLoggable<TMediaInfoContentMeta> {
 
   public IMediaSearchLogger<TMediaInfoContentMeta> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMediaInfoContentMeta>();
 

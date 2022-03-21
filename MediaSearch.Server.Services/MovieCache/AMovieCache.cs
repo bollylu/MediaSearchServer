@@ -40,16 +40,16 @@ public abstract class AMovieCache : IMovieCache, IMediaSearchLoggable<TMovieCach
     return Parse(_FetchFiles(token), token);
   }
 
-  public virtual Task Parse(IEnumerable<IFileInfo> fileSource, CancellationToken token) {
+  public virtual async Task Parse(IEnumerable<IFileInfo> fileSource, CancellationToken token) {
     Logger.Log("Initializing movies cache");
     Clear();
 
     foreach (IFileInfo FileItem in fileSource) {
       if (token.IsCancellationRequested) {
-        return Task.FromCanceled(token);
+        return;
       }
       try {
-        IMovie NewMovie = _ParseEntry(FileItem);
+        IMovie NewMovie = await _ParseEntry(FileItem);
 
         AddMovie(NewMovie);
       } catch (Exception ex) {
@@ -62,15 +62,15 @@ public abstract class AMovieCache : IMovieCache, IMediaSearchLoggable<TMovieCach
 
     Logger.Log("Cache initialized successfully");
 
-    return Task.CompletedTask;
+    return;
   }
 
-  protected virtual IMovie _ParseEntry(IFileInfo item) {
+  protected virtual async Task<IMovie> _ParseEntry(IFileInfo item) {
 
     // Standardize directory separator
     string ProcessedFileItem = item.FullName.NormalizePath();
 
-    IMovie RetVal = new TMovie() { Name = ProcessedFileItem.AfterLast(FOLDER_SEPARATOR).BeforeLast(" (") };
+    TMovie RetVal = new TMovie() { Name = ProcessedFileItem.AfterLast(FOLDER_SEPARATOR).BeforeLast(" (") };
 
     RetVal.StorageRoot = RootStoragePath.NormalizePath();
     RetVal.StoragePath = ProcessedFileItem.BeforeLast(FOLDER_SEPARATOR).After(RetVal.StorageRoot, System.StringComparison.InvariantCultureIgnoreCase);
@@ -112,6 +112,13 @@ public abstract class AMovieCache : IMovieCache, IMediaSearchLoggable<TMovieCach
     }
 
     RetVal.Size = item.Length;
+
+    IMediaInfoFile DataFile = new TMovieInfoFileMeta(Path.Join(RetVal.StorageRoot, RetVal.StoragePath));
+    if (await DataFile.Exists()) {
+      Logger.LogDebugExBox("Found datafile", DataFile);
+      await DataFile.Read();
+      //RetVal.MovieInfoContentMeta.Duplicate(DataFile.Content);
+    }
 
     return RetVal;
   }
@@ -207,6 +214,7 @@ public abstract class AMovieCache : IMovieCache, IMediaSearchLoggable<TMovieCach
   }
   #endregion --- Movies access --------------------------------------------
 
+  #region --- Groups --------------------------------------------
   public async IAsyncEnumerable<string> GetGroups() {
     try {
       //LogDebugEx($"==> GetGroups() from cache");
@@ -229,6 +237,7 @@ public abstract class AMovieCache : IMovieCache, IMediaSearchLoggable<TMovieCach
       //LogDebugEx($"<== GetSubGroups() from cache");
       _LockCache.ExitReadLock();
     }
-  }
+  } 
+  #endregion --- Groups --------------------------------------------
 }
 

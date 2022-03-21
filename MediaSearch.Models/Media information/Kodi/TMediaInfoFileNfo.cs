@@ -28,15 +28,15 @@ public class TMediaInfoFileNfo : IMediaInfoFile, IToXml, IMediaSearchLoggable<TM
   public string Description { get; set; } = "";
   #endregion --- IName --------------------------------------------
 
-  public bool Export(string newFilename) {
+  public Task<bool> Export(string newFilename) {
     throw new NotImplementedException();
   }
 
-  public bool Read() {
+  public Task<bool> Read() {
     throw new NotImplementedException();
   }
 
-  public bool Write() {
+  public Task<bool> Write() {
     throw new NotImplementedException();
   }
   #endregion --- IFileMediaInfo --------------------------------------------
@@ -72,10 +72,21 @@ public class TMediaInfoFileNfo : IMediaInfoFile, IToXml, IMediaSearchLoggable<TM
 
   
 
-  public bool Exists() {
+  public Task<bool> Exists() {
     throw new NotImplementedException();
   }
 
-  
+
+  IMediaInfoContent? IMediaInfoFile.Content { get; set; }
+
+  public ILanguageDictionary<string> GetTitles() {
+    throw new NotImplementedException();
+  }
+
+  public ILanguageDictionary<string> GetDescription() {
+    throw new NotImplementedException();
+  }
+
+
   #endregion --- IToXml --------------------------------------------
 }
