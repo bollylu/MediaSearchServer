@@ -105,10 +105,10 @@ public abstract class AMovieCache : IMovieCache, IMediaSearchLoggable<TMovieCach
     }
 
     try {
-      RetVal.OutputYear = int.Parse(RetVal.FileName.AfterLast('(').BeforeLast(')'));
+      RetVal.CreationYear = int.Parse(RetVal.FileName.AfterLast('(').BeforeLast(')'));
     } catch (FormatException ex) {
       Logger.LogWarning($"Unable to find output year : {ex.Message} : {item.FullName}");
-      RetVal.OutputYear = 0;
+      RetVal.CreationYear = 0;
     }
 
     RetVal.Size = item.Length;
@@ -183,7 +183,7 @@ public abstract class AMovieCache : IMovieCache, IMediaSearchLoggable<TMovieCach
     try {
       //LogDebugEx($"==> GetAllMovies() from cache");
       _LockCache.EnterReadLock();
-      return _Items.OrderedBy(TFilter.Empty);
+      return _Items.OrderedBy(TFilter.Empty).Cast<IMovie>();
     } finally {
       //LogDebugEx($"<== GetAllMovies() from cache");
       _LockCache.ExitReadLock();
@@ -200,7 +200,7 @@ public abstract class AMovieCache : IMovieCache, IMediaSearchLoggable<TMovieCach
 
     try {
       _LockCache.EnterReadLock();
-      IList<IMovie> FilteredMovies = _Items.WithFilter(filter).OrderedBy(filter).ToList();
+      IList<IMovie> FilteredMovies = _Items.WithFilter(filter).OrderedBy(filter).Cast<IMovie>().ToList();
       RetVal.AvailableMovies = FilteredMovies.Count;
       RetVal.AvailablePages = (RetVal.AvailableMovies / filter.PageSize) + (RetVal.AvailableMovies % filter.PageSize > 0 ? 1 : 0);
       RetVal.Movies.AddRange(FilteredMovies.Skip(filter.PageSize * (filter.Page - 1)).Take(filter.PageSize));
@@ -228,16 +228,16 @@ public abstract class AMovieCache : IMovieCache, IMediaSearchLoggable<TMovieCach
     }
   }
 
-  public IEnumerable<string> GetSubGroups(string group) {
-    try {
-      //LogDebugEx($"==> GetSubGroups() from cache");
-      _LockCache.EnterReadLock();
-      return _Items.GetSubGroups(group);
-    } finally {
-      //LogDebugEx($"<== GetSubGroups() from cache");
-      _LockCache.ExitReadLock();
-    }
-  } 
+  //public IEnumerable<string> GetSubGroups(string group) {
+  //  try {
+  //    //LogDebugEx($"==> GetSubGroups() from cache");
+  //    _LockCache.EnterReadLock();
+  //    return _Items.GetSubGroups(group);
+  //  } finally {
+  //    //LogDebugEx($"<== GetSubGroups() from cache");
+  //    _LockCache.ExitReadLock();
+  //  }
+  //} 
   #endregion --- Groups --------------------------------------------
 }
 

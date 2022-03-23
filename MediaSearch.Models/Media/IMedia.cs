@@ -31,5 +31,22 @@ public interface IMedia : IName, ITags, IMultiNames {
   /// The date that the movie was added to the library
   /// </summary>
   DateOnly DateAdded { get; set; }
+
+  /// <summary>
+  /// The media size
+  /// </summary>
+  long Size { get; set; }
+
+  /// <summary>
+  /// The group where the movie belongs
+  /// </summary>
+  string Group { get; set; }
+
+  bool IsGroupMember { get; }
+
+  /// <summary>
+  /// The year when the media was created
+  /// </summary>
+  int CreationYear { get; set; }
 }
 

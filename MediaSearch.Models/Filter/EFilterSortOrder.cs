@@ -2,7 +2,7 @@
 
 public enum EFilterSortOrder {
   Name,
-  OutputYear,
+  CreationYear,
   Group,
   Custom
 }

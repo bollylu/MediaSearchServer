@@ -7,7 +7,7 @@ public abstract class AMovieService : IMovieService, IName, IMediaSearchLoggable
   /// </summary>
   public string RootStoragePath { get; init; } = "";
 
-  public IDataProvider DataProvider { get; protected set; } = new TDataProvider();
+  public IMediaSearchDatabase Database { get; protected set; } = new TMediaSearchDatabaseMemory();
 
   public IMediaSearchLogger<AMovieService> Logger { get; } = GlobalSettings.LoggerPool.GetLogger <AMovieService>();
 
@@ -35,7 +35,6 @@ public abstract class AMovieService : IMovieService, IName, IMediaSearchLoggable
   public abstract Task<TMoviesPage?> GetMoviesPage(IFilter filter);
   public abstract Task<byte[]> GetPicture(string id, string pictureName, int width, int height);
   public abstract int GetRefreshStatus();
-  public abstract IAsyncEnumerable<string> GetSubGroups(string group);
   public abstract Task Initialize();
   public abstract ValueTask<int> MoviesCount(IFilter filter);
   public abstract ValueTask<int> PagesCount(IFilter filter);

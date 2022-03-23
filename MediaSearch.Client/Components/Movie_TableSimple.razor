@@ -13,7 +13,7 @@
   @foreach (IMovie MovieItem in (MoviesPage ?? TMoviesPage.Empty).Movies) {
   <tr class="border-bottom">
   <td scope="col" width="50px">
-  <span class="badge rounded-pill bg-danger text-light">@MovieItem.OutputYear</span>
+  <span class="badge rounded-pill bg-danger text-light">@MovieItem.CreationYear</span>
   </td>
 
   <td width="300px">
@@ -51,7 +51,7 @@
       <div class="@RowClass">
         <div class="row mt-1 mb-1 " >
           <div class="col col-1 d-flex align-self-center justify-content-center">
-            <span class="badge rounded-pill bg-danger text-light ">@MovieItem.OutputYear</span>
+            <span class="badge rounded-pill bg-danger text-light ">@MovieItem.CreationYear</span>
           </div>
 
           <div class="col col-5">

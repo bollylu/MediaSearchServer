@@ -16,7 +16,7 @@ public interface IMovieService {
   /// <summary>
   /// The source of the data for the service
   /// </summary>
-  IDataProvider DataProvider { get; }
+  IMediaSearchDatabase Database { get; }
 
   #region --- Movies --------------------------------------------
   List<string> MoviesExtensions { get; }
@@ -89,7 +89,6 @@ public interface IMovieService {
   #endregion --- Movies --------------------------------------------
 
   IAsyncEnumerable<string> GetGroups();
-  IAsyncEnumerable<string> GetSubGroups(string group);
 
   Task<byte[]> GetPicture(string id,
                           string pictureName,

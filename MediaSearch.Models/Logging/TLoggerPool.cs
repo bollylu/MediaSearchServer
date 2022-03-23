@@ -38,14 +38,12 @@ public class TLoggerPool {
   public IMediaSearchLogger<T> GetDefaultLogger<T>() {
 
     if (_Items.IsEmpty()) {
-      IMediaSearchLogger? NewLogger = Activator.CreateInstance(DefaultLoggerType) as IMediaSearchLogger;
-      if (NewLogger is not null) {
-        IMediaSearchLogger<T> NewDefaultLogger = _MakeLogger<T>(NewLogger);
-        AddDefaultLogger(NewDefaultLogger);
-        return NewDefaultLogger;
-      } else {
+      if (Activator.CreateInstance(DefaultLoggerType) is not IMediaSearchLogger NewLogger) {
         throw new ApplicationException("Default logger is missing or invalid");
       }
+      IMediaSearchLogger<T> NewDefaultLogger = _MakeLogger<T>(NewLogger);
+      AddDefaultLogger(NewDefaultLogger);
+      return NewDefaultLogger;
     }
 
     IMediaSearchLogger? DefaultLogger = _Items.SingleOrDefault(l => l.Name.Equals(DEFAULT_LOGGER_NAME, StringComparison.InvariantCultureIgnoreCase));
@@ -56,14 +54,12 @@ public class TLoggerPool {
         _ => throw new ApplicationException("Invalid logger<T> type")
       };
     } else {
-      IMediaSearchLogger? NewLogger = Activator.CreateInstance(DefaultLoggerType) as IMediaSearchLogger;
-      if (NewLogger is not null) {
-        IMediaSearchLogger<T> NewDefaultLogger = _MakeLogger<T>(NewLogger);
-        AddDefaultLogger(NewDefaultLogger);
-        return NewDefaultLogger;
-      } else {
+      if (Activator.CreateInstance(DefaultLoggerType) is not IMediaSearchLogger NewLogger) {
         throw new ApplicationException("Default logger is missing or invalid");
       }
+      IMediaSearchLogger<T> NewDefaultLogger = _MakeLogger<T>(NewLogger);
+      AddDefaultLogger(NewDefaultLogger);
+      return NewDefaultLogger;
     }
 
   }

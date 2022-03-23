@@ -38,7 +38,7 @@ public class TMovieSerializationTest {
     Assert.AreEqual(Movie.Size, Target.Size);
     Assert.AreEqual(Movie.Group, Target.Group);
     Assert.AreEqual(Movie.Tags.Count, Target.Tags.Count);
-    Assert.AreEqual(Movie.OutputYear, Target.OutputYear);
+    Assert.AreEqual(Movie.CreationYear, Target.CreationYear);
     TraceMessage("Target", Target);
   }
 

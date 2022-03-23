@@ -11,6 +11,6 @@ public interface IName {
   /// An extended description
   /// </summary>
   string Description { get; }
-
+  
 }
 

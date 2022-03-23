@@ -65,8 +65,8 @@ public class TMovieJsonConverter : JsonConverter<TMovie> {
               RetVal.Size = reader.GetInt64();
               break;
 
-            case nameof(IMovie.OutputYear):
-              RetVal.OutputYear = reader.GetInt32();
+            case nameof(IMovie.CreationYear):
+              RetVal.CreationYear = reader.GetInt32();
               break;
 
             case nameof(IMovie.DateAdded):
@@ -118,7 +118,7 @@ public class TMovieJsonConverter : JsonConverter<TMovie> {
     writer.WriteString(nameof(IMovie.FileName), value.FileName);
     writer.WriteString(nameof(IMovie.FileExtension), value.FileExtension);
     writer.WriteNumber(nameof(IMovie.Size), value.Size);
-    writer.WriteNumber(nameof(IMovie.OutputYear), value.OutputYear);
+    writer.WriteNumber(nameof(IMovie.CreationYear), value.CreationYear);
     writer.WritePropertyName(nameof(IMovie.DateAdded));
     JsonSerializer.Serialize(writer, value.DateAdded, options);
 

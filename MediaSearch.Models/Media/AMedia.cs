@@ -1,5 +1,4 @@
-﻿using BLTools.Diagnostic.Logging;
-using BLTools.Encryption;
+﻿using BLTools.Encryption;
 
 namespace MediaSearch.Models;
 
@@ -36,6 +35,7 @@ public abstract class AMedia : IMedia {
   public string StoragePath { get; set; } = "";
   public string FileName { get; set; } = "";
   public string FileExtension { get; set; } = "";
+  public long Size { get; set; }
 
   [JsonConverter(typeof(TDateOnlyJsonConverter))]
   public DateOnly DateAdded { get; set; }
@@ -92,6 +92,4 @@ public abstract class AMedia : IMedia {
     }
     return RetVal.ToString();
   }
-
-  
 }

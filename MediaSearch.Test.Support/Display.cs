@@ -10,7 +10,7 @@ public static class Display {
     Console.WriteLine(message.BoxFixedWidth(title ?? "", GlobalSettings.DEBUG_BOX_WIDTH));
   }
 
-  public static void TraceMessage(string? title, object item) {
+  public static void TraceMessage(string? title, object? item) {
     if (item is null) {
       Console.WriteLine($"null object".BoxFixedWidth(title ?? "", GlobalSettings.DEBUG_BOX_WIDTH));
     } else {
@@ -30,12 +30,12 @@ public static class Display {
     }
   }
 
-  public static void TraceMovies(IEnumerable<IMovie> movies) {
-    if (movies is null) {
-      TraceMessage("Movies", "Movies are null");
+  public static void TraceMedias(IEnumerable<IMedia> medias) {
+    if (medias is null) {
+      TraceMessage("Media", "Medias are null");
     } else {
-      foreach (IMovie MovieItem in movies) {
-        TraceMessage("Movie", MovieItem);
+      foreach (IMedia MediaItem in medias) {
+        TraceMessage(MediaItem.GetType().Name, MediaItem);
       }
     }
   }

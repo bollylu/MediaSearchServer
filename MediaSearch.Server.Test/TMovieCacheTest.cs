@@ -41,22 +41,26 @@ public class TMovieCacheTest {
     Assert.AreEqual(50, Target.Movies.Count());
   }
 
-  //[TestMethod]
-  //public async Task SaveCacheToJson() {
-  //  TMovieCache MovieCache = new TMovieCache() { RootStoragePath = @"\\andromeda.sharenet.priv\films" };
-  //  using (CancellationTokenSource Timeout = new CancellationTokenSource(100000)) {
-  //    await MovieCache.Parse(Timeout.Token);
-  //  }
-  //  StringBuilder sb = new StringBuilder();
-  //  sb.AppendLine("{\n \"movies\" : [\n");
-  //  foreach (IJson MovieItem in MovieCache.GetAllMovies()) {
-  //    sb.Append(MovieItem.ToJson());
-  //    sb.AppendLine(",");
-  //  }
-  //  sb.Truncate(1);
-  //  sb.AppendLine("\n]\n}");
-  //  File.WriteAllText("i:\\json\\movies.json", sb.ToString());
+  [TestMethod]
+  public async Task SaveCacheToJson() {
+    TMovieCache MovieCache = new TMovieCache() { RootStoragePath = @"\\multimedia.sharenet.priv\multimedia\films" };
+    using (CancellationTokenSource Timeout = new CancellationTokenSource(100000)) {
+      await MovieCache.Parse(Timeout.Token);
+    }
+    StringBuilder sb = new StringBuilder();
+    sb.AppendLine("{\n \"movies\" : [\n");
+    foreach (IJson MovieItem in MovieCache.GetAllMovies()) {
+      sb.Append(MovieItem.ToJson());
+      sb.AppendLine(",");
+    }
+    sb.Truncate(1);
+    sb.AppendLine("\n]\n}");
+    const string TARGET_FOLDER = @"i:\json";
+    if (!Directory.Exists(TARGET_FOLDER)) {
+      Directory.CreateDirectory(TARGET_FOLDER);
+    }
+    File.WriteAllText($@"{TARGET_FOLDER}\movies.json", sb.ToString(), Encoding.UTF8);
 
-  //  Assert.IsNotNull(sb);
-  //}
+    Assert.IsTrue(File.Exists($@"{TARGET_FOLDER}\movies.json"));
+  }
 }
