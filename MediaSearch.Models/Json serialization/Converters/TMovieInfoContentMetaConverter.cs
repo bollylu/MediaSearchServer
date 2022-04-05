@@ -15,14 +15,14 @@ public class TMovieInfoContentMetaConverter : JsonConverter<TMovieInfoContentMet
     }
 
     TMovieInfoContentMeta RetVal = new TMovieInfoContentMeta();
-
+    
     try {
       while (reader.Read()) {
 
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndObject && reader.CurrentDepth == 1) {
-          Logger.IfDebugMessageEx("Converted TMovieInfoContentMeta", RetVal);
+          Logger.IfDebugMessageEx($"Converted {nameof(TMovieInfoContentMeta)}", RetVal);
           return RetVal;
         }
 
@@ -37,20 +37,24 @@ public class TMovieInfoContentMetaConverter : JsonConverter<TMovieInfoContentMet
               RetVal.Size = reader.GetInt64();
               break;
 
+            case nameof(TMovieInfoContentMeta.CreationYear):
+              RetVal.CreationYear = reader.GetInt32();
+              break;
+
             case nameof(TMovieInfoContentMeta.Titles):
-              TLanguageDictionary<string>? Titles = JsonSerializer.Deserialize<TLanguageDictionary<string>>(ref reader, options);
+              ILanguageTextInfos? Titles = JsonSerializer.Deserialize<TLanguageTextInfos>(ref reader, options);
               if (Titles is not null) {
-                foreach (KeyValuePair<ELanguage, string> TitleItem in Titles) {
-                  RetVal.Titles.Add(TitleItem.Key, TitleItem.Value);
+                foreach (ILanguageTextInfo TitleItem in Titles.GetAll()) {
+                  RetVal.Titles.Add(TitleItem);
                 }
               }
               break;
 
             case nameof(TMovieInfoContentMeta.Descriptions):
-              TLanguageDictionary<string>? Descriptions = JsonSerializer.Deserialize<TLanguageDictionary<string>>(ref reader, options);
+              ILanguageTextInfos? Descriptions = JsonSerializer.Deserialize<TLanguageTextInfos>(ref reader, options);
               if (Descriptions is not null) {
-                foreach (KeyValuePair<ELanguage, string> DescriptionItem in Descriptions) {
-                  RetVal.Descriptions.Add(DescriptionItem.Key, DescriptionItem.Value);
+                foreach (ILanguageTextInfo DescriptionItem in Descriptions.GetAll()) {
+                  RetVal.Descriptions.Add(DescriptionItem);
                 }
               }
               break;
@@ -73,6 +77,15 @@ public class TMovieInfoContentMetaConverter : JsonConverter<TMovieInfoContentMet
               }
               break;
 
+            case nameof(TMovieInfoContentMeta.Genres):
+              IList<string>? Genres = JsonSerializer.Deserialize<List<string>>(ref reader, options);
+              if (Genres is not null) {
+                foreach (string GenreItem in Genres) {
+                  RetVal.Genres.Add(GenreItem);
+                }
+              }
+              break;
+
             default:
               Logger.LogWarningBox(ERROR_INVALID_PROPERTY, Property);
               break;
@@ -80,7 +93,7 @@ public class TMovieInfoContentMetaConverter : JsonConverter<TMovieInfoContentMet
         }
       }
 
-      Logger.IfDebugMessageEx("Converted TMovieInfoContentMeta", RetVal);
+      Logger.IfDebugMessageEx($"Converted {nameof(TMovieInfoContentMeta)}", RetVal);
       return RetVal;
 
     } catch (Exception ex) {
@@ -94,6 +107,7 @@ public class TMovieInfoContentMetaConverter : JsonConverter<TMovieInfoContentMet
       writer.WriteNullValue();
       return;
     }
+
     writer.WriteStartObject();
 
     writer.WritePropertyName(nameof(TMovieInfoContentMeta.Titles));
@@ -103,12 +117,16 @@ public class TMovieInfoContentMetaConverter : JsonConverter<TMovieInfoContentMet
     JsonSerializer.Serialize(writer, value.Descriptions, options);
 
     writer.WriteNumber(nameof(TMovieInfoContentMeta.Size), value.Size);
+    writer.WriteNumber(nameof(TMovieInfoContentMeta.CreationYear), value.CreationYear);
 
     writer.WritePropertyName(nameof(TMovieInfoContentMeta.Soundtracks));
     JsonSerializer.Serialize(writer, value.Soundtracks, options);
 
     writer.WritePropertyName(nameof(TMovieInfoContentMeta.Subtitles));
     JsonSerializer.Serialize(writer, value.Subtitles, options);
+
+    writer.WritePropertyName(nameof(TMovieInfoContentMeta.Genres));
+    JsonSerializer.Serialize(writer, value.Genres, options);
 
     writer.WriteEndObject();
   }

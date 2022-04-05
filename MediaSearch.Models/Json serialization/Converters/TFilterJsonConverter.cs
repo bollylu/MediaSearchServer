@@ -23,7 +23,7 @@ public class TFilterJsonConverter : JsonConverter<TFilter>, IMediaSearchLoggable
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndObject) {
-          Logger.IfDebugMessageEx("Converted filter", RetVal);
+          Logger.IfDebugMessageEx($"Converted {nameof(TFilter)}", RetVal);
           return RetVal;
         }
 
@@ -121,7 +121,7 @@ public class TFilterJsonConverter : JsonConverter<TFilter>, IMediaSearchLoggable
         }
       }
 
-      Logger.IfDebugMessageEx("Converted filter", RetVal);
+      Logger.IfDebugMessageEx($"Converted {nameof(TFilter)}", RetVal);
       return RetVal;
 
     } catch (Exception ex) {

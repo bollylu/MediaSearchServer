@@ -33,6 +33,10 @@ public interface IJson {
           _DefaultJsonSerializerOptions.Converters.Add(new TUserAccountSecretJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TUserTokenJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TMovieInfoContentMetaConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TLanguageTextInfoConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TLanguageTextInfosConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TMediaInfoHeaderConverter());
+          _DefaultJsonSerializerOptions.Converters.Add(new TMovieInfoFileMetaConverter());
         }
         return _DefaultJsonSerializerOptions;
       }

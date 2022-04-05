@@ -1,11 +1,11 @@
 ﻿namespace MediaSearch.Models;
 
-public interface IMultiNames {
+public interface ITitles {
 
   /// <summary>
   /// A list of alternate KeyValuePairs (language & name) (0 <= count <= n)
   /// </summary>
-  Dictionary<string, string> AltNames { get; }
+  ILanguageDictionary<string> Titles { get; }
 
 }
 

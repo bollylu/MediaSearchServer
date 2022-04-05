@@ -12,12 +12,15 @@ public class TIPAddressJsonConverter : JsonConverter<IPAddress> {
     if (reader.TokenType == JsonTokenType.String) {
       string? Data = reader.GetString();
       if (Data is null) {
-        throw new JsonException($"Invalid Json data for IPAddress : \"{Data}\"");
+        throw new JsonException($"Invalid Json data for {nameof(IPAddress)} : {Data.WithQuotes()}");
       }
-      IPAddress RetVal = IPAddress.Parse(Data);
-      return RetVal;
+      if (IPAddress.TryParse(Data, out IPAddress? RetVal)) {
+        return RetVal;
+      } else {
+        return IPAddress.Loopback;
+      }
     }
-    return IPAddress.Any;
+    return IPAddress.Loopback;
   }
 
   public override void Write(Utf8JsonWriter writer, IPAddress value, JsonSerializerOptions options) {

@@ -7,18 +7,13 @@ public interface IMovie : IMedia, IJson<IMovie> {
   /// </summary>
   EMovieExtension Extension { get; }
 
-  
+  List<ELanguage> Soundtracks { get; }
+  List<ELanguage> Subtitles { get; }
 
-  /// <summary>
-  /// The sub group where the movie belongs
-  /// </summary>
-  string SubGroup { get; set; }
-
-  
 
   const string DEFAULT_PICTURE_NAME = "folder.jpg";
 
-  IMovieInfoContent MovieInfoContent { get; }
+  //IMovieInfoContent MovieInfoContent { get; }
 
   void Duplicate(IMovie movie);
 

@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-
-using BLTools.Encryption;
+﻿using BLTools.Encryption;
 
 namespace MediaSearch.Models;
 
@@ -22,41 +20,42 @@ public class TMovie : IMovie, IJson<TMovie> {
   public string Description { get; set; } = "";
   #endregion --- IName --------------------------------------------
 
-  #region --- IMultiNames --------------------------------------------
-  public Dictionary<string, string> AltNames { get; } = new();
-  #endregion --- IMultiNames --------------------------------------------
+  #region --- ITitles --------------------------------------------
+  public ILanguageDictionary<string> Titles { get; } = new TLanguageDictionary<string>();
+  #endregion --- ITitles --------------------------------------------
 
   #region --- ITags --------------------------------------------
   public List<string> Tags { get; } = new();
   #endregion --- ITags --------------------------------------------
 
+  #region --- Storage --------------------------------------------
   public string StorageRoot { get; set; } = "";
   public string StoragePath { get; set; } = "";
   public string FileName { get; set; } = "";
   public string FileExtension { get; set; } = "";
-  public long Size { get; set; }
+  public EMovieExtension Extension {
+    get {
+      return (FileExtension?.TrimStart('.') ?? "") switch {
+        "avi" => EMovieExtension.AVI,
+        "mkv" => EMovieExtension.MKV,
+        "mp4" => EMovieExtension.MP4,
+        "iso" => EMovieExtension.ISO,
+        _ => EMovieExtension.Unknown,
+      };
+    }
+  }
 
-  public EMovieExtension Extension =>
-    FileExtension switch {
-      "avi" => EMovieExtension.AVI,
-      "mkv" => EMovieExtension.MKV,
-      "mp4" => EMovieExtension.MP4,
-      "iso" => EMovieExtension.ISO,
-      _ => EMovieExtension.Unknown,
-    };
+  public long Size { get; set; }
+  public DateOnly DateAdded { get; set; }
+  #endregion --- Storage --------------------------------------------
 
   public string Group { get; set; } = "";
-  public string SubGroup { get; set; } = "";
-
   public bool IsGroupMember => !string.IsNullOrWhiteSpace(Group);
-
 
   public int CreationYear { get; set; }
 
-  public IMovieInfoContent MovieInfoContent { get; } = new TMovieInfoContentMeta();
-  public TMovieInfoContentMeta MovieInfoContentMeta => MovieInfoContent as TMovieInfoContentMeta ?? new TMovieInfoContentMeta();
-
-  public DateOnly DateAdded { get; set; }
+  public List<ELanguage> Soundtracks { get; } = new();
+  public List<ELanguage> Subtitles { get; } = new();
   #endregion --- Public properties ---------------------------------------------------------------------------
 
   #region --- Picture --------------------------------------------
@@ -81,8 +80,8 @@ public class TMovie : IMovie, IJson<TMovie> {
     FileName = movie.FileName;
     FileExtension = movie.FileExtension;
 
-    foreach (KeyValuePair<string, string> AltNameItem in movie.AltNames) {
-      AltNames.Add(AltNameItem.Key, AltNameItem.Value);
+    foreach (var TitleItem in movie.Titles) {
+      Titles.Add(TitleItem);
     }
 
     foreach (string TagItem in movie.Tags) {
@@ -102,34 +101,54 @@ public class TMovie : IMovie, IJson<TMovie> {
   #region --- Converters -------------------------------------------------------------------------------------
   public override string ToString() {
     StringBuilder RetVal = new();
-    RetVal.AppendLine($"{nameof(Id)} = \"{Id}\"");
-    RetVal.AppendLine($"{nameof(Name)} = {Name}");
-    RetVal.AppendLine($"{nameof(Description)} = {Description}");
-    RetVal.AppendLine($"{nameof(StorageRoot)} = {StorageRoot}");
-    RetVal.AppendLine($"{nameof(StoragePath)} = {StoragePath}");
-    RetVal.AppendLine($"{nameof(FileName)} = {FileName}");
-    RetVal.AppendLine($"{nameof(FileExtension)} = {FileExtension}");
-    if (AltNames.Any()) {
-      RetVal.AppendLine("Alt. names");
-      foreach (KeyValuePair<string, string> AltNameItem in AltNames) {
-        RetVal.AppendLine($"|- {AltNameItem.Key}:{AltNameItem.Value}");
+    RetVal.AppendLine($"{nameof(Id)} = {Id.WithQuotes()}");
+    RetVal.AppendLine($"{nameof(Name)} = {Name.WithQuotes()}");
+    RetVal.AppendLine($"{nameof(Description)} = {Description.WithQuotes()}");
+    RetVal.AppendLine($"{nameof(StorageRoot)} = {StorageRoot.WithQuotes()}");
+    RetVal.AppendLine($"{nameof(StoragePath)} = {StoragePath.WithQuotes()}");
+    RetVal.AppendLine($"{nameof(FileName)} = {FileName.WithQuotes()}");
+    RetVal.AppendLine($"{nameof(FileExtension)} = {FileExtension.WithQuotes()}");
+    RetVal.AppendLine($"{nameof(Extension)} = {Extension}");
+    if (Titles.Any()) {
+      RetVal.AppendLine(nameof(Titles));
+      foreach (var TitleItem in Titles) {
+        RetVal.AppendLine($"|- {TitleItem.Key}: {TitleItem.Value.WithQuotes()}");
       }
     } else {
-      RetVal.AppendLine($"{nameof(AltNames)} is empty");
+      RetVal.AppendLine($"{nameof(Titles)} is empty");
     }
+    if (Soundtracks.Any()) {
+      RetVal.AppendLine(nameof(Soundtracks));
+      foreach (ELanguage SoundtrackItem in Soundtracks) {
+        RetVal.AppendLine($"|- {SoundtrackItem}");
+      }
+    } else {
+      RetVal.AppendLine($"{nameof(Soundtracks)} is empty");
+    }
+    if (Subtitles.Any()) {
+      RetVal.AppendLine(nameof(Subtitles));
+      foreach (ELanguage SubtitleItem in Subtitles) {
+        RetVal.AppendLine($"|- {SubtitleItem}");
+      }
+    } else {
+      RetVal.AppendLine($"{nameof(Subtitles)} is empty");
+    }
+
     if (Tags.Any()) {
-      RetVal.AppendLine("Tags");
+      RetVal.AppendLine(nameof(Tags));
       foreach (string TagItem in Tags) {
-        RetVal.AppendLine($"|- {TagItem}");
+        RetVal.AppendLine($"|- {TagItem.WithQuotes()}");
       }
     } else {
       RetVal.AppendLine($"{nameof(Tags)} is empty");
     }
-    RetVal.AppendLine($"{nameof(Extension)} = {Extension}");
+
     if (IsGroupMember) {
-      RetVal.AppendLine($"{nameof(Group)} = {Group}");
+      RetVal.AppendLine($"{nameof(Group)} = {Group.WithQuotes()}");
+    } else {
+      RetVal.AppendLine("No group membership");
     }
-    RetVal.AppendLine($"{nameof(Size)} = {Size}");
+    RetVal.AppendLine($"{nameof(Size)} = {Size} bytes");
     RetVal.AppendLine($"{nameof(CreationYear)} = {CreationYear}");
     return RetVal.ToString();
   }
@@ -141,9 +160,9 @@ public class TMovie : IMovie, IJson<TMovie> {
     }
     Name = movie.Name;
     Description = movie.Description;
-    AltNames.Clear();
-    foreach (var NameItem in movie.AltNames) {
-      AltNames.Add(NameItem.Key, NameItem.Value);
+    Titles.Clear();
+    foreach (var TitleItem in movie.Titles) {
+      Titles.Add(TitleItem);
     }
     Tags.Clear();
     Tags.AddRange(movie.Tags);
@@ -154,7 +173,6 @@ public class TMovie : IMovie, IJson<TMovie> {
     DateAdded = movie.DateAdded;
     Size = movie.Size;
     Group = movie.Group;
-    SubGroup = movie.SubGroup;
     CreationYear = movie.CreationYear;
 
   }

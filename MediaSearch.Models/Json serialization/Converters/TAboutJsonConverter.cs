@@ -23,7 +23,7 @@ public class TAboutJsonConverter : JsonConverter<TAbout>, IMediaSearchLoggable<T
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndObject) {
-          Logger.IfDebugMessageEx("Converted about", RetVal);
+          Logger.IfDebugMessageEx($"Converted {nameof(TAbout)}", RetVal);
           return RetVal;
         }
 
@@ -59,7 +59,7 @@ public class TAboutJsonConverter : JsonConverter<TAbout>, IMediaSearchLoggable<T
         }
       }
 
-      Logger.IfDebugMessageEx("Converted about", RetVal);
+      Logger.IfDebugMessageEx($"Converted {nameof(TAbout)}", RetVal);
       return RetVal;
 
     } catch (Exception ex) {

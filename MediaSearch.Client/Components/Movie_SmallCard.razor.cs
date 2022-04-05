@@ -26,11 +26,11 @@ namespace MediaSearch.Client.Components {
 
     private string AltNames {
       get {
-        if (Movie.AltNames.IsEmpty()) {
+        if (Movie.Titles.IsEmpty()) {
           return string.Empty;
           ;
         }
-        return string.Join("\n", Movie.AltNames.Select(n => $"{n.Key}:{n.Value}"));
+        return string.Join("\n", Movie.Titles.Select(n => $"{n.Key}:{n.Value}"));
       }
     }
 

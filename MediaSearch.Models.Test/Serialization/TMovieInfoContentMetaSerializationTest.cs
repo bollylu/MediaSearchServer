@@ -6,11 +6,11 @@ public class TMovieInfoContentMetaSerializationTest {
   [TestMethod]
   public void Serialize() {
 
-    IMovieInfoContent Source = new TMovieInfoContentMeta() {
+    TMovieInfoContentMeta Source = new TMovieInfoContentMeta() {
       Size = 123456
     };
     Source.Titles.Add(ELanguage.French, "Le pont de la rivère Kwai");
-    Source.Titles.Add(ELanguage.English, "Bridge over Kwai river");
+    Source.Titles.Add(ELanguage.English, "Bridge over Kwai river", true);
 
     Source.Descriptions.Add(ELanguage.French, "Des prisoniers doivent contruire un pont sur la rivière Kwai, en pleine jungle.");
 
@@ -21,7 +21,7 @@ public class TMovieInfoContentMetaSerializationTest {
 
     TraceMessage("Source", Source);
 
-    string Target = Source.ToJson();
+    string Target = ((IJson)Source).ToJson();
 
     TraceMessage("Target", Target);
 
@@ -33,17 +33,20 @@ public class TMovieInfoContentMetaSerializationTest {
   public void Deserialize() {
 
     string Source = @"
-{                                                                                               
-  ""Titles"": [                                                                                   
-      {
-        ""key"": ""French"",                                                                          
-        ""value"": ""Le pont de la rivère Kwai""
-      },                                                                                          
-      {
-        ""key"": ""English"",                                                                         
-        ""value"": ""Bridge over Kwai river""
-      }                                                                                           
-  ],                                                                                            
+      {                                                                                               
+        ""Titles"": [                              
+        {
+            ""Language"": ""French"",                
+            ""Value"": ""Le pont de la rivère Kwai"",
+            ""IsPrincipal"": false
+        },                                     
+        {
+            ""Language"": ""English"",               
+            ""Value"": ""Bridge over Kwai river"",   
+            ""IsPrincipal"": true
+        }                                      
+      ],                                       
+                                                                                            
   ""Descriptions"": [
       {
         ""key"": ""French"",                                                                          
@@ -67,7 +70,7 @@ public class TMovieInfoContentMetaSerializationTest {
     Assert.IsNotNull(Target);
     TraceMessage("Target", Target);
 
-    Assert.AreEqual(2, Target.Titles.Count);
+    Assert.AreEqual(2, Target.Titles.Count());
     Assert.AreEqual(2, Target.Soundtracks.Count);
 
   }

@@ -45,10 +45,6 @@ public class TMovieJsonConverter : JsonConverter<TMovie> {
               RetVal.Group = reader.GetString() ?? "";
               break;
 
-            case nameof(IMovie.SubGroup):
-              RetVal.SubGroup = reader.GetString() ?? "";
-              break;
-
             case nameof(IMovie.StoragePath):
               RetVal.StoragePath = reader.GetString() ?? "";
               break;
@@ -73,16 +69,29 @@ public class TMovieJsonConverter : JsonConverter<TMovie> {
               RetVal.DateAdded = JsonSerializer.Deserialize<DateOnly>(ref reader, options);
               break;
 
-            case nameof(IMovie.AltNames):
+            case nameof(IMovie.Titles):
               while (reader.Read() && reader.TokenType != JsonTokenType.EndArray) {
-                string AltNameItem = reader.GetString() ?? "";
-                RetVal.AltNames.Add(AltNameItem.Before('|'), AltNameItem.After('|'));
+                string TitleItem = reader.GetString() ?? "";
+                ELanguage Language = Enum.Parse<ELanguage>(TitleItem.Before('|'));
+                RetVal.Titles.Add(Language, TitleItem.After('|'));
               }
               break;
 
             case nameof(IMovie.Tags):
               while (reader.Read() && reader.TokenType != JsonTokenType.EndArray) {
                 RetVal.Tags.Add(reader.GetString() ?? "");
+              }
+              break;
+
+            case nameof(IMovie.Soundtracks):
+              while (reader.Read() && reader.TokenType != JsonTokenType.EndArray) {
+                RetVal.Soundtracks.Add(JsonSerializer.Deserialize<ELanguage>(ref reader, options));
+              }
+              break;
+
+            case nameof(IMovie.Subtitles):
+              while (reader.Read() && reader.TokenType != JsonTokenType.EndArray) {
+                RetVal.Subtitles.Add(JsonSerializer.Deserialize<ELanguage>(ref reader, options));
               }
               break;
 
@@ -113,7 +122,6 @@ public class TMovieJsonConverter : JsonConverter<TMovie> {
     writer.WriteString(nameof(IMovie.Id), value.Id);
     writer.WriteString(nameof(IMovie.Name), value.Name);
     writer.WriteString(nameof(IMovie.Group), value.Group);
-    writer.WriteString(nameof(IMovie.SubGroup), value.SubGroup);
     writer.WriteString(nameof(IMovie.StoragePath), value.StoragePath);
     writer.WriteString(nameof(IMovie.FileName), value.FileName);
     writer.WriteString(nameof(IMovie.FileExtension), value.FileExtension);
@@ -122,15 +130,27 @@ public class TMovieJsonConverter : JsonConverter<TMovie> {
     writer.WritePropertyName(nameof(IMovie.DateAdded));
     JsonSerializer.Serialize(writer, value.DateAdded, options);
 
-    writer.WriteStartArray(nameof(IMovie.AltNames));
-    foreach (KeyValuePair<string, string> AltNameItem in value.AltNames) {
-      writer.WriteStringValue($"{AltNameItem.Key}|{AltNameItem.Value}");
+    writer.WriteStartArray(nameof(IMovie.Titles));
+    foreach (var TitleItem in value.Titles) {
+      writer.WriteStringValue($"{TitleItem.Key}|{TitleItem.Value}");
     }
     writer.WriteEndArray();
 
     writer.WriteStartArray(nameof(IMovie.Tags));
     foreach (string TagItem in value.Tags) {
       writer.WriteStringValue(TagItem);
+    }
+    writer.WriteEndArray();
+
+    writer.WriteStartArray(nameof(IMovie.Soundtracks));
+    foreach (ELanguage SoundtrackItem in value.Soundtracks) {
+      JsonSerializer.Serialize(writer, SoundtrackItem, options);
+    }
+    writer.WriteEndArray();
+
+    writer.WriteStartArray(nameof(IMovie.Subtitles));
+    foreach (ELanguage SubtitleItem in value.Subtitles) {
+      JsonSerializer.Serialize(writer, SubtitleItem, options);
     }
     writer.WriteEndArray();
 

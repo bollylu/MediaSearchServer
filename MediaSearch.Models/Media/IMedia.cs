@@ -1,12 +1,13 @@
 ﻿namespace MediaSearch.Models;
 
-public interface IMedia : IName, ITags, IMultiNames {
+public interface IMedia : IName, ITags, ITitles {
 
   /// <summary>
   /// Identifier for this item
   /// </summary>
   string Id { get; }
 
+  #region --- Physical storage --------------------------------------------
   /// <summary>
   /// The filename used to store the media
   /// </summary>
@@ -30,7 +31,8 @@ public interface IMedia : IName, ITags, IMultiNames {
   /// <summary>
   /// The date that the movie was added to the library
   /// </summary>
-  DateOnly DateAdded { get; set; }
+  DateOnly DateAdded { get; set; } 
+  #endregion --- Physical storage --------------------------------------------
 
   /// <summary>
   /// The media size
@@ -42,6 +44,9 @@ public interface IMedia : IName, ITags, IMultiNames {
   /// </summary>
   string Group { get; set; }
 
+  /// <summary>
+  /// Indicate if the movie belongs to a group
+  /// </summary>
   bool IsGroupMember { get; }
 
   /// <summary>

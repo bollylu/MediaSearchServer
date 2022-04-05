@@ -67,6 +67,7 @@ public abstract class AMovieCache : IMovieCache, IMediaSearchLoggable<TMovieCach
 
   protected virtual async Task<IMovie> _ParseEntry(IFileInfo item) {
 
+    await Task.Yield();
     // Standardize directory separator
     string ProcessedFileItem = item.FullName.NormalizePath();
 
@@ -78,31 +79,16 @@ public abstract class AMovieCache : IMovieCache, IMediaSearchLoggable<TMovieCach
     RetVal.FileName = item.Name;
     RetVal.FileExtension = RetVal.FileName.AfterLast('.').ToLowerInvariant();
 
-    string[] Tags = RetVal.StoragePath.BeforeLast(FOLDER_SEPARATOR).Split(FOLDER_SEPARATOR, StringSplitOptions.RemoveEmptyEntries);
-    IList<string> GroupTags = Tags.Where(t => t.EndsWith(" #")).ToList();
-    switch (GroupTags.Count) {
-      case 0:
-        RetVal.Group = "";
-        RetVal.SubGroup = "";
-        break;
-      case 1:
-        RetVal.Group = GroupTags[0]; 
-        RetVal.SubGroup = "";
-        break;
-      case 2:
-        RetVal.Group = GroupTags[0];
-        RetVal.SubGroup = GroupTags[1];
-        break;
-      default:
-        RetVal.Group = GroupTags[0];
-        RetVal.SubGroup = GroupTags[1];
-        Logger.LogWarning($"Too much groups in path name : {string.Join(", ", Tags)}".BoxFixedWidth(GlobalSettings.DEBUG_BOX_WIDTH));
-        break;
+    IEnumerable<string> Tags = RetVal.StoragePath
+                                      .BeforeLast(FOLDER_SEPARATOR)
+                                      .Split(FOLDER_SEPARATOR, StringSplitOptions.RemoveEmptyEntries);
+
+    foreach (string TagItem in Tags.Where(t => !t.EndsWith(" #"))) {
+      RetVal.Tags.Add(TagItem.TrimStart('[').TrimEnd(']'));
     }
 
-    foreach (string TagItem in Tags) {
-      RetVal.Tags.Add(TagItem);
-    }
+    IEnumerable<string> GroupTags = Tags.Where(t => t.EndsWith(" #")).Select(t => t.TrimEnd(' ', '#'));
+    RetVal.Group = string.Join("/", GroupTags);
 
     try {
       RetVal.CreationYear = int.Parse(RetVal.FileName.AfterLast('(').BeforeLast(')'));
@@ -113,12 +99,12 @@ public abstract class AMovieCache : IMovieCache, IMediaSearchLoggable<TMovieCach
 
     RetVal.Size = item.Length;
 
-    IMediaInfoFile DataFile = new TMovieInfoFileMeta(Path.Join(RetVal.StorageRoot, RetVal.StoragePath));
-    if (await DataFile.Exists()) {
-      Logger.LogDebugExBox("Found datafile", DataFile);
-      await DataFile.Read();
-      //RetVal.MovieInfoContentMeta.Duplicate(DataFile.Content);
-    }
+    //IMediaInfoFile DataFile = new TMovieInfoFileMeta(Path.Join(RetVal.StorageRoot, RetVal.StoragePath));
+    //if (await DataFile.Exists()) {
+    //  Logger.LogDebugExBox("Found datafile", DataFile);
+    //  await DataFile.Read();
+    //  //RetVal.MovieInfoContentMeta.Duplicate(DataFile.Content);
+    //}
 
     return RetVal;
   }
