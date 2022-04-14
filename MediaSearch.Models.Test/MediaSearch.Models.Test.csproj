@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Data\movies.json">
+    <None Update="Data\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

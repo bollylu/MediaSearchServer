@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BuildMoviesJson": {
+      "commandName": "Project",
+      "commandLineArgs": "source=\"\\\\multimedia.sharenet.priv\\multimedia\\films\" dbpath=\"i:\\json\" dbname=\"movies\""
+    }
+  }
+}

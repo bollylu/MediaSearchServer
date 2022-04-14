@@ -20,8 +20,8 @@ public class TMovieInfoContentMeta : IMediaInfoContent,
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMovieInfoContentMeta() { }
   public TMovieInfoContentMeta(IMovie movie) {
-    foreach(var TitleItem in movie.Titles) {
-      Titles.Add(new TLanguageTextInfo(TitleItem.Key, TitleItem.Value));
+    foreach(var TitleItem in movie.Titles.GetAll()) {
+      Titles.Add(TitleItem);
     }
     
   } 

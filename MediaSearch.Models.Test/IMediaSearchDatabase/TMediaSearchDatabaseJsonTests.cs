@@ -6,47 +6,34 @@ public class TMediaSearchDatabaseJsonTests {
 
   [TestMethod]
   public void Instanciate_Empty_TMediaSearchDatabaseJson() {
-    TMediaSearchDatabaseJson Target = new TMediaSearchDatabaseJson() {
-      Name = "test",
-      Description = "test db",
-      StoragePath = Path.GetTempPath(),
-      StorageFilename = "empty.json"
-    };
+
+    IMediaSearchDatabase Target = new TMediaSearchDatabaseJson(Path.GetTempPath(), "empty");
     Assert.IsNotNull(Target);
     Assert.IsTrue(Target.IsEmpty());
 
-    TraceMessage("Target", Target.ToString());
+    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
   public void Empty_TMediaSearchDatabaseJson_OpenThenAddItems_ThenCleanup() {
-    TMediaSearchDatabaseJson Target = new TMediaSearchDatabaseJson() {
-      Name = "test",
-      Description = "test db",
-      StoragePath = Path.GetTempPath(),
-      StorageFilename = $"TestAdd{Random.Shared.Next()}.json"
-    };
+    IMediaSearchDatabase Target = new TMediaSearchDatabaseJson(Path.GetTempPath(), $"TestAdd{Random.Shared.Next()}");
 
     Target.Open();
     Assert.IsTrue(Target.Exists());
 
-    IMedia Media = new TMovie() {
-      Name = "test movie",
-      Description = "Good movie",
-      Size = 1234,
-      CreationYear = 1966
+    IMedia Media = new TMovie("test movie", 1966) {
+      Size = 1234
     };
+    Media.Descriptions.Add("A good movie");
     Target.Add(Media);
 
     TraceMessage("Target after one addition", Target.ToString());
     Assert.AreEqual(1, Target.GetAll().Count());
 
-    IMedia Media2 = new TMovie() {
-      Name = "other movie",
-      Description = "Bad movie",
-      Size = 4321,
-      CreationYear = 1989
+    IMedia Media2 = new TMovie("other movie", 1989) {
+      Size = 4321
     };
+    Media2.Descriptions.Add("Bad movies");
     Target.Add(Media2);
 
     TraceMessage("Target after two additions", Target.ToString());
@@ -59,111 +46,141 @@ public class TMediaSearchDatabaseJsonTests {
   }
 
   [TestMethod]
-  public async Task TMediaSearchDatabaseJson_AddItems_ThenCommit() {
-    TMediaSearchDatabaseJson Target = new TMediaSearchDatabaseJson() {
-      Name = "test",
-      Description = "test db",
-      StoragePath = Path.GetTempPath(),
-      StorageFilename = $"TestAdd{Random.Shared.Next()}.json"
-    };
+  public async Task TMediaSearchDatabaseJson_AddItems_ThenSave() {
+    IMediaSearchDatabase Target = new TMediaSearchDatabaseJson(Path.GetTempPath(), $"TestAdd{Random.Shared.Next()}");
 
     Target.Open();
     Assert.IsTrue(Target.Exists());
 
-    Target.Add(new TMovie() {
-      Name = "test movie",
-      Description = "Good movie",
-      Size = 1234,
-      CreationYear = 1966
-    });
+    IMedia Media = new TMovie("test movie", 1966) {
+      Size = 1234
+    };
+    Media.Descriptions.Add("A good movie");
+    Target.Add(Media);
 
-    Target.Add(new TMovie() {
-      Name = "other movie",
-      Description = "Bad movie",
-      Size = 4321,
-      CreationYear = 1989
-    });
+    TraceMessage("Target after one addition", Target.ToString());
+    Assert.AreEqual(1, Target.GetAll().Count());
 
-    TraceMessage("Target after two additions", Target.ToString());
+    IMedia Media2 = new TMovie("other movie", 1989) {
+      Size = 4321
+    };
+    Media2.Descriptions.Add("Bad movies");
+    Target.Add(Media2);
+    Assert.IsTrue(Target.IsDirty);
+
+    TraceMessage("Target after two additions", Target);
 
     await Target.SaveAsync(CancellationToken.None);
-    await Target.CloseAsync(CancellationToken.None);
+    Assert.IsFalse(Target.IsDirty);
 
-    TraceMessage("RwContent of file", await File.ReadAllTextAsync(Target.FullStorageFilename));
+    foreach (string RecordItem in Target.GetAll().Select(r => r.Id)) {
+      string RealFullFilename = Path.Combine(((TMediaSearchDatabaseJson)Target).DatabaseFullName, RecordItem);
+      TraceMessage($"RawContent of {RecordItem}", await File.ReadAllTextAsync($"{RealFullFilename}.json"));
+    }
+
+    await Target.CloseAsync(CancellationToken.None);
     Target.Remove();
     Assert.IsFalse(Target.Exists());
   }
 
   [TestMethod]
-  public async Task TMediaSearchDatabaseJson_AddItems_WithAutoCommit_Async() {
-    TMediaSearchDatabaseJson Target = new TMediaSearchDatabaseJson() {
-      Name = "test",
-      Description = "test db",
-      StoragePath = Path.GetTempPath(),
-      StorageFilename = $"TestAdd{Random.Shared.Next()}.json",
-      AutoSave = true
-    };
+  public async Task TMediaSearchDatabaseJson_AddItems_WithAutoSave_Async() {
+    IMediaSearchDatabase Target = new TMediaSearchDatabaseJson(Path.GetTempPath(), $"TestAdd{Random.Shared.Next()}");
+    Target.AutoSave = true;
 
     Target.Open();
     Assert.IsTrue(Target.Exists());
+    Assert.IsFalse(Target.IsDirty);
 
-    Target.Add(new TMovie() {
-      Name = "test movie",
-      Description = "Good movie",
-      Size = 1234,
-      CreationYear = 1966
-    });
+    IMedia Media = new TMovie("test movie", 1966) {
+      Size = 1234
+    };
+    Media.Descriptions.Add("A good movie");
 
-    TraceMessage("RawContent of file after 1 addition", await File.ReadAllTextAsync(Target.FullStorageFilename));
+    IMedia Media2 = new TMovie("other movie", 1989) {
+      Size = 4321
+    };
+    Media2.Descriptions.Add("Bad movies");
 
-    Target.Add(new TMovie() {
-      Name = "other movie",
-      Description = "Bad movie",
-      Size = 4321,
-      CreationYear = 1989
-    });
+    await Target.AddAsync(Media, CancellationToken.None);
+    Assert.IsFalse(Target.IsDirty);
 
-    TraceMessage("RawContent of file after 2 additions", await File.ReadAllTextAsync(Target.FullStorageFilename));
+    TraceMessage("Db after 1 addition", Directory.EnumerateFiles(((TMediaSearchDatabaseJson)Target).DatabaseFullName).Count());
 
-    TraceMessage("Target after two additions", Target.ToString());
+    await Target.AddAsync(Media2, CancellationToken.None);
+    Assert.IsFalse(Target.IsDirty);
 
-    await Target.SaveAsync(CancellationToken.None);
+    TraceMessage("Db after 2 additions", Directory.EnumerateFiles(((TMediaSearchDatabaseJson)Target).DatabaseFullName).Count());
+
+    TraceMessage("Target after two additions", Target);
+
     await Target.CloseAsync(CancellationToken.None);
 
-    TraceMessage("RwContent of file", await File.ReadAllTextAsync(Target.FullStorageFilename));
+    foreach (string RecordItem in Target.GetAll().Select(r => r.Id)) {
+      string RealFullFilename = Path.Combine(((TMediaSearchDatabaseJson)Target).DatabaseFullName, RecordItem);
+      TraceMessage($"RawContent of {RecordItem}", await File.ReadAllTextAsync($"{RealFullFilename}.json"));
+    }
     Target.Remove();
     Assert.IsFalse(Target.Exists());
   }
 
   [TestMethod]
   public void Duplicate_TMediaSearchDatabaseJson() {
-    TMediaSearchDatabaseJson Source = new TMediaSearchDatabaseJson() {
-      Name = "test",
-      Description = "test db"
+    IMediaSearchDatabase Source = new TMediaSearchDatabaseJson(Path.GetTempPath(), $"TestAdd{Random.Shared.Next()}");
+
+    Assert.IsTrue(Source.Open());
+    Assert.IsTrue(Source.Exists());
+
+    IMedia Media = new TMovie("test movie", 1966) {
+      Size = 1234
     };
+    Media.Descriptions.Add("A good movie");
 
-    Source.Add(new TMovie() {
-      Name = "test movie",
-      Description = "Good movie",
-      Size = 1234,
-      CreationYear = 1966
-    });
-
-    Source.Add(new TMovie() {
-      Name = "other movie",
-      Description = "Bad movie",
-      Size = 4321,
-      CreationYear = 1989
-    });
-
-    TraceMessage("Source after two additions", Source.ToString());
-
-    TMediaSearchDatabaseJson Target = new TMediaSearchDatabaseJson(Source) {
-      Name = "second",
-      Description = "Duplicated db"
+    IMedia Media2 = new TMovie("other movie", 1989) {
+      Size = 4321
     };
+    Media2.Descriptions.Add("Bad movies");
 
-    TraceMessage("Target", Target.ToString());
+    Source.Add(Media);
+    Assert.IsTrue(Source.IsDirty);
+
+    Source.Add(Media2);
+    Assert.IsTrue(Source.IsDirty);
+
+    TraceMessage($"{nameof(Source)} after 2 additions : {Source.GetType().Name}", Source);
+
+    Assert.IsTrue(Source.Save());
+    Assert.IsFalse(Source.IsDirty);
+    Source.Close();
+
+    IMediaSearchDatabase Target = new TMediaSearchDatabaseJson(Source) {
+      DatabaseName = $"TestAdd{Random.Shared.Next()}"
+    };
+    Assert.IsFalse(Target.Exists());
+    Assert.IsTrue(Target.Open());
+    Assert.IsTrue(Target.Save());
+    Assert.IsTrue(Target.Exists());
+    Target.Close();
+
+    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
     Assert.AreEqual(2, Target.GetAll().Count());
+
+    Source.Remove();
+    Target.Remove();
+    Assert.IsFalse(Source.Exists());
+    Assert.IsFalse(Target.Exists());
+  }
+
+  [TestMethod]
+  public void Instance_TMediaSearchDatabaseJson_Load() {
+    IMediaSearchDatabase Target = new TMediaSearchDatabaseJson("data", "movies");
+    Assert.IsTrue(Target.Exists());
+
+    Assert.IsTrue(Target.Open());
+    Assert.IsTrue(Target.Load());
+
+    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+
+    Target.Close();
   }
 }

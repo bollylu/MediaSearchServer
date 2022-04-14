@@ -28,17 +28,17 @@ public class TMovieInfoFileMeta : IMediaInfoFile, IMediaSearchLoggable<TMovieInf
   #endregion --- Header --------------------------------------------
 
   #region --- Content --------------------------------------------
-  public IMediaInfoContent Content {
+  public IMedia Content {
     get {
-      return _Content ??= new TMovieInfoContentMeta();
+      return _Content ??= new TMovie();
     }
     set {
       _Content = value;
     }
   }
-  private IMediaInfoContent? _Content;
+  private IMedia? _Content;
 
-  public TMovieInfoContentMeta MetaContent => (TMovieInfoContentMeta)Content;
+  public TMovie MetaContent => (TMovie)Content;
 
   public string RawContent { get; private set; } = ""; 
   #endregion --- Content --------------------------------------------

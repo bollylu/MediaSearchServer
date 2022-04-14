@@ -16,6 +16,6 @@ public interface IMediaInfoFile {
   Task<bool> ExportAsync(string newFilename, CancellationToken token);
 
   IMediaInfoHeader Header { get; }
-  IMediaInfoContent Content { get; }
+  IMedia Content { get; }
 
 }

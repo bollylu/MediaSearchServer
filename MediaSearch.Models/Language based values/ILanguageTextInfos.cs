@@ -2,6 +2,7 @@
 public interface ILanguageTextInfos {
 
   void Add(ILanguageTextInfo languageTextInfo);
+  void Add(string value, bool isPrincipal = false);
   void Add(ELanguage language, string value, bool isPrincipal = false);
   void Clear();
   bool Any();

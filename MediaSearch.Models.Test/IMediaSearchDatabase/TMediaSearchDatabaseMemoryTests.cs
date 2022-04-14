@@ -4,81 +4,74 @@
 public class TMediaSearchDatabaseMemoryTests {
 
   [TestMethod]
-  public void Instanciate_Empty_TMediaSearchDatabaseMemory() {
-    TMediaSearchDatabaseMemory Target = new TMediaSearchDatabaseMemory() {
-      Name = "test",
-      Description = "test db"
-    };
+  public void Instanciate_TMediaSearchDatabaseMemory_Empty() {
+    IMediaSearchDatabase Target = new TMediaSearchDatabaseMemory();
     Assert.IsNotNull(Target);
+
+    Assert.IsNotNull(Target.Header);
+    Target.Header.Name = "test";
+    Target.Header.Description = "test db";
+
     Assert.IsTrue(Target.IsEmpty());
 
-    TraceMessage("Target", Target.ToString());
+    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
   public void Empty_TMediaSearchDatabaseMemory_AddItems() {
-    TMediaSearchDatabaseMemory Target = new TMediaSearchDatabaseMemory() {
-      Name = "test",
-      Description = "test db"
-    };
+    IMediaSearchDatabase Target = new TMediaSearchDatabaseMemory();
+    Target.Header.Name = "test";
+    Target.Header.Description = "test db";
     Assert.IsNotNull(Target);
+
     Assert.IsTrue(Target.IsEmpty());
 
-    IMedia Media = new TMovie() {
-      Name = "test movie",
-      Description = "Good movie",
-      Size = 1234,
-      CreationYear = 1966
+    IMedia Media = new TMovie("test movie", 1966) {
+      Size = 1234
     };
+    Media.Descriptions.Add(ELanguage.English, "Good movie");
     Target.Add(Media);
 
-    TraceMessage("Target after one addition", Target.ToString());
+    TraceMessage($"{nameof(Target)} after 1 addition : {Target.GetType().Name}", Target);
     Assert.AreEqual(1, Target.GetAll().Count());
 
-    IMedia Media2 = new TMovie() {
-      Name = "other movie",
-      Description = "Bad movie",
+    IMedia Media2 = new TMovie("other movie", 1989) {
       Size = 4321,
-      CreationYear = 1989
     };
+    Media2.Descriptions.Add(ELanguage.English, "Bad movie");
     Target.Add(Media2);
 
-    TraceMessage("Target after two additions", Target.ToString());
+    TraceMessage($"{nameof(Target)} after 2 additions : {Target.GetType().Name}", Target);
 
     Assert.AreEqual(2, Target.GetAll().Count());
   }
 
   [TestMethod]
   public void Duplicate_TMediaSearchDatabaseMemory() {
-    TMediaSearchDatabaseMemory Source = new TMediaSearchDatabaseMemory() {
-      Name = "test",
-      Description = "test db"
-    };
+    IMediaSearchDatabase Source = new TMediaSearchDatabaseMemory();
+    Source.Header.Name = "test";
+    Source.Header.Description = "test db";
 
-    IMedia Media = new TMovie() {
-      Name = "test movie",
-      Description = "Good movie",
-      Size = 1234,
-      CreationYear = 1966
+    IMedia Media = new TMovie("test movie", 1966) {
+      Size = 1234
     };
+    Media.Descriptions.Add(ELanguage.English, "Good movie");
     Source.Add(Media);
 
-    IMedia Media2 = new TMovie() {
-      Name = "other movie",
-      Description = "Bad movie",
+    TraceMessage($"{nameof(Source)} after 1 addition : {Source.GetType().Name}", Source);
+    Assert.AreEqual(1, Source.GetAll().Count());
+
+    IMedia Media2 = new TMovie("other movie", 1989) {
       Size = 4321,
-      CreationYear = 1989
     };
+    Media2.Descriptions.Add(ELanguage.English, "Bad movie");
     Source.Add(Media2);
 
-    TraceMessage("Source after two additions", Source.ToString());
+    TraceMessage($"{nameof(Source)} after 2 additions : {Source.GetType().Name}", Source);
 
-    TMediaSearchDatabaseMemory Target = new TMediaSearchDatabaseMemory(Source) {
-      Name = "second",
-      Description = "Duplicated db"
-    };
+    IMediaSearchDatabase Target = new TMediaSearchDatabaseMemory(Source);
 
-    TraceMessage("Target", Target.ToString());
+    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
     Assert.AreEqual(2, Target.GetAll().Count());
   }
 }

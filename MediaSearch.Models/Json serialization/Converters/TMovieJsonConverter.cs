@@ -6,7 +6,7 @@ public class TMovieJsonConverter : JsonConverter<TMovie> {
   public IMediaSearchLogger<TMovieJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovieJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
-    return typeToConvert == typeof(TMovie);
+    return typeToConvert == typeof(TMovie) || typeToConvert.UnderlyingSystemType.Name == nameof(IMovie);
   }
 
   public override TMovie Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
@@ -37,10 +37,6 @@ public class TMovieJsonConverter : JsonConverter<TMovie> {
               reader.GetString();
               break;
 
-            case nameof(IMovie.Name):
-              RetVal.Name = reader.GetString() ?? "";
-              break;
-
             case nameof(IMovie.Group):
               RetVal.Group = reader.GetString() ?? "";
               break;
@@ -62,7 +58,10 @@ public class TMovieJsonConverter : JsonConverter<TMovie> {
               break;
 
             case nameof(IMovie.CreationYear):
-              RetVal.CreationYear = reader.GetInt32();
+              int Year = reader.GetInt32();
+              if (Year > 0) {
+                RetVal.CreationDate = new DateOnly(Year, 1, 1);
+              }
               break;
 
             case nameof(IMovie.DateAdded):
@@ -70,10 +69,20 @@ public class TMovieJsonConverter : JsonConverter<TMovie> {
               break;
 
             case nameof(IMovie.Titles):
-              while (reader.Read() && reader.TokenType != JsonTokenType.EndArray) {
-                string TitleItem = reader.GetString() ?? "";
-                ELanguage Language = Enum.Parse<ELanguage>(TitleItem.Before('|'));
-                RetVal.Titles.Add(Language, TitleItem.After('|'));
+              ILanguageTextInfos? Titles = JsonSerializer.Deserialize<TLanguageTextInfos>(ref reader, options);
+              if (Titles is not null) {
+                foreach (var TitleItem in Titles.GetAll()) {
+                  RetVal.Titles.Add(TitleItem);
+                }
+              }
+              break;
+
+            case nameof(IMovie.Descriptions):
+              ILanguageTextInfos? Descriptions = JsonSerializer.Deserialize<TLanguageTextInfos>(ref reader, options);
+              if (Descriptions is not null) {
+                foreach (var DescriptionItem in Descriptions.GetAll()) {
+                  RetVal.Descriptions.Add(DescriptionItem);
+                }
               }
               break;
 
@@ -120,7 +129,6 @@ public class TMovieJsonConverter : JsonConverter<TMovie> {
     writer.WriteStartObject();
 
     writer.WriteString(nameof(IMovie.Id), value.Id);
-    writer.WriteString(nameof(IMovie.Name), value.Name);
     writer.WriteString(nameof(IMovie.Group), value.Group);
     writer.WriteString(nameof(IMovie.StoragePath), value.StoragePath);
     writer.WriteString(nameof(IMovie.FileName), value.FileName);
@@ -130,11 +138,11 @@ public class TMovieJsonConverter : JsonConverter<TMovie> {
     writer.WritePropertyName(nameof(IMovie.DateAdded));
     JsonSerializer.Serialize(writer, value.DateAdded, options);
 
-    writer.WriteStartArray(nameof(IMovie.Titles));
-    foreach (var TitleItem in value.Titles) {
-      writer.WriteStringValue($"{TitleItem.Key}|{TitleItem.Value}");
-    }
-    writer.WriteEndArray();
+    writer.WritePropertyName(nameof(IMovie.Titles));
+    JsonSerializer.Serialize(writer, value.Titles, options);
+
+    writer.WritePropertyName(nameof(IMovie.Descriptions));
+    JsonSerializer.Serialize(writer, value.Descriptions, options);
 
     writer.WriteStartArray(nameof(IMovie.Tags));
     foreach (string TagItem in value.Tags) {

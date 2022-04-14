@@ -1,4 +1,6 @@
-﻿using BLTools.Text;
+﻿using System.Xml.Linq;
+
+using BLTools.Text;
 
 namespace MediaSearch.Models;
 public class TMediaSourceMovieKodiParser : IMediaSourceParser, IMediaSearchLoggable<TMediaSourceMovieKodiParser> {
@@ -11,7 +13,9 @@ public class TMediaSourceMovieKodiParser : IMediaSourceParser, IMediaSearchLogga
     // Standardize directory separator
     string ProcessedFileItem = item.FullName.NormalizePath();
 
-    TMovie RetVal = new TMovie() { Name = ProcessedFileItem.AfterLast(FOLDER_SEPARATOR).BeforeLast(" (") };
+    TMovie RetVal = new TMovie();
+
+    RetVal.Titles.Add(ELanguage.Unknown, ProcessedFileItem.AfterLast(FOLDER_SEPARATOR).BeforeLast(" ("), true);
 
     RetVal.StorageRoot = rootStoragePath.NormalizePath();
     RetVal.StoragePath = ProcessedFileItem.BeforeLast(FOLDER_SEPARATOR).After(RetVal.StorageRoot, System.StringComparison.InvariantCultureIgnoreCase);
@@ -31,10 +35,10 @@ public class TMediaSourceMovieKodiParser : IMediaSourceParser, IMediaSearchLogga
     RetVal.Group = string.Join("/", GroupTags);
 
     try {
-      RetVal.CreationYear = int.Parse(RetVal.FileName.AfterLast('(').BeforeLast(')'));
+      RetVal.CreationDate = new DateOnly(int.Parse(RetVal.FileName.AfterLast('(').BeforeLast(')')), 1, 1);
     } catch (FormatException ex) {
       Logger.LogWarningBox($"Unable to find output year", $"{ex.Message}\n{item.FullName}");
-      RetVal.CreationYear = 0;
+      RetVal.CreationDate = DateOnly.MinValue;
     }
 
     RetVal.Size = item.Length;
@@ -53,7 +57,9 @@ public class TMediaSourceMovieKodiParser : IMediaSourceParser, IMediaSearchLogga
     // Standardize directory separator
     string ProcessedFileItem = item.FullName.NormalizePath();
 
-    TMovie RetVal = new TMovie() { Name = ProcessedFileItem.AfterLast(FOLDER_SEPARATOR).BeforeLast(" (") };
+    TMovie RetVal = new TMovie();
+
+    RetVal.Titles.Add(ELanguage.Unknown, ProcessedFileItem.AfterLast(FOLDER_SEPARATOR).BeforeLast(" ("), true);
 
     RetVal.StorageRoot = rootStoragePath.NormalizePath();
     RetVal.StoragePath = ProcessedFileItem.BeforeLast(FOLDER_SEPARATOR).After(RetVal.StorageRoot, System.StringComparison.InvariantCultureIgnoreCase);
@@ -73,10 +79,10 @@ public class TMediaSourceMovieKodiParser : IMediaSourceParser, IMediaSearchLogga
     RetVal.Group = string.Join("/", GroupTags);
 
     try {
-      RetVal.CreationYear = int.Parse(RetVal.FileName.AfterLast('(').BeforeLast(')'));
+      RetVal.CreationDate = new DateOnly(int.Parse(RetVal.FileName.AfterLast('(').BeforeLast(')')), 1, 1);
     } catch (FormatException ex) {
       Logger.LogWarningBox($"Unable to find output year", $"{ex.Message}\n{item.FullName}");
-      RetVal.CreationYear = 0;
+      RetVal.CreationDate = DateOnly.MinValue;
     }
 
     RetVal.Size = item.Length;

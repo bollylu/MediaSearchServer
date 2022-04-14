@@ -1,4 +1,6 @@
-﻿using BLTools.Text;
+﻿using System.Collections;
+
+using BLTools.Text;
 
 using MediaSearch.Models;
 
@@ -11,11 +13,31 @@ public static class Display {
   }
 
   public static void TraceMessage(string? title, object? item) {
+
     if (item is null) {
       Console.WriteLine($"null object".BoxFixedWidth(title ?? "", GlobalSettings.DEBUG_BOX_WIDTH));
-    } else {
-      Console.WriteLine(item.ToString().BoxFixedWidth(title ?? "", GlobalSettings.DEBUG_BOX_WIDTH));
+      return;
     }
+
+    switch (item) {
+      case string StringItem: {
+          Console.WriteLine(StringItem.BoxFixedWidth(title ?? "", GlobalSettings.DEBUG_BOX_WIDTH));
+          return;
+        }
+
+      case IEnumerable EnumerableItems: {
+          foreach(var ItemItem in EnumerableItems) {
+            Console.WriteLine(ItemItem.ToString().BoxFixedWidth(title ?? "", GlobalSettings.DEBUG_BOX_WIDTH));
+          }
+          return;
+        }
+
+      default: {
+          Console.WriteLine(item.ToString().BoxFixedWidth(title ?? "", GlobalSettings.DEBUG_BOX_WIDTH));
+          return;
+        }
+    }
+      
   }
 
   public static void TraceMoviesName(IEnumerable<IMovie> movies) {

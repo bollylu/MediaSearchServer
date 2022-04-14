@@ -65,7 +65,7 @@ public class Program {
     MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerFile(LogFile) { SeverityLimit = ESeverity.Debug });
     MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<TLoginService>(LogFile) { SeverityLimit = ESeverity.Debug });
     MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<TMovieService>(LogFile) { SeverityLimit = ESeverity.Debug });
-    MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<TMovieCache>(LogFile) { SeverityLimit = ESeverity.Debug });
+    MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<TMediaSearchDatabaseJson>(LogFile) { SeverityLimit = ESeverity.Debug });
     #endregion --- Log configuration --------------------------------------------
 
     string AuditFile = GlobalSettings.AppArgs.GetValue("audit", OperatingSystem.IsWindows() ? DEFAULT_AUDITFILE_WINDOWS : DEFAULT_AUDITFILE_LINUX);

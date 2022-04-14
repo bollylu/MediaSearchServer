@@ -1,17 +1,19 @@
-﻿using MediaSearch.Server.Services;
-
-namespace MediaSearch.Models.Serialization.Test;
+﻿namespace MediaSearch.Models.Serialization.Test;
 
 [TestClass]
 public class TMoviesPageSerializationTest {
 
-  internal IMovieService MovieService => _MovieService ??= new XMovieService(new XMovieCache() { DataSource = @"data\movies.json" });
-  private IMovieService? _MovieService;
+  internal TMediaSearchDatabaseJson Database => _Database ??= new TMediaSearchDatabaseJson("data", "movies");
+  private TMediaSearchDatabaseJson? _Database;
 
   [TestMethod]
-  public async Task Serialize() {
+  public void Serialize() {
 
-    List<IMovie> Movies = await MovieService.GetAllMovies().Take(2).ToListAsync<IMovie>().ConfigureAwait(false);
+    Assert.IsTrue(Database.Exists());
+    Assert.IsTrue(Database.Open());
+    Assert.IsTrue(Database.Load());
+
+    IList<IMovie> Movies = Database.GetAll().Take(2).Cast<IMovie>().ToList();
 
     IMoviesPage Source = new TMoviesPage() {
       Name = "Sélection",
@@ -22,17 +24,20 @@ public class TMoviesPageSerializationTest {
     };
     Source.Movies.AddRange(Movies);
 
-    TraceMessage("Source", Source);
+    TraceMessage($"{nameof(Source)} : {Source.GetType().Name}", Source);
 
     string Target = Source.ToJson();
 
     Assert.IsNotNull(Target);
-    TraceMessage("Target", Target);
+    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
-  public async Task Deserialize() {
-    List<IMovie> Movies = await MovieService.GetAllMovies().Take(2).ToListAsync<IMovie>().ConfigureAwait(false);
+  public void Deserialize() {
+    Assert.IsTrue(Database.Exists());
+    Assert.IsTrue(Database.Open());
+    Assert.IsTrue(Database.Load());
+    IList<IMovie> Movies = Database.GetAll().Take(2).Cast<IMovie>().ToList();
 
     IMoviesPage MoviesPage = new TMoviesPage() {
       Name = "Sélection",
@@ -44,11 +49,11 @@ public class TMoviesPageSerializationTest {
     MoviesPage.Movies.AddRange(Movies);
 
     string Source = MoviesPage.ToJson();
-    TraceMessage("Source", Source);
+    TraceMessage($"{nameof(Source)} : {Source.GetType().Name}", Source);
 
     IMoviesPage? Target = IJson<TMoviesPage>.FromJson(Source);
     Assert.IsNotNull(Target);
-    TraceMessage("Target", Target);
+    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
 }

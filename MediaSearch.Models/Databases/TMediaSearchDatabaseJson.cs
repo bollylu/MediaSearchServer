@@ -4,28 +4,25 @@ using BLTools.Diagnostic.Logging;
 
 namespace MediaSearch.Models;
 
-public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSearchLoggable<TMediaSearchDatabaseJson> {
+public class TMediaSearchDatabaseJson : IMediaSearchDatabase, IMediaSearchLoggable<TMediaSearchDatabaseJson> {
+
+  public const int TIMEOUT_IN_MS = 5000;
+  public const string JSON_HEADER = "header";
+  public const string JSON_CONTENT = "medias";
 
   public IMediaSearchLogger<TMediaSearchDatabaseJson> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMediaSearchDatabaseJson>();
 
   #region --- Public properties ------------------------------------------------------------------------------
-  #region --- IName --------------------------------------------
-  public string Name {
-    get {
-      return _Name ??= FullStorageFilename;
-    }
-    set {
-      _Name = value;
-    }
-  }
-  private string? _Name;
-  public string Description { get; set; } = "";
-  #endregion --- IName --------------------------------------------
 
-  public string StoragePath { get; init; } = "";
-  public string StorageFilename { get; init; } = "";
+  public IMediaSearchDatabaseHeader Header { get; } = new TMediaSearchDatabaseHeader();
 
-  public string FullStorageFilename => Path.Join(StoragePath, StorageFilename);
+  public string DatabasePath { get; init; } = "";
+  public string DatabaseName { get; init; } = "";
+  public string DatabaseFullName => Path.Join(DatabasePath, DatabaseName);
+
+  public string HeaderFilename { get; init; } = "=header=.json";
+
+  public bool IsDirty { get; set; } = false;
   #endregion --- Public properties ---------------------------------------------------------------------------
 
   #region --- Internal data storage --------------------------------------------
@@ -37,26 +34,44 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
   private readonly ReaderWriterLockSlim _LockData = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
   private bool _IsOpened = false;
-  private bool _IsDirty = false;
+
   #endregion --- Internal data storage --------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMediaSearchDatabaseJson() {
+  public TMediaSearchDatabaseJson(string databasePath, string name) {
+    DatabasePath = databasePath;
+    DatabaseName = name;
+    Header.Name = name;
     Logger.SeverityLimit = ESeverity.DebugEx;
+    SetDirty();
   }
 
-  public TMediaSearchDatabaseJson(IMediaSearchDatabase database) : this() {
+  public TMediaSearchDatabaseJson(IMediaSearchDatabase database) {
+    if (database is TMediaSearchDatabaseJson JsonDatabase) {
+      DatabasePath = JsonDatabase.DatabasePath;
+      DatabaseName = JsonDatabase.DatabaseName;
+    }
+    Header.Name = database.Header.Name;
+    Header.Description = database.Header.Description;
     foreach (IMedia MediaItem in database.GetAll()) {
       _Items.Add(MediaItem);
     }
-    _IsDirty = true;
+    Logger.SeverityLimit = ESeverity.DebugEx;
+    SetDirty();
   }
 
-  public TMediaSearchDatabaseJson(IEnumerable<IMedia> medias) : this() {
+  public TMediaSearchDatabaseJson(IEnumerable<IMedia> medias) {
     foreach (IMedia MediaItem in medias) {
+      MediaItem.SetDirty();
       _Items.Add(MediaItem);
     }
-    _IsDirty = true;
+    Logger.SeverityLimit = ESeverity.DebugEx;
+    SetDirty();
+  }
+
+  public void Dispose() {
+    Close();
+    _Items.Clear();
   }
 
   public async ValueTask DisposeAsync() {
@@ -70,17 +85,21 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
     indent = indent.WithinLimits(0, int.MaxValue);
     string IndentSpace = new string(' ', indent);
 
-    StringBuilder RetVal = new StringBuilder();
-    RetVal.AppendLine($"{IndentSpace}{nameof(TMediaSearchDatabaseJson)} : {Name.WithQuotes()}");
-    if (!string.IsNullOrWhiteSpace(Description)) {
-      RetVal.AppendLine($"{IndentSpace}  {nameof(Description)} : {Description.WithQuotes()}");
+    try {
+      _LockData.EnterReadLock();
+      StringBuilder RetVal = new StringBuilder();
+      RetVal.AppendLine($"{IndentSpace}- {nameof(DatabasePath)} : {DatabasePath.WithQuotes()}");
+      RetVal.AppendLine($"{IndentSpace}- {nameof(DatabaseName)} : {DatabaseName.WithQuotes()}");
+      RetVal.AppendLine($"{IndentSpace}- {nameof(DatabaseFullName)} : {DatabaseFullName.WithQuotes()}");
+      RetVal.AppendLine($"{IndentSpace}- {nameof(Header)}");
+      RetVal.AppendLine($"{IndentSpace}{Header.ToString(2)}");
+      RetVal.AppendLine($"{IndentSpace}- Content in memory : {_Items.Count} item(s)");
+      RetVal.AppendLine($"{IndentSpace}- {nameof(AutoSave)} : {AutoSave}");
+      return RetVal.ToString();
+    } finally {
+      _LockData.ExitReadLock();
     }
-    RetVal.AppendLine($"{IndentSpace}  {nameof(StoragePath)} : {StoragePath.WithQuotes()}");
-    RetVal.AppendLine($"{IndentSpace}  {nameof(StorageFilename)} : {StorageFilename.WithQuotes()}");
-    RetVal.AppendLine($"{IndentSpace}  {nameof(FullStorageFilename)} : {FullStorageFilename.WithQuotes()}");
-    RetVal.AppendLine($"{IndentSpace}  Content in memory : {_Items.Count} item(s)");
-    RetVal.AppendLine($"{IndentSpace}  {nameof(AutoSave)} : {AutoSave}");
-    return RetVal.ToString();
+
   }
 
   public override string ToString() {
@@ -124,15 +143,12 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
       throw new ApplicationException("IMedia item is missing");
     }
 
+    item.SetDirty();
+
     try {
       _LockData.EnterWriteLock();
-      int ItemIndex = _Items.FindIndex(x => x.Id == item.Id);
-      if (ItemIndex < 0) {
-        _Items.Add(item);
-      } else {
-        _Items[ItemIndex] = item;
-      }
-      _IsDirty = true;
+      _Items.Add(item);
+      SetDirty();
     } finally {
       _LockData.ExitWriteLock();
     }
@@ -149,19 +165,14 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
 
     try {
       _LockData.EnterWriteLock();
-      int ItemIndex = _Items.FindIndex(x => x.Id == item.Id);
-      if (ItemIndex < 0) {
-        _Items.Add(item);
-      } else {
-        _Items[ItemIndex] = item;
-      }
-      _IsDirty = true;
-
-      if (AutoSave) {
-        await SaveAsync(token).ConfigureAwait(false);
-      }
+      _Items.Add(item);
+      SetDirty();
     } finally {
       _LockData.ExitWriteLock();
+    }
+
+    if (AutoSave) {
+      await SaveAsync(token).ConfigureAwait(false);
     }
   }
 
@@ -172,14 +183,20 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
 
     try {
       _LockData.EnterWriteLock();
-      _Items.Add(item);
-      _IsDirty = true;
-
-      if (AutoSave) {
-        Save();
+      int ItemIndex = _Items.FindIndex(x => x.Id == item.Id);
+      if (ItemIndex < 0) {
+        _Items.Add(item);
+      } else {
+        _Items[ItemIndex] = item;
       }
+
+      SetDirty();
     } finally {
       _LockData.ExitWriteLock();
+    }
+
+    if (AutoSave) {
+      Save();
     }
   }
 
@@ -190,14 +207,19 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
 
     try {
       _LockData.EnterWriteLock();
-      _Items.Add(item);
-      _IsDirty = true;
-
-      if (AutoSave) {
-        await SaveAsync(token);
+      int ItemIndex = _Items.FindIndex(x => x.Id == item.Id);
+      if (ItemIndex < 0) {
+        _Items.Add(item);
+      } else {
+        _Items[ItemIndex] = item;
       }
+      SetDirty();
     } finally {
       _LockData.ExitWriteLock();
+    }
+
+    if (AutoSave) {
+      await SaveAsync(token).ConfigureAwait(false);
     }
   }
 
@@ -214,13 +236,12 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
       }
       _Items[ItemIndex] = item;
       _Items.Add(item);
-      _IsDirty = true;
-
-      if (AutoSave) {
-        Save();
-      }
+      SetDirty();
     } finally {
       _LockData.ExitWriteLock();
+    }
+    if (AutoSave) {
+      Save();
     }
   }
 
@@ -237,13 +258,13 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
       }
       _Items[ItemIndex] = item;
       _Items.Add(item);
-      _IsDirty = true;
-
-      if (AutoSave) {
-        await SaveAsync(token);
-      }
+      SetDirty();
     } finally {
       _LockData.ExitWriteLock();
+    }
+
+    if (AutoSave) {
+      await SaveAsync(token).ConfigureAwait(false);
     }
   }
 
@@ -259,13 +280,13 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
         throw new ApplicationException($"IMedia item to delete is not found : {item.Id}");
       }
       _Items.RemoveAt(ItemIndex);
-      _IsDirty = true;
-
-      if (AutoSave) {
-        Save();
-      }
+      SetDirty();
     } finally {
       _LockData.ExitWriteLock();
+    }
+
+    if (AutoSave) {
+      Save();
     }
   }
 
@@ -281,13 +302,13 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
         throw new ApplicationException($"IMedia item to delete is not found : {item.Id}");
       }
       _Items.RemoveAt(ItemIndex);
-      _IsDirty = true;
-
-      if (AutoSave) {
-        await SaveAsync(token).ConfigureAwait(false);
-      }
+      SetDirty();
     } finally {
       _LockData.ExitWriteLock();
+    }
+
+    if (AutoSave) {
+      await SaveAsync(token).ConfigureAwait(false);
     }
   }
 
@@ -295,11 +316,12 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
     try {
       _LockData.EnterWriteLock();
       _Items.Clear();
-      if (AutoSave) {
-        Save();
-      }
+      SetDirty();
     } finally {
       _LockData.ExitWriteLock();
+    }
+    if (AutoSave) {
+      Save();
     }
   }
 
@@ -307,11 +329,12 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
     try {
       _LockData.EnterWriteLock();
       _Items.Clear();
-      if (AutoSave) {
-        await SaveAsync(token).ConfigureAwait(false);
-      }
+      SetDirty();
     } finally {
       _LockData.ExitWriteLock();
+    }
+    if (AutoSave) {
+      await SaveAsync(token).ConfigureAwait(false);
     }
   }
 
@@ -366,7 +389,7 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
     }
   }
 
-  public IEnumerable<IMedia> GetFiltered(TFilter filter) {
+  public IEnumerable<IMedia> GetFiltered(IFilter filter) {
 
     if (filter is null) {
       yield break;
@@ -418,7 +441,7 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
   public const int IO_TIMEOUT_IN_MS = 5000;
 
   #region --- Load --------------------------------------------
-  public virtual bool Load() {
+  public bool Load() {
     if (!_IsOpened) {
       throw new ApplicationException("Database needs to be opened to load items");
     }
@@ -426,32 +449,30 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
     bool OldAutoSave = AutoSave;
 
     try {
-      _LockData?.EnterReadLock();
-
       AutoSave = false;
       Clear();
 
-      string DataSourceContent = File.ReadAllText(FullStorageFilename);
-      JsonDocument JsonContent = JsonDocument.Parse(DataSourceContent);
-      JsonElement JsonMovies = JsonContent.RootElement;
-      foreach (JsonElement JsonMovieItem in JsonMovies.GetProperty("movies").EnumerateArray()) {
-        IMovie? Movie = IJson<TMovie>.FromJson(JsonMovieItem.GetRawText());
+      IEnumerable<string> Records = Directory.EnumerateFiles(DatabaseFullName, "*.json");
+      foreach (string RecordItem in Records.AsParallel()) {
+        string DataSourceContent = File.ReadAllText(RecordItem);
+        JsonDocument JsonContent = JsonDocument.Parse(DataSourceContent);
+        JsonElement JsonMovie = JsonContent.RootElement;
+        IMovie? Movie = IJson<TMovie>.FromJson(JsonMovie.GetRawText());
         if (Movie is not null) {
           Add(Movie);
         }
       }
-      _IsDirty = false;
+      ClearDirty();
       return true;
     } catch (Exception ex) {
-      Logger.LogErrorBox($"Unable to load data from {FullStorageFilename}", ex);
+      Logger.LogErrorBox($"Unable to load data from {DatabaseFullName}", ex);
       return false;
     } finally {
-      _LockData?.ExitReadLock();
       AutoSave = OldAutoSave;
     }
   }
 
-  public virtual async Task<bool> LoadAsync(CancellationToken token) {
+  public async Task<bool> LoadAsync(CancellationToken token) {
     if (!_IsOpened) {
       throw new ApplicationException("Database needs to be opened to load items");
     }
@@ -463,19 +484,23 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
       AutoSave = false;
       await ClearAsync(token).ConfigureAwait(false);
 
-      string DataSourceContent = await File.ReadAllTextAsync(FullStorageFilename, token).ConfigureAwait(false);
-      JsonDocument JsonContent = JsonDocument.Parse(DataSourceContent);
-      JsonElement JsonMovies = JsonContent.RootElement;
-      foreach (JsonElement JsonMovieItem in JsonMovies.GetProperty("movies").EnumerateArray()) {
-        IMovie? Movie = IJson<TMovie>.FromJson(JsonMovieItem.GetRawText());
+      IEnumerable<string> Records = Directory.EnumerateFiles(DatabaseFullName, "*.json");
+      foreach (string RecordItem in Records.AsParallel()) {
+        if (token.IsCancellationRequested) {
+          return false;
+        }
+        string DataSourceContent = await File.ReadAllTextAsync(RecordItem, token);
+        JsonDocument JsonContent = JsonDocument.Parse(DataSourceContent);
+        JsonElement JsonMovie = JsonContent.RootElement;
+        IMovie? Movie = IJson<TMovie>.FromJson(JsonMovie.GetRawText());
         if (Movie is not null) {
-          await AddAsync(Movie, CancellationToken.None).ConfigureAwait(false);
+          await AddAsync(Movie, token);
         }
       }
-      _IsDirty = false;
+      ClearDirty();
       return true;
     } catch (Exception ex) {
-      Logger.LogErrorBox($"Unable to load data from {FullStorageFilename}", ex);
+      Logger.LogErrorBox($"Unable to load data from {DatabaseFullName}", ex);
       return false;
     } finally {
       AutoSave = OldAutoSave;
@@ -489,39 +514,37 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
   public bool Save() {
 
     try {
-      Logger.IfDebugMessageEx($"Saving database content to {FullStorageFilename}", $"{Count()} records");
+      Logger.IfDebugMessageEx($"Saving database content to {DatabaseFullName}", $"{Count()} records");
       if (!_IsOpened) {
         return false;
       }
-      if (!_IsDirty) {
+      if (!IsDirty) {
         return true;
       }
 
-      StringBuilder RawContent = new();
-
       try {
-        _LockData.EnterReadLock();
-        RawContent.AppendLine("{\n \"medias\" : [\n");
-        foreach (IJson MovieItem in _Items) {
-          RawContent.Append(MovieItem.ToJson());
-          RawContent.AppendLine(",");
+
+        foreach (IMovie MovieItem in GetAll().Where(m => m.IsDirty).AsParallel()) {
+          string RecordName = $"{Path.Combine(DatabaseFullName, MovieItem.Id)}.json";
+          using (FileStream OutputStream = new FileStream(RecordName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None)) {
+            using (Utf8JsonWriter Writer = new Utf8JsonWriter(OutputStream, new JsonWriterOptions() { Indented = true, Encoder = IJson.DefaultJsonSerializerOptions.Encoder })) {
+              JsonSerializer.Serialize(Writer, MovieItem, IJson.DefaultJsonSerializerOptions);
+              Writer.Flush();
+            }
+          }
+          MovieItem.ClearDirty();
         }
-        RawContent.Truncate(1);
-        RawContent.AppendLine("\n]\n}");
-      } finally {
-        _LockData.ExitReadLock();
-      }
-
-      try {
-        File.WriteAllText(FullStorageFilename, RawContent.ToString());
-        _IsDirty = false;
+        ClearDirty();
         return true;
+
       } catch (Exception ex) {
         Logger.LogErrorBox("Unable to commit changes to storage", ex);
         return false;
+
       }
+
     } finally {
-      Logger.IfDebugMessageEx($"Database content saved to {FullStorageFilename}", $"{Count()} records");
+      Logger.IfDebugMessageEx($"Database content saved to {DatabaseFullName}", $"{Count()} records");
     }
 
   }
@@ -529,40 +552,39 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
   public async Task<bool> SaveAsync(CancellationToken token) {
 
     try {
-      Logger.IfDebugMessageEx($"Saving database content to {FullStorageFilename}", $"{Count()} records");
+      Logger.IfDebugMessageEx($"Saving database content to {DatabaseFullName}", $"{_Items.Count} records");
 
       if (!_IsOpened) {
         return false;
       }
-      if (!_IsDirty) {
+      if (!IsDirty) {
         return true;
       }
 
-      StringBuilder RawContent = new();
-
       try {
-        _LockData.EnterReadLock();
-        RawContent.AppendLine("{\n \"medias\" : [\n");
-        foreach (IJson MovieItem in _Items) {
-          RawContent.Append(MovieItem.ToJson());
-          RawContent.AppendLine(",");
+
+        await foreach (IMovie MovieItem in GetAllAsync(token).Where(m => m.IsDirty).ConfigureAwait(false)) {
+          if (token.IsCancellationRequested) {
+            return false;
+          }
+          string RecordName = $"{Path.Combine(DatabaseFullName, MovieItem.Id)}.json";
+          using (MemoryStream OutputStream = new MemoryStream()) {
+            await JsonSerializer.SerializeAsync(OutputStream, MovieItem, IJson.DefaultJsonSerializerOptions, token).ConfigureAwait(false);
+            await File.WriteAllBytesAsync(RecordName, OutputStream.ToArray(), token).ConfigureAwait(false);
+          }
+          MovieItem.ClearDirty();
         }
-        RawContent.Truncate(1);
-        RawContent.AppendLine("\n]\n}");
-      } finally {
-        _LockData.ExitReadLock();
-      }
-
-      try {
-        await File.WriteAllTextAsync(FullStorageFilename, RawContent.ToString(), token).ConfigureAwait(false);
-        _IsDirty = false;
+        ClearDirty();
         return true;
+
       } catch (Exception ex) {
         Logger.LogErrorBox("Unable to commit changes to storage", ex);
         return false;
+
       }
+
     } finally {
-      Logger.IfDebugMessageEx($"Database content saved asynchronously to {FullStorageFilename}", $"{Count()} records");
+      Logger.IfDebugMessageEx($"Database content saved asynchronously to {DatabaseFullName}", $"{Count()} records");
     }
 
   }
@@ -574,27 +596,25 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
     }
     try {
 
-      Logger.IfDebugMessageEx("Opening json database", FullStorageFilename);
+      Logger.IfDebugMessageEx("Opening json database", DatabaseFullName);
       if (Exists()) {
         _IsOpened = true;
-        _IsDirty = false;
         return true;
       }
 
       try {
-        FileStream Db = File.Create(FullStorageFilename);
-        Db.Close();
+        Create();
         _IsOpened = true;
-        _IsDirty = false;
+        ClearDirty();
         return true;
       } catch (Exception ex) {
         _IsOpened = false;
-        Logger.LogErrorBox($"Unable to create {FullStorageFilename}", ex);
+        Logger.LogErrorBox($"Unable to create {DatabaseFullName}", ex);
         return false;
       }
 
     } finally {
-      Logger.IfDebugMessageEx("Json database status", this);
+      Logger.IfDebugMessageEx("Json database status after open", this);
     }
 
 
@@ -603,12 +623,12 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
   public void Close() {
 
     try {
-      Logger.IfDebugMessageEx("Closing json database", FullStorageFilename);
-      if (_IsOpened && _IsDirty) {
+      Logger.IfDebugMessageEx("Closing json database", DatabaseFullName);
+      if (_IsOpened && IsDirty) {
         Save();
       }
       _IsOpened = false;
-      _IsDirty = false;
+      ClearDirty();
     } finally {
       Logger.IfDebugMessageEx("Json database status", this);
     }
@@ -617,30 +637,43 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
 
   public async Task CloseAsync(CancellationToken token) {
     try {
-      Logger.IfDebugMessageEx("Closing json database async", FullStorageFilename);
-      if (_IsOpened && _IsDirty) {
+      Logger.IfDebugMessageEx("Closing json database async", DatabaseFullName);
+      if (_IsOpened && IsDirty) {
         await SaveAsync(token).ConfigureAwait(false);
       }
       _IsOpened = false;
-      _IsDirty = false;
+      ClearDirty();
     } finally {
       Logger.IfDebugMessageEx("Json database status", this);
     }
 
   }
 
+  public bool Create() {
+    if (Exists()) {
+      return true;
+    }
+    try {
+      Directory.CreateDirectory(DatabaseFullName);
+      return true;
+    } catch (Exception ex) {
+      Logger.LogErrorBox($"Unable to create database {DatabaseFullName}", ex);
+      return false;
+    }
+  }
+
   public void Remove() {
     try {
-      Logger.IfDebugMessageEx("Removing json database", FullStorageFilename);
+      Logger.IfDebugMessageEx("Removing json database", DatabaseFullName);
       if (!Exists()) {
-        Logger.LogWarningBox("Unable to remove database", this.ToString());
+        Logger.LogWarningBox("Unable to remove database", this);
         return;
       }
       try {
-        File.Delete(FullStorageFilename);
+        Directory.Delete(DatabaseFullName, true);
         return;
       } catch (Exception ex) {
-        Logger.LogErrorBox($"Unable to remove database {FullStorageFilename}", ex);
+        Logger.LogErrorBox($"Unable to remove database {DatabaseFullName}", ex);
         throw;
       }
     } finally {
@@ -650,12 +683,22 @@ public class TMediaSearchDatabaseJson : IMediaSearchDatabasePersistent, IMediaSe
   }
 
   public bool Exists() {
-    if (string.IsNullOrEmpty(FullStorageFilename)) {
-      Logger.LogWarning($"Unable to test for existence : Missing {nameof(FullStorageFilename)}");
+    if (string.IsNullOrEmpty(DatabaseFullName)) {
+      Logger.LogWarning($"Unable to test for existence : Missing {nameof(DatabaseFullName)}");
       return false;
     }
-    return File.Exists(FullStorageFilename);
+    return Directory.Exists(DatabaseFullName);
   }
   #endregion --- I/O --------------------------------------------
 
+  #region --- Dirty indicator --------------------------------------------
+  public void SetDirty() {
+    IsDirty = true;
+    Header.LastUpdate = DateTime.Now;
+  }
+
+  public void ClearDirty() {
+    IsDirty = false;
+  }
+  #endregion --- Dirty indicator --------------------------------------------
 }

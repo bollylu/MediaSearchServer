@@ -28,7 +28,7 @@ public interface IMediaSearchDatabasePersistent : IMediaSearchDatabase {
   /// Load the data (if the storage is available)
   /// </summary>
   /// <param name="token">A token to cancel operation</param>
-  /// <returns>A background task</returns>
+  /// <returns>true when ok, false otherwise</returns>
   bool Load();
 
   /// <summary>
@@ -56,17 +56,6 @@ public interface IMediaSearchDatabasePersistent : IMediaSearchDatabase {
   /// <param name="token">Token for optional cancellation</param>
   /// <returns>true if ok, false otherwise</returns>
   Task<bool> SaveAsync(CancellationToken token);
-
-  /// <summary>
-  /// Remove the database from persistent storage
-  /// </summary>
-  void Remove();
-
-  /// <summary>
-  /// Test for database existence in persistent storage
-  /// </summary>
-  /// <returns>true if database exists, false otherwise</returns>
-  bool Exists();
   #endregion --- I/O --------------------------------------------
 
   #region --- Content management --------------------------------------------

@@ -7,85 +7,126 @@ namespace MediaSearch.Server.Services.Test;
 [TestClass]
 public class TMovieServiceTest {
 
-  #region --- Initialize --------------------------------------------
-  [ClassInitialize]
-  public static async Task MovieCacheInit(TestContext testContext) {
-    //await MediaSearch.Models.GlobalSettings.Initialize().ConfigureAwait(false);
-    Global.MovieService = new TMovieService(new XMovieCache() { DataSource = @"data\movies.json" });
-    await Global.MovieService.Initialize().ConfigureAwait(false);
-  }
-  #endregion --- Initialize --------------------------------------------
-
   [TestMethod]
-  public async Task TestCacheIsInitialized() {
-
-    Assert.IsTrue(Global.MovieService.MoviesExtensions.Any());
-
-    Assert.IsTrue(await Global.MovieService.GetAllMovies().AnyAsync().ConfigureAwait(false));
-
-    int Count = await Global.MovieService.GetAllMovies().CountAsync().ConfigureAwait(false);
-
-    TraceMessage("Movie count", Count);
-    Assert.IsTrue(Count > 0);
+  public void Instanciate_TMovieService_Empty() {
+    IMovieService Target = new TMovieService();
+    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
-  public async Task Service_GetFirstPage() {
+  public void Instanciate_TMovieService_WithDatabase() {
+    TMediaSearchDatabaseMemory Database = new TMediaSearchDatabaseMemory();
+    IMovieService Target = new TMovieService(Database);
+    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+  }
+
+  [TestMethod]
+  public async Task Instanciate_TMovieService_WithDatabase_WithContent() {
+    TMediaSearchDatabaseJson Database = new TMediaSearchDatabaseJson("data", "movies.json");
+    Database.Open();
+    await Database.LoadAsync(CancellationToken.None);
+
+    IMovieService Target = new TMovieService(Database) { Name = "test db", Description = "the db for the tests" };
+    TraceMessage("Target", Target);
+
+    //TFilter DefaultFilter = new TFilter() {
+    //  Page = 1,
+    //  PageSize = TMoviesPage.DEFAULT_PAGE_SIZE
+    //};
+    //TraceMessage("Filter", DefaultFilter);
+
+
+
+
+
+    //IMoviesPage? Target = await Global.MovieService.GetMoviesPage(DefaultFilter).ConfigureAwait(false);
+    //Assert.IsNotNull(Target);
+    //TraceMoviesName(Target.Movies);
+    //Assert.AreEqual(TMoviesPage.DEFAULT_PAGE_SIZE, Target.Movies.Count);
+  }
+
+  [TestMethod]
+  public async Task TMovieService_GetFirstPage() {
+    TMediaSearchDatabaseJson Database = new TMediaSearchDatabaseJson("data", "movies.json");
+    Database.Open();
+    await Database.LoadAsync(CancellationToken.None);
+
+    IMovieService Source = new TMovieService(Database) { Name = "test db", Description = "the db for the tests" };
+    TraceMessage($"{nameof(Source)} : {Source.GetType().Name}", Source);
+
     TFilter DefaultFilter = new TFilter() {
       Page = 1,
-      PageSize = AMovieCache.DEFAULT_PAGE_SIZE
+      PageSize = TMoviesPage.DEFAULT_PAGE_SIZE
     };
-    TraceMessage("Filter", DefaultFilter);
-    IMoviesPage? Target = await Global.MovieService.GetMoviesPage(DefaultFilter).ConfigureAwait(false);
+    TraceMessage($"{nameof(DefaultFilter)} : {DefaultFilter.GetType().Name}", DefaultFilter);
+
+    IMoviesPage? Target = await Source.GetMoviesPage(DefaultFilter).ConfigureAwait(false);
     Assert.IsNotNull(Target);
-    TraceMoviesName(Target.Movies);
-    Assert.AreEqual(IMovieService.DEFAULT_PAGE_SIZE, Target.Movies.Count);
+    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    Assert.AreEqual(TMoviesPage.DEFAULT_PAGE_SIZE, Target.Movies.Count);
   }
 
   [TestMethod]
   public async Task Service_GetLastPage() {
-    int MovieCount = await Global.MovieService.GetAllMovies().CountAsync().ConfigureAwait(false);
-    int PageCount = (MovieCount / IMovieService.DEFAULT_PAGE_SIZE) + (MovieCount % IMovieService.DEFAULT_PAGE_SIZE) > 0 ? 1 : 0;
+    TMediaSearchDatabaseJson Database = new TMediaSearchDatabaseJson("data", "movies.json");
+    Database.Open();
+    await Database.LoadAsync(CancellationToken.None);
 
-    StringBuilder Message = new();
-    Message.AppendLine($"Movies count = {MovieCount}");
-    Message.AppendLine($"Last page = {PageCount}");
-    TraceMessage("Result", Message);
+    IMovieService Source = new TMovieService(Database) { Name = "test db", Description = "the db for the tests" };
+    TraceMessage($"{nameof(Source)} : {Source.GetType().Name}", Source);
 
-    IMoviesPage? Target = await Global.MovieService.GetMoviesLastPage(TFilter.Empty).ConfigureAwait(false);
+    TFilter DefaultFilter = new TFilter() {
+      Page = 1,
+      PageSize = TMoviesPage.DEFAULT_PAGE_SIZE
+    };
+    TraceMessage($"{nameof(DefaultFilter)} : {DefaultFilter.GetType().Name}", DefaultFilter);
+
+    IMoviesPage? Target = await Source.GetMoviesLastPage(DefaultFilter).ConfigureAwait(false);
     Assert.IsNotNull(Target);
-    TraceMoviesName(Target.Movies);
-    Assert.IsTrue(IMovieService.DEFAULT_PAGE_SIZE >= Target.Movies.Count);
+    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
   public async Task Service_GetFilteredFirstPage() {
-    TFilter Filter = new TFilter() { Keywords = "The", Page = 1, PageSize = IMovieService.DEFAULT_PAGE_SIZE };
-    TraceMessage("Filter", Filter);
-    IMoviesPage? Target = await Global.MovieService.GetMoviesPage(Filter).ConfigureAwait(false);
+    TMediaSearchDatabaseJson Database = new TMediaSearchDatabaseJson("data", "movies.json");
+    Database.Open();
+    await Database.LoadAsync(CancellationToken.None);
+
+    IMovieService Source = new TMovieService(Database) { Name = "test db", Description = "the db for the tests" };
+    TraceMessage($"{nameof(Source)} : {Source.GetType().Name}", Source);
+
+    TFilter DefaultFilter = new TFilter() {
+      Keywords = "the",
+      Page = 1,
+      PageSize = TMoviesPage.DEFAULT_PAGE_SIZE
+    };
+    TraceMessage($"{nameof(DefaultFilter)} : {DefaultFilter.GetType().Name}", DefaultFilter);
+
+    IMoviesPage? Target = await Source.GetMoviesPage(DefaultFilter).ConfigureAwait(false);
     Assert.IsNotNull(Target);
-    TraceMoviesName(Target.Movies);
-    Assert.IsTrue(IMovieService.DEFAULT_PAGE_SIZE >= Target.Movies.Count);
+    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    Assert.AreEqual(TMoviesPage.DEFAULT_PAGE_SIZE, Target.Movies.Count);
   }
 
   [TestMethod]
   public async Task Service_GetFilteredLastPage() {
-    TFilter Filter = new TFilter() { Keywords = "The", PageSize = IMovieService.DEFAULT_PAGE_SIZE };
-    TraceMessage("Filter", Filter);
+    TMediaSearchDatabaseJson Database = new TMediaSearchDatabaseJson("data", "movies.json");
+    Database.Open();
+    await Database.LoadAsync(CancellationToken.None);
 
-    int MovieCount = (await Global.MovieService.GetMoviesPage(Filter).ConfigureAwait(false) ?? TMoviesPage.Empty).Movies.Count;
-    int PageCount = (MovieCount / IMovieService.DEFAULT_PAGE_SIZE) + (MovieCount % IMovieService.DEFAULT_PAGE_SIZE) > 0 ? 1 : 0;
+    IMovieService Source = new TMovieService(Database) { Name = "test db", Description = "the db for the tests" };
+    TraceMessage($"{nameof(Source)} : {Source.GetType().Name}", Source);
 
-    
-    StringBuilder Message = new();
-    Message.AppendLine($"Movies count = {MovieCount}");
-    Message.AppendLine($"Last page = {PageCount}");
-    TraceMessage("Result", Message);
+    TFilter DefaultFilter = new TFilter() {
+      Keywords = "the",
+      Page = 1,
+      PageSize = TMoviesPage.DEFAULT_PAGE_SIZE
+    };
+    TraceMessage($"{nameof(DefaultFilter)} : {DefaultFilter.GetType().Name}", DefaultFilter);
 
-    IMoviesPage? Target = await Global.MovieService.GetMoviesLastPage(Filter).ConfigureAwait(false);
+    IMoviesPage? Target = await Source.GetMoviesLastPage(DefaultFilter).ConfigureAwait(false);
     Assert.IsNotNull(Target);
-    TraceMoviesName(Target.Movies);
-    Assert.IsTrue(IMovieService.DEFAULT_PAGE_SIZE >= Target.Movies.Count);
+    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
 }

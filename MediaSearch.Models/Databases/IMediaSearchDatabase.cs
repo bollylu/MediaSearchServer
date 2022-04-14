@@ -1,6 +1,8 @@
 ﻿namespace MediaSearch.Models;
 
-public interface IMediaSearchDatabase : IName, IAsyncDisposable {
+public interface IMediaSearchDatabase : IDisposable, IAsyncDisposable {
+
+  IMediaSearchDatabaseHeader Header { get; }
 
   #region --- Converters -------------------------------------------------------------------------------------
   /// <summary>
@@ -32,7 +34,6 @@ public interface IMediaSearchDatabase : IName, IAsyncDisposable {
   #endregion --- Content information --------------------------------------------
 
   #region --- Content management --------------------------------------------
-
   /// <summary>
   /// Add a media
   /// </summary>
@@ -73,7 +74,7 @@ public interface IMediaSearchDatabase : IName, IAsyncDisposable {
   /// </summary>
   /// <param name="filter">The filter for the data</param>
   /// <returns>The filtered list of IMedia</returns>
-  IEnumerable<IMedia> GetFiltered(TFilter filter);
+  IEnumerable<IMedia> GetFiltered(IFilter filter);
 
   /// <summary>
   /// Get a record
@@ -81,7 +82,128 @@ public interface IMediaSearchDatabase : IName, IAsyncDisposable {
   /// <param name="id">The identifier of the record</param>
   /// <returns>The requested record or null if unavailable</returns>
   IMedia? Get(string id);
-
   #endregion --- Content management --------------------------------------------
 
+  #region --- Content management async--------------------------------------------
+  /// <summary>
+  /// Add a media, asynchronously
+  /// </summary>
+  /// <param name="item">The media to add</param>
+  /// <param name="token">A way to cancel action</param>
+  Task AddAsync(IMedia item, CancellationToken token);
+
+  /// <summary>
+  /// Add a media when it is not yet in the list, otherwise update its properties (all but Id), asynchronously
+  /// </summary>
+  /// <param name="item">The media to add or update</param>
+  /// <param name="token">A way to cancel action</param>
+  Task AddOrUpdateAsync(IMedia item, CancellationToken token);
+
+  /// <summary>
+  /// Update a media properties if it is in the list, asynchronously
+  /// </summary>
+  /// <param name="item">The media to add or update</param>
+  /// <param name="token">A way to cancel action</param>
+  Task UpdateAsync(IMedia item, CancellationToken token);
+
+  /// <summary>
+  /// Clear the data
+  /// </summary>
+  Task ClearAsync(CancellationToken token);
+
+  /// <summary>
+  /// Delete a media properties if it is in the list, asynchronously
+  /// </summary>
+  /// <param name="item">The media to add or update</param>
+  /// <param name="token">A way to cancel action</param>
+  Task DeleteAsync(IMedia item, CancellationToken token);
+
+  /// <summary>
+  /// Get all the records, asynchronously
+  /// </summary>
+  /// <param name="token">A way to cancel action</param>
+  /// <returns>A enumeration of the records, asynchronous</returns>
+  IAsyncEnumerable<IMedia> GetAllAsync(CancellationToken token);
+
+  /// <summary>
+  /// Get all the records filtered, asynchronously
+  /// </summary>
+  /// <param name="token">A way to cancel action</param>
+  /// <returns>A enumeration of the records, asynchronous</returns>
+  IAsyncEnumerable<IMedia> GetFilteredAsync(TFilter filter, CancellationToken token);
+  #endregion --- Content management async -------------------------------------------
+
+  #region --- I/O --------------------------------------------
+  /// <summary>
+  /// Determine if the database exists
+  /// </summary>
+  /// <returns>true if the database exists, false otherwise</returns>
+  public bool Exists();
+
+  /// <summary>
+  /// Create a new database
+  /// </summary>
+  /// <returns>true if successful, false otherwise</returns>
+  public bool Create();
+
+  /// <summary>
+  /// Remove the database
+  /// </summary>
+  public void Remove();
+
+  /// <summary>
+  /// Open the access to the persistent storage
+  /// </summary>
+  /// <returns><see langword="true"/> if ok, <see langword="false"/> otherwise</returns>
+  bool Open();
+
+  /// <summary>
+  /// Flushes all data to the persistence layer
+  /// </summary>
+  /// <returns>An awaitable task</returns>
+  void Close();
+
+  /// <summary>
+  /// Flushes all data to the persistence layer, asynchronously
+  /// </summary>
+  /// <param name="token">Token for optional cancellation</param>
+  /// <returns>An awaitable task</returns>
+  Task CloseAsync(CancellationToken token);
+
+  /// <summary>
+  /// Load the data (if the storage is available)
+  /// </summary>
+  /// <param name="token">A token to cancel operation</param>
+  /// <returns>true when ok, false otherwise</returns>
+  bool Load();
+
+  /// <summary>
+  /// Load the data (if the storage is available), asynchronously
+  /// </summary>
+  /// <param name="token">A token to cancel operation</param>
+  /// <returns>true if ok, false otherwise</returns>
+  Task<bool> LoadAsync(CancellationToken token);
+
+  /// <summary>
+  /// When set to true, any update is automatically replicated to storage
+  /// </summary>
+  bool AutoSave { get; set; }
+
+  /// <summary>
+  /// Commit all modifications to storage
+  /// </summary>
+  /// <param name="token">Token for optional cancellation</param>
+  /// <returns>true if ok, false otherwise</returns>
+  bool Save();
+
+  /// <summary>
+  /// Commit all modifications to storage, asynchronously
+  /// </summary>
+  /// <param name="token">Token for optional cancellation</param>
+  /// <returns>true if ok, false otherwise</returns>
+  Task<bool> SaveAsync(CancellationToken token);
+
+  bool IsDirty { get; }
+  #endregion --- I/O --------------------------------------------
+  
 }

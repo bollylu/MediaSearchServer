@@ -19,13 +19,13 @@ namespace MediaSearch.Client.Components {
     [Parameter]
     public string? ImageSource { get; set; }
 
-    private string AltNames {
+    private string Titles {
       get {
         if (Movie.Titles.IsEmpty()) {
           return string.Empty;
           ;
         }
-        return string.Join("\n", Movie.Titles.Select(n => $"{n.Key}:{n.Value}"));
+        return string.Join("\n", Movie.Titles.GetAll().Select(n => $"{n.Language}:{n.Value}"));
       }
     }
 
@@ -37,7 +37,7 @@ namespace MediaSearch.Client.Components {
     private CancellationTokenSource Cancellation = new CancellationTokenSource();
 
     public string? HeaderText => Movie.Name ?? "";
-    public string? BodyTitle => AltNames;
+    public string? BodyTitle => Titles;
     public string? BodySubTitle => Movie.Group;
     public string? BodyText => string.Join(", ", Movie.Tags);
     public string? FooterLink { get; set; }

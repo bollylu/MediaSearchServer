@@ -7,6 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="MovieCache\**" />
+    <EmbeddedResource Remove="MovieCache\**" />
+    <None Remove="MovieCache\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Movie Service\AMovieService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="_Global_\changelog.txt" />
     <None Remove="_Global_\version.txt" />
   </ItemGroup>

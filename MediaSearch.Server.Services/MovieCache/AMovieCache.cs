@@ -213,17 +213,6 @@ public abstract class AMovieCache : IMovieCache, IMediaSearchLoggable<TMovieCach
       _LockCache.ExitReadLock();
     }
   }
-
-  //public IEnumerable<string> GetSubGroups(string group) {
-  //  try {
-  //    //LogDebugEx($"==> GetSubGroups() from cache");
-  //    _LockCache.EnterReadLock();
-  //    return _Items.GetSubGroups(group);
-  //  } finally {
-  //    //LogDebugEx($"<== GetSubGroups() from cache");
-  //    _LockCache.ExitReadLock();
-  //  }
-  //} 
   #endregion --- Groups --------------------------------------------
 }
 

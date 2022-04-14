@@ -3,7 +3,7 @@
 namespace MediaSearch.Server;
 
 public static class GlobalSettings {
-  public const int DEBUG_BOX_WIDTH = 100;
+  public const int DEBUG_BOX_WIDTH = 110;
 
   public static ISplitArgs AppArgs { get; } = new SplitArgs();
 

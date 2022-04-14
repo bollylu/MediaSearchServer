@@ -13,8 +13,8 @@ public interface IMovie : IMedia, IJson<IMovie> {
 
   const string DEFAULT_PICTURE_NAME = "folder.jpg";
 
-  //IMovieInfoContent MovieInfoContent { get; }
+  void ReplaceBy(IMovie movie);
 
-  void Duplicate(IMovie movie);
+  string ToString(int indent);
 
 }

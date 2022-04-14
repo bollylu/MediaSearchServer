@@ -41,7 +41,7 @@ public class TMovieInfoFileMetaConverter : JsonConverter<TMovieInfoFileMeta>, IM
               break;
 
             case nameof(TMovieInfoFileMeta.Content):
-              TMovieInfoContentMeta? Content = JsonSerializer.Deserialize<TMovieInfoContentMeta>(ref reader, options);
+              TMovie? Content = JsonSerializer.Deserialize<TMovie>(ref reader, options);
               if (Content is not null) {
                 RetVal.Content = Content;
               }

@@ -4,6 +4,7 @@ namespace MediaSearch.Models;
 
 public abstract class AMedia : IMedia {
 
+  #region --- Public properties ------------------------------------------------------------------------------
   public string Id {
     get {
       return _Id ??= _BuildId();
@@ -18,18 +19,24 @@ public abstract class AMedia : IMedia {
     return Name.HashToBase64();
   }
 
-  #region --- IName --------------------------------------------
-  public string Name { get; set; } = "";
-  public string Description { get; set; } = "";
-  #endregion --- IName --------------------------------------------
+  public string Name {
+    get {
+      return Titles.GetPrincipal()?.Value ?? "";
+    }
+  }
 
-  #region --- IMultiNames --------------------------------------------
-  public Dictionary<string, string> AltNames { get; } = new();
-  #endregion --- IMultiNames --------------------------------------------
+  public ILanguageTextInfos Titles { get; } = new TLanguageTextInfos();
 
-  #region --- ITags --------------------------------------------
+  public ILanguageTextInfos Descriptions { get; } = new TLanguageTextInfos();
+
   public List<string> Tags { get; } = new();
-  #endregion --- ITags --------------------------------------------
+
+  public DateOnly CreationDate { get; set; } = new DateOnly();
+  public int CreationYear {
+    get {
+      return CreationDate.Year;
+    }
+  }
 
   public string StorageRoot { get; set; } = "";
   public string StoragePath { get; set; } = "";
@@ -37,26 +44,33 @@ public abstract class AMedia : IMedia {
   public string FileExtension { get; set; } = "";
   public long Size { get; set; }
 
-  [JsonConverter(typeof(TDateOnlyJsonConverter))]
   public DateOnly DateAdded { get; set; }
+
+  public string Group { get; set; } = "";
+  public bool IsGroupMember => !string.IsNullOrWhiteSpace(Group); 
+  #endregion --- Public properties ---------------------------------------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   protected AMedia() {
   }
 
   protected AMedia(IMedia media) {
-
     Id = media.Id;
-    Name = media.Name;
-    Description = media.Description;
-
     StorageRoot = media.StorageRoot;
     StoragePath = media.StoragePath;
     FileName = media.FileName;
     FileExtension = media.FileExtension;
+    CreationDate = media.CreationDate;
+    Size = media.Size;
+    DateAdded = media.DateAdded;
+    Group = media.Group;
 
-    foreach (KeyValuePair<string, string> AltNameItem in media.AltNames) {
-      AltNames.Add(AltNameItem.Key, AltNameItem.Value);
+    foreach (var TitleItem in media.Titles.GetAll()) {
+      Titles.Add(TitleItem);
+    }
+
+    foreach (var DescriptionItem in media.Descriptions.GetAll()) {
+      Titles.Add(DescriptionItem);
     }
 
     foreach (string TagItem in media.Tags) {
@@ -65,31 +79,61 @@ public abstract class AMedia : IMedia {
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  public override string ToString() {
+  public virtual string ToString(int Indent) {
     StringBuilder RetVal = new();
-    RetVal.AppendLine($"{nameof(Id)} = \"{Id}\"");
-    RetVal.AppendLine($"{nameof(Name)} = {Name}");
-    RetVal.AppendLine($"{nameof(Description)} = {Description}");
-    RetVal.AppendLine($"{nameof(StorageRoot)} = {StorageRoot}");
-    RetVal.AppendLine($"{nameof(StoragePath)} = {StoragePath}");
-    RetVal.AppendLine($"{nameof(FileName)} = {FileName}");
-    RetVal.AppendLine($"{nameof(FileExtension)} = {FileExtension}");
-    if (AltNames.Any()) {
-      RetVal.AppendLine("Alt. names");
-      foreach (KeyValuePair<string, string> AltNameItem in AltNames) {
-        RetVal.AppendLine($"|- {AltNameItem.Key}:{AltNameItem.Value}");
-      }
+    string IndentSpace = new string(' ', Indent);
+    RetVal.AppendLine($"{IndentSpace}{nameof(Id)} = {Id.WithQuotes()}");
+    RetVal.AppendLine($"{IndentSpace}{nameof(Name)} = {Name.WithQuotes()}");
+    RetVal.AppendLine($"{IndentSpace}{nameof(StorageRoot)} = {StorageRoot.WithQuotes()}");
+    RetVal.AppendLine($"{IndentSpace}{nameof(StoragePath)} = {StoragePath.WithQuotes()}");
+    RetVal.AppendLine($"{IndentSpace}{nameof(FileName)} = {FileName.WithQuotes()}");
+    RetVal.AppendLine($"{IndentSpace}{nameof(FileExtension)} = {FileExtension.WithQuotes()}");
+    if (Titles.Any()) {
+      RetVal.AppendLine($"{IndentSpace}{nameof(Titles)}");
+      RetVal.AppendLine($"{IndentSpace}{Titles.ToString(2)}");
     } else {
-      RetVal.AppendLine($"{nameof(AltNames)} is empty");
+      RetVal.AppendLine($"{IndentSpace}{nameof(Titles)} is empty");
     }
+    if (Descriptions.Any()) {
+      RetVal.AppendLine($"{IndentSpace}{nameof(Descriptions)}");
+      RetVal.AppendLine($"{IndentSpace}{Descriptions.ToString(2)}");
+    } else {
+      RetVal.AppendLine($"{IndentSpace}{nameof(Descriptions)} is empty");
+    }
+
     if (Tags.Any()) {
-      RetVal.AppendLine("Tags");
+      RetVal.AppendLine($"{IndentSpace}{nameof(Tags)}");
       foreach (string TagItem in Tags) {
-        RetVal.AppendLine($"|- {TagItem}");
+        RetVal.AppendLine($"{IndentSpace}|- {TagItem.WithQuotes()}");
       }
     } else {
-      RetVal.AppendLine($"{nameof(Tags)} is empty");
+      RetVal.AppendLine($"{IndentSpace}{nameof(Tags)} is empty");
     }
+
+    if (IsGroupMember) {
+      RetVal.AppendLine($"{IndentSpace}{nameof(Group)} = {Group.WithQuotes()}");
+    } else {
+      RetVal.AppendLine($"{IndentSpace}No group membership");
+    }
+    RetVal.AppendLine($"{IndentSpace}{nameof(Size)} = {Size} bytes");
+    RetVal.AppendLine($"{IndentSpace}{nameof(CreationYear)} = {CreationYear}");
     return RetVal.ToString();
   }
+
+
+  public override string ToString() {
+    return ToString(0);
+  }
+
+  #region --- IDirty --------------------------------------------
+  public bool IsDirty { get; protected set; } = false;
+
+  public virtual void SetDirty() {
+    IsDirty = true;
+  }
+
+  public virtual void ClearDirty() {
+    IsDirty = false;
+  } 
+  #endregion --- IDirty --------------------------------------------
 }

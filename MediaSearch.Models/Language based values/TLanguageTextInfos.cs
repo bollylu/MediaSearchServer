@@ -9,7 +9,7 @@ public class TLanguageTextInfos : ILanguageTextInfos, IMediaSearchLoggable<TLang
   #region --- Converters -------------------------------------------------------------------------------------
   public string ToString(int indent) {
     StringBuilder RetVal = new();
-    string IndentSpace = new string(' ', indent);
+    string IndentSpace = indent == 0 ? "" : $"{new string(' ', indent - 2)}|- ";
     foreach (ILanguageTextInfo LanguageTextInfoItem in _Items) {
       RetVal.AppendLine($"{IndentSpace}{LanguageTextInfoItem.ToString()}");
     }
@@ -38,6 +38,19 @@ public class TLanguageTextInfos : ILanguageTextInfos, IMediaSearchLoggable<TLang
     try {
       _LockData.EnterWriteLock();
       ILanguageTextInfo NewItem = new TLanguageTextInfo(language, value, isPrincipal);
+      _Items.Add(NewItem);
+      if (HasMoreThanOnePrincipal()) {
+        Logger.LogWarningBox($"More than one {nameof(ILanguageTextInfo)} is principal", NewItem);
+      }
+    } finally {
+      _LockData.ExitWriteLock();
+    }
+  }
+
+  public void Add(string value, bool isPrincipal = false) {
+    try {
+      _LockData.EnterWriteLock();
+      ILanguageTextInfo NewItem = new TLanguageTextInfo(ELanguage.Unknown, value, isPrincipal);
       _Items.Add(NewItem);
       if (HasMoreThanOnePrincipal()) {
         Logger.LogWarningBox($"More than one {nameof(ILanguageTextInfo)} is principal", NewItem);

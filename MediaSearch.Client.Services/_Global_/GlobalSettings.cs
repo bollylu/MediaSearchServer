@@ -6,7 +6,7 @@ using System.Text.Unicode;
 namespace MediaSearch.Client.Services;
 
 public static class GlobalSettings {
-  public const int DEBUG_BOX_WIDTH = 100;
+  public const int DEBUG_BOX_WIDTH = 110;
   public const int HTTP_TIMEOUT_IN_MS = 1000000;
 
   public static IMediaSearchLogger GlobalLogger { get; set; } = new TMediaSearchLoggerConsole();

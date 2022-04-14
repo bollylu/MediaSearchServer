@@ -3,9 +3,9 @@
 public interface ITitles {
 
   /// <summary>
-  /// A list of alternate KeyValuePairs (language & name) (0 <= count <= n)
+  /// A list of unique titles with ELanguage
   /// </summary>
-  ILanguageDictionary<string> Titles { get; }
+  ILanguageTextInfos Titles { get; }
 
 }
 

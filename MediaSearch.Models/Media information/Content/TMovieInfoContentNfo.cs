@@ -1,7 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public class TMovieInfoContentNfo : IMediaInfoContent, 
-                                    IToXml, 
+public class TMovieInfoContentNfo : IToXml,
                                     IMediaSearchLoggable<TMovieInfoContentNfo> {
 
   #region --- XML constants ----------------------------------------------------------------------------------
@@ -16,7 +15,7 @@ public class TMovieInfoContentNfo : IMediaInfoContent,
   public const string XML_ELEMENT_COUNTRY = "country";
   public const string XML_ELEMENT_PREMIERED = "premiered";
   public const string XML_ELEMENT_OUTLINE = "outline";
-  public const string XML_ELEMENT_CREATION_YEAR = "year"; 
+  public const string XML_ELEMENT_CREATION_YEAR = "year";
   #endregion --- XML constants -------------------------------------------------------------------------------
 
   public IMediaSearchLogger<TMovieInfoContentNfo> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovieInfoContentNfo>();
@@ -34,7 +33,7 @@ public class TMovieInfoContentNfo : IMediaInfoContent,
   public TMovieInfoContentNfo() { }
   public TMovieInfoContentNfo(IMovie movie) {
 
-  } 
+  }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   #region --- Converters -------------------------------------------------------------------------------------
@@ -58,10 +57,12 @@ public class TMovieInfoContentNfo : IMediaInfoContent,
 
   public IMovie GetMovie() {
     IMovie RetVal = new TMovie() {
-      Description = Description,
-      Name = Title,
-      CreationYear = CreationYear,
+      CreationDate = new DateOnly(CreationYear, 1, 1)
     };
+
+    RLanguage LanguageFromCountry = Languages.GetLanguageFromCode(Country);
+    RetVal.Titles.Add(LanguageFromCountry.Language, Title, true);
+    RetVal.Descriptions.Add(LanguageFromCountry.Language, Description, true);
     RetVal.Tags.AddRange(Genres);
     return RetVal;
   }

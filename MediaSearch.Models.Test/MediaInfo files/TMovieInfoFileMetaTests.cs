@@ -27,16 +27,14 @@ public class TMovieInfoFileMetaTests {
       StorageName = $"{Random.Shared.Next()}.msmeta"
     };
 
-    TMovieInfoContentMeta TargetContent = new() {
-      CreationYear = 1966,
+    IMovie TargetContent = new TMovie(ELanguage.French, "La grande vadrouille", 1966) {
       Size = 1234567890
     };
 
-    TargetContent.Titles.Add(new TLanguageTextInfo(ELanguage.French, "La grande vadrouille"));
     TargetContent.Descriptions.Add(new TLanguageTextInfo(ELanguage.French, "Pendant la WW2, ..."));
-    TargetContent.Genres.Add("Guerre");
-    TargetContent.Genres.Add("WW2");
-    TargetContent.Genres.Add("Comédie");
+    TargetContent.Tags.Add("Guerre");
+    TargetContent.Tags.Add("WW2");
+    TargetContent.Tags.Add("Comédie");
 
     Target.Content = TargetContent;
 
@@ -57,16 +55,14 @@ public class TMovieInfoFileMetaTests {
       StorageName = $"{Random.Shared.Next()}.msmeta"
     };
 
-    TMovieInfoContentMeta TargetContent = new() {
-      CreationYear = 1966,
+    IMovie TargetContent = new TMovie(ELanguage.French, "La grande vadrouille", 1966) {
       Size = 1234567890
     };
 
-    TargetContent.Titles.Add(new TLanguageTextInfo(ELanguage.French, "La grande vadrouille"));
     TargetContent.Descriptions.Add(new TLanguageTextInfo(ELanguage.French, "Pendant la WW2, ..."));
-    TargetContent.Genres.Add("Guerre");
-    TargetContent.Genres.Add("WW2");
-    TargetContent.Genres.Add("Comédie");
+    TargetContent.Tags.Add("Guerre");
+    TargetContent.Tags.Add("WW2");
+    TargetContent.Tags.Add("Comédie");
 
     Target.Content = TargetContent;
 
@@ -93,16 +89,14 @@ public class TMovieInfoFileMetaTests {
       StorageName = $"{Random.Shared.Next()}.msmeta"
     };
 
-    TMovieInfoContentMeta TargetContent = new() {
-      CreationYear = 1966,
+    IMovie TargetContent = new TMovie(ELanguage.French, "La grande vadrouille", 1966) {
       Size = 1234567890
     };
 
-    TargetContent.Titles.Add(new TLanguageTextInfo(ELanguage.French, "La grande vadrouille"));
     TargetContent.Descriptions.Add(new TLanguageTextInfo(ELanguage.French, "Pendant la WW2, ..."));
-    TargetContent.Genres.Add("Guerre");
-    TargetContent.Genres.Add("WW2");
-    TargetContent.Genres.Add("Comédie");
+    TargetContent.Tags.Add("Guerre");
+    TargetContent.Tags.Add("WW2");
+    TargetContent.Tags.Add("Comédie");
 
     Target.Content = TargetContent;
 
@@ -128,16 +122,14 @@ public class TMovieInfoFileMetaTests {
       StorageName = $"{Random.Shared.Next()}.msmeta", 
     };
 
-    TMovieInfoContentMeta SourceContent = new() {
-      CreationYear = 1966,
+    IMovie SourceContent = new TMovie(ELanguage.French, "La grande vadrouille", 1966) {
       Size = 1234567890
     };
 
-    SourceContent.Titles.Add(new TLanguageTextInfo(ELanguage.French, "La grande vadrouille"));
     SourceContent.Descriptions.Add(new TLanguageTextInfo(ELanguage.French, "Pendant la WW2, ..."));
-    SourceContent.Genres.Add("Guerre");
-    SourceContent.Genres.Add("WW2");
-    SourceContent.Genres.Add("Comédie");
+    SourceContent.Tags.Add("Guerre");
+    SourceContent.Tags.Add("WW2");
+    SourceContent.Tags.Add("Comédie");
 
     Source.Content = SourceContent;
 
@@ -175,16 +167,14 @@ public class TMovieInfoFileMetaTests {
       StorageName = $"{Random.Shared.Next()}.msmeta",
     };
 
-    TMovieInfoContentMeta SourceContent = new() {
-      CreationYear = 1966,
+    IMovie SourceContent = new TMovie(ELanguage.French, "La grande vadrouille", 1966) {
       Size = 1234567890
     };
 
-    SourceContent.Titles.Add(new TLanguageTextInfo(ELanguage.French, "La grande vadrouille"));
     SourceContent.Descriptions.Add(new TLanguageTextInfo(ELanguage.French, "Pendant la WW2, ..."));
-    SourceContent.Genres.Add("Guerre");
-    SourceContent.Genres.Add("WW2");
-    SourceContent.Genres.Add("Comédie");
+    SourceContent.Tags.Add("Guerre");
+    SourceContent.Tags.Add("WW2");
+    SourceContent.Tags.Add("Comédie");
 
     Source.Content = SourceContent;
 

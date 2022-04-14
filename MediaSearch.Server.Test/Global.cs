@@ -4,8 +4,7 @@
 public static class Global {
 
   public static IMovieService MovieService = new TMovieService();
-  public static IMovieCache MovieCache = new TMovieCache();
-
+  public static TMediaSearchDatabaseJson? Database;
   public const string STORAGE = @"\\andromeda.sharenet.priv\films";
 
 }

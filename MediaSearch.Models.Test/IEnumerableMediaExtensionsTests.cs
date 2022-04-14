@@ -10,26 +10,32 @@ public class IEnumerableMediaExtensionsTests {
   /// <summary>
   /// Internal source of data
   /// </summary>
-  internal static IMovieCache MovieCache => _MovieCache ??= XMovieCache.Instance(@"data\movies.json");
-  private static IMovieCache? _MovieCache;
+  internal TMediaSearchDatabaseJson Database => _Database ??= new TMediaSearchDatabaseJson("data", "movies");
+  private TMediaSearchDatabaseJson? _Database;
+
+  public IEnumerableMediaExtensionsTests() {
+    Assert.IsTrue(Database.Exists());
+    Assert.IsTrue(Database.Open());
+    Assert.IsTrue(Database.Load());
+  }
 
   #region --- Any tag --------------------------------------------
   [TestMethod]
   public void FilterByAnyTag_OneTagOnly_ResultOk() {
     TFilter Filter = new TFilter() { Tags = "science-fiction", TagSelection = EFilterType.Any };
-    Console.WriteLine(Filter.ToString().Box("Filter"));
-    IEnumerable<IMedia> Target = MovieCache.GetAllMovies().FilterByTags(Filter);
+    TraceMessage($"{nameof(Filter)} : {Filter.GetType().Name}", Filter);
+    IList<IMedia> Target = Database.GetFiltered(Filter).ToList();
     Assert.IsNotNull(Target);
     Assert.IsTrue(Target.Any());
-    Assert.IsTrue(Target.Count() > 10);
-    TraceMedias(Target);
+    Assert.IsTrue(Target.Count > 10);
+    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
   public void FilterByAnyTag_OneTagOnlyButMissing_NothingToList() {
     TFilter Filter = new TFilter() { Tags = "xxxtotoxxx", TagSelection = EFilterType.Any };
-    Console.WriteLine(Filter.ToString().Box("Filter"));
-    IEnumerable<IMedia> Target = MovieCache.GetAllMovies().FilterByTags(Filter);
+    TraceMessage($"{nameof(Filter)} : {Filter.GetType().Name}", Filter);
+    IEnumerable<IMedia> Target = Database.GetFiltered(Filter);
     Assert.IsNotNull(Target);
     Assert.IsTrue(Target.IsEmpty());
   }
@@ -37,12 +43,12 @@ public class IEnumerableMediaExtensionsTests {
   [TestMethod]
   public void FilterByAnyTag_MultipleTags_ResultOk() {
     TFilter Filter = new TFilter() { Tags = "science-fiction aliens", TagSelection = EFilterType.Any };
-    Console.WriteLine(Filter.ToString().Box("Filter"));
-    IEnumerable<IMedia> Target = MovieCache.GetAllMovies().FilterByTags(Filter);
+    TraceMessage("Filter", Filter);
+    IEnumerable<IMedia> Target = Database.GetFiltered(Filter);
     Assert.IsNotNull(Target);
     Assert.IsTrue(Target.Any());
     Assert.IsTrue(Target.Count() > 10);
-    TraceMedias(Target);
+    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
   #endregion --- Any tag --------------------------------------------
 
@@ -50,10 +56,10 @@ public class IEnumerableMediaExtensionsTests {
   [TestMethod]
   public void FilterByAllTag_OneTagOnly_ResultOk() {
     TFilter Filter = new TFilter() { Tags = "science-fiction", TagSelection = EFilterType.All };
-    Console.WriteLine(Filter.ToString().Box("Filter"));
-    IEnumerable<IMedia> Target = MovieCache.GetAllMovies().FilterByTags(Filter);
+    TraceMessage($"{nameof(Filter)} : {Filter.GetType().Name}", Filter);
+    IEnumerable<IMedia> Target = Database.GetFiltered(Filter);
     Assert.IsNotNull(Target);
-    TraceMedias(Target);
+    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
     Assert.IsTrue(Target.Any());
     Assert.IsTrue(Target.Count() > 10);
 
@@ -62,19 +68,20 @@ public class IEnumerableMediaExtensionsTests {
   [TestMethod]
   public void FilterByAllTag_OneTagOnlyButMissing_ResultOk() {
     TFilter Filter = new TFilter() { Tags = "xxxtotoxxx", TagSelection = EFilterType.All };
-    Console.WriteLine(Filter.ToString().Box("Filter"));
-    IEnumerable<IMedia> Target = MovieCache.GetAllMovies().FilterByTags(Filter);
+    TraceMessage($"{nameof(Filter)} : {Filter.GetType().Name}", Filter);
+    IEnumerable<IMedia> Target = Database.GetFiltered(Filter);
     Assert.IsNotNull(Target);
     Assert.IsTrue(Target.IsEmpty());
+    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
   public void FilterByAllTag_MultipleTags_ResultOk() {
     TFilter Filter = new TFilter() { Tags = "science-fiction aliens", TagSelection = EFilterType.All };
-    Console.WriteLine(Filter.ToString().Box("Filter"));
-    IEnumerable<IMedia> Target = MovieCache.GetAllMovies().FilterByTags(Filter);
+    TraceMessage($"{nameof(Filter)} : {Filter.GetType().Name}", Filter);
+    IEnumerable<IMedia> Target = Database.GetFiltered(Filter);
     Assert.IsNotNull(Target);
-    TraceMedias(Target);
+    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
     Assert.IsTrue(Target.Any());
     Assert.IsTrue(Target.Count() > 10);
   }

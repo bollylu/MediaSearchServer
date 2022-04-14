@@ -1,44 +1,45 @@
 namespace MediaSearch.Server.Services.Test;
 
 [TestClass]
-public class TMovieCacheTest {
+public class TMediaSearchDatabaseTest {
 
   [ClassInitialize]
-  public static async Task MovieCacheInit(TestContext testContext) {
-    //await MediaSearch.Models.GlobalSettings.Initialize().ConfigureAwait(false);
-    Global.MovieCache = new XMovieCache() { DataSource = @"data\movies.json" };
-    await Global.MovieCache.Parse(CancellationToken.None).ConfigureAwait(false);
+  public static async Task DatabaseInit(TestContext testContext) {
+    Global.Database = new TMediaSearchDatabaseJson() { StoragePath="data", StorageFilename = "movies.json" };
+    Global.Database.Open();
+    Global.MovieService = new TMovieService(Global.Database);
+    await Global.MovieService.ParseAsync(CancellationToken.None).ConfigureAwait(false);
   }
 
   [TestMethod]
-  public void CacheInitialized_CheckCache_CacheOk() {
-    Assert.IsFalse(Global.MovieCache.IsEmpty());
+  public void Database_Initialized_NotEmpty() {
+    Assert.IsFalse(Global.Database.IsEmpty());
   }
 
   [TestMethod]
-  public void CacheInitialized_RetrieveMovies_MoviesOk() {
-    Assert.AreEqual(Global.MovieCache.Count(), Global.MovieCache.GetAllMovies().Count());
+  public void Database_Initialized_WithMoviesFiltered() {
+    Assert.AreEqual(Global.Database.Count(), Global.Database.GetAll().Count());
 
     TFilter DefaultFilter = new TFilter() {
       Page = 2,
-      PageSize = AMovieCache.DEFAULT_PAGE_SIZE
+      PageSize = TMoviesPage.DEFAULT_PAGE_SIZE
     };
 
     TFilter Filter50 = new TFilter() {
       PageSize = 50
     };
 
-    TMoviesPage? Target = Global.MovieCache.GetMoviesPage(TFilter.Empty);
+    IEnumerable<IMedia> Target = Global.Database.GetFiltered(TFilter.Empty);
     Assert.IsNotNull(Target);
-    Assert.AreEqual(AMovieCache.DEFAULT_PAGE_SIZE, Target.Movies.Count());
+    Assert.AreEqual(Global.Database.Count(), Target.Count());
 
-    Target = Global.MovieCache.GetMoviesPage(DefaultFilter);
+    Target = Global.Database.GetFiltered(DefaultFilter);
     Assert.IsNotNull(Target);
-    Assert.AreEqual(AMovieCache.DEFAULT_PAGE_SIZE, Target.Movies.Count());
+    Assert.AreEqual(TMoviesPage.DEFAULT_PAGE_SIZE, Target.Count());
 
-    Target = Global.MovieCache.GetMoviesPage(Filter50);
+    Target = Global.Database.GetFiltered(Filter50);
     Assert.IsNotNull(Target);
-    Assert.AreEqual(50, Target.Movies.Count());
+    Assert.AreEqual(50, Target.Count());
   }
   
 }

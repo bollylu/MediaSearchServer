@@ -2,7 +2,7 @@
 
 public interface IMovieService {
 
-  public const int DEFAULT_PAGE_SIZE = 20;
+  //public const int DEFAULT_PAGE_SIZE = 20;
 
   public const int MIN_PICTURE_WIDTH = 128;
   public const int MAX_PICTURE_WIDTH = 1024;
@@ -17,6 +17,20 @@ public interface IMovieService {
   /// The source of the data for the service
   /// </summary>
   IMediaSearchDatabase Database { get; }
+
+  #region --- Database I/O --------------------------------------------
+  /// <summary>
+  /// Load the data into the database (if the storage is available), asynchronously
+  /// </summary>
+  /// <param name="token">A token to cancel operation</param>
+  /// <returns>A background task</returns>
+  Task ParseAsync(CancellationToken token);
+
+  /// <summary>
+  /// Load the data into the database (if the storage is available)
+  /// </summary>
+  void Parse();
+  #endregion --- Database I/O --------------------------------------------
 
   #region --- Movies --------------------------------------------
   List<string> MoviesExtensions { get; }
@@ -69,7 +83,7 @@ public interface IMovieService {
   /// </summary>
   /// <param name="filter">The data to check in name and alt. names</param>
   /// <returns>A page of IMovie</returns>
-  Task<TMoviesPage?> GetMoviesPage(IFilter filter);
+  Task<TMoviesPage> GetMoviesPage(IFilter filter);
 
   // <summary>
   /// Get a page of movies matching a filter
@@ -78,7 +92,7 @@ public interface IMovieService {
   /// <param name="startPage">Which page to start with</param>
   /// <param name="pageSize">How many movies on a page</param>
   /// <returns>A page of IMovie</returns>
-  Task<TMoviesPage?> GetMoviesLastPage(IFilter filter);
+  Task<TMoviesPage> GetMoviesLastPage(IFilter filter);
 
   /// <summary>
   /// Get a movie based on it's Id

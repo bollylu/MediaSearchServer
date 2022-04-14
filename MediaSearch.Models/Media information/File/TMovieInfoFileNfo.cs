@@ -6,11 +6,6 @@ public class TMovieInfoFileNfo : IMediaInfoFile, IMediaSearchLoggable<TMovieInfo
 
   public IMediaSearchLogger<TMovieInfoFileNfo> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovieInfoFileNfo>();
 
-  #region --- IName --------------------------------------------
-  public string Name { get; set; } = "";
-  public string Description { get; set; } = "";
-  #endregion --- IName --------------------------------------------
-
   #region --- Storage info --------------------------------------------
   public string StoragePath { get; set; } = "";
   public string StorageName { get; set; } = "";
@@ -19,20 +14,18 @@ public class TMovieInfoFileNfo : IMediaInfoFile, IMediaSearchLoggable<TMovieInfo
 
   public IMediaInfoHeader Header => throw new NotImplementedException();
 
-  #region --- Content --------------------------------------------
-  public IMediaInfoContent Content {
+  public IMedia Content {
     get {
-      return _Content ??= new TMovieInfoContentNfo();
+      return _Content ??= new TMovie();
     }
     set {
       _Content = value;
     }
   }
-  private IMediaInfoContent? _Content;
+  private IMedia? _Content;
   public TMovieInfoContentNfo NfoContent => (TMovieInfoContentNfo)Content;
 
   private XElement? XmlContent;
-  #endregion --- Content --------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMovieInfoFileNfo() { }
@@ -45,11 +38,8 @@ public class TMovieInfoFileNfo : IMediaInfoFile, IMediaSearchLoggable<TMovieInfo
   #region --- Converters -------------------------------------------------------------------------------------
   public override string ToString() {
     StringBuilder RetVal = new StringBuilder();
-    RetVal.AppendLine($"{nameof(Name)} = {Name.WithQuotes()}");
-    RetVal.AppendLine($"{nameof(Description)} = {Description.WithQuotes()}");
-    RetVal.AppendLine($"{nameof(StoragePath)} = {StoragePath.WithQuotes()}");
-    RetVal.AppendLine($"{nameof(StorageName)} = {StorageName.WithQuotes()}");
-    RetVal.AppendLine($"{nameof(FullStorageName)} = {FullStorageName.WithQuotes()}");
+    RetVal.AppendLine($"{nameof(Header)} ({Header.GetType().Name})");
+    RetVal.AppendLine($"{Header.ToString(2)}");
     RetVal.AppendLine($"{nameof(Content)} ({Content.GetType().Name})");
     RetVal.AppendLine($"{Content.ToString(2)}");
     return RetVal.ToString();
