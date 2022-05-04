@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/MediaSearch.Models.Test/Data/movies
+/MediaSearch.Server.Test/Data/movies
