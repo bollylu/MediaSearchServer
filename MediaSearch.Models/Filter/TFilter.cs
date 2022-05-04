@@ -92,6 +92,9 @@ public class TFilter : IFilter, IJson<TFilter>, IEquatable<TFilter> {
       return _OutputDateMin;
     }
     set {
+      if (value > OutputDateMax) {
+        value = OutputDateMax;
+      }
       _OutputDateMin = value.WithinLimits(0, int.MaxValue);
     }
   }
@@ -106,6 +109,7 @@ public class TFilter : IFilter, IJson<TFilter>, IEquatable<TFilter> {
       return _OutputDateMax;
     }
     set {
+
       if (value == 0) {
         _OutputDateMax = DateTime.Now.Year + 1;
       } else {
@@ -151,7 +155,7 @@ public class TFilter : IFilter, IJson<TFilter>, IEquatable<TFilter> {
   #endregion --- Static instance for an empty filter --------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TFilter() {}
+  public TFilter() { }
   public TFilter(IFilter filter) : this() {
     Page = filter.Page;
     PageSize = filter.PageSize;

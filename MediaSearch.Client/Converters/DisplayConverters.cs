@@ -11,7 +11,7 @@ public static class DisplayConverters {
 
     if (size > GB) {
       double Size = (double)size / (double)GB;
-      return $"{Size:N3} GB";
+      return $"{Size:N1} GB";
 
     }
     if (size > MB) {

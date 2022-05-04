@@ -17,13 +17,15 @@ namespace MediaSearch.Client.Pages {
     [Inject]
     public IBusService<string>? BusServiceAction { get; set; }
 
-    private string RemoteIpText => $"{GlobalSettings.Account?.RemoteIp.MapToIPv4().ToString() ?? "000.000.000.000"}";
+    private string RemoteIpText => $"{GlobalSettings.Account?.RemoteIp.MapToIPv4().ToString() ?? ""}";
     private string Username => $"{GlobalSettings.Account?.Name ?? "(anonymous)"}";
-    private string UserConnectionDisplay => $"{Username} / {RemoteIpText}";
+    private string UserConnectionDisplay => $"{Username}{(RemoteIpText == "" ? "" : " / ")}{RemoteIpText}";
+
+    private bool IsAnonymous => string.IsNullOrWhiteSpace(GlobalSettings.Account?.Name);
 
     private string Server => GlobalSettings.ApiServer?.BaseAddress?.ToString() ?? "(no server)";
-    private string ServerRequestId => GlobalSettings.ApiServer?.RequestId.ToString() ?? "";
-    private string ServerConnectionDisplay => $"{Server} #{ServerRequestId}";
+    private string ServerRequestId => IsAnonymous ? "" : $" #{GlobalSettings.ApiServer?.RequestId.ToString() ?? ""}";
+    private string ServerConnectionDisplay => $"{Server}{ServerRequestId}";
 
     protected override void OnInitialized() {
       base.OnInitialized();
