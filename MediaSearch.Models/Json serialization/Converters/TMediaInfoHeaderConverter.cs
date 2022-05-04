@@ -22,7 +22,7 @@ public class TMediaInfoHeaderConverter : JsonConverter<TMediaInfoHeader>, IMedia
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndObject) {
-          Logger.IfDebugMessageEx($"Converted {nameof(TMediaInfoHeader)}", RetVal);
+          Logger.IfDebugMessageExBox($"Converted {nameof(TMediaInfoHeader)}", RetVal);
           return RetVal;
         }
 
@@ -48,7 +48,7 @@ public class TMediaInfoHeaderConverter : JsonConverter<TMediaInfoHeader>, IMedia
         }
       }
 
-      Logger.IfDebugMessageEx($"Converted {nameof(TMediaInfoHeader)}", RetVal);
+      Logger.IfDebugMessageExBox($"Converted {nameof(TMediaInfoHeader)}", RetVal);
       return RetVal;
 
     } catch (Exception ex) {

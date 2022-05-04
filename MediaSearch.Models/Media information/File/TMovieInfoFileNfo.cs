@@ -12,18 +12,9 @@ public class TMovieInfoFileNfo : IMediaInfoFile, IMediaSearchLoggable<TMovieInfo
   public string FullStorageName => Path.Join(StoragePath.NormalizePath(), StorageName);
   #endregion --- Storage info --------------------------------------------
 
-  public IMediaInfoHeader Header => throw new NotImplementedException();
+  public IMedia Content => NfoContent.GetMovie();
 
-  public IMedia Content {
-    get {
-      return _Content ??= new TMovie();
-    }
-    set {
-      _Content = value;
-    }
-  }
-  private IMedia? _Content;
-  public TMovieInfoContentNfo NfoContent => (TMovieInfoContentNfo)Content;
+  public TMovieInfoContentNfo NfoContent { get; } = new TMovieInfoContentNfo();
 
   private XElement? XmlContent;
 
@@ -38,8 +29,6 @@ public class TMovieInfoFileNfo : IMediaInfoFile, IMediaSearchLoggable<TMovieInfo
   #region --- Converters -------------------------------------------------------------------------------------
   public override string ToString() {
     StringBuilder RetVal = new StringBuilder();
-    RetVal.AppendLine($"{nameof(Header)} ({Header.GetType().Name})");
-    RetVal.AppendLine($"{Header.ToString(2)}");
     RetVal.AppendLine($"{nameof(Content)} ({Content.GetType().Name})");
     RetVal.AppendLine($"{Content.ToString(2)}");
     return RetVal.ToString();
@@ -72,7 +61,7 @@ public class TMovieInfoFileNfo : IMediaInfoFile, IMediaSearchLoggable<TMovieInfo
       XDocument Document = XDocument.Load(FullStorageName);
       XElement Root = Document.Root ?? new XElement(TMovieInfoContentNfo.XML_THIS_ELEMENT);
       NfoContent.FromXml(Root);
-      Logger.IfDebugMessageEx($"Read content of {FullStorageName}", Content);
+      Logger.IfDebugMessageExBox($"Read content of {FullStorageName}", Content);
       return true;
     } catch (Exception ex) {
       Logger.LogErrorBox($"Unable to read {GetType().Name} : {FullStorageName}", ex);
@@ -83,16 +72,17 @@ public class TMovieInfoFileNfo : IMediaInfoFile, IMediaSearchLoggable<TMovieInfo
   public async Task<bool> ReadAsync(CancellationToken token) {
     try {
       XDocument Document;
-      using (Stream InputStream = new FileStream(FullStorageName, new FileStreamOptions() {
-                                                                    Access = FileAccess.Read,
-                                                                    Mode = FileMode.Open,
-                                                                    Share = FileShare.Read
-                                                                  })) {
+      FileStreamOptions Options = new() {
+        Access = FileAccess.Read,
+        Mode = FileMode.Open,
+        Share = FileShare.Read
+      };
+      using (Stream InputStream = new FileStream(FullStorageName, Options)) {
         Document = await XDocument.LoadAsync(InputStream, LoadOptions.None, token);
       }
       XElement Root = Document.Root ?? new XElement(TMovieInfoContentNfo.XML_THIS_ELEMENT);
       NfoContent?.FromXml(Root);
-      Logger.IfDebugMessageEx($"Read content of {FullStorageName}", Content);
+      Logger.IfDebugMessageExBox($"Read content of {FullStorageName}", Content);
       return true;
     } catch (Exception ex) {
       Logger.LogErrorBox($"Unable to read {GetType().Name} : {FullStorageName}", ex);
@@ -102,7 +92,7 @@ public class TMovieInfoFileNfo : IMediaInfoFile, IMediaSearchLoggable<TMovieInfo
 
   public bool Write() {
     try {
-      Logger.IfDebugMessageEx($"Writing content to {FullStorageName}", XmlContent);
+      Logger.IfDebugMessageExBox($"Writing content to {FullStorageName}", XmlContent);
       XmlContent = NfoContent?.ToXml();
       XDocument Document = new XDocument();
       Document.Add(XmlContent);
@@ -116,15 +106,16 @@ public class TMovieInfoFileNfo : IMediaInfoFile, IMediaSearchLoggable<TMovieInfo
 
   public async Task<bool> WriteAsync(CancellationToken token) {
     try {
-      Logger.IfDebugMessageEx($"Writing content to {FullStorageName}", XmlContent);
+      Logger.IfDebugMessageExBox($"Writing content to {FullStorageName}", XmlContent);
       XmlContent = NfoContent?.ToXml();
       XDocument Document = new XDocument();
       Document.Add(XmlContent);
-      using (Stream OutputStream = new FileStream(FullStorageName, new FileStreamOptions() {
+      FileStreamOptions Options = new() {
         Access = FileAccess.Write,
         Mode = FileMode.Create,
         Share = FileShare.Read
-      })) {
+      };
+      using (Stream OutputStream = new FileStream(FullStorageName, Options)) {
         await Document.SaveAsync(OutputStream, SaveOptions.None, token);
       }
       return true;

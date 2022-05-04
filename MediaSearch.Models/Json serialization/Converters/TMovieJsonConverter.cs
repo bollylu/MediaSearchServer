@@ -2,6 +2,7 @@
 using static MediaSearch.Models.JsonConverterResources;
 
 public class TMovieJsonConverter : JsonConverter<TMovie> {
+  public const string JSON_MEDIA_TYPE = "MediaType";
 
   public IMediaSearchLogger<TMovieJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovieJsonConverter>();
 
@@ -33,7 +34,8 @@ public class TMovieJsonConverter : JsonConverter<TMovie> {
 
           switch (Property) {
 
-            case nameof(TMovie.Id):
+            case nameof(TMovie.ID):
+            case nameof(IMovie.MediaType):
               reader.GetString();
               break;
 
@@ -127,8 +129,8 @@ public class TMovieJsonConverter : JsonConverter<TMovie> {
       return;
     }
     writer.WriteStartObject();
-
-    writer.WriteString(nameof(IMovie.Id), value.Id);
+    writer.WriteString(nameof(IMovie.MediaType), value.MediaType.ToString());
+    writer.WriteString(nameof(IMovie.ID), value.ID);
     writer.WriteString(nameof(IMovie.Group), value.Group);
     writer.WriteString(nameof(IMovie.StoragePath), value.StoragePath);
     writer.WriteString(nameof(IMovie.FileName), value.FileName);

@@ -21,7 +21,7 @@ public class TUserTokenJsonConverter : JsonConverter<TUserToken>, IMediaSearchLo
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndObject) {
-          Logger.IfDebugMessageEx($"Converted {nameof(TUserToken)}", RetVal);
+          Logger.IfDebugMessageExBox($"Converted {nameof(TUserToken)}", RetVal);
           return RetVal;
         }
 
@@ -47,7 +47,7 @@ public class TUserTokenJsonConverter : JsonConverter<TUserToken>, IMediaSearchLo
         }
       }
 
-      Logger.IfDebugMessageEx("Converted UserToken", RetVal);
+      Logger.IfDebugMessageExBox("Converted UserToken", RetVal);
       return RetVal;
 
     } catch (Exception ex) {

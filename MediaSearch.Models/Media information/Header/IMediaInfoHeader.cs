@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public interface IMediaInfoHeader : IName {
+public interface IMediaInfoHeader {
 
   string ToString(int indent);
 

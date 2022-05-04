@@ -3,17 +3,17 @@
 [TestClass]
 public class TMoviesPageSerializationTest {
 
-  internal TMediaSearchDatabaseJson Database => _Database ??= new TMediaSearchDatabaseJson("data", "movies");
-  private TMediaSearchDatabaseJson? _Database;
+  internal TMSTableJsonMovie Database => _Database ??= new TMSTableJsonMovie("data", "movies");
+  private TMSTableJsonMovie? _Database;
 
   [TestMethod]
   public void Serialize() {
 
     Assert.IsTrue(Database.Exists());
-    Assert.IsTrue(Database.Open());
+    Assert.IsTrue(Database.OpenOrCreate());
     Assert.IsTrue(Database.Load());
 
-    IList<IMovie> Movies = Database.GetAll().Take(2).Cast<IMovie>().ToList();
+    IList<IMovie> Movies = Database.GetAll(2).Cast<IMovie>().ToList();
 
     IMoviesPage Source = new TMoviesPage() {
       Name = "Sélection",
@@ -35,9 +35,9 @@ public class TMoviesPageSerializationTest {
   [TestMethod]
   public void Deserialize() {
     Assert.IsTrue(Database.Exists());
-    Assert.IsTrue(Database.Open());
+    Assert.IsTrue(Database.OpenOrCreate());
     Assert.IsTrue(Database.Load());
-    IList<IMovie> Movies = Database.GetAll().Take(2).Cast<IMovie>().ToList();
+    IList<IMovie> Movies = Database.GetAll(2).Cast<IMovie>().ToList();
 
     IMoviesPage MoviesPage = new TMoviesPage() {
       Name = "Sélection",

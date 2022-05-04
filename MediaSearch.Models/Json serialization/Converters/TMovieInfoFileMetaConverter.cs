@@ -22,7 +22,7 @@ public class TMovieInfoFileMetaConverter : JsonConverter<TMovieInfoFileMeta>, IM
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndObject) {
-          Logger.IfDebugMessageEx($"Converted {nameof(TMovieInfoFileMeta)}", RetVal);
+          Logger.IfDebugMessageExBox($"Converted {nameof(TMovieInfoFileMeta)}", RetVal);
           return RetVal;
         }
 
@@ -33,17 +33,17 @@ public class TMovieInfoFileMetaConverter : JsonConverter<TMovieInfoFileMeta>, IM
 
           switch (Property) {
 
-            case nameof(TMovieInfoFileMeta.Header):
-              TMediaInfoHeader? Header = JsonSerializer.Deserialize<TMediaInfoHeader>(ref reader, options);
-              if (Header is not null) {
-                RetVal.Header = Header;
-              }
-              break;
+            //case nameof(TMovieInfoFileMeta.Header):
+            //  TMediaInfoHeader? Header = JsonSerializer.Deserialize<TMediaInfoHeader>(ref reader, options);
+            //  if (Header is not null) {
+            //    RetVal.Header = Header;
+            //  }
+            //  break;
 
             case nameof(TMovieInfoFileMeta.Content):
-              TMovie? Content = JsonSerializer.Deserialize<TMovie>(ref reader, options);
-              if (Content is not null) {
-                RetVal.Content = Content;
+              TMovie? Movie = JsonSerializer.Deserialize<TMovie>(ref reader, options);
+              if (Movie is not null) {
+                RetVal.MetaContent = Movie;
               }
               break;
 
@@ -54,7 +54,7 @@ public class TMovieInfoFileMetaConverter : JsonConverter<TMovieInfoFileMeta>, IM
         }
       }
 
-      Logger.IfDebugMessageEx($"Converted {nameof(TMovieInfoFileMeta)}", RetVal);
+      Logger.IfDebugMessageExBox($"Converted {nameof(TMovieInfoFileMeta)}", RetVal);
       return RetVal;
 
     } catch (Exception ex) {
@@ -70,8 +70,8 @@ public class TMovieInfoFileMetaConverter : JsonConverter<TMovieInfoFileMeta>, IM
     }
     writer.WriteStartObject();
 
-    writer.WritePropertyName(nameof(TMovieInfoFileMeta.Header));
-    JsonSerializer.Serialize(writer, value.Header, options);
+    //writer.WritePropertyName(nameof(TMovieInfoFileMeta.Header));
+    //JsonSerializer.Serialize(writer, value.Header, options);
 
     writer.WritePropertyName(nameof(TMovieInfoFileMeta.Content));
     JsonSerializer.Serialize(writer, value.MetaContent, options);

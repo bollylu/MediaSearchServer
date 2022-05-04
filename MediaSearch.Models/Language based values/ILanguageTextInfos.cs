@@ -2,8 +2,8 @@
 public interface ILanguageTextInfos {
 
   void Add(ILanguageTextInfo languageTextInfo);
-  void Add(string value, bool isPrincipal = false);
-  void Add(ELanguage language, string value, bool isPrincipal = false);
+  void Add(string value);
+  void Add(ELanguage language, string value);
   void Clear();
   bool Any();
   bool IsEmpty();
@@ -12,6 +12,12 @@ public interface ILanguageTextInfos {
   ILanguageTextInfo? Get(ELanguage language);
   ILanguageTextInfo? GetPrincipal();
   IEnumerable<ILanguageTextInfo> GetAll();
+
+  void SetPrincipal(ELanguage language);
+  void SetPrincipal(ILanguageTextInfo languageTextInfo);
+
+  bool HasMoreThanOnePrincipal();
+  bool HasMoreThanOneTextPerLanguage();
 
   string ToString(int indent);
 }

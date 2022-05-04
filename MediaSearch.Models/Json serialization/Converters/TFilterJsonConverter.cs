@@ -23,7 +23,7 @@ public class TFilterJsonConverter : JsonConverter<TFilter>, IMediaSearchLoggable
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndObject) {
-          Logger.IfDebugMessageEx($"Converted {nameof(TFilter)}", RetVal);
+          Logger.IfDebugMessageExBox($"Converted {nameof(TFilter)}", RetVal);
           return RetVal;
         }
 
@@ -36,67 +36,67 @@ public class TFilterJsonConverter : JsonConverter<TFilter>, IMediaSearchLoggable
 
             case nameof(TFilter.Page):
               RetVal.Page = reader.GetInt32();
-              Logger.IfDebugMessageEx($"Found {nameof(RetVal.Page)}", RetVal.Page);
+              Logger.IfDebugMessageExBox($"Found {nameof(RetVal.Page)}", RetVal.Page);
               break;
 
             case nameof(TFilter.PageSize):
               RetVal.PageSize = reader.GetInt32();
-              Logger.IfDebugMessageEx($"Found {nameof(RetVal.PageSize)}", RetVal.PageSize);
+              Logger.IfDebugMessageExBox($"Found {nameof(RetVal.PageSize)}", RetVal.PageSize);
               break;
 
             case nameof(TFilter.DaysBack):
               RetVal.DaysBack = reader.GetInt32();
-              Logger.IfDebugMessageEx($"Found {nameof(RetVal.DaysBack)}", RetVal.DaysBack);
+              Logger.IfDebugMessageExBox($"Found {nameof(RetVal.DaysBack)}", RetVal.DaysBack);
               break;
 
             case nameof(TFilter.OutputDateMin):
               RetVal.OutputDateMin = reader.GetInt32();
-              Logger.IfDebugMessageEx($"Found {nameof(RetVal.OutputDateMin)}", RetVal.OutputDateMin);
+              Logger.IfDebugMessageExBox($"Found {nameof(RetVal.OutputDateMin)}", RetVal.OutputDateMin);
               break;
 
             case nameof(TFilter.OutputDateMax):
               RetVal.OutputDateMax = reader.GetInt32();
-              Logger.IfDebugMessageEx($"Found {nameof(RetVal.OutputDateMax)}", RetVal.OutputDateMax);
+              Logger.IfDebugMessageExBox($"Found {nameof(RetVal.OutputDateMax)}", RetVal.OutputDateMax);
               break;
 
             case nameof(TFilter.Keywords):
               RetVal.Keywords = reader.GetString() ?? "";
-              Logger.IfDebugMessageEx($"Found {nameof(RetVal.Keywords)}", RetVal.Keywords.WithQuotes());
+              Logger.IfDebugMessageExBox($"Found {nameof(RetVal.Keywords)}", RetVal.Keywords.WithQuotes());
               break;
 
             case nameof(TFilter.KeywordsSelection):
               RetVal.KeywordsSelection = JsonSerializer.Deserialize<EFilterType>(ref reader, options);
-              Logger.IfDebugMessageEx($"Found {nameof(RetVal.KeywordsSelection)}", RetVal.KeywordsSelection);
+              Logger.IfDebugMessageExBox($"Found {nameof(RetVal.KeywordsSelection)}", RetVal.KeywordsSelection);
               break;
 
             case nameof(TFilter.Tags):
               RetVal.Tags = reader.GetString() ?? "";
-              Logger.IfDebugMessageEx($"Found {nameof(RetVal.Tags)}", RetVal.Tags.WithQuotes());
+              Logger.IfDebugMessageExBox($"Found {nameof(RetVal.Tags)}", RetVal.Tags.WithQuotes());
               break;
 
             case nameof(TFilter.TagSelection):
               RetVal.TagSelection = JsonSerializer.Deserialize<EFilterType>(ref reader, options);
-              Logger.IfDebugMessageEx($"Found {nameof(RetVal.TagSelection)}", RetVal.TagSelection);
+              Logger.IfDebugMessageExBox($"Found {nameof(RetVal.TagSelection)}", RetVal.TagSelection);
               break;
 
             case nameof(TFilter.Group):
               RetVal.Group = reader.GetString() ?? "";
-              Logger.IfDebugMessageEx($"Found {nameof(RetVal.Group)}", RetVal.Group.WithQuotes());
+              Logger.IfDebugMessageExBox($"Found {nameof(RetVal.Group)}", RetVal.Group.WithQuotes());
               break;
 
             case nameof(TFilter.SubGroup):
               RetVal.SubGroup = reader.GetString() ?? "";
-              Logger.IfDebugMessageEx($"Found {nameof(RetVal.SubGroup)}", RetVal.SubGroup.WithQuotes());
+              Logger.IfDebugMessageExBox($"Found {nameof(RetVal.SubGroup)}", RetVal.SubGroup.WithQuotes());
               break;
 
             case nameof(TFilter.GroupOnly):
               RetVal.GroupOnly = reader.GetBoolean();
-              Logger.IfDebugMessageEx($"Found {nameof(RetVal.GroupOnly)}", RetVal.GroupOnly);
+              Logger.IfDebugMessageExBox($"Found {nameof(RetVal.GroupOnly)}", RetVal.GroupOnly);
               break;
 
             case nameof(TFilter.SortOrder):
               RetVal.SortOrder = JsonSerializer.Deserialize<EFilterSortOrder>(ref reader, options);
-              Logger.IfDebugMessageEx($"Found {nameof(RetVal.SortOrder)}", RetVal.SortOrder);
+              Logger.IfDebugMessageExBox($"Found {nameof(RetVal.SortOrder)}", RetVal.SortOrder);
               break;
 
             case nameof(TFilter.GroupMemberships):
@@ -106,12 +106,12 @@ public class TFilterJsonConverter : JsonConverter<TFilter>, IMediaSearchLoggable
                   RetVal.GroupMemberships.Add(GroupMembershipItem);
                 }
               }
-              Logger.IfDebugMessageEx($"Found {nameof(RetVal.GroupMemberships)}", string.Join(", ", RetVal.GroupMemberships));
+              Logger.IfDebugMessageExBox($"Found {nameof(RetVal.GroupMemberships)}", string.Join(", ", RetVal.GroupMemberships));
               break;
 
             case nameof(TFilter.GroupFilter):
               RetVal.GroupFilter = JsonSerializer.Deserialize<EFilterGroup>(ref reader, options);
-              Logger.IfDebugMessageEx($"Found {nameof(RetVal.GroupFilter)}", RetVal.GroupFilter);
+              Logger.IfDebugMessageExBox($"Found {nameof(RetVal.GroupFilter)}", RetVal.GroupFilter);
               break;
 
             default:
@@ -121,7 +121,7 @@ public class TFilterJsonConverter : JsonConverter<TFilter>, IMediaSearchLoggable
         }
       }
 
-      Logger.IfDebugMessageEx($"Converted {nameof(TFilter)}", RetVal);
+      Logger.IfDebugMessageExBox($"Converted {nameof(TFilter)}", RetVal);
       return RetVal;
 
     } catch (Exception ex) {

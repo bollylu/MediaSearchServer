@@ -1,7 +1,9 @@
 ﻿namespace MediaSearch.Models;
-public interface IMediaSource : IName {
+public interface IMediaSource<T> where T : IMedia {
 
-  public EMediaSourceType MediaSourceType { get; }
+  public Type MediaType { get; }
 
-  public IMediaSearchDatabase? Database { get; }
+  public string RootStorage { get; set; }
+
+  public string ToString(int indent);
 }

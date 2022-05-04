@@ -7,8 +7,8 @@ namespace MediaSearch.Models.Serialization.Test;
 [TestClass]
 public class TMovieSerializationTest {
 
-  internal TMediaSearchDatabaseJson Database => _Database ??= new TMediaSearchDatabaseJson("data", "movies");
-  private TMediaSearchDatabaseJson? _Database;
+  internal TMSTableJsonMovie Database => _Database ??= new TMSTableJsonMovie("data", "movies");
+  private TMSTableJsonMovie? _Database;
 
   [TestMethod]
   public void Serialize() {
@@ -40,7 +40,7 @@ public class TMovieSerializationTest {
   [TestMethod]
   public void Deserialize() {
     Assert.IsTrue(Database.Exists());
-    Assert.IsTrue(Database.Open());
+    Assert.IsTrue(Database.OpenOrCreate());
     Assert.IsTrue(Database.Load());
 
     IMovie? Movie = Database.GetAll().First() as IMovie;

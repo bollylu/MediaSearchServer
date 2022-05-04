@@ -120,14 +120,14 @@ public class TMovieService : IMovieService, IMediaSearchLoggable<TMovieService> 
 
   public async Task<string> GetPicture64(IMovie movie, CancellationToken cancelToken) {
 
-    byte[] PictureBytes = _ImagesCache.GetImage(movie.Id);
+    byte[] PictureBytes = _ImagesCache.GetImage(movie.ID);
 
     if (PictureBytes is null || PictureBytes.IsEmpty()) {
-      PictureBytes = await GetPicture(movie.Id, cancelToken).ConfigureAwait(false);
+      PictureBytes = await GetPicture(movie.ID, cancelToken).ConfigureAwait(false);
       if (PictureBytes is null) {
         PictureBytes = TMovie.PictureMissing;
       } else {
-        _ImagesCache.AddImage(movie.Id, PictureBytes);
+        _ImagesCache.AddImage(movie.ID, PictureBytes);
       }
     }
 

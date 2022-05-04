@@ -23,7 +23,7 @@ public class TUserAccountInfoJsonConverter : JsonConverter<TUserAccountInfo>, IM
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndObject) {
-          Logger.IfDebugMessageEx("Converted UserAccountInfo", RetVal);
+          Logger.IfDebugMessageExBox("Converted UserAccountInfo", RetVal);
           return RetVal;
         }
 
@@ -64,7 +64,7 @@ public class TUserAccountInfoJsonConverter : JsonConverter<TUserAccountInfo>, IM
         }
       }
 
-      Logger.IfDebugMessageEx("Converted UserAccountInfo", RetVal);
+      Logger.IfDebugMessageExBox("Converted UserAccountInfo", RetVal);
       return RetVal;
 
     } catch (Exception ex) {

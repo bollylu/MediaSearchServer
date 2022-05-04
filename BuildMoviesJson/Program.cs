@@ -5,10 +5,11 @@ using BLTools.Text;
 
 using MediaSearch.Models;
 using MediaSearch.Server.Services;
+using static BuildMoviesJson.Display;
 
 namespace DisplayStdin {
   class Program {
-    static async Task Main(string[] args) {
+    static void Main(string[] args) {
 
       int TIMEOUT_IN_MS = (int)TimeSpan.FromMinutes(5).TotalMilliseconds;
 
@@ -26,29 +27,29 @@ namespace DisplayStdin {
 
       string DbPath = Args.GetValue(PARAM_DB_PATH, ".");
       string DbName = Args.GetValue(PARAM_DB_NAME, "movies");
-      TMediaSearchDatabaseJson Database = new TMediaSearchDatabaseJson(DbPath,DbName);
+      IMediaSearchDataTable Database = new TMSTableJsonMovie(DbPath,DbName);
       
       try {
         if (Database.Exists()) {
           Database.Remove();
         }
         Database.Create();
-        Database.Open();
+        Database.OpenOrCreate();
       } catch (Exception ex) {
         Usage($"Problem accessing database : {ex.Message}");
       }
-      Console.WriteLine(Database.ToString().Box("Db file"));
+      TraceMessage("db file", Database);
 
       IMovieService MovieService = new TMovieService(Database) { RootStoragePath = DataSource };
 
       using (CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT_IN_MS)) {
-        await MovieService.ParseAsync(Timeout.Token).ConfigureAwait(false);
+        MovieService.Parse();
       }
 
-      using (CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT_IN_MS)) {
-        await Database.SaveAsync(Timeout.Token).ConfigureAwait(false);
-        //Database.Save();
-      }
+      //using (CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT_IN_MS)) {
+        //await Database.SaveAsync(Timeout.Token).ConfigureAwait(false);
+        Database.Save();
+      //}
 
       Environment.Exit(0);
     }

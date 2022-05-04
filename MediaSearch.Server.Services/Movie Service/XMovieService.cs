@@ -39,10 +39,10 @@ public class XMovieService : IMovieService, IName, IMediaSearchLoggable<XMovieSe
   /// </summary>
   public List<string> MoviesExtensions { get; } = new() { ".mkv", ".avi", ".mp4", ".iso" };
 
-  public IMediaSearchDatabase Database { get; protected set; } = new TMediaSearchDatabaseMemory();
+  public IMediaSearchDataTable Database { get; protected set; } = new TMediaSearchMovieDatabaseMemory();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public XMovieService(IMediaSearchDatabase database) {
+  public XMovieService(IMediaSearchDataTable database) {
     Database = database;
   }
 
@@ -104,33 +104,34 @@ public class XMovieService : IMovieService, IName, IMediaSearchLoggable<XMovieSe
     }
   }
 
-  public async Task<TMoviesPage?> GetMoviesPage(IFilter filter) {
+  public async Task<TMoviesPage> GetMoviesPage(IFilter filter) {
     await Initialize().ConfigureAwait(false);
 
-    IList<IMovie> FilteredMovies = Database.GetFiltered(filter).Cast<IMovie>().ToList();
+    IEnumerable<IMovie> FilteredMovies = Database.GetFiltered(filter).OrderedBy(filter).Cast<IMovie>();
 
     TMoviesPage RetVal = new TMoviesPage() {
       Source = RootStoragePath,
       Page = filter.Page
     };
 
-    RetVal.AvailableMovies = FilteredMovies.Count;
+    RetVal.AvailableMovies = FilteredMovies.Count();
     RetVal.AvailablePages = (RetVal.AvailableMovies / filter.PageSize) + (RetVal.AvailableMovies % filter.PageSize > 0 ? 1 : 0);
     RetVal.Movies.AddRange(FilteredMovies.Skip(filter.PageSize * (filter.Page - 1)).Take(filter.PageSize));
 
     return RetVal;
   }
 
-  public async Task<TMoviesPage?> GetMoviesLastPage(IFilter filter) {
+  public async Task<TMoviesPage> GetMoviesLastPage(IFilter filter) {
     await Initialize().ConfigureAwait(false);
 
-    IList<IMovie> FilteredMovies = Database.GetFiltered(filter).Cast<IMovie>().ToList();
+    IEnumerable<IMovie> FilteredMovies = Database.GetFiltered(filter).OrderedBy(filter).Cast<IMovie>();
+    int MoviesCount = FilteredMovies.Count();
 
     TMoviesPage RetVal = new TMoviesPage() {
       Source = RootStoragePath,
-      Page = (FilteredMovies.Count / filter.PageSize) + (FilteredMovies.Count % filter.PageSize > 0 ? 1 : 0),
-      AvailableMovies = FilteredMovies.Count,
-      AvailablePages = (FilteredMovies.Count / filter.PageSize) + (FilteredMovies.Count % filter.PageSize > 0 ? 1 : 0)
+      Page = (MoviesCount / filter.PageSize) + (MoviesCount % filter.PageSize > 0 ? 1 : 0),
+      AvailableMovies = MoviesCount,
+      AvailablePages = (MoviesCount / filter.PageSize) + (MoviesCount % filter.PageSize > 0 ? 1 : 0)
     };
 
     RetVal.Movies.AddRange(FilteredMovies.Skip(filter.PageSize * (filter.Page - 1)).Take(filter.PageSize));

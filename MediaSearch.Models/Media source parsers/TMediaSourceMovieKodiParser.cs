@@ -15,7 +15,7 @@ public class TMediaSourceMovieKodiParser : IMediaSourceParser, IMediaSearchLogga
 
     TMovie RetVal = new TMovie();
 
-    RetVal.Titles.Add(ELanguage.Unknown, ProcessedFileItem.AfterLast(FOLDER_SEPARATOR).BeforeLast(" ("), true);
+    RetVal.Titles.Add(ELanguage.Unknown, ProcessedFileItem.AfterLast(FOLDER_SEPARATOR).BeforeLast(" ("));
 
     RetVal.StorageRoot = rootStoragePath.NormalizePath();
     RetVal.StoragePath = ProcessedFileItem.BeforeLast(FOLDER_SEPARATOR).After(RetVal.StorageRoot, System.StringComparison.InvariantCultureIgnoreCase);
@@ -59,7 +59,7 @@ public class TMediaSourceMovieKodiParser : IMediaSourceParser, IMediaSearchLogga
 
     TMovie RetVal = new TMovie();
 
-    RetVal.Titles.Add(ELanguage.Unknown, ProcessedFileItem.AfterLast(FOLDER_SEPARATOR).BeforeLast(" ("), true);
+    RetVal.Titles.Add(ELanguage.Unknown, ProcessedFileItem.AfterLast(FOLDER_SEPARATOR).BeforeLast(" ("));
 
     RetVal.StorageRoot = rootStoragePath.NormalizePath();
     RetVal.StoragePath = ProcessedFileItem.BeforeLast(FOLDER_SEPARATOR).After(RetVal.StorageRoot, System.StringComparison.InvariantCultureIgnoreCase);

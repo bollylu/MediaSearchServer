@@ -2,6 +2,7 @@
 
 using BLTools.Text;
 
+using MediaSearch.Database;
 using MediaSearch.Models;
 
 namespace MediaSearch.Test.Support;
@@ -32,6 +33,10 @@ public static class Display {
           return;
         }
 
+      case object ObjectItem when ObjectItem.GetType().IsGenericType:
+        Console.WriteLine(ObjectItem.ToString().BoxFixedWidth(title ?? "", GlobalSettings.DEBUG_BOX_WIDTH));
+        return;
+
       default: {
           Console.WriteLine(item.ToString().BoxFixedWidth(title ?? "", GlobalSettings.DEBUG_BOX_WIDTH));
           return;
@@ -39,6 +44,9 @@ public static class Display {
     }
       
   }
+
+  
+
 
   public static void TraceMoviesName(IEnumerable<IMovie> movies) {
     if (movies is null) {

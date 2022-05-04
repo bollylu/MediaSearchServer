@@ -5,7 +5,10 @@ namespace MediaSearch.Models;
 public abstract class AMedia : IMedia {
 
   #region --- Public properties ------------------------------------------------------------------------------
-  public string Id {
+  
+  public EMediaSourceType MediaType { get; set; }
+  
+  public string ID {
     get {
       return _Id ??= _BuildId();
     }
@@ -21,7 +24,11 @@ public abstract class AMedia : IMedia {
 
   public string Name {
     get {
-      return Titles.GetPrincipal()?.Value ?? "";
+      if (Titles.Any()) {
+        return Titles.GetPrincipal()?.Value ?? "";
+      } else {
+        return "";
+      }
     }
   }
 
@@ -55,7 +62,8 @@ public abstract class AMedia : IMedia {
   }
 
   protected AMedia(IMedia media) {
-    Id = media.Id;
+    MediaType = media.MediaType;
+    ID = media.ID;
     StorageRoot = media.StorageRoot;
     StoragePath = media.StoragePath;
     FileName = media.FileName;
@@ -77,46 +85,65 @@ public abstract class AMedia : IMedia {
       Tags.Add(TagItem);
     }
   }
+
+  public virtual void Dispose() {
+    Titles?.Clear();
+    Descriptions?.Clear();
+    Tags?.Clear();
+  }
+
+  public virtual ValueTask DisposeAsync() {
+    Titles?.Clear();
+    Descriptions?.Clear();
+    Tags?.Clear();
+    return ValueTask.CompletedTask;
+  }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  public virtual string ToString(int Indent) {
+  public virtual string ToString(int indent) {
     StringBuilder RetVal = new();
-    string IndentSpace = new string(' ', Indent);
-    RetVal.AppendLine($"{IndentSpace}{nameof(Id)} = {Id.WithQuotes()}");
-    RetVal.AppendLine($"{IndentSpace}{nameof(Name)} = {Name.WithQuotes()}");
-    RetVal.AppendLine($"{IndentSpace}{nameof(StorageRoot)} = {StorageRoot.WithQuotes()}");
-    RetVal.AppendLine($"{IndentSpace}{nameof(StoragePath)} = {StoragePath.WithQuotes()}");
-    RetVal.AppendLine($"{IndentSpace}{nameof(FileName)} = {FileName.WithQuotes()}");
-    RetVal.AppendLine($"{IndentSpace}{nameof(FileExtension)} = {FileExtension.WithQuotes()}");
+
+    RetVal.AppendIndent($"- {nameof(MediaType)} = {MediaType}", indent)
+          .AppendIndent($"- {nameof(ID)} = {ID.WithQuotes()}", indent)
+          .AppendIndent($"- {nameof(Name)} = {Name.WithQuotes()}", indent)
+          .AppendIndent($"- {nameof(StorageRoot)} = {StorageRoot.WithQuotes()}", indent)
+          .AppendIndent($"- {nameof(StoragePath)} = {StoragePath.WithQuotes()}", indent)
+          .AppendIndent($"- {nameof(FileName)} = {FileName.WithQuotes()}", indent)
+          .AppendIndent($"- {nameof(FileExtension)} = {FileExtension.WithQuotes()}", indent);
+    
     if (Titles.Any()) {
-      RetVal.AppendLine($"{IndentSpace}{nameof(Titles)}");
-      RetVal.AppendLine($"{IndentSpace}{Titles.ToString(2)}");
+      RetVal.AppendIndent($"- {nameof(Titles)}", indent);
+      foreach (var TitleItem in Titles.GetAll()) {
+        RetVal.AppendIndent($"- {TitleItem}", indent + 2);
+      }
     } else {
-      RetVal.AppendLine($"{IndentSpace}{nameof(Titles)} is empty");
+      RetVal.AppendIndent($"- {nameof(Titles)} is empty", indent);
     }
     if (Descriptions.Any()) {
-      RetVal.AppendLine($"{IndentSpace}{nameof(Descriptions)}");
-      RetVal.AppendLine($"{IndentSpace}{Descriptions.ToString(2)}");
+      RetVal.AppendIndent($"- {nameof(Descriptions)}", indent);
+      foreach (var DescriptionItem in Descriptions.GetAll()) {
+        RetVal.AppendIndent($"- {DescriptionItem}", indent + 2);
+      }
     } else {
-      RetVal.AppendLine($"{IndentSpace}{nameof(Descriptions)} is empty");
+      RetVal.AppendIndent($"- {nameof(Descriptions)} is empty", indent);
     }
 
     if (Tags.Any()) {
-      RetVal.AppendLine($"{IndentSpace}{nameof(Tags)}");
+      RetVal.AppendIndent($"- {nameof(Tags)}", indent);
       foreach (string TagItem in Tags) {
-        RetVal.AppendLine($"{IndentSpace}|- {TagItem.WithQuotes()}");
+        RetVal.AppendIndent($"- {TagItem.WithQuotes()}", indent+2);
       }
     } else {
-      RetVal.AppendLine($"{IndentSpace}{nameof(Tags)} is empty");
+      RetVal.AppendIndent($"- {nameof(Tags)} is empty", indent);
     }
 
     if (IsGroupMember) {
-      RetVal.AppendLine($"{IndentSpace}{nameof(Group)} = {Group.WithQuotes()}");
+      RetVal.AppendIndent($"- {nameof(Group)} = {Group.WithQuotes()}", indent);
     } else {
-      RetVal.AppendLine($"{IndentSpace}No group membership");
+      RetVal.AppendIndent($"- No group membership", indent);
     }
-    RetVal.AppendLine($"{IndentSpace}{nameof(Size)} = {Size} bytes");
-    RetVal.AppendLine($"{IndentSpace}{nameof(CreationYear)} = {CreationYear}");
+    RetVal.AppendIndent($"- {nameof(Size)} = {Size} bytes", indent)
+          .AppendIndent($"- {nameof(CreationYear)} = {CreationYear}", indent);
     return RetVal.ToString();
   }
 

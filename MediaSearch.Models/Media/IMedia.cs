@@ -1,20 +1,20 @@
 ﻿namespace MediaSearch.Models;
 
-public interface IMedia : IStorage, 
+public interface IMedia : IID<string>,
+                          IStorage, 
                           ITags, 
                           ITitles, 
                           IDescriptions, 
                           IGroupMembership, 
                           IDirty, 
                           IToStringIndent,
-                          ICreation {
+                          ICreation,
+                          IDisposable,
+                          IAsyncDisposable {
+
+  public EMediaSourceType MediaType { get; set; }
 
   public string Name { get; }
 
-  /// <summary>
-  /// Identifier for this item
-  /// </summary>
-  string Id { get; }
-  
 }
 

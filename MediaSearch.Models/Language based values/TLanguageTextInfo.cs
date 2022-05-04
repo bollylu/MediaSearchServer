@@ -21,14 +21,14 @@ public class TLanguageTextInfo : ILanguageTextInfo {
   }
 
   public string ToString(int indent) {
-    StringBuilder RetVal = new StringBuilder();
+    StringBuilder RetVal = new ();
     string IndentSpace = new string(' ', indent);
-    RetVal.Append(IndentSpace);
-    RetVal.Append(IsPrincipal);
-    RetVal.Append(':');
-    RetVal.Append(Language.ToString());
-    RetVal.Append(':');
-    RetVal.Append(Value.WithQuotes());
+    RetVal.Append(IndentSpace)
+          .Append(IsPrincipal)
+          .Append(" : ")
+          .Append(Language.ToString())
+          .Append(" : ")
+          .Append(Value.WithQuotes());
     
     return RetVal.ToString();
   }

@@ -23,7 +23,7 @@ public class TUserAccountJsonConverter : JsonConverter<TUserAccount>, IMediaSear
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndObject) {
-          Logger.IfDebugMessageEx("Converted UserAccount", RetVal);
+          Logger.IfDebugMessageExBox("Converted UserAccount", RetVal);
           return RetVal;
         }
 
@@ -69,7 +69,7 @@ public class TUserAccountJsonConverter : JsonConverter<TUserAccount>, IMediaSear
         }
       }
 
-      Logger.IfDebugMessageEx("Converted UserAccount", RetVal);
+      Logger.IfDebugMessageExBox("Converted UserAccount", RetVal);
       return RetVal;
 
     } catch (Exception ex) {

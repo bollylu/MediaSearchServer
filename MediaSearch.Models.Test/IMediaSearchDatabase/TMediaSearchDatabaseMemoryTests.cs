@@ -5,7 +5,7 @@ public class TMediaSearchDatabaseMemoryTests {
 
   [TestMethod]
   public void Instanciate_TMediaSearchDatabaseMemory_Empty() {
-    IMediaSearchDatabase Target = new TMediaSearchDatabaseMemory();
+    IMediaSearchDataTable Target = new TMediaSearchMovieDatabaseMemory();
     Assert.IsNotNull(Target);
 
     Assert.IsNotNull(Target.Header);
@@ -19,7 +19,7 @@ public class TMediaSearchDatabaseMemoryTests {
 
   [TestMethod]
   public void Empty_TMediaSearchDatabaseMemory_AddItems() {
-    IMediaSearchDatabase Target = new TMediaSearchDatabaseMemory();
+    IMediaSearchDataTable Target = new TMediaSearchMovieDatabaseMemory();
     Target.Header.Name = "test";
     Target.Header.Description = "test db";
     Assert.IsNotNull(Target);
@@ -48,7 +48,7 @@ public class TMediaSearchDatabaseMemoryTests {
 
   [TestMethod]
   public void Duplicate_TMediaSearchDatabaseMemory() {
-    IMediaSearchDatabase Source = new TMediaSearchDatabaseMemory();
+    IMediaSearchDataTable Source = new TMediaSearchMovieDatabaseMemory();
     Source.Header.Name = "test";
     Source.Header.Description = "test db";
 
@@ -69,7 +69,7 @@ public class TMediaSearchDatabaseMemoryTests {
 
     TraceMessage($"{nameof(Source)} after 2 additions : {Source.GetType().Name}", Source);
 
-    IMediaSearchDatabase Target = new TMediaSearchDatabaseMemory(Source);
+    IMediaSearchDataTable Target = new TMediaSearchMovieDatabaseMemory(Source);
 
     TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
     Assert.AreEqual(2, Target.GetAll().Count());

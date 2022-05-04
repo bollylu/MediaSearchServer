@@ -10,21 +10,25 @@
 
   <ItemGroup>
     <Compile Remove="Converters\**" />
+    <Compile Remove="Databases\**" />
     <Compile Remove="Output formatters\**" />
     <EmbeddedResource Remove="Converters\**" />
+    <EmbeddedResource Remove="Databases\**" />
     <EmbeddedResource Remove="Output formatters\**" />
     <None Remove="Converters\**" />
+    <None Remove="Databases\**" />
     <None Remove="Output formatters\**" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="ADataModel.cs" />
-    <Compile Remove="Databases\IMediaSearchDatabasePersistent.cs" />
     <Compile Remove="Interfaces\IDuplicate.cs" />
     <Compile Remove="Json serialization\AJson.cs" />
+    <Compile Remove="Json serialization\Converters\TMediaInfoHeaderConverter.cs" />
     <Compile Remove="Json serialization\Converters\TMovieInfoContentMetaConverter_1.cs" />
     <Compile Remove="Logging\AMediaSearchLoggable.cs" />
     <Compile Remove="Logging\AMediaSearchLogger.cs" />
+    <Compile Remove="Media sources\TMediaSourceMovie.cs" />
     <Compile Remove="Movie\TMovieJson.cs" />
   </ItemGroup>
 

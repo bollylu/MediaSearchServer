@@ -39,7 +39,7 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
   /// </summary>
   public List<string> MoviesExtensions { get; } = new() { ".mkv", ".avi", ".mp4", ".iso" };
 
-  public IMediaSearchDatabase Database { get; protected set; } = new TMediaSearchDatabaseMemory();
+  public IMediaSearchDataTable Database { get; protected set; } = new TMediaSearchMovieDatabaseMemory();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMovieService() {
@@ -49,7 +49,7 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
     RootStoragePath = storage;
   }
 
-  public TMovieService(IMediaSearchDatabase database) : this() {
+  public TMovieService(IMediaSearchDataTable database) : this() {
     Database = database;
   }
 
@@ -329,7 +329,7 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
         Logger.LogDebugEx($"Found {MovieInfoItem.FullName}");
         Database.Add(NewMovie);
       } catch (Exception ex) {
-        Logger.LogWarning($"Unable to parse movie {MovieInfoItem} : {ex.Message}");
+        Logger.LogWarning($"Unable to parse movie {MovieInfoItem.FullName.WithQuotes()} : {ex.Message}");
         if (ex.InnerException is not null) {
           Logger.LogWarning($"  {ex.InnerException.Message}");
         }
@@ -363,7 +363,7 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
         Logger.LogDebugEx($"Found {FileItem.FullName}");
         Database.Add(NewMovie);
       } catch (Exception ex) {
-        Logger.LogWarning($"Unable to parse movie {FileItem} : {ex.Message}");
+        Logger.LogWarning($"Unable to parse movie {FileItem.FullName.WithQuotes()} : {ex.Message}");
         if (ex.InnerException is not null) {
           Logger.LogWarning($"  {ex.InnerException.Message}");
         }

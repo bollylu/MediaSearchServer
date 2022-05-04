@@ -15,15 +15,15 @@ public class TMovieServiceTest {
 
   [TestMethod]
   public void Instanciate_TMovieService_WithDatabase() {
-    TMediaSearchDatabaseMemory Database = new TMediaSearchDatabaseMemory();
+    TMediaSearchMovieDatabaseMemory Database = new TMediaSearchMovieDatabaseMemory();
     IMovieService Target = new TMovieService(Database);
     TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
   public async Task Instanciate_TMovieService_WithDatabase_WithContent() {
-    TMediaSearchDatabaseJson Database = new TMediaSearchDatabaseJson("data", "movies.json");
-    Database.Open();
+    TMSTableJsonMovie Database = new TMSTableJsonMovie("data", "movies.json");
+    Database.OpenOrCreate();
     await Database.LoadAsync(CancellationToken.None);
 
     IMovieService Target = new TMovieService(Database) { Name = "test db", Description = "the db for the tests" };
@@ -47,8 +47,8 @@ public class TMovieServiceTest {
 
   [TestMethod]
   public async Task TMovieService_GetFirstPage() {
-    TMediaSearchDatabaseJson Database = new TMediaSearchDatabaseJson("data", "movies.json");
-    Database.Open();
+    TMSTableJsonMovie Database = new TMSTableJsonMovie("data", "movies.json");
+    Database.OpenOrCreate();
     await Database.LoadAsync(CancellationToken.None);
 
     IMovieService Source = new TMovieService(Database) { Name = "test db", Description = "the db for the tests" };
@@ -68,8 +68,8 @@ public class TMovieServiceTest {
 
   [TestMethod]
   public async Task Service_GetLastPage() {
-    TMediaSearchDatabaseJson Database = new TMediaSearchDatabaseJson("data", "movies.json");
-    Database.Open();
+    TMSTableJsonMovie Database = new TMSTableJsonMovie("data", "movies.json");
+    Database.OpenOrCreate();
     await Database.LoadAsync(CancellationToken.None);
 
     IMovieService Source = new TMovieService(Database) { Name = "test db", Description = "the db for the tests" };
@@ -88,8 +88,8 @@ public class TMovieServiceTest {
 
   [TestMethod]
   public async Task Service_GetFilteredFirstPage() {
-    TMediaSearchDatabaseJson Database = new TMediaSearchDatabaseJson("data", "movies.json");
-    Database.Open();
+    TMSTableJsonMovie Database = new TMSTableJsonMovie("data", "movies.json");
+    Database.OpenOrCreate();
     await Database.LoadAsync(CancellationToken.None);
 
     IMovieService Source = new TMovieService(Database) { Name = "test db", Description = "the db for the tests" };
@@ -110,8 +110,8 @@ public class TMovieServiceTest {
 
   [TestMethod]
   public async Task Service_GetFilteredLastPage() {
-    TMediaSearchDatabaseJson Database = new TMediaSearchDatabaseJson("data", "movies.json");
-    Database.Open();
+    TMSTableJsonMovie Database = new TMSTableJsonMovie("data", "movies.json");
+    Database.OpenOrCreate();
     await Database.LoadAsync(CancellationToken.None);
 
     IMovieService Source = new TMovieService(Database) { Name = "test db", Description = "the db for the tests" };

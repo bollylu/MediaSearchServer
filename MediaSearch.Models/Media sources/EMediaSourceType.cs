@@ -1,8 +1,8 @@
 ﻿namespace MediaSearch.Models;
 public enum EMediaSourceType {
   Unknown,
-  Movies,
-  Series,
+  Movie,
+  Serie,
   Music,
   Video
 }

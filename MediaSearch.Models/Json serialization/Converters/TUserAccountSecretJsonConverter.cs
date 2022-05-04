@@ -23,7 +23,7 @@ public class TUserAccountSecretJsonConverter : JsonConverter<TUserAccountSecret>
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndObject) {
-          Logger.IfDebugMessageEx("Converted UserAccountSecret", RetVal);
+          Logger.IfDebugMessageExBox("Converted UserAccountSecret", RetVal);
           return RetVal;
         }
 
@@ -57,7 +57,7 @@ public class TUserAccountSecretJsonConverter : JsonConverter<TUserAccountSecret>
         }
       }
 
-      Logger.IfDebugMessageEx("Converted UserAccountSecret", RetVal);
+      Logger.IfDebugMessageExBox("Converted UserAccountSecret", RetVal);
       return RetVal;
 
     } catch (Exception ex) {

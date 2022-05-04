@@ -364,3 +364,5 @@ FodyWeavers.xsd
 
 movies/*.json
 *.msmeta
+/MediaSearch.Models.Test/Data/movies
+/MediaSearch.Server.Test/Data/movies

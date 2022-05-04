@@ -22,7 +22,7 @@ public class TMovieInfoContentMetaConverter : JsonConverter<TMovieInfoContentMet
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndObject && reader.CurrentDepth == 1) {
-          Logger.IfDebugMessageEx($"Converted {nameof(TMovieInfoContentMeta)}", RetVal);
+          Logger.IfDebugMessageExBox($"Converted {nameof(TMovieInfoContentMeta)}", RetVal);
           return RetVal;
         }
 
@@ -93,7 +93,7 @@ public class TMovieInfoContentMetaConverter : JsonConverter<TMovieInfoContentMet
         }
       }
 
-      Logger.IfDebugMessageEx($"Converted {nameof(TMovieInfoContentMeta)}", RetVal);
+      Logger.IfDebugMessageExBox($"Converted {nameof(TMovieInfoContentMeta)}", RetVal);
       return RetVal;
 
     } catch (Exception ex) {

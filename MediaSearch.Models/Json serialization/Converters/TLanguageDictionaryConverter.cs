@@ -25,7 +25,7 @@ public class TLanguageDictionaryStringConverter : JsonConverter<TLanguageDiction
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndArray) {
-          Logger.IfDebugMessageEx($"Converted {nameof(TLanguageDictionary<string>)}", RetVal);
+          Logger.IfDebugMessageExBox($"Converted {nameof(TLanguageDictionary<string>)}", RetVal);
           return RetVal;
         }
 
@@ -59,7 +59,7 @@ public class TLanguageDictionaryStringConverter : JsonConverter<TLanguageDiction
         }
       }
 
-      Logger.IfDebugMessageEx($"Converted {nameof(TLanguageDictionary<string>)}", RetVal);
+      Logger.IfDebugMessageExBox($"Converted {nameof(TLanguageDictionary<string>)}", RetVal);
       return RetVal;
 
     } catch (Exception ex) {

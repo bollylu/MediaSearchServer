@@ -1,7 +1,7 @@
 ﻿namespace MediaSearch.Models;
 public class TMediaSourceMovie : IMediaSource, IJson<TMediaSourceMovie>, IMediaSearchLoggable<TMediaSourceMovie> {
 
-  public EMediaSourceType MediaSourceType { get; } = EMediaSourceType.Movies;
+  public EMediaSourceType MediaSourceType { get; } = EMediaSourceType.Movie;
   public IMediaSearchDatabase? Database { get; set; }
   public string Name {
     get {

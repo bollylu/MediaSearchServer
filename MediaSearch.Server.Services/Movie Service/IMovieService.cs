@@ -16,7 +16,7 @@ public interface IMovieService {
   /// <summary>
   /// The source of the data for the service
   /// </summary>
-  IMediaSearchDatabase Database { get; }
+  IMediaSearchDataTable Database { get; }
 
   #region --- Database I/O --------------------------------------------
   /// <summary>

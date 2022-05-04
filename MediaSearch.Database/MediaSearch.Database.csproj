@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnablePreviewFeatures>true</EnablePreviewFeatures>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Physical storage\**" />
+    <Compile Remove="Table\**" />
+    <EmbeddedResource Remove="Physical storage\**" />
+    <EmbeddedResource Remove="Table\**" />
+    <None Remove="Physical storage\**" />
+    <None Remove="Table\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="_Global_\changelog.txt" />
+    <None Remove="_Global_\version.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Table\Header\IMSTableHeader.cs" />
+    <Compile Include="Table\Header\TMSTableHeader.cs" />
+    <Compile Include="Table\IMSTable.cs" />
+    <Compile Include="Table\TMSTable.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="_Global_\changelog.txt" />
+    <EmbeddedResource Include="_Global_\version.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MediaSearch.Models\MediaSearch.Models.csproj" />
+  </ItemGroup>
+
+</Project>

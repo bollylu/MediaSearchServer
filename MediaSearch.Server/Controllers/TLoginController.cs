@@ -21,9 +21,9 @@ public class TLoginController : ControllerBase, IMediaSearchLoggable<TLoginContr
   [HttpPost("login")]
   public async Task<ActionResult<TUserAccountInfo>> Login(TUserAccountSecret user) {
 
-    Logger.IfDebugMessage("Headers", HttpContext.Request.GetHeaders());
+    Logger.IfDebugMessageBox("Headers", HttpContext.Request.GetHeaders());
     IPAddress RemoteIP = IPAddress.Parse(HttpContext.Request.Headers["X-Real-IP"].SingleOrDefault() ?? "127.0.0.1") ?? IPAddress.Loopback;
-    Logger.IfDebugMessage("Remote ip", RemoteIP);
+    Logger.IfDebugMessageBox("Remote ip", RemoteIP);
 
     _AuditService.Audit(user.Name, $"Login request from {RemoteIP}");
 

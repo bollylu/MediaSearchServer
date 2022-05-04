@@ -62,5 +62,5 @@ public static class GlobalSettings {
     return RetVal.ToString();
   }
 
-  public static IAuditService AuditService {get; set;}
+  public static IAuditService AuditService {get; set;} = new TAuditServiceConsole();
 }

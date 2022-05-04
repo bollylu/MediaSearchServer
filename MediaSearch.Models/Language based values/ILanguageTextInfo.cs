@@ -13,7 +13,7 @@ public interface ILanguageTextInfo {
   /// <summary>
   /// When used in a list, one item should be marked as principal
   /// </summary>
-  bool IsPrincipal { get; }
+  bool IsPrincipal { get; set; }
 
   string ToString(int indent);
 }

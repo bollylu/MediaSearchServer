@@ -15,7 +15,7 @@ public interface IMediaInfoFile {
   Task<bool> WriteAsync(CancellationToken token);
   Task<bool> ExportAsync(string newFilename, CancellationToken token);
 
-  IMediaInfoHeader Header { get; }
+  //IMediaInfoHeader Header { get; }
   IMedia Content { get; }
 
 }

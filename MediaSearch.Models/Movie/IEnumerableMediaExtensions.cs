@@ -4,8 +4,8 @@ namespace MediaSearch.Models;
 
 public static class IEnumerableMediaExtensions {
 
-  public static IEnumerable<IMedia> WithFilter(this IEnumerable<IMedia> medias, IFilter filter) {
-    IEnumerable<IMedia> Filtered = medias.FilterByDays(filter)
+  public static IEnumerable<T> WithFilter<T>(this IEnumerable<T> medias, IFilter filter) where T : IMedia {
+    IEnumerable<T> Filtered = medias.FilterByDays(filter)
                                          .FilterByOutputDate(filter)
                                          .FilterByKeywords(filter)
                                          .FilterByTags(filter)
@@ -15,7 +15,7 @@ public static class IEnumerableMediaExtensions {
     return Filtered;
   }
 
-  public static IEnumerable<IMedia> OrderedBy(this IEnumerable<IMedia> medias, IFilter filter) {
+  public static IEnumerable<T> OrderedBy<T>(this IEnumerable<T> medias, IFilter filter) where T : IMedia {
 
     switch (filter.SortOrder) {
       default:
@@ -29,7 +29,7 @@ public static class IEnumerableMediaExtensions {
   }
 
   #region --- Keywords --------------------------------------------
-  public static IEnumerable<IMedia> FilterByKeywords(this IEnumerable<IMedia> medias, IFilterKeywords filter) {
+  public static IEnumerable<T> FilterByKeywords<T>(this IEnumerable<T> medias, IFilterKeywords filter) where T : IMedia {
     if (string.IsNullOrWhiteSpace(filter.Keywords)) {
       return medias;
     }
@@ -45,7 +45,7 @@ public static class IEnumerableMediaExtensions {
   #endregion --- Keywords --------------------------------------------
 
   #region --- Tags --------------------------------------------
-  public static IEnumerable<IMedia> FilterByTags(this IEnumerable<IMedia> medias, IFilterTags filter) {
+  public static IEnumerable<T> FilterByTags<T>(this IEnumerable<T> medias, IFilterTags filter) where T : IMedia {
     if (string.IsNullOrWhiteSpace(filter.Tags)) {
       return medias;
     }
@@ -74,7 +74,7 @@ public static class IEnumerableMediaExtensions {
   #endregion --- Tags --------------------------------------------
 
   #region --- Days since added --------------------------------------------
-  public static IEnumerable<IMedia> FilterByDays(this IEnumerable<IMedia> medias, IFilterDaysBack filter) {
+  public static IEnumerable<T> FilterByDays<T>(this IEnumerable<T> medias, IFilterDaysBack filter) where T : IMedia {
     if (filter.DaysBack == 0) {
       return medias;
     }
@@ -84,7 +84,7 @@ public static class IEnumerableMediaExtensions {
   #endregion --- Days since added --------------------------------------------
 
   #region --- Output year --------------------------------------------
-  public static IEnumerable<IMedia> FilterByOutputDate(this IEnumerable<IMedia> medias, IFilterOutputDate filter) {
+  public static IEnumerable<T> FilterByOutputDate<T>(this IEnumerable<T> medias, IFilterOutputDate filter) where T : IMedia {
     if (filter.OutputDateMax < filter.OutputDateMin) {
       return medias;
     }
@@ -92,7 +92,7 @@ public static class IEnumerableMediaExtensions {
   }
   #endregion --- Output year --------------------------------------------
 
-  public static IEnumerable<IMedia> FilterByGroupsOnly(this IEnumerable<IMedia> medias, IFilter filter) {
+  public static IEnumerable<T> FilterByGroupsOnly<T>(this IEnumerable<T> medias, IFilter filter) where T : IMedia {
     if (filter is null) {
       return medias;
     }
@@ -102,7 +102,7 @@ public static class IEnumerableMediaExtensions {
       return medias;
     }
   }
-  public static IEnumerable<IMedia> FilterByGroup(this IEnumerable<IMedia> medias, IFilterGroup filter) {
+  public static IEnumerable<T> FilterByGroup<T>(this IEnumerable<T> medias, IFilterGroup filter) where T : IMedia {
     if (filter is null || string.IsNullOrWhiteSpace(filter.Group)) {
       return medias;
     }
@@ -118,7 +118,7 @@ public static class IEnumerableMediaExtensions {
   //  return movies.Where(m => m.SubGroup.Equals(filter.SubGroup, StringComparison.CurrentCultureIgnoreCase));
   //}
 
-  public static IAsyncEnumerable<string> GetGroups(this IEnumerable<IMedia> medias) {
+  public static IAsyncEnumerable<string> GetGroups<T>(this IEnumerable<T> medias) where T : IMedia {
     return medias.Where(m => m.IsGroupMember)
                  .Select(m => m.Group)
                  .Distinct()

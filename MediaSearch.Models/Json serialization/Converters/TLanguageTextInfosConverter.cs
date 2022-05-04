@@ -23,7 +23,7 @@ public class TLanguageTextInfosConverter : JsonConverter<TLanguageTextInfos>, IM
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndArray) {
-          Logger.IfDebugMessageEx($"Converted {nameof(TLanguageTextInfos)}", RetVal);
+          Logger.IfDebugMessageExBox($"Converted {nameof(TLanguageTextInfos)}", RetVal);
           return RetVal;
         }
 
@@ -33,7 +33,7 @@ public class TLanguageTextInfosConverter : JsonConverter<TLanguageTextInfos>, IM
         }
       }
 
-      Logger.IfDebugMessageEx($"Converted {nameof(TLanguageTextInfos)}", RetVal);
+      Logger.IfDebugMessageExBox($"Converted {nameof(TLanguageTextInfos)}", RetVal);
       return RetVal;
 
     } catch (Exception ex) {

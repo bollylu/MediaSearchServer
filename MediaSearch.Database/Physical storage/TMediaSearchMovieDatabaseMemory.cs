@@ -1,12 +1,15 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace MediaSearch.Models;
+using MediaSearch.Models;
+using MediaSearch.Models.Logging;
 
-public class TMediaSearchDatabaseMemory : IMediaSearchDatabase, IMediaSearchLoggable<TMediaSearchDatabaseMemory> {
+namespace MediaSearch.Database;
 
-  public IMediaSearchLogger<TMediaSearchDatabaseMemory> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMediaSearchDatabaseMemory>();
+public class TMediaSearchMovieDatabaseMemory : IMediaSearchDataTable<IMovie>, IMediaSearchLoggable<TMediaSearchMovieDatabaseMemory> {
 
-  public IMediaSearchDatabaseHeader Header { get; } = new TMediaSearchDatabaseHeader();
+  public IMediaSearchLogger<TMediaSearchMovieDatabaseMemory> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMediaSearchMovieDatabaseMemory>();
+
+  public IMSTableHeader Header { get; } = new TMSTableHeader();
 
   public bool IsDirty { get; set; } = false;
 
@@ -14,24 +17,24 @@ public class TMediaSearchDatabaseMemory : IMediaSearchDatabase, IMediaSearchLogg
   /// <summary>
   /// Store the movies
   /// </summary>
-  private readonly List<IMedia> _Items = new();
+  private readonly List<IMovie> _Items = new();
 
   private readonly ReaderWriterLockSlim _LockData = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
   #endregion --- Internal data storage --------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMediaSearchDatabaseMemory() { }
+  public TMediaSearchMovieDatabaseMemory() { }
 
-  public TMediaSearchDatabaseMemory(IMediaSearchDatabase database) {
+  public TMediaSearchMovieDatabaseMemory(IMediaSearchDataTable<IMovie> database) {
     Header = new TMediaSearchDatabaseHeader(database.Header);
-    foreach (IMedia MediaItem in database.GetAll()) {
+    foreach (IMovie MediaItem in database.GetAll()) {
       MediaItem.SetDirty();
       _Items.Add(MediaItem);
     }
   }
 
-  public TMediaSearchDatabaseMemory(IEnumerable<IMedia> medias) {
-    foreach (IMedia MediaItem in medias) {
+  public TMediaSearchMovieDatabaseMemory(IEnumerable<IMovie> medias) {
+    foreach (IMovie MediaItem in medias) {
       MediaItem.SetDirty();
       _Items.Add(MediaItem);
     }
@@ -97,7 +100,7 @@ public class TMediaSearchDatabaseMemory : IMediaSearchDatabase, IMediaSearchLogg
 
   #region --- Content management --------------------------------------------
 
-  public void Add(IMedia item) {
+  public void Add(IMovie item) {
     if (item is null) {
       throw new ApplicationException("IMedia item is missing");
     }
@@ -114,9 +117,9 @@ public class TMediaSearchDatabaseMemory : IMediaSearchDatabase, IMediaSearchLogg
 
   }
 
-  public void AddOrUpdate(IMedia item) {
+  public void AddOrUpdate(IMovie item) {
     if (item is null) {
-      throw new ApplicationException("IMedia item is missing");
+      throw new ApplicationException("IMovie item is missing");
     }
 
     item.SetDirty();
@@ -136,9 +139,9 @@ public class TMediaSearchDatabaseMemory : IMediaSearchDatabase, IMediaSearchLogg
 
   }
 
-  public void Update(IMedia item) {
+  public void Update(IMovie item) {
     if (item is null) {
-      throw new ApplicationException("IMedia item is missing");
+      throw new ApplicationException("IMovie item is missing");
     }
 
     item.SetDirty();
@@ -147,7 +150,7 @@ public class TMediaSearchDatabaseMemory : IMediaSearchDatabase, IMediaSearchLogg
       _LockData.EnterWriteLock();
       int ItemIndex = _Items.FindIndex(x => x.Id == item.Id);
       if (ItemIndex < 0) {
-        throw new ApplicationException($"IMedia item to update is not found : {item.Id}");
+        throw new ApplicationException($"IMovie item to update is not found : {item.Id}");
       }
       _Items[ItemIndex] = item;
       _Items.Add(item);
@@ -167,16 +170,16 @@ public class TMediaSearchDatabaseMemory : IMediaSearchDatabase, IMediaSearchLogg
     }
   }
 
-  public void Delete(IMedia item) {
+  public void Delete(IMovie item) {
     if (item is null) {
-      throw new ApplicationException("IMedia item is missing");
+      throw new ApplicationException("IMovie item is missing");
     }
 
     try {
       _LockData.EnterWriteLock();
       int ItemIndex = _Items.FindIndex(x => x.Id == item.Id);
       if (ItemIndex < 0) {
-        throw new ApplicationException($"IMedia item to delete is not found : {item.Id}");
+        throw new ApplicationException($"IMovie item to delete is not found : {item.Id}");
       }
       _Items.RemoveAt(ItemIndex);
       SetDirty();
@@ -185,26 +188,32 @@ public class TMediaSearchDatabaseMemory : IMediaSearchDatabase, IMediaSearchLogg
     }
   }
 
-  public IEnumerable<IMedia> GetAll() {
+  public IEnumerable<IMovie> GetAll(int maxRecords = 0) {
 
     if (IsEmpty()) {
       yield break;
     }
 
-    IList<IMedia> LocalItems;
+    maxRecords = maxRecords.WithinLimits(0, int.MaxValue);
+
     try {
       _LockData.EnterReadLock();
-      LocalItems = new List<IMedia>(_Items);
+      if (maxRecords == 0) {
+        foreach (IMovie MediaItem in _Items) {
+          yield return MediaItem;
+        }
+      } else {
+        foreach (IMovie MediaItem in _Items.Take(maxRecords)) {
+          yield return MediaItem;
+        }
+      }
     } finally {
       _LockData.ExitReadLock();
     }
 
-    foreach (IMedia MediaItem in LocalItems) {
-      yield return MediaItem;
-    }
   }
 
-  public IEnumerable<IMedia> GetFiltered(IFilter filter) {
+  public IEnumerable<IMovie> GetFiltered(IFilter filter, int maxRecords = 0) {
 
     if (filter is null) {
       yield break;
@@ -214,20 +223,27 @@ public class TMediaSearchDatabaseMemory : IMediaSearchDatabase, IMediaSearchLogg
       yield break;
     }
 
-    IList<IMedia> LocalItems;
+    maxRecords = maxRecords.WithinLimits(0, int.MaxValue);
+
+    IList<IMovie> LocalItems;
     try {
       _LockData.EnterReadLock();
-      LocalItems = new List<IMedia>(_Items.WithFilter(filter).OrderedBy(filter));
+      if (maxRecords == 0) {
+        LocalItems = new List<IMovie>(_Items.WithFilter(filter).OrderedBy(filter));
+      } else {
+        LocalItems = new List<IMovie>(_Items.WithFilter(filter).OrderedBy(filter).Take(maxRecords));
+      }
     } finally {
       _LockData.ExitReadLock();
     }
 
-    foreach (IMedia MediaItem in LocalItems) {
+    foreach (IMovie MediaItem in LocalItems) {
       yield return MediaItem;
     }
+
   }
 
-  public IMedia? Get(string id) {
+  public IMovie? Get(string id) {
     if (string.IsNullOrWhiteSpace(id)) {
       throw new ArgumentNullException(nameof(id));
     }
@@ -242,7 +258,7 @@ public class TMediaSearchDatabaseMemory : IMediaSearchDatabase, IMediaSearchLogg
   #endregion --- Content management --------------------------------------------
 
   #region --- Content management async --------------------------------------------
-  public Task AddAsync(IMedia item, CancellationToken token) {
+  public Task AddAsync(IMovie item, CancellationToken token) {
     if (item is null) {
       throw new ApplicationException("IMedia item is missing");
     }
@@ -259,7 +275,7 @@ public class TMediaSearchDatabaseMemory : IMediaSearchDatabase, IMediaSearchLogg
     return Task.CompletedTask;
   }
 
-  public Task AddOrUpdateAsync(IMedia item, CancellationToken token) {
+  public Task AddOrUpdateAsync(IMovie item, CancellationToken token) {
     if (item is null) {
       throw new ApplicationException("IMedia item is missing");
     }
@@ -281,7 +297,7 @@ public class TMediaSearchDatabaseMemory : IMediaSearchDatabase, IMediaSearchLogg
     return Task.CompletedTask;
   }
 
-  public Task UpdateAsync(IMedia item, CancellationToken token) {
+  public Task UpdateAsync(IMovie item, CancellationToken token) {
     if (item is null) {
       throw new ApplicationException("IMedia item is missing");
     }
@@ -314,7 +330,7 @@ public class TMediaSearchDatabaseMemory : IMediaSearchDatabase, IMediaSearchLogg
     return Task.CompletedTask;
   }
 
-  public Task DeleteAsync(IMedia item, CancellationToken token) {
+  public Task DeleteAsync(IMovie item, CancellationToken token) {
     if (item is null) {
       throw new ApplicationException("IMedia item is missing");
     }
@@ -334,25 +350,25 @@ public class TMediaSearchDatabaseMemory : IMediaSearchDatabase, IMediaSearchLogg
     return Task.CompletedTask;
   }
 
-  public async IAsyncEnumerable<IMedia> GetAllAsync([EnumeratorCancellation] CancellationToken token) {
+  public async IAsyncEnumerable<IMovie> GetAllAsync([EnumeratorCancellation] CancellationToken token) {
     if (IsEmpty()) {
       yield break;
     }
 
-    IList<IMedia> LocalItems;
+    IList<IMovie> LocalItems;
     try {
       _LockData.EnterReadLock();
-      LocalItems = new List<IMedia>(_Items);
+      LocalItems = new List<IMovie>(_Items);
     } finally {
       _LockData.ExitReadLock();
     }
 
-    await foreach (IMedia MediaItem in LocalItems.ToAsyncEnumerable()) {
+    await foreach (IMovie MediaItem in LocalItems.ToAsyncEnumerable()) {
       yield return MediaItem;
     }
   }
 
-  public async IAsyncEnumerable<IMedia> GetFilteredAsync(TFilter filter, [EnumeratorCancellation] CancellationToken token) {
+  public async IAsyncEnumerable<IMovie> GetFilteredAsync(TFilter filter, [EnumeratorCancellation] CancellationToken token) {
     if (filter is null) {
       yield break;
     }
@@ -361,15 +377,15 @@ public class TMediaSearchDatabaseMemory : IMediaSearchDatabase, IMediaSearchLogg
       yield break;
     }
 
-    IList<IMedia> LocalItems;
+    IList<IMovie> LocalItems;
     try {
       _LockData.EnterReadLock();
-      LocalItems = new List<IMedia>(_Items.WithFilter(filter).OrderedBy(filter));
+      LocalItems = new List<IMovie>(_Items.WithFilter(filter).OrderedBy(filter));
     } finally {
       _LockData.ExitReadLock();
     }
 
-    await foreach (IMedia MediaItem in LocalItems.ToAsyncEnumerable()) {
+    await foreach (IMovie MediaItem in LocalItems.ToAsyncEnumerable()) {
       yield return MediaItem;
     }
   }
@@ -387,7 +403,7 @@ public class TMediaSearchDatabaseMemory : IMediaSearchDatabase, IMediaSearchLogg
     return;
   }
 
-  public bool Open() {
+  public bool OpenOrCreate() {
     return true;
   }
 
@@ -420,6 +436,9 @@ public class TMediaSearchDatabaseMemory : IMediaSearchDatabase, IMediaSearchLogg
     }
   }
 
+  public async Task<bool> SaveAsync() {
+    return await SaveAsync(CancellationToken.None);
+  }
   public Task<bool> SaveAsync(CancellationToken token) {
     try {
       _LockData.EnterWriteLock();

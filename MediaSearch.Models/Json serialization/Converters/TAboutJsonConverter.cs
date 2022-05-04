@@ -23,7 +23,7 @@ public class TAboutJsonConverter : JsonConverter<TAbout>, IMediaSearchLoggable<T
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndObject) {
-          Logger.IfDebugMessageEx($"Converted {nameof(TAbout)}", RetVal);
+          Logger.IfDebugMessageExBox($"Converted {nameof(TAbout)}", RetVal);
           return RetVal;
         }
 
@@ -44,12 +44,12 @@ public class TAboutJsonConverter : JsonConverter<TAbout>, IMediaSearchLoggable<T
 
             case nameof(TAbout.CurrentVersion):
               RetVal.CurrentVersion = Version.Parse(reader.GetString() ?? "0.0");
-              Logger.IfDebugMessageEx($"Found {nameof(RetVal.CurrentVersion)}", RetVal.CurrentVersion);
+              Logger.IfDebugMessageExBox($"Found {nameof(RetVal.CurrentVersion)}", RetVal.CurrentVersion);
               break;
 
             case nameof(TAbout.ChangeLog):
               RetVal.ChangeLog = reader.GetString() ?? "";
-              Logger.IfDebugMessageEx($"Found {nameof(RetVal.ChangeLog)}", RetVal.ChangeLog);
+              Logger.IfDebugMessageExBox($"Found {nameof(RetVal.ChangeLog)}", RetVal.ChangeLog);
               break;
 
             default:
@@ -59,7 +59,7 @@ public class TAboutJsonConverter : JsonConverter<TAbout>, IMediaSearchLoggable<T
         }
       }
 
-      Logger.IfDebugMessageEx($"Converted {nameof(TAbout)}", RetVal);
+      Logger.IfDebugMessageExBox($"Converted {nameof(TAbout)}", RetVal);
       return RetVal;
 
     } catch (Exception ex) {

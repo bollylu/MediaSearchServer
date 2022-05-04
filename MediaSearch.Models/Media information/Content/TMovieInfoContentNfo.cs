@@ -7,6 +7,7 @@ public class TMovieInfoContentNfo : IToXml,
   public const string XML_THIS_ELEMENT = "movie";
   public const string XML_ELEMENT_TITLE = "title";
   public const string XML_ELEMENT_ORIGINAL_TITLE = "originaltitle";
+  public const string XML_ELEMENT_SORT_TITLE = "sorttitle";
   public const string XML_ELEMENT_DESCRIPTION = "plot";
   public const string XML_ELEMENT_KODI_ID = "id";
   public const string XML_ELEMENT_UNIQUE_ID = "uniqueid";
@@ -32,7 +33,13 @@ public class TMovieInfoContentNfo : IToXml,
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMovieInfoContentNfo() { }
   public TMovieInfoContentNfo(IMovie movie) {
-
+    Title = movie.Titles.GetPrincipal()?.Value ?? "";
+    OriginalTitle = movie.Titles.GetPrincipal()?.Value ?? "";
+    SortTitle = movie.Titles.GetPrincipal()?.Value ?? "";
+    Description = movie.Descriptions.GetPrincipal()?.Value ?? "";
+    Country = Languages.GetLanguageCode(movie.Titles.GetPrincipal()?.Language ?? ELanguage.Unknown);
+    CreationYear = movie.CreationYear;
+    Genres.AddRange(movie.Tags);
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
@@ -56,13 +63,17 @@ public class TMovieInfoContentNfo : IToXml,
   }
 
   public IMovie GetMovie() {
-    IMovie RetVal = new TMovie() {
-      CreationDate = new DateOnly(CreationYear, 1, 1)
-    };
+    IMovie RetVal = new TMovie();
 
+    try {
+      RetVal.CreationDate = new DateOnly(CreationYear, 1, 1);
+    } catch {
+      RetVal.CreationDate = DateOnly.MinValue;
+    }
+    
     RLanguage LanguageFromCountry = Languages.GetLanguageFromCode(Country);
-    RetVal.Titles.Add(LanguageFromCountry.Language, Title, true);
-    RetVal.Descriptions.Add(LanguageFromCountry.Language, Description, true);
+    RetVal.Titles.Add(LanguageFromCountry.Language, Title);
+    RetVal.Descriptions.Add(LanguageFromCountry.Language, Description);
     RetVal.Tags.AddRange(Genres);
     return RetVal;
   }
@@ -93,6 +104,8 @@ public class TMovieInfoContentNfo : IToXml,
 
     Country = source.SafeReadElementValue(XML_ELEMENT_COUNTRY, "FR");
     Title = source.SafeReadElementValue(XML_ELEMENT_TITLE, "");
+    OriginalTitle = source.SafeReadElementValue(XML_ELEMENT_ORIGINAL_TITLE, "");
+    SortTitle = source.SafeReadElementValue(XML_ELEMENT_SORT_TITLE, "");
     Description = source.SafeReadElementValue(XML_ELEMENT_DESCRIPTION, "");
 
     Genres.Clear();

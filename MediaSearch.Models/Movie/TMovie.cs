@@ -2,7 +2,9 @@
 
 namespace MediaSearch.Models;
 
-public class TMovie : AMedia, IMovie, IJson<TMovie>, IDirty {
+public class TMovie : AMedia, IMovie, IJson<TMovie>, IDirty, IMediaSearchLoggable<TMovie> {
+
+  public IMediaSearchLogger<TMovie> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovie>();
 
   #region --- Public properties ------------------------------------------------------------------------------
 
@@ -21,7 +23,7 @@ public class TMovie : AMedia, IMovie, IJson<TMovie>, IDirty {
   public List<ELanguage> Soundtracks { get; } = new();
   public List<ELanguage> Subtitles { get; } = new();
 
-  
+
   #endregion --- Public properties ---------------------------------------------------------------------------
 
   #region --- Picture --------------------------------------------
@@ -35,26 +37,60 @@ public class TMovie : AMedia, IMovie, IJson<TMovie>, IDirty {
   #endregion --- Picture --------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMovie() : base() { }
+  public TMovie() : base() {
+    MediaType = EMediaSourceType.Movie;
+  }
 
   public TMovie(string name, int creationYear = -1) : base() {
-    Titles.Add(ELanguage.Unknown, name, true);
-    CreationDate = new DateOnly(creationYear, 1, 1);
+    MediaType = EMediaSourceType.Movie;
+    Titles.Add(ELanguage.Unknown, name);
+    try {
+      if (creationYear == -1) {
+        CreationDate = DateOnly.MinValue;
+      } else {
+        CreationDate = new DateOnly(creationYear, 1, 1);
+      }
+    } catch {
+      Logger.LogWarning($"Unable to set {nameof(CreationDate)} of {nameof(TMovie)} {name.WithQuotes()} : {nameof(creationYear)} is invalid : {creationYear}");
+      CreationDate = DateOnly.MinValue;
+    }
   }
 
   public TMovie(ELanguage language, string name, int creationYear = -1) : base() {
-    Titles.Add(language, name, true);
-    CreationDate = new DateOnly(creationYear, 1, 1);
+    MediaType = EMediaSourceType.Movie;
+    Titles.Add(language, name);
+    try {
+      if (creationYear == -1) {
+        CreationDate = DateOnly.MinValue;
+      } else {
+        CreationDate = new DateOnly(creationYear, 1, 1);
+      }
+    } catch {
+      Logger.LogWarning($"Unable to set {nameof(CreationDate)} of {nameof(TMovie)} {language}:{name.WithQuotes()} : {nameof(creationYear)} is invalid : {creationYear}");
+      CreationDate = DateOnly.MinValue;
+    }
   }
 
   public TMovie(IMovie movie) : base(movie) {
-    foreach(var SoundtrackItem in movie.Soundtracks) {
+    MediaType = EMediaSourceType.Movie;
+    foreach (var SoundtrackItem in movie.Soundtracks) {
       Soundtracks.Add(SoundtrackItem);
     }
     foreach (var SubtitleItem in movie.Subtitles) {
       Subtitles.Add(SubtitleItem);
     }
     SetDirty();
+  }
+
+  public override void Dispose() {
+    base.Dispose();
+    Soundtracks.Clear();
+    Subtitles.Clear();
+  }
+  public override async ValueTask DisposeAsync() {
+    await base.DisposeAsync();
+    Soundtracks.Clear();
+    Subtitles.Clear();
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
@@ -63,31 +99,30 @@ public class TMovie : AMedia, IMovie, IJson<TMovie>, IDirty {
   }
 
   #region --- Converters -------------------------------------------------------------------------------------
-  public override string ToString(int Indent) {
-    StringBuilder RetVal = new(base.ToString(Indent));
-    string IndentSpace = new string(' ', Indent);
-    
-    RetVal.AppendLine($"{IndentSpace}{nameof(Extension)} = {Extension}");
-    
+  public override string ToString(int indent) {
+    StringBuilder RetVal = new(base.ToString(indent));
+
+    RetVal.AppendIndent($"- {nameof(Extension)} = {Extension}", indent);
+
     if (Soundtracks.Any()) {
-      RetVal.AppendLine($"{IndentSpace}{nameof(Soundtracks)}");
+      RetVal.AppendIndent($"- {nameof(Soundtracks)}", indent);
       foreach (ELanguage SoundtrackItem in Soundtracks) {
-        RetVal.AppendLine($"{IndentSpace}|- {SoundtrackItem}");
+        RetVal.AppendIndent($"- {SoundtrackItem}", indent + 2);
       }
     } else {
-      RetVal.AppendLine($"{IndentSpace}{nameof(Soundtracks)} is empty");
+      RetVal.AppendIndent($"- {nameof(Soundtracks)} is empty", indent);
     }
     if (Subtitles.Any()) {
-      RetVal.AppendLine($"{IndentSpace}{nameof(Subtitles)}");
+      RetVal.AppendIndent($"- {nameof(Subtitles)}", indent);
       foreach (ELanguage SubtitleItem in Subtitles) {
-        RetVal.AppendLine($"{IndentSpace}|- {SubtitleItem}");
+        RetVal.AppendIndent($"- {SubtitleItem}", indent + 2);
       }
     } else {
-      RetVal.AppendLine($"{IndentSpace}{nameof(Subtitles)} is empty");
+      RetVal.AppendIndent($"- {nameof(Subtitles)} is empty", indent);
     }
     return RetVal.ToString();
   }
-  
+
   #endregion --- Converters ----------------------------------------------------------------------------------
 
   public void ReplaceBy(IMovie movie) {
@@ -110,4 +145,6 @@ public class TMovie : AMedia, IMovie, IJson<TMovie>, IDirty {
     CreationDate = movie.CreationDate;
 
   }
+
+
 }

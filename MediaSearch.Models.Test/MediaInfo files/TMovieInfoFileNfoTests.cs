@@ -22,13 +22,13 @@ public class TMovieInfoFileNfoTests {
       StorageName = $"{Random.Shared.Next()}.nfo"
     };
 
-    IMovie TargetContent = new TMovie(ELanguage.French, "La grande vadrouille", 1966) {
-    };
-    TargetContent.Tags.Add("Guerre");
-    TargetContent.Tags.Add("WW2");
-    TargetContent.Tags.Add("Comédie");
-
-    Target.Content = TargetContent;
+    Target.NfoContent.Title = "La grande vadrouille";
+    Target.NfoContent.Country = "FR";
+    Target.NfoContent.Description = "Comédie de guerre";
+    Target.NfoContent.CreationYear = 1966;
+    Target.NfoContent.Genres.Add("Guerre");
+    Target.NfoContent.Genres.Add("WW2");
+    Target.NfoContent.Genres.Add("Comédie");
 
     Assert.IsNotNull(Target);
 
@@ -42,13 +42,13 @@ public class TMovieInfoFileNfoTests {
       StorageName = $"{Random.Shared.Next()}.nfo"
     };
 
-    IMovie TargetContent = new TMovie(ELanguage.French, "La grande vadrouille", 1966) {
-    };
-    TargetContent.Tags.Add("Guerre");
-    TargetContent.Tags.Add("WW2");
-    TargetContent.Tags.Add("Comédie");
-
-    Target.Content = TargetContent;
+    Target.NfoContent.Title = "La grande vadrouille";
+    Target.NfoContent.Country = "FR";
+    Target.NfoContent.Description = "Comédie de guerre";
+    Target.NfoContent.CreationYear = 1966;
+    Target.NfoContent.Genres.Add("Guerre");
+    Target.NfoContent.Genres.Add("WW2");
+    Target.NfoContent.Genres.Add("Comédie");
 
     Assert.IsFalse(Target.Exists());
 
@@ -68,27 +68,28 @@ public class TMovieInfoFileNfoTests {
       StorageName = $"{Random.Shared.Next()}.nfo"
     };
 
-    IMovie SourceContent = new TMovie(ELanguage.French, "La grande vadrouille", 1966) {
-    };
-    SourceContent.Tags.Add("Guerre");
-    SourceContent.Tags.Add("WW2");
-    SourceContent.Tags.Add("Comédie");
+    Source.NfoContent.Title = "La grande vadrouille";
+    Source.NfoContent.Country = "FR";
+    Source.NfoContent.Description = "Comédie de guerre";
+    Source.NfoContent.CreationYear = 1966;
+    Source.NfoContent.Genres.Add("Guerre");
+    Source.NfoContent.Genres.Add("WW2");
+    Source.NfoContent.Genres.Add("Comédie");
+    
+    TraceMessage($"{nameof(Source)} : {Source.GetType().Name}", Source.ToString());
 
-    Source.Content = SourceContent;
-
-    Source.Write();
+    Assert.IsTrue(Source.Write());
     Assert.IsTrue(Source.Exists());
 
-    TraceMessage($"{nameof(Source)} : {Source.GetType().Name}", Source.ToString());
     TraceMessage("Source file raw content", File.ReadAllText(Source.FullStorageName));
-
+    
     TMovieInfoFileNfo Target = new TMovieInfoFileNfo() {
       StoragePath = Source.StoragePath,
       StorageName = Source.StorageName
     };
 
     Assert.IsTrue(Target.Exists());
-    Target.Read();
+    Assert.IsTrue(Target.Read());
 
     TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
 
@@ -103,13 +104,13 @@ public class TMovieInfoFileNfoTests {
       StorageName = $"{Random.Shared.Next()}.nfo"
     };
 
-    IMovie TargetContent = new TMovie(ELanguage.French, "La grande vadrouille", 1966) {
-    };
-    TargetContent.Tags.Add("Guerre");
-    TargetContent.Tags.Add("WW2");
-    TargetContent.Tags.Add("Comédie");
-
-    Target.Content = TargetContent;
+    Target.NfoContent.Title = "La grande vadrouille";
+    Target.NfoContent.Country = "FR";
+    Target.NfoContent.Description = "Comédie de guerre";
+    Target.NfoContent.CreationYear = 1966;
+    Target.NfoContent.Genres.Add("Guerre");
+    Target.NfoContent.Genres.Add("WW2");
+    Target.NfoContent.Genres.Add("Comédie");
 
     Assert.IsFalse(Target.Exists());
 
@@ -128,13 +129,13 @@ public class TMovieInfoFileNfoTests {
       StorageName = $"{Random.Shared.Next()}.nfo"
     };
 
-    IMovie SourceContent = new TMovie(ELanguage.French, "La grande vadrouille", 1966) {
-    };
-    SourceContent.Tags.Add("Guerre");
-    SourceContent.Tags.Add("WW2");
-    SourceContent.Tags.Add("Comédie");
-
-    Source.Content = SourceContent;
+    Source.NfoContent.Title = "La grande vadrouille";
+    Source.NfoContent.Country = "FR";
+    Source.NfoContent.Description = "Comédie de guerre";
+    Source.NfoContent.CreationYear = 1966;
+    Source.NfoContent.Genres.Add("Guerre");
+    Source.NfoContent.Genres.Add("WW2");
+    Source.NfoContent.Genres.Add("Comédie");
 
     await Source.WriteAsync(CancellationToken.None);
     Assert.IsTrue(Source.Exists());

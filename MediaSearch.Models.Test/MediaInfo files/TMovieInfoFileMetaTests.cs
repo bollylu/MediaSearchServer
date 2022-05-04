@@ -17,26 +17,18 @@ public class TMovieInfoFileMetaTests {
 
   [TestMethod]
   public void Instanciate_TMovieInfoFileMeta_FillData() {
-    TMediaInfoHeader TargetHeader = new TMediaInfoHeader() {
-      Name = "testfile",
-      Description = "Description"
-    };
     TMovieInfoFileMeta Target = new() {
-      Header = TargetHeader,
       StoragePath = Path.GetTempPath(),
       StorageName = $"{Random.Shared.Next()}.msmeta"
     };
 
-    IMovie TargetContent = new TMovie(ELanguage.French, "La grande vadrouille", 1966) {
-      Size = 1234567890
-    };
-
-    TargetContent.Descriptions.Add(new TLanguageTextInfo(ELanguage.French, "Pendant la WW2, ..."));
-    TargetContent.Tags.Add("Guerre");
-    TargetContent.Tags.Add("WW2");
-    TargetContent.Tags.Add("Comédie");
-
-    Target.Content = TargetContent;
+    Target.MetaContent.Titles.Add(ELanguage.French, "La grande vadrouille");
+    Target.MetaContent.CreationDate = new DateOnly(1966, 1, 1);
+    Target.MetaContent.Size = 1_234_567_890;
+    Target.MetaContent.Descriptions.Add(ELanguage.French, "Pendant la WW2, ...");
+    Target.MetaContent.Tags.Add("Guerre");
+    Target.MetaContent.Tags.Add("WW2");
+    Target.MetaContent.Tags.Add("Comédie");
 
     Assert.IsNotNull(Target);
 
@@ -45,26 +37,19 @@ public class TMovieInfoFileMetaTests {
 
   [TestMethod]
   public void TMovieInfoFileMeta_Save_Test_Remove() {
-    TMediaInfoHeader TargetHeader = new TMediaInfoHeader() {
-      Name = "testfile",
-      Description = "Description"
-    };
     TMovieInfoFileMeta Target = new() {
-      Header = TargetHeader,
       StoragePath = Path.GetTempPath(),
       StorageName = $"{Random.Shared.Next()}.msmeta"
     };
 
-    IMovie TargetContent = new TMovie(ELanguage.French, "La grande vadrouille", 1966) {
-      Size = 1234567890
-    };
+    Target.MetaContent.Titles.Add(ELanguage.French, "La grande vadrouille");
+    Target.MetaContent.CreationDate = new DateOnly(1966, 1, 1);
+    Target.MetaContent.Size = 1_234_567_890;
+    Target.MetaContent.Descriptions.Add(ELanguage.French, "Pendant la WW2, ...");
+    Target.MetaContent.Tags.Add("Guerre");
+    Target.MetaContent.Tags.Add("WW2");
+    Target.MetaContent.Tags.Add("Comédie");
 
-    TargetContent.Descriptions.Add(new TLanguageTextInfo(ELanguage.French, "Pendant la WW2, ..."));
-    TargetContent.Tags.Add("Guerre");
-    TargetContent.Tags.Add("WW2");
-    TargetContent.Tags.Add("Comédie");
-
-    Target.Content = TargetContent;
 
     Assert.IsFalse(Target.Exists());
 
@@ -79,26 +64,19 @@ public class TMovieInfoFileMetaTests {
 
   [TestMethod]
   public async Task TMovieInfoFileMeta_Save_Test_Remove_Async() {
-    TMediaInfoHeader TargetHeader = new TMediaInfoHeader() {
-      Name = "testfile",
-      Description = "Description"
-    };
     TMovieInfoFileMeta Target = new() {
-      Header = TargetHeader,
       StoragePath = Path.GetTempPath(),
       StorageName = $"{Random.Shared.Next()}.msmeta"
     };
 
-    IMovie TargetContent = new TMovie(ELanguage.French, "La grande vadrouille", 1966) {
-      Size = 1234567890
-    };
+    Target.MetaContent.Titles.Add(ELanguage.French, "La grande vadrouille");
+    Target.MetaContent.CreationDate = new DateOnly(1966, 1, 1);
+    Target.MetaContent.Size = 1_234_567_890;
+    Target.MetaContent.Descriptions.Add(ELanguage.French, "Pendant la WW2, ...");
+    Target.MetaContent.Tags.Add("Guerre");
+    Target.MetaContent.Tags.Add("WW2");
+    Target.MetaContent.Tags.Add("Comédie");
 
-    TargetContent.Descriptions.Add(new TLanguageTextInfo(ELanguage.French, "Pendant la WW2, ..."));
-    TargetContent.Tags.Add("Guerre");
-    TargetContent.Tags.Add("WW2");
-    TargetContent.Tags.Add("Comédie");
-
-    Target.Content = TargetContent;
 
     Assert.IsFalse(Target.Exists());
 
@@ -112,26 +90,18 @@ public class TMovieInfoFileMetaTests {
 
   [TestMethod]
   public void TMovieInfoFileMeta_Read() {
-    TMediaInfoHeader SourceHeader = new TMediaInfoHeader() {
-      Name = "testfile",
-      Description = "Description"
-    };
     TMovieInfoFileMeta Source = new() {
-      Header = SourceHeader,
       StoragePath = Path.GetTempPath(),
       StorageName = $"{Random.Shared.Next()}.msmeta", 
     };
 
-    IMovie SourceContent = new TMovie(ELanguage.French, "La grande vadrouille", 1966) {
-      Size = 1234567890
-    };
-
-    SourceContent.Descriptions.Add(new TLanguageTextInfo(ELanguage.French, "Pendant la WW2, ..."));
-    SourceContent.Tags.Add("Guerre");
-    SourceContent.Tags.Add("WW2");
-    SourceContent.Tags.Add("Comédie");
-
-    Source.Content = SourceContent;
+    Source.MetaContent.Titles.Add(ELanguage.French, "La grande vadrouille");
+    Source.MetaContent.CreationDate = new DateOnly(1966, 1, 1);
+    Source.MetaContent.Size = 1_234_567_890;
+    Source.MetaContent.Descriptions.Add(ELanguage.French, "Pendant la WW2, ...");
+    Source.MetaContent.Tags.Add("Guerre");
+    Source.MetaContent.Tags.Add("WW2");
+    Source.MetaContent.Tags.Add("Comédie");
 
     Assert.IsFalse(Source.Exists());
 
@@ -157,26 +127,18 @@ public class TMovieInfoFileMetaTests {
 
   [TestMethod]
   public async Task TMovieInfoFileMeta_Read_Async() {
-    TMediaInfoHeader SourceHeader = new TMediaInfoHeader() {
-      Name = "testfile",
-      Description = "Description"
-    };
     TMovieInfoFileMeta Source = new() {
-      Header = SourceHeader,
       StoragePath = Path.GetTempPath(),
       StorageName = $"{Random.Shared.Next()}.msmeta",
     };
 
-    IMovie SourceContent = new TMovie(ELanguage.French, "La grande vadrouille", 1966) {
-      Size = 1234567890
-    };
-
-    SourceContent.Descriptions.Add(new TLanguageTextInfo(ELanguage.French, "Pendant la WW2, ..."));
-    SourceContent.Tags.Add("Guerre");
-    SourceContent.Tags.Add("WW2");
-    SourceContent.Tags.Add("Comédie");
-
-    Source.Content = SourceContent;
+    Source.MetaContent.Titles.Add(ELanguage.French, "La grande vadrouille");
+    Source.MetaContent.CreationDate = new DateOnly(1966, 1, 1);
+    Source.MetaContent.Size = 1_234_567_890;
+    Source.MetaContent.Descriptions.Add(ELanguage.French, "Pendant la WW2, ...");
+    Source.MetaContent.Tags.Add("Guerre");
+    Source.MetaContent.Tags.Add("WW2");
+    Source.MetaContent.Tags.Add("Comédie");
 
     Assert.IsFalse(Source.Exists());
 
@@ -186,7 +148,7 @@ public class TMovieInfoFileMetaTests {
     TraceMessage($"{nameof(Source)} : {Source.GetType().Name}", Source);
     TraceMessage("Source file raw content", File.ReadAllText(Source.FullStorageName));
 
-    TMovieInfoFileNfo Target = new TMovieInfoFileNfo() {
+    TMovieInfoFileMeta Target = new TMovieInfoFileMeta() {
       StoragePath = Source.StoragePath,
       StorageName = Source.StorageName
     };

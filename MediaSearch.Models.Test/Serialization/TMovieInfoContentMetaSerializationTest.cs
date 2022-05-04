@@ -10,7 +10,7 @@ public class TMovieInfoContentMetaSerializationTest {
       Size = 123456
     };
     Source.Titles.Add(ELanguage.French, "Le pont de la rivère Kwai");
-    Source.Titles.Add(ELanguage.English, "Bridge over Kwai river", true);
+    Source.Titles.Add(ELanguage.English, "Bridge over Kwai river");
 
     Source.Descriptions.Add(ELanguage.French, "Des prisoniers doivent contruire un pont sur la rivière Kwai, en pleine jungle.");
 
