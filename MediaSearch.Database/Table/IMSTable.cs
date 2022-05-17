@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Database;
 
-public interface IMSTable {
+public interface IMSTable : IDisposable {
 
   string Name { get; }
 
@@ -111,11 +111,14 @@ public interface IMSTable {
 
   //bool IsDirty { get; }
   //#endregion --- I/O --------------------------------------------
+
+  IMSDatabase? Database { get; set; }
+
+  IMSTableHeader Header { get; }
+
 }
 
 public interface IMSTable<RECORD> : IMSTable where RECORD : IID<string> {
-
-  IMSTableHeader<RECORD> Header { get; }
 
   #region --- Content management --------------------------------------------
   /// <summary>

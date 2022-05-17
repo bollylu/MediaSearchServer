@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Database;
 
-public partial interface IMSDatabase {
+public partial interface IMSDatabase : IDisposable {
 
   /// <summary>
   /// The name of the database
@@ -23,5 +23,9 @@ public partial interface IMSDatabase {
   /// <param name="indent">The width of the indentation</param>
   string ToString(int indent);
 
+  /// <summary>
+  /// Indicate if the database is opened or not
+  /// </summary>
+  bool IsOpened { get; }
 
 }

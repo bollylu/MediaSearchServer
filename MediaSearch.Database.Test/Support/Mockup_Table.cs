@@ -1,7 +1,20 @@
 ﻿namespace MediaSearch.Database.Test;
 
 public class Mockup_Table : IMSTable<Mockup_Record_IID> {
-  public IMSTableHeader<Mockup_Record_IID> Header { get; } = new TMSTableHeader<Mockup_Record_IID>();
+  public IMSTableHeader Header { get; } = new TMSTableHeader<Mockup_Record_IID>();
+
+  public IMSDatabase? Database {
+    get {
+      return _Database;
+    }
+    set {
+      _Database = value;
+    }
+  }
+  private IMSDatabase? _Database;
+
+  public void Dispose() {
+  }
 
   public void Add(Mockup_Record_IID item) {
     throw new NotImplementedException();

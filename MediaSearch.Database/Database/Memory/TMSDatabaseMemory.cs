@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Database;
 
-public class TMSDatabaseMemory : IMSDatabase, IMediaSearchLoggable<TMSDatabaseMemory> {
+public partial class TMSDatabaseMemory : IMSDatabase, IMediaSearchLoggable<TMSDatabaseMemory> {
 
   public IMediaSearchLogger<TMSDatabaseMemory> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMSDatabaseMemory>();
 
@@ -14,11 +14,7 @@ public class TMSDatabaseMemory : IMSDatabase, IMediaSearchLoggable<TMSDatabaseMe
     }
   }
 
-  public List<IMSTable> Tables { get; } = new List<IMSTable>();
-
-  public string GetSchema() {
-    return "";
-  }
+  public bool IsOpened { get; private set; }
 
   #region --- Converters -------------------------------------------------------------------------------------
   public string ToString(int indent) {
@@ -31,9 +27,11 @@ public class TMSDatabaseMemory : IMSDatabase, IMediaSearchLoggable<TMSDatabaseMe
       foreach (IMSTable TableItem in Tables) {
         RetVal.AppendIndent(TableItem.ToString(indent), indent + 2);
       }
-    }else {
+    } else {
       RetVal.AppendIndent("- No table available", indent);
     }
+    RetVal.AppendIndent($"- {nameof(IsOpened)} : {IsOpened}");
+    RetVal.AppendIndent($"- {nameof(Exists)} : {Exists()}", indent);
     return RetVal.ToString();
   }
 
@@ -42,45 +40,15 @@ public class TMSDatabaseMemory : IMSDatabase, IMediaSearchLoggable<TMSDatabaseMe
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
-  public bool Create() {
-    return true;
-  }
+  public void Dispose() {
+    if (IsOpened) {
+      Close();
+    }
 
-  public bool Create(string schema) {
-    return true;
-  }
-
-  public bool Remove() {
-    return true;
-  }
-
-  public bool Exists() {
-    return true;
-  }
-
-  public bool Reindex() {
-    return true;
-  }
-
-  public bool DbCheck() {
-    return true;
-  }
-
-  public bool AddTable(IMSTable Table) {
-    Tables.Add(Table);
-    return true;
-  }
-
-  public bool Save(IMSTable table) {
-    throw new NotImplementedException();
-  }
-
-  public bool Save(IMSTable table, IMSRecord record) {
-    throw new NotImplementedException();
-  }
-
-  public RECORD Get<RECORD>(string table, string key)
-    where RECORD : IMSRecord {
-    throw new NotImplementedException();
+    if (Tables.Any()) {
+      foreach (IMSTable TableItem in Tables) {
+        TableItem.Dispose();
+      }
+    }
   }
 }

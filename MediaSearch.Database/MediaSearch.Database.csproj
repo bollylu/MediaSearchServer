@@ -22,8 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="Table\Header\IMSTableHeader.cs" />
-    <Compile Include="Table\Header\TMSTableHeader.cs" />
     <Compile Include="Table\IMSTable.cs" />
     <Compile Include="Table\TMSTable.cs" />
   </ItemGroup>

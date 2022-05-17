@@ -32,7 +32,7 @@ public class TContext<RECORD> : IContext<RECORD>, IDisposable where RECORD : IMS
     switch (operation.Operation) {
       case EContextOperation.Get:
         TContextGet<RECORD> GetOperation = (TContextGet<RECORD>)operation;
-        RECORD? Record = Database.Get<RECORD>(Table, GetOperation.Key);
+        RECORD? Record = Database.Read<RECORD>(Table, GetOperation.Key);
         if (Record is not null) {
           Records.Add(Record);
         }

@@ -23,9 +23,9 @@
   <ItemGroup>
     <Compile Remove="ADataModel.cs" />
     <Compile Remove="Interfaces\IDuplicate.cs" />
-    <Compile Remove="Json serialization\AJson.cs" />
-    <Compile Remove="Json serialization\Converters\TMediaInfoHeaderConverter.cs" />
-    <Compile Remove="Json serialization\Converters\TMovieInfoContentMetaConverter_1.cs" />
+    <Compile Remove="= Json serialization\AJson.cs" />
+    <Compile Remove="= Json serialization\Converters\TMediaInfoHeaderConverter.cs" />
+    <Compile Remove="= Json serialization\Converters\TMovieInfoContentMetaConverter_1.cs" />
     <Compile Remove="Logging\AMediaSearchLoggable.cs" />
     <Compile Remove="Logging\AMediaSearchLogger.cs" />
     <Compile Remove="Media sources\TMediaSourceMovie.cs" />

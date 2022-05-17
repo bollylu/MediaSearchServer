@@ -9,7 +9,7 @@ public class ContextTests {
     IMSDatabase Source = new TMSDatabaseJson();
 
     IContext<IMSRecord> Target = new TContext<IMSRecord>(Source, "movies");
-    TraceMessage($"{nameof(Target)} : {Target.GetType().GetGenericName()}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().GetGenericName()}", Target);
 
     Assert.IsNotNull(Target);
   }
@@ -18,7 +18,7 @@ public class ContextTests {
   public void Instanciate_TContextOperation_Get() {
     IContextOperation Target = new TContextGet<IMSRecord>("1234567890");
 
-    TraceMessage($"{nameof(Target)} : {Target.GetType().GetGenericName()}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().GetGenericName()}", Target);
 
     Assert.IsNotNull(Target);
   }

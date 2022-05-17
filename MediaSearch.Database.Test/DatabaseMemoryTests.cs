@@ -1,13 +1,12 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 namespace MediaSearch.Database.Test;
+
 [TestClass]
 public class DatabaseMemoryTests {
   
   [TestMethod]
   public void Instanciate_TMSDatabaseMemory_Empty() {
     IMSDatabase Target = new TMSDatabaseMemory();
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
 
     Assert.IsNotNull(Target);
   }
@@ -15,7 +14,7 @@ public class DatabaseMemoryTests {
   [TestMethod]
   public void Instanciate_TMSDatabaseMemory_WithName() {
     IMSDatabase Target = new TMSDatabaseMemory() { Name="missing.db", Description = "Missing database" };
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
 
     Assert.IsTrue(Target.Exists());
   }
@@ -23,7 +22,7 @@ public class DatabaseMemoryTests {
   [TestMethod]
   public void TMSDatabase_CreateThenRemove() {
     IMSDatabase Target = new TMSDatabaseMemory() {Name = "missing.db" };
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
 
     Assert.IsTrue(Target.Exists());
     Assert.IsTrue(Target.Create());

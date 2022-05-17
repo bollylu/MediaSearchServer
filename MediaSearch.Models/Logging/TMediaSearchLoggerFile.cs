@@ -4,13 +4,15 @@ namespace MediaSearch.Models.Logging;
 
 public class TMediaSearchLoggerFile : TFileLogger, IMediaSearchLogger {
 
+  #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMediaSearchLoggerFile(string filename) : base(filename) {
   }
 
   public TMediaSearchLoggerFile(TFileLogger logger) : base(logger) {
-  }
+  } 
+  #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  public object Clone() {
+  public virtual object Clone() {
     return (TMediaSearchLoggerFile)Clone();
   }
 
@@ -18,18 +20,18 @@ public class TMediaSearchLoggerFile : TFileLogger, IMediaSearchLogger {
   public string Description { get; set; } = "";
 }
 
-public class TMediaSearchLoggerFile<T> : TFileLogger, IMediaSearchLogger<T> {
+public class TMediaSearchLoggerFile<T> : TMediaSearchLoggerFile, IMediaSearchLogger<T> {
 
+  #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMediaSearchLoggerFile(string filename) : base(filename) {
   }
 
   public TMediaSearchLoggerFile(TFileLogger logger) : base(logger) {
-  }
+  } 
+  #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  public object Clone() {
+  public override object Clone() {
     return (TMediaSearchLoggerFile<T>)Clone();
   }
 
-  public string Name { get; set; } = "";
-  public string Description { get; set; } = "";
 }

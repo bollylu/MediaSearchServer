@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaSearch.Database.Test",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaSearch.Test.Support", "MediaSearch.Test.Support\MediaSearch.Test.Support.csproj", "{8FEBB4BC-44A5-481C-94A4-1D6D28FDD8B4}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaSearch.Models", "MediaSearch.Models\MediaSearch.Models.csproj", "{B57FB75B-0567-4E2D-8990-9E14460785A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{8FEBB4BC-44A5-481C-94A4-1D6D28FDD8B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FEBB4BC-44A5-481C-94A4-1D6D28FDD8B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FEBB4BC-44A5-481C-94A4-1D6D28FDD8B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B57FB75B-0567-4E2D-8990-9E14460785A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B57FB75B-0567-4E2D-8990-9E14460785A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B57FB75B-0567-4E2D-8990-9E14460785A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B57FB75B-0567-4E2D-8990-9E14460785A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
