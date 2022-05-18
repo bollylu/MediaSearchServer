@@ -1,4 +1,4 @@
-﻿namespace MediaSearch.Database;
+﻿namespace MediaSearch.Models;
 public interface IMSRecord : IID<string> {
 
   #region --- Converters -------------------------------------------------------------------------------------

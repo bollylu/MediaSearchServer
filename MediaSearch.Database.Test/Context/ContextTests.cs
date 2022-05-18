@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace MediaSearch.Database.Test;
+﻿namespace MediaSearch.Database.Test;
 [TestClass]
 public class ContextTests {
 

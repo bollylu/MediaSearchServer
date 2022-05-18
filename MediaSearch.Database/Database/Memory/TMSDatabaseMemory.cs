@@ -1,23 +1,17 @@
 ﻿namespace MediaSearch.Database;
 
-public partial class TMSDatabaseMemory : IMSDatabase, IMediaSearchLoggable<TMSDatabaseMemory> {
+public partial class TMSDatabaseMemory : AMSDatabase, IMediaSearchLoggable<TMSDatabaseMemory> {
 
-  public IMediaSearchLogger<TMSDatabaseMemory> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMSDatabaseMemory>();
+  public override IMediaSearchLogger<TMSDatabaseMemory> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMSDatabaseMemory>();
 
-  public string Name { get; set; } = "";
-
-  public string Description { get; set; } = "";
-
-  public string DatabaseFullName {
+  public override string DatabaseFullName {
     get {
       return Name;
     }
   }
 
-  public bool IsOpened { get; private set; }
-
   #region --- Converters -------------------------------------------------------------------------------------
-  public string ToString(int indent) {
+  public override string ToString(int indent) {
     StringBuilder RetVal = new();
     RetVal.AppendIndent($"- {nameof(Name)} = {Name.WithQuotes()}", indent)
           .AppendIndent($"- {nameof(Description)} = {Description.WithQuotes()}", indent)
@@ -40,7 +34,7 @@ public partial class TMSDatabaseMemory : IMSDatabase, IMediaSearchLoggable<TMSDa
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
-  public void Dispose() {
+  public override void Dispose() {
     if (IsOpened) {
       Close();
     }

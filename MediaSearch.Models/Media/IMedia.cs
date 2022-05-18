@@ -1,13 +1,12 @@
 ﻿namespace MediaSearch.Models;
 
-public interface IMedia : IID<string>,
+public interface IMedia : IMSRecord,
                           IStorage, 
                           ITags, 
                           ITitles, 
                           IDescriptions, 
                           IGroupMembership, 
                           IDirty, 
-                          IToStringIndent,
                           ICreation,
                           IDisposable,
                           IAsyncDisposable {

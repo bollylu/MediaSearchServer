@@ -71,10 +71,4 @@ public partial class TMSDatabaseJson {
     return Directory.Exists(DatabaseFullName);
   }
 
-  
-
-  public override bool DbCheck() {
-    return Tables.All(t => TableCheck(t));
-  }
-
 }

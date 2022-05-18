@@ -64,7 +64,7 @@ public class TMSTable : IMSTable, IMediaSearchLoggable<TMSTable> {
 }
 
 public class TMSTable<RECORD> : TMSTable, IMSTable<RECORD>
-  where RECORD : IID<string> {
+  where RECORD : IMSRecord {
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMSTable() : base() {
@@ -106,12 +106,14 @@ public class TMSTable<RECORD> : TMSTable, IMSTable<RECORD>
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
-
-
   public List<IMSIndex<RECORD>> Indexes { get; } = new List<IMSIndex<RECORD>>();
 
   public void Add(RECORD item) {
-    throw new NotImplementedException();
+    if (Database is null) {
+      Logger.LogError("Unable to add record : database is not specified");
+      return;
+    }
+    Database.Write(this, item);
   }
 
   public void AddOrUpdate(RECORD item) {

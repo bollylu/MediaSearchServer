@@ -6,8 +6,9 @@ public abstract partial class AMSDatabase {
   public abstract bool Create(string schema);
   public abstract bool Remove();
   public abstract bool Exists();
-  public abstract bool Reindex(IMSTable table);
-  public abstract bool DbCheck();
+  public virtual bool DbCheck() {
+    return Tables.All(t => TableCheck(t));
+  }
   public abstract void Dispose();
 
 }

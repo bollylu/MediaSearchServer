@@ -27,4 +27,10 @@ public abstract partial class AMSDatabase {
   }
   public abstract IMSTableHeader? TableReadHeader(string table);
 
+  public virtual string TableDump(IMSTable table) {
+    StringBuilder RetVal = new();
+
+    return RetVal.ToString();
+  }
+
 }

@@ -2,33 +2,23 @@
 
 public partial class TMSDatabaseMemory {
 
-  public bool TableCreate(IMSTable table) {
+  public override bool TableCreate(IMSTable table) {
     return true;
   }
 
-  public bool TableExists(IMSTable table) {
-    return true;
-  }
-  public bool TableExists(string table) {
+  public override bool TableExists(string table) {
     return true;
   }
 
-  public bool TableCheck(IMSTable table) {
-    return true;
-  }
-  public bool TableCheck(string table) {
+  public override bool TableCheck(string table) {
     return true;
   }
 
-
-  public bool TableRemove(IMSTable table) {
-    return true;
-  }
-  public bool TableRemove(string table) {
+  public override bool TableRemove(string table) {
     return true;
   }
 
-  public IMSTableHeader? TableReadHeader(IMSTable table) {
+  public override IMSTableHeader? TableReadHeader(IMSTable table) {
     if (!TableExists(table)) {
       return null;
     }
@@ -37,7 +27,7 @@ public partial class TMSDatabaseMemory {
     return Header;
 
   }
-  public IMSTableHeader? TableReadHeader(string name) {
+  public override IMSTableHeader? TableReadHeader(string name) {
     if (!TableExists(name)) {
       return null;
     }
@@ -46,11 +36,17 @@ public partial class TMSDatabaseMemory {
     return Header;
   }
 
+  public override bool TableWriteHeader(IMSTable table) {
 
+    if (!TableExists(table.Name)) {
+      Logger.LogErrorBox($"Unable to write header for table {table.Name.WithQuotes()}", "Table is missing");
+      return false;
+    }
 
-
-  public bool Save(IMSTable table) {
-    throw new NotImplementedException();
+    return true;
   }
 
+  public override bool TableReindex(string table) {
+    throw new NotImplementedException();
+  }
 }

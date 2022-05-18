@@ -2,7 +2,7 @@
 
 public partial class TMSDatabaseMemory {
 
-  public bool Open() {
+  public override bool Open() {
     if (!Exists()) {
       return false;
     }
@@ -11,7 +11,7 @@ public partial class TMSDatabaseMemory {
     return true;
   }
 
-  public bool Close() {
+  public override bool Close() {
     IsOpened = false;
     return true;
   }

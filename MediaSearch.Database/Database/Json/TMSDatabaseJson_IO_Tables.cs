@@ -84,18 +84,8 @@ public partial class TMSDatabaseJson {
     }
   }
 
-  public override bool TableReindex(IMSTable table) {
-    //if (table.Header.Indexes.Any()) {
-    //  return true;
-    //}
-    Logger.LogWarningBox($"Unable to reindex table : {table.Name.WithQuotes()} is missing", table);
-    return false;
-  }
-
-
-  public bool Save(IMSTable table) {
+  public override bool TableReindex(string table) {
     throw new NotImplementedException();
   }
-
   
 }

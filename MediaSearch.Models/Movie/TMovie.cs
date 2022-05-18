@@ -4,6 +4,7 @@ namespace MediaSearch.Models;
 
 public class TMovie : AMedia, IMovie, IJson<TMovie>, IDirty, IMediaSearchLoggable<TMovie> {
 
+  
   public IMediaSearchLogger<TMovie> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovie>();
 
   #region --- Public properties ------------------------------------------------------------------------------
@@ -43,7 +44,7 @@ public class TMovie : AMedia, IMovie, IJson<TMovie>, IDirty, IMediaSearchLoggabl
 
   public TMovie(string name, int creationYear = -1) : base() {
     MediaType = EMediaSourceType.Movie;
-    Titles.Add(ELanguage.Unknown, name);
+    Titles.Add(DEFAULT_LANGUAGE, name);
     try {
       if (creationYear == -1) {
         CreationDate = DateOnly.MinValue;

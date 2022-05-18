@@ -4,6 +4,8 @@ namespace MediaSearch.Models;
 
 public abstract class AMedia : IMedia {
 
+  public static ELanguage DEFAULT_LANGUAGE = ELanguage.French;
+
   #region --- Public properties ------------------------------------------------------------------------------
   
   public EMediaSourceType MediaType { get; set; }

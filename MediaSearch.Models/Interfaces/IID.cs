@@ -2,8 +2,6 @@
 
 public interface IID { }
 
-public interface IID<T> : IID where T : notnull {
-
+public interface IID<T> : IID  {
   T ID { get; }
-
 }

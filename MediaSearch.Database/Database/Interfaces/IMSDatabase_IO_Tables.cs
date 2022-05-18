@@ -78,4 +78,11 @@ public partial interface IMSDatabase {
   /// <returns><see langword="true"/> if ok, <see langword="false"/> otherwise</returns>
   bool TableReindex(string tableName);
 
+  /// <summary>
+  /// Dump the raw content of a table for debug purpose
+  /// </summary>
+  /// <returns>A string describing the raw content</returns>
+  string TableDump(IMSTable table);
+
+
 }

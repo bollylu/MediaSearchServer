@@ -2,9 +2,9 @@
 public class TID : IID {
 }
 
-public class TID<T> : IID, IID<T> where T : notnull {
-  public T ID { get; set; }
-  public TID(T value) {
+public class TID<KEYID> : IID, IID<KEYID> {
+  public KEYID ID { get; set; }
+  public TID(KEYID value) {
     ID = value;
   }
 }

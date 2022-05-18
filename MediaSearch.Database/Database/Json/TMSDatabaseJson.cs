@@ -1,8 +1,10 @@
-﻿namespace MediaSearch.Database;
+﻿using BLTools.Text;
+
+namespace MediaSearch.Database;
 
 public partial class TMSDatabaseJson : AMSDatabase, IMediaSearchLoggable<TMSDatabaseJson> {
 
-  public IMediaSearchLogger<TMSDatabaseJson> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMSDatabaseJson>();
+  public override IMediaSearchLogger<TMSDatabaseJson> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMSDatabaseJson>();
 
   public string RootPath { get; set; } = ".\\";
 
@@ -49,5 +51,24 @@ public partial class TMSDatabaseJson : AMSDatabase, IMediaSearchLoggable<TMSData
         TableItem.Dispose();
       }
     }
+  }
+
+  public override string Dump() {
+    StringBuilder RetVal = new(base.Dump());
+    IEnumerable<string> TableList = Directory.EnumerateDirectories(DatabaseFullName);
+    RetVal.AppendLine(".");
+    RetVal.AppendLine($"=== Tables raw directories : {TableList.Count()} item(s) ===".AlignedCenter(GlobalSettings.DEBUG_BOX_WIDTH - 4));
+    RetVal.AppendLine(".");
+    foreach (string TableDirectoryItem in TableList) {
+      IEnumerable<string> RecordList = Directory.EnumerateFiles(TableDirectoryItem);
+      RetVal.AppendLine($"==> {TableDirectoryItem.WithQuotes()} : {RecordList.Count()} item(s)");
+      RetVal.AppendLine(".");
+      foreach (string RecordItem in RecordList) {
+        string RawContent = File.ReadAllText(RecordItem);
+        RetVal.AppendLine(TextBox.BuildFixedWidth(RawContent, RecordItem, GlobalSettings.DEBUG_BOX_WIDTH - 4, TextBox.EStringAlignment.Left));
+      }
+      RetVal.AppendLine("==================================");
+    }
+    return RetVal.ToString();
   }
 }

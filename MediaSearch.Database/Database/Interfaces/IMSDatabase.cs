@@ -28,4 +28,13 @@ public partial interface IMSDatabase : IDisposable {
   /// </summary>
   bool IsOpened { get; }
 
+  /// <summary>
+  /// Dump the raw content of the database for debug purpose
+  /// </summary>
+  /// <returns>A string describing the raw content</returns>
+  string Dump();
+
+  
+  
+
 }
