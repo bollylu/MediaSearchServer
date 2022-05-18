@@ -28,36 +28,26 @@ public partial class TMSDatabaseJson {
     }
   }
 
-  public override RECORD Read<RECORD>(IMSTable table, string key) where RECORD : struct {
+  public override RECORD? Read<RECORD>(IMSTable table, string key) where RECORD : class {
     if (!IsOpened) {
       Logger.LogErrorBox($"Unable to read record from table {table.Name.WithQuotes()} : Database must be opened first", key);
-      throw new ApplicationException("Database is not opened");
+      return null;
     }
     if (!TableExists(table)) {
       Logger.LogErrorBox($"Unable to read record from table {table.Name.WithQuotes()} : Table does not exist", key);
-      throw new ApplicationException("Table does not exist");
+      return null;
     }
 
     try {
       string RecordName = Path.Join(DatabaseFullName, table.Name, $"{key}.json");
       string RawContent = File.ReadAllText(RecordName);
-      RECORD RetVal = IJson<RECORD>.FromJson(RawContent);
-      if (RetVal is null) {
-        throw new JsonException("Unable to convert record");
-      }
+      RECORD? RetVal = IJson<RECORD>.FromJson(RawContent);
+      
       return RetVal;
     } catch (Exception ex) {
       Logger.LogErrorBox($"Unable to read record from table {table.Name.WithQuotes()}", ex);
+      return null;
     }
-  }
-
-  public override RECORD Read<RECORD>(string table, string key) {
-    IMSTable? Table = GetTable(table);
-    if (Table is null) {
-      Logger.LogError("Unable to read record from table : table name is missing");
-      throw new ArgumentException("Unable to read record from table : table name is missing", table);
-    }
-    return Read<RECORD>(Table, key);
   }
 
   public override string RecordDump(IMSTable table, string recordId) {

@@ -111,10 +111,15 @@ public class TMSRecordTests {
   [TestMethod]
   public void TMSRecord_ReadRecord_JsonDatabase() {
     IMSDatabase Database = CreateTestDatabase();
-    TraceBox("Raw database", Database.Dump());
+    TraceBox($"{nameof(Database)} : {Database.GetType().Name}", Database);
 
-    IMovie Target = Database.Read<TMovie>("movies", "4C6E47324F65594C6E75314A55663631486C384A446B516E7871677830424844324C30577A30646E4359593D");
+    TraceBox("Raw database", Database.Dump());
+    Database.Open();
+
+    IMovie? Target = Database.Read<TMovie>("movies", "4C6E47324F65594C6E75314A55663631486C384A446B516E7871677830424844324C30577A30646E4359593D");
     Assert.IsNotNull(Target);
+
+    Database.Close();
 
     TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
     Database.Remove();

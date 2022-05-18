@@ -12,8 +12,17 @@ public abstract partial class AMSDatabase {
     return Write(Table, record);
   }
 
-  public abstract RECORD Read<RECORD>(IMSTable table, string key) where RECORD : IMSRecord;
-  public abstract RECORD Read<RECORD>(string table, string key) where RECORD : IMSRecord;
+  public abstract RECORD? Read<RECORD>(IMSTable table, string key) where RECORD : class;
+
+
+  public virtual RECORD? Read<RECORD>(string table, string key) where RECORD : class {
+    IMSTable? Table = GetTable(table);
+    if (Table is null) {
+      Logger.LogError("Unable to read record from table : table name is missing");
+      throw new ArgumentException("Unable to read record from table : table name is missing", table);
+    }
+    return Read<RECORD>(Table, key);
+  }
 
   public virtual string RecordDump(IMSTable table, string recordId) {
     StringBuilder RetVal = new();

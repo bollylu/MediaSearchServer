@@ -22,11 +22,8 @@ public partial class TMSDatabaseMemory {
   }
 
 
-  public override RECORD Read<RECORD>(IMSTable table, string key)  {
+  public override RECORD? Read<RECORD>(IMSTable table, string key) where RECORD : class {
     throw new NotImplementedException();
   }
 
-  public override RECORD Read<RECORD>(string table, string key) {
-    throw new NotImplementedException();
-  }
 }

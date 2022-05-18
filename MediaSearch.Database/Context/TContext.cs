@@ -1,5 +1,5 @@
 ﻿namespace MediaSearch.Database;
-public class TContext<RECORD> : IContext<RECORD>, IDisposable where RECORD : IMSRecord {
+public class TContext<RECORD> : IContext<RECORD>, IDisposable where RECORD : class, IMSRecord {
   public IMSDatabase Database { get; init; }
   public string Table { get; init; }
   public List<RECORD> Records { get; } = new();
@@ -10,7 +10,7 @@ public class TContext<RECORD> : IContext<RECORD>, IDisposable where RECORD : IMS
   }
 
   public void Dispose() {
-    //Records.Clear();
+    Records?.Clear();
   }
 
 

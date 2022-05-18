@@ -75,7 +75,7 @@ public interface IJson {
 
 }
 
-public interface IJson<T> : IJson where T : class {
+public interface IJson<T> : IJson {
 
   public static T? FromJson(string source) {
     if (string.IsNullOrWhiteSpace(source)) {
