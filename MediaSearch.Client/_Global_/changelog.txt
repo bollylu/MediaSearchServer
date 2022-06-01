@@ -37,3 +37,4 @@
 * 0.0.18
 - When redirected to the login page, returns to the origin page if login successful
 - Display information about user, ip, server, requests
+- Fixed display glitches

@@ -1,5 +1,4 @@
 ﻿using BLTools.Diagnostic.Logging;
-using BLTools.Text;
 
 using Microsoft.AspNetCore.Components;
 
@@ -39,15 +38,55 @@ namespace MediaSearch.Client.Pages {
     public EViewType ViewType { get; set; } = EViewType.List;
 
     public IMoviesPage? MoviesPage { get; set; }
-    private int _AvailableMovies => MoviesPage?.AvailableMovies ?? 0;
+    private int _AvailableMovies {
+      get {
+        if (MoviesPage is null) {
+          return 0;
+        }
+        if (MoviesPage.Movies.IsEmpty()) {
+          return 0;
+        }
+        return MoviesPage.AvailableMovies;
+      }
+    }
     private int _AvailablePages => MoviesPage?.AvailablePages ?? 0;
 
     public string MoviesTitle => $"{(_AvailableMovies)} movies";
 
-    public string Pagination => $"{Filter.Page}/{_AvailablePages}";
+    public string Pagination {
+      get {
+        if (MoviesPage is null) {
+          return "0/0";
+        }
+        if (MoviesPage.Movies.IsEmpty()) {
+          return "0/0";
+        }
+        return $"{Filter.Page}/{_AvailablePages}";
+      }
+    }
 
-    public bool BackDisabled => Filter.Page == 1;
-    public bool NextDisabled => Filter.Page == _AvailablePages;
+    public bool BackDisabled {
+      get {
+        if (MoviesPage is null) {
+          return true;
+        }
+        if (MoviesPage.Movies.IsEmpty()) {
+          return true;
+        }
+        return Filter.Page == 1;
+      }
+    }
+    public bool NextDisabled {
+      get {
+        if (MoviesPage is null) {
+          return true;
+        }
+        if (MoviesPage.Movies.IsEmpty()) {
+          return true;
+        }
+        return Filter.Page == _AvailablePages;
+      }
+    }
 
     #region --- Constructor(s) ---------------------------------------------------------------------------------
     public View_MoviesInPages() : base() {
