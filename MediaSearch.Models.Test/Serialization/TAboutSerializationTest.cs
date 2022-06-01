@@ -12,11 +12,11 @@ public class TAboutSerializationTest {
       CurrentVersion = new Version(0,0,1), 
       ChangeLog="1st version"
     };
-    TraceMessage("Source", Source);
+    TraceBox("Source", Source);
 
     string Target = Source.ToJson();
 
-    TraceMessage("Target", Target);
+    TraceBox("Target", Target);
 
     Assert.IsNotNull(Target);
 
@@ -33,11 +33,11 @@ public class TAboutSerializationTest {
       " \"ChangeLog\":\"No news\"" +
       "}";
 
-    TraceMessage("Source", Source);
+    TraceBox("Source", Source);
 
     TAbout? Target = IJson<TAbout>.FromJson(Source);
     Assert.IsNotNull(Target);
-    TraceMessage("Target", Target);
+    TraceBox("Target", Target);
 
     Assert.AreEqual(Target.CurrentVersion.ToString(), "0.0.1");
     Assert.AreEqual(Target.ChangeLog, "No news");

@@ -34,5 +34,5 @@ public partial interface IMSDatabase {
   /// </summary>
   /// <param name="tableName">The name of the table (case insensitive)</param>
   /// <returns>The table or <see langword="null"/></returns>
-  protected IMSTable? GetTable(string tableName);
+  public IMSTable? GetTable(string tableName);
 }

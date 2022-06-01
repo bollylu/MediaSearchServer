@@ -12,7 +12,7 @@ public class TMovieInfoContentNfoTests {
     Assert.IsInstanceOfType(Target, typeof(IToXml));
     Assert.IsNotNull(Target);
 
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
   }
 
   [TestMethod]
@@ -29,7 +29,7 @@ public class TMovieInfoContentNfoTests {
 
     Assert.IsNotNull(Target);
 
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
   }
 
   [TestMethod]
@@ -46,8 +46,8 @@ public class TMovieInfoContentNfoTests {
 
     XElement Target = Source.ToXml();
 
-    TraceMessage($"{nameof(Source)} : {Source.GetType().Name}", Source.ToString());
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
+    TraceBox($"{nameof(Source)} : {Source.GetType().Name}", Source.ToString());
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
   }
 
   [TestMethod]
@@ -72,7 +72,7 @@ public class TMovieInfoContentNfoTests {
     TMovieInfoContentNfo Target = new();
     Target.FromXml(Source.Root);
 
-    TraceMessage($"{nameof(Source)} : {Source.GetType().Name}", Source.ToString());
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
+    TraceBox($"{nameof(Source)} : {Source.GetType().Name}", Source.ToString());
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
   }
 }

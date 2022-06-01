@@ -78,5 +78,24 @@ public static class Support {
     }
     return builder;
   }
+
+  public static string RunWithChrono(Action action) {
+    using (TChrono Chrono = new TChrono()) {
+      Chrono.Start();
+      action();
+      Chrono.Stop();
+      return $"Executed action {action.Method.Name} in {DisplayTime(Chrono.ElapsedTime)}";
+    }
+  }
+
+  public static async Task<string> RunWithChronoAsync(Task task) {
+    using (TChrono Chrono = new TChrono()) {
+      Chrono.Start();
+      await task;
+      Console.WriteLine("Task is done");
+      Chrono.Stop();
+      return $"Executed action {task.GetType().GetGenericName()} in {DisplayTime(Chrono.ElapsedTime)}";
+    }
+  }
 }
 

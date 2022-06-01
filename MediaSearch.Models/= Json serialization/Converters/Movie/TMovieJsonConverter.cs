@@ -7,7 +7,7 @@ public class TMovieJsonConverter : JsonConverter<TMovie> {
   public IMediaSearchLogger<TMovieJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovieJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
-    return typeToConvert == typeof(TMovie) || typeToConvert.UnderlyingSystemType.Name == nameof(IMovie);
+    return typeToConvert == typeof(TMovie) || typeToConvert.GetInterface(nameof(IMovie)) is not null;
   }
 
   public override TMovie Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {

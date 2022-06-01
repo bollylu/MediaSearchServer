@@ -51,15 +51,35 @@ public class TMSTable : IMSTable, IMediaSearchLoggable<TMSTable> {
   #endregion --- Converters -------------------------------------------------------------------------------------
 
   public virtual bool IsEmpty() {
-    throw new NotImplementedException();
+    if (Database is null) {
+      Logger.LogError("Unable to count record : database is not specified");
+      return true;
+    }
+    return Database.IsEmpty(this);
   }
 
   public virtual bool Any() {
-    throw new NotImplementedException();
+    if (Database is null) {
+      Logger.LogError("Unable to count record : database is not specified");
+      return false;
+    }
+    return Database.Any(this);
   }
 
-  public virtual int Count() {
-    throw new NotImplementedException();
+  public virtual long Count() {
+    if (Database is null) {
+      Logger.LogError("Unable to count record : database is not specified");
+      return 0;
+    }
+    return Database.Count(this);
+  }
+
+  public virtual void Clear() {
+    if (Database is null) {
+      Logger.LogError($"Unable to clear table {Name.WithQuotes()} : database is not specified");
+      return;
+    }
+    Database.Clear(this);
   }
 }
 
@@ -124,9 +144,7 @@ public class TMSTable<RECORD> : TMSTable, IMSTable<RECORD>
     throw new NotImplementedException();
   }
 
-  public void Clear() {
-    throw new NotImplementedException();
-  }
+  
 
   public void Delete(RECORD item) {
     throw new NotImplementedException();

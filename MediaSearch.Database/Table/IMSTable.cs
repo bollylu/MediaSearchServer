@@ -29,8 +29,13 @@ public interface IMSTable : IDisposable {
   /// <summary>
   /// The count of data
   /// </summary>
-  /// <returns>An integer >= 0</returns>
-  int Count();
+  /// <returns>A long >= 0</returns>
+  long Count();
+
+  /// <summary>
+  /// Clear the data
+  /// </summary>
+  void Clear();
   #endregion --- Content information --------------------------------------------
 
   //#region --- I/O --------------------------------------------
@@ -138,11 +143,6 @@ public interface IMSTable<RECORD> : IMSTable where RECORD : IID<string> {
   /// </summary>
   /// <param name="item">The media to add or update</param>
   void Update(RECORD item);
-
-  /// <summary>
-  /// Clear the data
-  /// </summary>
-  void Clear();
 
   /// <summary>
   /// Delete a media properties if it is in the list

@@ -1,4 +1,6 @@
-﻿namespace MediaSearch.Server.Services;
+﻿using MediaSearch.Database;
+
+namespace MediaSearch.Server.Services;
 
 public interface IMovieService {
 
@@ -16,7 +18,7 @@ public interface IMovieService {
   /// <summary>
   /// The source of the data for the service
   /// </summary>
-  IMediaSearchDataTable Database { get; }
+  IMSTable<IMovie> MovieTable { get; }
 
   #region --- Database I/O --------------------------------------------
   /// <summary>

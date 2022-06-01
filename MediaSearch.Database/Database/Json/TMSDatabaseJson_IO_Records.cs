@@ -18,7 +18,7 @@ public partial class TMSDatabaseJson {
     }
 
     try {
-      string RawData = JsonRecord.ToJson();
+      string RawData = JsonRecord.ToJson(SerializerOptions);
       string RecordName = Path.Join(DatabaseFullName, table.Name, $"{record.ID}.json");
       File.WriteAllText(RecordName, RawData);
       return true;
@@ -41,8 +41,8 @@ public partial class TMSDatabaseJson {
     try {
       string RecordName = Path.Join(DatabaseFullName, table.Name, $"{key}.json");
       string RawContent = File.ReadAllText(RecordName);
-      RECORD? RetVal = IJson<RECORD>.FromJson(RawContent);
-      
+      RECORD? RetVal = IJson<RECORD>.FromJson(RawContent, SerializerOptions);
+
       return RetVal;
     } catch (Exception ex) {
       Logger.LogErrorBox($"Unable to read record from table {table.Name.WithQuotes()}", ex);
@@ -57,6 +57,42 @@ public partial class TMSDatabaseJson {
     } catch (Exception ex) {
       Logger.LogErrorBox($"Unable to dump record {recordId.WithQuotes()} for table {table.Name.WithQuotes()}", ex);
       return "";
+    }
+  }
+
+  public override bool Any(IMSTable table) {
+    try {
+      string TableFullName = Path.Join(DatabaseFullName, table.Name);
+      return GetRecords(table).Any();
+    } catch (Exception ex) {
+      Logger.LogErrorBox($"Unable to access table {table.Name.WithQuotes()}", ex);
+      return false;
+    }
+  }
+
+  public override long Count(IMSTable table) {
+    try {
+      return GetRecords(table).Count();
+    } catch (Exception ex) {
+      Logger.LogErrorBox($"Unable to access table {table.Name.WithQuotes()}", ex);
+      return 0;
+    }
+  }
+
+  public override void Clear(IMSTable table) {
+    try {
+      foreach (string RecordItem in GetRecords(table)) {
+        File.Delete(RecordItem);
+      }
+    } catch (Exception ex) {
+      Logger.LogErrorBox($"Unable to access table {table.Name.WithQuotes()}", ex);
+    }
+  }
+
+  private IEnumerable<string> GetRecords(IMSTable table) {
+    string TableFullName = Path.Join(DatabaseFullName, table.Name);
+    foreach (string RecordItem in Directory.EnumerateFiles(TableFullName, "*.json").Where(f => !f.EndsWith(TABLE_HEADER_FILENAME))) {
+      yield return RecordItem;
     }
   }
 }

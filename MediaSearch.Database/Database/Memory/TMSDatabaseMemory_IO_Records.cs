@@ -26,4 +26,25 @@ public partial class TMSDatabaseMemory {
     throw new NotImplementedException();
   }
 
+  public override bool Any(IMSTable table) {
+    try {
+      return true;
+    } catch (Exception ex) {
+      Logger.LogErrorBox($"Unable to access table {table.Name.WithQuotes()}", ex);
+      return false;
+    }
+  }
+
+  public override long Count(IMSTable table) {
+    try {
+      return 0;
+    } catch (Exception ex) {
+      Logger.LogErrorBox($"Unable to access table {table.Name.WithQuotes()}", ex);
+      return 0;
+    }
+  }
+
+  public override void Clear(IMSTable table) {
+    throw new NotImplementedException();
+  }
 }

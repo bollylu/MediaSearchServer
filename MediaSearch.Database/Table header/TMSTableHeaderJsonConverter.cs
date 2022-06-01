@@ -8,7 +8,7 @@ public class TMSTableHeaderJsonConverter : JsonConverter<TMSTableHeader> {
   public IMediaSearchLogger<TMSTableHeaderJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMSTableHeaderJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
-    return typeToConvert == typeof(TMSTableHeader) || typeToConvert.UnderlyingSystemType.Name == nameof(IMSTableHeader);
+    return typeToConvert == typeof(TMSTableHeader) || typeToConvert.GetInterface(nameof(IMSTableHeader)) is not null;
   }
 
   public override TMSTableHeader Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {

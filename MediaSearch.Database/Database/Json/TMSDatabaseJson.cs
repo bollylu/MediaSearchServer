@@ -14,6 +14,7 @@ public partial class TMSDatabaseJson : AMSDatabase, IMediaSearchLoggable<TMSData
     }
   }
 
+  public JsonSerializerOptions SerializerOptions { get; } = new JsonSerializerOptions(IJson.DefaultJsonSerializerOptions);
   #region --- Converters -------------------------------------------------------------------------------------
   public override string ToString(int indent) {
     StringBuilder RetVal = new();
@@ -41,6 +42,16 @@ public partial class TMSDatabaseJson : AMSDatabase, IMediaSearchLoggable<TMSData
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
+  #region --- Constructor(s) ---------------------------------------------------------------------------------
+  public TMSDatabaseJson() {
+    SerializerOptions.Converters.Add(new TMSTableHeaderJsonConverter());
+  }
+
+  public TMSDatabaseJson(string rootPath, string name) : this() {
+    RootPath = rootPath;
+    Name = name;
+  }
+
   public override void Dispose() {
     if (IsOpened) {
       Close();
@@ -51,7 +62,8 @@ public partial class TMSDatabaseJson : AMSDatabase, IMediaSearchLoggable<TMSData
         TableItem.Dispose();
       }
     }
-  }
+  } 
+  #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public override string Dump() {
     StringBuilder RetVal = new(base.Dump());

@@ -12,7 +12,7 @@ public class TMovieInfoContentMetaTests {
     Assert.IsInstanceOfType(Target, typeof(IJson));
     Assert.IsNotNull(Target);
 
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
   }
 
   [TestMethod]
@@ -35,7 +35,7 @@ public class TMovieInfoContentMetaTests {
     Assert.AreEqual(1966, Target.CreationYear);
     Assert.AreEqual(1234567890, Target.Size);
 
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
@@ -53,8 +53,8 @@ public class TMovieInfoContentMetaTests {
 
     string Target = ((IJson)Source).ToJson();
 
-    TraceMessage($"{nameof(Source)} : {Source.GetType().Name}", Source.ToString());
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
+    TraceBox($"{nameof(Source)} : {Source.GetType().Name}", Source.ToString());
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
   }
 
   [TestMethod]
@@ -96,7 +96,7 @@ public class TMovieInfoContentMetaTests {
     TMovieInfoContentMeta? Target = IJson<TMovieInfoContentMeta>.FromJson(Source);
     Assert.IsNotNull(Target);
 
-    TraceMessage($"{nameof(Source)} : {Source.GetType().Name}", Source.ToString());
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
+    TraceBox($"{nameof(Source)} : {Source.GetType().Name}", Source.ToString());
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
   }
 }

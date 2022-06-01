@@ -1,5 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 
+using MediaSearch.Database;
+
 using SkiaSharp;
 
 namespace MediaSearch.Server.Services;
@@ -39,7 +41,7 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
   /// </summary>
   public List<string> MoviesExtensions { get; } = new() { ".mkv", ".avi", ".mp4", ".iso" };
 
-  public IMediaSearchDataTable Database { get; protected set; } = new TMediaSearchMovieDatabaseMemory();
+  public IMSTable<IMovie> MovieTable { get; protected set; } = new TMSTable<IMovie>();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMovieService() {
@@ -49,8 +51,9 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
     RootStoragePath = storage;
   }
 
-  public TMovieService(IMediaSearchDataTable database) : this() {
-    Database = database;
+  public TMovieService(IMSTable<IMovie> table) : this() {
+    MovieTable = table;
+    RootStoragePath = table.Header.MediaSource.RootStorage;
   }
 
   private bool _IsInitialized = false;
@@ -64,7 +67,7 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
       return;
     }
 
-    if (Database.Any()) {
+    if (MovieTable.Any()) {
       return;
     }
 
@@ -81,26 +84,27 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
 
+  #region --- Converters -------------------------------------------------------------------------------------
   public string ToString(int indent) {
     StringBuilder RetVal = new StringBuilder();
-    string IndentSpace = new string(' ', indent);
 
-    RetVal.AppendLine($"{IndentSpace}{nameof(Name)} : {Name.WithQuotes()}");
-    RetVal.AppendLine($"{IndentSpace}{nameof(Description)} : {Description.WithQuotes()}");
-    RetVal.AppendLine($"{IndentSpace}{nameof(RootStoragePath)} : {RootStoragePath.WithQuotes()}");
-    RetVal.AppendLine($"{IndentSpace}{nameof(MoviesExtensions)} : {string.Join(", ", MoviesExtensions.Select(x => x.WithQuotes()))}");
-    RetVal.AppendLine($"{IndentSpace}{nameof(Database)} :");
-    RetVal.AppendLine($"{IndentSpace}{Database.ToString(2)}");
+    RetVal.AppendIndent($"{nameof(Name)} : {Name.WithQuotes()}", indent);
+    RetVal.AppendIndent($"{nameof(Description)} : {Description.WithQuotes()}", indent);
+    RetVal.AppendIndent($"{nameof(RootStoragePath)} : {RootStoragePath.WithQuotes()}", indent);
+    RetVal.AppendIndent($"{nameof(MoviesExtensions)} : {string.Join(", ", MoviesExtensions.Select(x => x.WithQuotes()))}", indent);
+    RetVal.AppendIndent($"{nameof(MovieTable)} :", indent);
+    RetVal.AppendIndent($"{MovieTable.ToString(2)}", indent);
 
     return RetVal.ToString();
   }
 
   public override string ToString() {
     return ToString(0);
-  }
+  } 
+  #endregion --- Converters -------------------------------------------------------------------------------------
 
   public void Reset() {
-    Database.Clear();
+    MovieTable.Clear();
     _IsInitialized = false;
   }
 
@@ -113,13 +117,13 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
     if (_IsInitialized) {
       return -1;
     }
-    return Database.Count();
+    return (int)MovieTable.Count();
   }
 
   #region --- Movies --------------------------------------------
   public async ValueTask<int> MoviesCount(IFilter filter) {
     await Initialize().ConfigureAwait(false);
-    return Database.GetFiltered(filter).Count();
+    return MovieTable.GetFiltered(filter).Count();
   }
 
   public async ValueTask<int> PagesCount(IFilter filter) {
@@ -130,14 +134,14 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
   public async IAsyncEnumerable<TMovie> GetAllMovies() {
     await Initialize().ConfigureAwait(false);
 
-    foreach (TMovie MovieItem in Database.GetAll()) {
+    foreach (TMovie MovieItem in MovieTable.GetAll()) {
       yield return MovieItem;
     }
   }
 
   public Task<TMoviesPage> GetMoviesPage(IFilter filter) {
 
-    IList<IMovie> FilteredMovies = Database.GetFiltered(filter).Cast<IMovie>().ToList();
+    IList<IMovie> FilteredMovies = MovieTable.GetFiltered(filter).Cast<IMovie>().ToList();
 
     TMoviesPage RetVal = new TMoviesPage() {
       Source = RootStoragePath,
@@ -153,7 +157,7 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
 
   public Task<TMoviesPage> GetMoviesLastPage(IFilter filter) {
 
-    IList<IMovie> FilteredMovies = Database.GetFiltered(filter).Cast<IMovie>().ToList();
+    IList<IMovie> FilteredMovies = MovieTable.GetFiltered(filter).Cast<IMovie>().ToList();
 
     TMoviesPage RetVal = new TMoviesPage() {
       Source = RootStoragePath,
@@ -172,7 +176,7 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
       Logger.LogWarning("Unable to retrieve movie : id is null or invalid");
       return Task.FromResult<IMovie?>(null);
     }
-    IMedia? Media = Database.Get(id);
+    IMedia? Media = MovieTable.Get(id);
     return Task.FromResult<IMovie?>(Media as IMovie);
   }
   #endregion --- Movies --------------------------------------------
@@ -180,7 +184,7 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
   public async IAsyncEnumerable<string> GetGroups() {
     await Initialize().ConfigureAwait(false);
 
-    await foreach (string GroupItem in Database.GetAll().GetGroups().ConfigureAwait(false)) {
+    await foreach (string GroupItem in MovieTable.GetAll().GetGroups().ConfigureAwait(false)) {
       yield return GroupItem;
     }
   }
@@ -202,7 +206,7 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
     }
     #endregion === Validate parameters ===
 
-    IMedia? Movie = Database.Get(movieId);
+    IMedia? Movie = MovieTable.Get(movieId);
     if (Movie is null) {
       Logger.LogError($"Unable to fetch picture id \"{movieId}\"");
       return Array.Empty<byte>();
@@ -274,7 +278,7 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
       throw new ApplicationException("Storage is missing. Cannot process movies");
     }
 
-    Database.Clear();
+    MovieTable.Clear();
 
     int Progress = 0;
 
@@ -286,7 +290,7 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
         IMovie NewMovie = _ParseEntry(MovieInfoItem);
         NewMovie.DateAdded = DateOnly.FromDateTime(MovieInfoItem.ModificationDate);
         Logger.LogDebugEx($"Found {MovieInfoItem.FullName}");
-        Database.Add(NewMovie);
+        MovieTable.Add(NewMovie);
       } catch (Exception ex) {
         Logger.LogWarning($"Unable to parse movie {MovieInfoItem} : {ex.Message}");
         if (ex.InnerException is not null) {
@@ -312,7 +316,7 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
       throw new ApplicationException("Storage is missing. Cannot process movies");
     }
 
-    Database.Clear();
+    MovieTable.Clear();
 
     int Progress = 0;
 
@@ -327,7 +331,7 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
         IMovie NewMovie = await _ParseEntryAsync(MovieInfoItem);
         NewMovie.DateAdded = DateOnly.FromDateTime(MovieInfoItem.ModificationDate);
         Logger.LogDebugEx($"Found {MovieInfoItem.FullName}");
-        Database.Add(NewMovie);
+        MovieTable.Add(NewMovie);
       } catch (Exception ex) {
         Logger.LogWarning($"Unable to parse movie {MovieInfoItem.FullName.WithQuotes()} : {ex.Message}");
         if (ex.InnerException is not null) {
@@ -348,7 +352,7 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
 
   public async Task ParseAsync(IEnumerable<IFileInfo> fileSource, CancellationToken token) {
     Logger.Log($"Initializing database from {nameof(fileSource)}, {fileSource.Count()} item(s) to parse ");
-    Database.Clear();
+    MovieTable.Clear();
     int Progress = 0;
 
     foreach (IFileInfo FileItem in fileSource) {
@@ -361,7 +365,7 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
         IMovie NewMovie = await _ParseEntryAsync(FileItem).ConfigureAwait(false);
         NewMovie.DateAdded = DateOnly.FromDateTime(FileItem.ModificationDate);
         Logger.LogDebugEx($"Found {FileItem.FullName}");
-        Database.Add(NewMovie);
+        MovieTable.Add(NewMovie);
       } catch (Exception ex) {
         Logger.LogWarning($"Unable to parse movie {FileItem.FullName.WithQuotes()} : {ex.Message}");
         if (ex.InnerException is not null) {

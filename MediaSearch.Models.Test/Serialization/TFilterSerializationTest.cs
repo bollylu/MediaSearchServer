@@ -18,11 +18,11 @@ public class TFilterSerializationTest {
     Source.GroupMemberships.Add("Group 1");
     Source.GroupMemberships.Add("Group 2");
 
-    TraceMessage("Source", Source);
+    TraceBox("Source", Source);
 
     string Target = Source.ToJson();
     Assert.IsNotNull(Target);
-    TraceMessage("Target", Target);
+    TraceBox("Target", Target);
 
     Assert.IsTrue(Target.Contains("\"Keywords\": \"maman tous\""));
     Assert.IsTrue(Target.Contains("\"KeywordsSelection\": \"All\""));
@@ -44,12 +44,12 @@ public class TFilterSerializationTest {
     Source.GroupMemberships.Add("Group 1");
     Source.GroupMemberships.Add("Group 2");
     string JsonSource = Source.ToJson();
-    TraceMessage("Source", JsonSource);
+    TraceBox("Source", JsonSource);
 
     IFilter? Target = IJson<TFilter>.FromJson(JsonSource);
     Assert.IsNotNull(Target);
 
-    TraceMessage("Target", Target);
+    TraceBox("Target", Target);
     Assert.AreEqual(2, Target.GroupMemberships.Count);
   }
 

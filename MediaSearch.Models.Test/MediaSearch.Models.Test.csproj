@@ -8,6 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="IMediaSearchDatabase\**" />
+    <EmbeddedResource Remove="IMediaSearchDatabase\**" />
+    <None Remove="IMediaSearchDatabase\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Serialization\TMediaInfoContentMetaSerializationTest.cs" />
   </ItemGroup>
 

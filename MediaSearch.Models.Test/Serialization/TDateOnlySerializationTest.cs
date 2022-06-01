@@ -9,11 +9,11 @@ public class TDateOnlySerializationTest {
   public void Serialize() {
 
     DateOnly Source = DateOnly.FromDateTime(DateTime.Parse("2022-02-22 22:22:22"));
-    TraceMessage("Source", Source);
+    TraceBox("Source", Source);
 
     string Target = JsonSerializer.Serialize(Source, IJson.DefaultJsonSerializerOptions);
 
-    TraceMessage("Target", Target);
+    TraceBox("Target", Target);
 
     Assert.IsNotNull(Target);
 
@@ -25,11 +25,11 @@ public class TDateOnlySerializationTest {
 
     string Source = @"""20220222""";
 
-    TraceMessage("Source", Source);
+    TraceBox("Source", Source);
 
     DateOnly? Target = JsonSerializer.Deserialize<DateOnly>(Source, IJson.DefaultJsonSerializerOptions);
     Assert.IsNotNull(Target);
-    TraceMessage("Target", Target);
+    TraceBox("Target", Target);
 
     Assert.AreEqual(DateOnly.Parse("2022-02-22"), Target);
 

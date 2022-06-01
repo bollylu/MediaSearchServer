@@ -29,4 +29,12 @@ public abstract partial class AMSDatabase {
 
     return RetVal.ToString();
   }
+
+  public abstract bool Any(IMSTable table);
+
+  public virtual bool IsEmpty(IMSTable table) => !Any(table);
+
+  public abstract long Count(IMSTable table);
+
+  public abstract void Clear(IMSTable table);
 }

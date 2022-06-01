@@ -58,7 +58,7 @@ public partial class TMSDatabaseJson {
     string HeaderFullname = Path.Join(DatabaseFullName, name, TABLE_HEADER_FILENAME);
     try {
       string RawContent = File.ReadAllText(HeaderFullname);
-      IMSTableHeader? Header = IJson<IMSTableHeader>.FromJson(RawContent);
+      IMSTableHeader? Header = IJson<IMSTableHeader>.FromJson(RawContent, SerializerOptions);
       return Header;
     } catch (Exception ex) {
       Logger.LogErrorBox($"Unable to read header for table {name.WithQuotes()}", ex);
@@ -75,7 +75,7 @@ public partial class TMSDatabaseJson {
 
     string HeaderFullname = Path.Join(DatabaseFullName, table.Name, TABLE_HEADER_FILENAME);
     try {
-      string RawContent = table.Header?.ToJson() ?? "";
+      string RawContent = table.Header?.ToJson(SerializerOptions) ?? "";
       File.WriteAllText(HeaderFullname, RawContent);
       return true;
     } catch (Exception ex) {

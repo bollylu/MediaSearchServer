@@ -88,7 +88,7 @@ public class Mockup_Table : IMSTable<Mockup_Record_IID> {
     throw new NotImplementedException();
   }
 
-  public int Count() {
+  public long Count() {
     throw new NotImplementedException();
   }
 

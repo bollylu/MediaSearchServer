@@ -11,11 +11,11 @@ public class TIPAddressSerializationTest {
   public void Serialize() {
 
     IPAddress Source = IPAddress.Parse("192.168.132.160");
-    TraceMessage("Source", Source);
+    TraceBox("Source", Source);
 
     string Target = JsonSerializer.Serialize(Source, IJson.DefaultJsonSerializerOptions);
 
-    TraceMessage("Target", Target);
+    TraceBox("Target", Target);
 
     Assert.IsNotNull(Target);
   }
@@ -25,11 +25,11 @@ public class TIPAddressSerializationTest {
 
     string Source = @"""192.168.132.160""";
 
-    TraceMessage("Source", Source);
+    TraceBox("Source", Source);
 
     IPAddress? Target = JsonSerializer.Deserialize<IPAddress>(Source, IJson.DefaultJsonSerializerOptions);
     Assert.IsNotNull(Target);
-    TraceMessage("Target", Target);
+    TraceBox("Target", Target);
 
     Assert.AreEqual(IPAddress.Parse("192.168.132.160"), Target);
 

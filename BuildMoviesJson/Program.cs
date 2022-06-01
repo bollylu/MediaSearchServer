@@ -1,56 +1,76 @@
-﻿using System.Text;
+﻿using BLTools;
 
-using BLTools;
-using BLTools.Text;
-
+using MediaSearch.Database;
 using MediaSearch.Models;
+using static MediaSearch.Models.Support;
 using MediaSearch.Server.Services;
+
 using static BuildMoviesJson.Display;
 
-namespace DisplayStdin {
+namespace BuildMoviesJson {
   class Program {
-    static void Main(string[] args) {
+    static async Task Main(string[] args) {
 
+      #region --- Constants --------------------------------------------
       int TIMEOUT_IN_MS = (int)TimeSpan.FromMinutes(5).TotalMilliseconds;
+      #endregion --- Constants --------------------------------------------
 
-      const string PARAM_DATASOURCE = "source";
+      #region --- Parameters --------------------------------------------
+      const string PARAM_DATASOURCE = "datasource";
       const string PARAM_DB_PATH = "dbpath";
       const string PARAM_DB_NAME = "dbname";
+      const string PARAM_TABLE_NAME = "table";
+
+      const string PARAM_DEFAULT_DATASOURCE = @"\\multimedia.sharenet.priv\multimedia\films";
+      const string PARAM_DEFAULT_DB_PATH = ".";
+      const string PARAM_DEFAULT_DB_NAME = "demo";
+      const string PARAM_DEFAULT_TABLE_NAME = "movies";
 
       ISplitArgs Args = new SplitArgs();
       Args.Parse(args);
 
-      string DataSource = Args.GetValue(PARAM_DATASOURCE, "");
-      if (DataSource == "" || !Directory.Exists(DataSource)) {
-        Usage($"Invalid or missing datasource : {DataSource.WithQuotes()}");
+      string ParamDataSource = Args.GetValue(PARAM_DATASOURCE, PARAM_DEFAULT_DATASOURCE);
+      if (ParamDataSource == "" || !Directory.Exists(ParamDataSource)) {
+        Usage($"Invalid or missing datasource : {ParamDataSource.WithQuotes()}");
       }
 
-      string DbPath = Args.GetValue(PARAM_DB_PATH, ".");
-      string DbName = Args.GetValue(PARAM_DB_NAME, "movies");
-      IMediaSearchDataTable Database = new TMSTableJsonMovie(DbPath,DbName);
-      
+      string ParamDbPath = Args.GetValue(PARAM_DB_PATH, PARAM_DEFAULT_DB_PATH);
+      string ParamDbName = Args.GetValue(PARAM_DB_NAME, PARAM_DEFAULT_DB_NAME);
+      string ParamTableName = Args.GetValue(PARAM_TABLE_NAME, PARAM_DEFAULT_TABLE_NAME);
+
+      TraceMessage($"{nameof(ParamDataSource)} = {ParamDataSource.WithQuotes()}");
+      TraceMessage($"{nameof(ParamDbPath)} = {ParamDbPath.WithQuotes()}");
+      TraceMessage($"{nameof(ParamDbName)} = {ParamDbName.WithQuotes()}");
+      TraceMessage($"{nameof(ParamTableName)} = {ParamTableName.WithQuotes()}");
+
+      #endregion --- Parameters --------------------------------------------
+
+      IMSDatabase Database = new TMSDatabaseJson(ParamDbPath, ParamDbName);
+
       try {
         if (Database.Exists()) {
           Database.Remove();
         }
         Database.Create();
-        Database.OpenOrCreate();
       } catch (Exception ex) {
         Usage($"Problem accessing database : {ex.Message}");
       }
-      TraceMessage("db file", Database);
 
-      IMovieService MovieService = new TMovieService(Database) { RootStoragePath = DataSource };
+      Database.Open();
+      IMSTable<IMovie> MovieTable = new TMSTable<IMovie>(ParamTableName);
+      IMediaSource<IMovie> MovieSource = new TMediaSource<IMovie>(ParamDataSource);
+      MovieTable.Header.SetMediaSource(MovieSource);
+      Database.TableCreate(MovieTable);
 
-      using (CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT_IN_MS)) {
-        MovieService.Parse();
-      }
+      TraceBox("Database", Database);
 
-      //using (CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT_IN_MS)) {
-        //await Database.SaveAsync(Timeout.Token).ConfigureAwait(false);
-        Database.Save();
-      //}
+      IMovieService MovieService = new TMovieService(MovieTable);
 
+      TraceBox($"{nameof(MovieService)} : {MovieService.GetType().Name}", MovieService);
+
+      Console.WriteLine(await RunWithChronoAsync(MovieService.Initialize()));
+
+      Database.Close();
       Environment.Exit(0);
     }
 

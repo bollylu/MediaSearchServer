@@ -9,12 +9,16 @@ namespace BuildMoviesJson;
 
 public static class Display {
 
-  public static void TraceMessage(string? title, string? message) {
+  public static void TraceMessage(string message) {
+    Console.WriteLine($"==> {message}");
+  }
+
+  public static void TraceBox(string? title, string? message) {
     message ??= "";
     Console.WriteLine(message.BoxFixedWidth(title ?? "", GlobalSettings.DEBUG_BOX_WIDTH));
   }
 
-  public static void TraceMessage(string? title, object? item) {
+  public static void TraceBox(string? title, object? item) {
 
     if (item is null) {
       Console.WriteLine($"null object".BoxFixedWidth(title ?? "", GlobalSettings.DEBUG_BOX_WIDTH));
@@ -28,38 +32,43 @@ public static class Display {
         }
 
       case IEnumerable EnumerableItems: {
-          foreach(var ItemItem in EnumerableItems) {
+          foreach (var ItemItem in EnumerableItems) {
             Console.WriteLine(ItemItem.ToString().BoxFixedWidth(title ?? "", GlobalSettings.DEBUG_BOX_WIDTH));
           }
           return;
         }
+
+      case object ObjectItem when ObjectItem.GetType().IsGenericType:
+        Console.WriteLine(ObjectItem.ToString().BoxFixedWidth(title ?? "", GlobalSettings.DEBUG_BOX_WIDTH));
+        return;
 
       default: {
           Console.WriteLine(item.ToString().BoxFixedWidth(title ?? "", GlobalSettings.DEBUG_BOX_WIDTH));
           return;
         }
     }
-      
+
   }
+
 
   public static void TraceMoviesName(IEnumerable<IMovie> movies) {
     if (movies is null) {
-      TraceMessage("Movies", "Movies are null");
+      TraceBox("Movies", "Movies are null");
     } else {
       StringBuilder MoviesList = new();
       foreach (IMovie MovieItem in movies) {
         MoviesList.AppendLine(MovieItem.Name);
       }
-      TraceMessage("Movies", MoviesList);
+      TraceBox("Movies", MoviesList);
     }
   }
 
   public static void TraceMedias(IEnumerable<IMedia> medias) {
     if (medias is null) {
-      TraceMessage("Media", "Medias are null");
+      TraceBox("Media", "Medias are null");
     } else {
       foreach (IMedia MediaItem in medias) {
-        TraceMessage(MediaItem.GetType().Name, MediaItem);
+        TraceBox(MediaItem.GetType().Name, MediaItem);
       }
     }
   }

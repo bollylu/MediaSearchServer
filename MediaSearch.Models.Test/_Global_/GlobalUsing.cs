@@ -16,3 +16,4 @@ global using static MediaSearch.Test.Support.Display;
 
 global using MediaSearch.Models;
 global using MediaSearch.Models.Language;
+global using MediaSearch.Database;

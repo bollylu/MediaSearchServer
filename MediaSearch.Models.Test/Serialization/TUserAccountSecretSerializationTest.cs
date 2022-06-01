@@ -17,11 +17,11 @@ public class TUserAccountSecretSerializationTest {
         Expiration = DateTime.Now
       }
     };
-    TraceMessage("Source", Source);
+    TraceBox("Source", Source);
 
     string Target = Source.ToJson();
 
-    TraceMessage("Target", Target);
+    TraceBox("Target", Target);
 
     Assert.IsNotNull(Target);
 
@@ -43,11 +43,11 @@ public class TUserAccountSecretSerializationTest {
 }                                              
 ";
 
-    TraceMessage("Source", Source);
+    TraceBox("Source", Source);
 
     TUserAccountSecret? Target = IJson<TUserAccountSecret>.FromJson(Source);
     Assert.IsNotNull(Target);
-    TraceMessage("Target", Target);
+    TraceBox("Target", Target);
 
     Assert.AreEqual("blabla", Target.PasswordHash);
     Assert.AreEqual("testuser", Target.Name);

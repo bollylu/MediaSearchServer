@@ -3,17 +3,19 @@
 [TestClass]
 public class TMoviesPageSerializationTest {
 
-  internal TMSTableJsonMovie Database => _Database ??= new TMSTableJsonMovie("data", "movies");
-  private TMSTableJsonMovie? _Database;
+  internal IMSDatabase Database => _Database ??= new TMSDatabaseJson("data", "demo");
+  private IMSDatabase? _Database;
 
   [TestMethod]
   public void Serialize() {
 
     Assert.IsTrue(Database.Exists());
-    Assert.IsTrue(Database.OpenOrCreate());
-    Assert.IsTrue(Database.Load());
+    Assert.IsTrue(Database.Open());
 
-    IList<IMovie> Movies = Database.GetAll(2).Cast<IMovie>().ToList();
+    IMSTable<IMovie>? MovieTable = Database.GetTable("movies") as IMSTable<IMovie>;
+    Assert.IsNotNull(MovieTable);
+
+    IList<IMovie> Movies = MovieTable.GetAll(2).Cast<IMovie>().ToList();
 
     IMoviesPage Source = new TMoviesPage() {
       Name = "Sélection",
@@ -24,20 +26,23 @@ public class TMoviesPageSerializationTest {
     };
     Source.Movies.AddRange(Movies);
 
-    TraceMessage($"{nameof(Source)} : {Source.GetType().Name}", Source);
+    TraceBox($"{nameof(Source)} : {Source.GetType().Name}", Source);
 
     string Target = Source.ToJson();
 
     Assert.IsNotNull(Target);
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
   public void Deserialize() {
     Assert.IsTrue(Database.Exists());
-    Assert.IsTrue(Database.OpenOrCreate());
-    Assert.IsTrue(Database.Load());
-    IList<IMovie> Movies = Database.GetAll(2).Cast<IMovie>().ToList();
+    Assert.IsTrue(Database.Open());
+
+    IMSTable<IMovie>? MovieTable = Database.GetTable("movies") as IMSTable<IMovie>;
+    Assert.IsNotNull(MovieTable);
+
+    IList<IMovie> Movies = MovieTable.GetAll(2).Cast<IMovie>().ToList();
 
     IMoviesPage MoviesPage = new TMoviesPage() {
       Name = "Sélection",
@@ -49,11 +54,11 @@ public class TMoviesPageSerializationTest {
     MoviesPage.Movies.AddRange(Movies);
 
     string Source = MoviesPage.ToJson();
-    TraceMessage($"{nameof(Source)} : {Source.GetType().Name}", Source);
+    TraceBox($"{nameof(Source)} : {Source.GetType().Name}", Source);
 
     IMoviesPage? Target = IJson<TMoviesPage>.FromJson(Source);
     Assert.IsNotNull(Target);
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
 }

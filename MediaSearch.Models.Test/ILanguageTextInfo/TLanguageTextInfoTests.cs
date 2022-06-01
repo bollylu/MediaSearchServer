@@ -8,7 +8,7 @@ public class TLanguageTextInfoTests {
     Assert.IsNotNull(Target);
     Assert.AreEqual(ELanguage.Unknown, Target.Language);
     Assert.AreEqual("", Target.Value);
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
@@ -17,7 +17,7 @@ public class TLanguageTextInfoTests {
     Assert.IsNotNull(Target);
     Assert.AreEqual(ELanguage.French, Target.Language);
     Assert.AreEqual("Coucou", Target.Value);
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
@@ -27,7 +27,7 @@ public class TLanguageTextInfoTests {
     Assert.AreEqual(0, Target.GetAll().Count());
     Assert.IsFalse(Target.HasMoreThanOnePrincipal());
     Assert.IsFalse(Target.HasMoreThanOneTextPerLanguage());
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
@@ -39,7 +39,7 @@ public class TLanguageTextInfoTests {
     Assert.IsFalse(Target.HasMoreThanOnePrincipal());
     Assert.AreEqual(ELanguage.French, Target.GetPrincipal()?.Language ?? ELanguage.Unknown);
     Assert.IsFalse(Target.HasMoreThanOneTextPerLanguage());
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
@@ -51,14 +51,14 @@ public class TLanguageTextInfoTests {
     Assert.IsFalse(Target.HasMoreThanOnePrincipal());
     Assert.AreEqual(ELanguage.French, Target.GetPrincipal()?.Language ?? ELanguage.Unknown);
     Assert.IsTrue(Target.HasMoreThanOneTextPerLanguage());
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
   public void TLanguageTestInfos_SetPrincipal_Empty() {
     ILanguageTextInfos Target = new TLanguageTextInfos();
     Target.SetPrincipal(ELanguage.English);
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
@@ -67,7 +67,7 @@ public class TLanguageTextInfoTests {
     Target.Add(new TLanguageTextInfo(ELanguage.French, "Coucou"));
     Target.Add(new TLanguageTextInfo(ELanguage.English, "Hello"));
     Target.SetPrincipal(ELanguage.French);
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
@@ -76,7 +76,7 @@ public class TLanguageTextInfoTests {
     Target.Add(new TLanguageTextInfo(ELanguage.French, "Coucou"));
     Target.Add(new TLanguageTextInfo(ELanguage.French, "Hello"));
     Target.SetPrincipal(ELanguage.English);
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
@@ -85,13 +85,13 @@ public class TLanguageTextInfoTests {
     Target.Add(new TLanguageTextInfo(ELanguage.French, "Coucou"));
     Target.Add(new TLanguageTextInfo(ELanguage.French, "Hello"));
     Target.Add(new TLanguageTextInfo(ELanguage.English, "Hello"));
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
     Target.SetPrincipal(ELanguage.English);
     Assert.AreEqual(ELanguage.English, Target.GetPrincipal()?.Language ?? ELanguage.Unknown);
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
     Target.SetPrincipal(ELanguage.French);
     Assert.AreEqual(ELanguage.French, Target.GetPrincipal()?.Language ?? ELanguage.Unknown);
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
@@ -102,7 +102,7 @@ public class TLanguageTextInfoTests {
     Target.SetPrincipal(ELanguage.English);
     Assert.IsFalse(Target.HasMoreThanOnePrincipal());
     Assert.AreEqual(ELanguage.English, Target.GetPrincipal()?.Language ?? ELanguage.Unknown);
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
@@ -115,6 +115,6 @@ public class TLanguageTextInfoTests {
     Target.SetPrincipal(Item2);
     Assert.IsFalse(Target.HasMoreThanOnePrincipal());
     Assert.AreEqual(ELanguage.English, Target.GetPrincipal()?.Language ?? ELanguage.Unknown);
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 }

@@ -7,8 +7,8 @@ namespace MediaSearch.Models.Serialization.Test;
 [TestClass]
 public class TMovieSerializationTest {
 
-  internal TMSTableJsonMovie Database => _Database ??= new TMSTableJsonMovie("data", "movies");
-  private TMSTableJsonMovie? _Database;
+  internal IMSDatabase Database => _Database ??= new TMSDatabaseJson("data", "demo");
+  private IMSDatabase? _Database;
 
   [TestMethod]
   public void Serialize() {
@@ -29,26 +29,27 @@ public class TMovieSerializationTest {
     Source.Tags.Add("Comédie");
     Source.Tags.Add("Action");
 
-    TraceMessage($"{nameof(Source)} : {Source.GetType().Name}", Source);
+    TraceBox($"{nameof(Source)} : {Source.GetType().Name}", Source);
 
     string Target = Source.ToJson();
 
     Assert.IsNotNull(Target);
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
   }
 
   [TestMethod]
   public void Deserialize() {
     Assert.IsTrue(Database.Exists());
-    Assert.IsTrue(Database.OpenOrCreate());
-    Assert.IsTrue(Database.Load());
+    Assert.IsTrue(Database.Open());
 
-    IMovie? Movie = Database.GetAll().First() as IMovie;
+    IMSTable<IMovie>? MovieTable = Database.GetTable("movies") as IMSTable<IMovie>;
+    Assert.IsNotNull(MovieTable);
 
+    IMovie Movie = MovieTable.GetAll(1).Cast<IMovie>().First();
     Assert.IsNotNull(Movie);
 
     string Source = Movie.ToJson();
-    TraceMessage($"{nameof(Source)} : {Source.GetType().Name}", Source);
+    TraceBox($"{nameof(Source)} : {Source.GetType().Name}", Source);
 
     IMovie? Target = IJson<TMovie>.FromJson(Source);
 
@@ -59,7 +60,7 @@ public class TMovieSerializationTest {
     Assert.AreEqual(Movie.Group, Target.Group);
     Assert.AreEqual(Movie.Tags.Count, Target.Tags.Count);
     Assert.AreEqual(Movie.CreationYear, Target.CreationYear);
-    TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
 
     Database.Close();
   }

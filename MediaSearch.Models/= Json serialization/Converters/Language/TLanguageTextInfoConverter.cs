@@ -6,7 +6,7 @@ public class TLanguageTextInfoConverter : JsonConverter<TLanguageTextInfo>, IMed
   public IMediaSearchLogger<TLanguageTextInfoConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TLanguageTextInfoConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
-    return typeToConvert == typeof(TLanguageTextInfo) || typeToConvert.UnderlyingSystemType.Name == nameof(ILanguageTextInfo);
+    return typeToConvert == typeof(TLanguageTextInfo) || typeToConvert.GetInterface(nameof(ILanguageTextInfo)) is not null;
   }
 
   public override TLanguageTextInfo Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {

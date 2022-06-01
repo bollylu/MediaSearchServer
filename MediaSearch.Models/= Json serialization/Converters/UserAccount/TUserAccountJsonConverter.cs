@@ -7,7 +7,7 @@ public class TUserAccountJsonConverter : JsonConverter<TUserAccount>, IMediaSear
   public IMediaSearchLogger<TUserAccountJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TUserAccountJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
-    return typeToConvert == typeof(TUserAccount) || typeToConvert.GetInterfaces().Any(x => x == typeof(IUserAccount));
+    return typeToConvert == typeof(TUserAccount) || typeToConvert.GetInterface(nameof(IUserAccount)) is not null;
   }
 
   public override TUserAccount Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {

@@ -41,4 +41,12 @@ public partial interface IMSDatabase {
   /// <param name="key">The ID of the record</param>
   /// <returns>A string describing the raw content</returns>
   string RecordDump(IMSTable table, string key);
+
+  bool Any(IMSTable table);
+
+  bool IsEmpty(IMSTable table);
+
+  long Count(IMSTable table);
+
+  void Clear(IMSTable table);
 }

@@ -6,7 +6,7 @@ public class TLanguageTextInfosConverter : JsonConverter<TLanguageTextInfos>, IM
   public IMediaSearchLogger<TLanguageTextInfosConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TLanguageTextInfosConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
-    return typeToConvert == typeof(TLanguageTextInfos) || typeToConvert.UnderlyingSystemType.Name == nameof(ILanguageTextInfos);
+    return typeToConvert == typeof(TLanguageTextInfos) || typeToConvert.GetInterface(nameof(ILanguageTextInfos)) is not null;
   }
 
   public override TLanguageTextInfos Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
@@ -54,7 +54,6 @@ public class TLanguageTextInfosConverter : JsonConverter<TLanguageTextInfos>, IM
     foreach (ILanguageTextInfo LanguageTextInfoItem in value.GetAll()) {
       JsonSerializer.Serialize(writer, LanguageTextInfoItem, options);
     }
-    
 
     writer.WriteEndArray();
   }
