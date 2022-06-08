@@ -1,5 +1,4 @@
-﻿using System.Xml.Linq;
-
+﻿using BLTools.Storage.Xml;
 namespace MediaSearch.Models.MediaInfoContent.Test;
 
 [TestClass]
@@ -82,7 +81,7 @@ public class TMovieInfoFileNfoTests {
     Assert.IsTrue(Source.Exists());
 
     TraceBox("Source file raw content", File.ReadAllText(Source.FullStorageName));
-    
+
     TMovieInfoFileNfo Target = new TMovieInfoFileNfo() {
       StoragePath = Source.StoragePath,
       StorageName = Source.StorageName

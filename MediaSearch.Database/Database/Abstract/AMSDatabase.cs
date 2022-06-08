@@ -1,7 +1,7 @@
 ﻿namespace MediaSearch.Database;
-public abstract partial class AMSDatabase : IMSDatabase, IMediaSearchLoggable {
+public abstract partial class AMSDatabase : IMSDatabase, ILoggable {
 
-  public abstract IMediaSearchLogger Logger { get; }
+  public abstract ILogger Logger { get; set; }
 
   public string Name { get; set; } = "";
   public string Description { get; set; } = "";
@@ -16,7 +16,7 @@ public abstract partial class AMSDatabase : IMSDatabase, IMediaSearchLoggable {
     RetVal.AppendLine($"{nameof(Name)} = {Name}");
     RetVal.AppendLine($"{nameof(Description)} = {Description}");
     RetVal.AppendLine($"{nameof(DatabaseFullName)} = {DatabaseFullName}");
-    
+
     return RetVal.ToString();
   }
 

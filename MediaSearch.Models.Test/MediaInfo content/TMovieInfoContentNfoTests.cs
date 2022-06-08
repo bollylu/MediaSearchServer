@@ -1,5 +1,7 @@
 ﻿using System.Xml.Linq;
 
+using BLTools.Storage.Xml;
+
 namespace MediaSearch.Models.MediaInfoContent.Test;
 
 [TestClass]
@@ -19,7 +21,7 @@ public class TMovieInfoContentNfoTests {
   public void Instanciate_TMovieInfoContentNfo_FillData() {
     TMovieInfoContentNfo Target = new() {
       Title = "La grande vadrouille",
-      Description= "Pendant la WW2, ...",
+      Description = "Pendant la WW2, ...",
       Country = "FR",
       CreationYear = 1966
     };

@@ -1,5 +1,3 @@
-using BLTools.Diagnostic.Logging;
-
 using MediaSearch.Server.Controllers;
 
 using Microsoft.AspNetCore.Hosting;
@@ -7,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-using System.Reflection;
+using ILogger = BLTools.Diagnostic.Logging.ILogger;
 
 namespace MediaSearch.Server;
 
@@ -49,22 +47,24 @@ public class Program {
     }
 
     #region --- Log configuration --------------------------------------------
-    string LogFile = GlobalSettings.AppArgs.GetValue("log", OperatingSystem.IsWindows() ? DEFAULT_LOGFILE_WINDOWS : DEFAULT_LOGFILE_LINUX);
+    string? LogFile = GlobalSettings.AppArgs.GetValue("log", OperatingSystem.IsWindows() ? DEFAULT_LOGFILE_WINDOWS : DEFAULT_LOGFILE_LINUX);
+    if (LogFile is null) {
+      Usage();
+    }
+    GlobalSettings.LoggerPool.SetDefaultLogger(new TFileLogger(LogFile) { SeverityLimit = ESeverity.Debug });
+    GlobalSettings.LoggerPool.AddLogger(new TFileLogger<Program>(LogFile) { SeverityLimit = ESeverity.Debug });
+    GlobalSettings.LoggerPool.AddLogger(new TFileLogger<TLoginController>(LogFile) { SeverityLimit = ESeverity.Debug });
+    GlobalSettings.LoggerPool.AddLogger(new TFileLogger<TMovieController>(LogFile) { SeverityLimit = ESeverity.Debug });
+    GlobalSettings.LoggerPool.AddLogger(new TFileLogger<TSystemController>(LogFile) { SeverityLimit = ESeverity.Debug });
 
-    GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerFile(LogFile) { SeverityLimit = ESeverity.Debug });
-    GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<Program>(LogFile) { SeverityLimit = ESeverity.Debug });
-    GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<TLoginController>(LogFile) { SeverityLimit = ESeverity.Debug });
-    GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<TMovieController>(LogFile) { SeverityLimit = ESeverity.Debug });
-    GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<TSystemController>(LogFile) { SeverityLimit = ESeverity.Debug });
+    ILogger Logger = GlobalSettings.LoggerPool.GetLogger<Program>();
 
-    IMediaSearchLogger<Program> Logger = GlobalSettings.LoggerPool.GetLogger<Program>();
+    MediaSearch.Models.GlobalSettings.LoggerPool.SetDefaultLogger(new TFileLogger(LogFile) { SeverityLimit = ESeverity.Debug });
+    MediaSearch.Models.GlobalSettings.LoggerPool.AddLogger(new TFileLogger<TAbout>(LogFile) { SeverityLimit = ESeverity.Debug });
 
-    MediaSearch.Models.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerFile(LogFile) { SeverityLimit = ESeverity.Debug });
-    MediaSearch.Models.GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<TAbout>(LogFile) { SeverityLimit = ESeverity.Debug });
-
-    MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerFile(LogFile) { SeverityLimit = ESeverity.Debug });
-    MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<TLoginService>(LogFile) { SeverityLimit = ESeverity.Debug });
-    MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<TMovieService>(LogFile) { SeverityLimit = ESeverity.Debug });
+    MediaSearch.Server.Services.GlobalSettings.LoggerPool.SetDefaultLogger(new TFileLogger(LogFile) { SeverityLimit = ESeverity.Debug });
+    MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TFileLogger<TLoginService>(LogFile) { SeverityLimit = ESeverity.Debug });
+    MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TFileLogger<TMovieService>(LogFile) { SeverityLimit = ESeverity.Debug });
     #endregion --- Log configuration --------------------------------------------
 
     string AuditFile = GlobalSettings.AppArgs.GetValue("audit", OperatingSystem.IsWindows() ? DEFAULT_AUDITFILE_WINDOWS : DEFAULT_AUDITFILE_LINUX);

@@ -7,15 +7,13 @@ using Microsoft.OpenApi.Models;
 
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-using System.Reflection;
-
 namespace MediaSearch.Server;
 
 public class Startup {
 
   public const string DEFAULT_DATASOURCE = @"\\andromeda.sharenet.priv\multimedia\films\";
 
-  IMediaSearchLogger<Startup> Logger = GlobalSettings.LoggerPool.GetLogger<Startup>();
+  ILogger Logger = GlobalSettings.LoggerPool.GetLogger<Startup>();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public Startup(IConfiguration configuration) {

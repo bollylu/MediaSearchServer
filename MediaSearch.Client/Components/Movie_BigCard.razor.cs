@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 
 namespace MediaSearch.Client.Components {
 
-  public partial class Movie_BigCard : ComponentBase, IMediaSearchLoggable<Movie_BigCard> {
+  public partial class Movie_BigCard : ComponentBase, ILoggable {
 
     [Parameter]
     public IMovie Movie {
@@ -32,7 +31,7 @@ namespace MediaSearch.Client.Components {
     [Inject]
     public IMovieService? MovieService { get; set; }
 
-    public IMediaSearchLogger<Movie_BigCard> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<Movie_BigCard>();
+    public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<Movie_BigCard>();
 
     private CancellationTokenSource Cancellation = new CancellationTokenSource();
 

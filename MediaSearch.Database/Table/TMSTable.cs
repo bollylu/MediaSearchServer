@@ -1,8 +1,8 @@
 ﻿namespace MediaSearch.Database;
 
-public class TMSTable : IMSTable, IMediaSearchLoggable<TMSTable> {
+public class TMSTable : IMSTable, ILoggable {
 
-  public IMediaSearchLogger<TMSTable> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMSTable>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMSTable>();
 
   public IMSDatabase? Database {
     get {
@@ -144,7 +144,7 @@ public class TMSTable<RECORD> : TMSTable, IMSTable<RECORD>
     throw new NotImplementedException();
   }
 
-  
+
 
   public void Delete(RECORD item) {
     throw new NotImplementedException();

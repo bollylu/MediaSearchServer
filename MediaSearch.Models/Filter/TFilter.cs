@@ -151,7 +151,7 @@ public class TFilter : IFilter, IJson<TFilter>, IEquatable<TFilter> {
   #endregion --- Static instance for an empty filter --------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TFilter() {}
+  public TFilter() { }
   public TFilter(IFilter filter) : this() {
     Page = filter.Page;
     PageSize = filter.PageSize;
@@ -173,24 +173,26 @@ public class TFilter : IFilter, IJson<TFilter>, IEquatable<TFilter> {
 
   #region --- Converters -------------------------------------------------------------------------------------
   public override string ToString() {
+    return ToString(0);
+  }
+
+  public string ToString(int indent) {
     StringBuilder RetVal = new StringBuilder();
-    RetVal.Append($"{nameof(Keywords)}={KeywordsSelection}:{Keywords.WithQuotes()}");
-    RetVal.Append($", {nameof(Tags)}={TagSelection}:{Tags.WithQuotes()}");
-    RetVal.Append($", {nameof(DaysBack)}={DaysBack}");
-    RetVal.Append($", OutputDateRange={OutputDateMin}..{OutputDateMax}");
-    RetVal.Append($", {nameof(Page)}={Page}");
-    RetVal.Append($", {nameof(PageSize)}={PageSize}");
-    RetVal.Append($", {nameof(GroupOnly)}={GroupOnly}");
-    RetVal.Append($", {nameof(Group)}={Group}");
-    RetVal.Append($", {nameof(SubGroup)}={SubGroup}");
-    RetVal.Append($", {nameof(SortOrder)}={SortOrder}");
+    RetVal.AppendLine($"- {nameof(Keywords)} = {KeywordsSelection}:{Keywords.WithQuotes()}");
+    RetVal.AppendLine($"- {nameof(Tags)} = {TagSelection}:{Tags.WithQuotes()}");
+    RetVal.AppendLine($"- {nameof(DaysBack)}={DaysBack}");
+    RetVal.AppendLine($"- OutputDateRange = {OutputDateMin}..{OutputDateMax}");
+    RetVal.AppendLine($"- {nameof(Page)} = {Page}");
+    RetVal.AppendLine($"- {nameof(PageSize)} = {PageSize}");
+    RetVal.AppendLine($"- {nameof(GroupOnly)} = {GroupOnly}");
+    RetVal.AppendLine($"- {nameof(Group)} = {Group.WithQuotes()}");
+    RetVal.AppendLine($"- {nameof(SubGroup)} = {SubGroup.WithQuotes()}");
+    RetVal.AppendLine($"- {nameof(SortOrder)} = {SortOrder}");
     if (GroupMemberships.Any()) {
-      RetVal.Append($", {nameof(GroupMemberships)} [");
+      RetVal.AppendLine($"- {nameof(GroupMemberships)}");
       foreach (string GroupMembershipItem in GroupMemberships) {
-        RetVal.Append($"{GroupMembershipItem}, ");
+        RetVal.AppendIndent($"- {GroupMembershipItem}", 2);
       }
-      RetVal.Truncate(2);
-      RetVal.Append(']');
     }
     return RetVal.ToString();
   }

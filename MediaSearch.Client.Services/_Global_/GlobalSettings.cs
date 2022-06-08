@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using System.Text.Encodings.Web;
+﻿using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
 using System.Text.Unicode;
 
@@ -9,7 +8,7 @@ public static class GlobalSettings {
   public const int DEBUG_BOX_WIDTH = 110;
   public const int HTTP_TIMEOUT_IN_MS = 1000000;
 
-  public static IMediaSearchLogger GlobalLogger { get; set; } = new TMediaSearchLoggerConsole();
+  public static ILogger GlobalLogger { get; set; } = new TConsoleLogger();
 
   public static TLoggerPool LoggerPool { get; } = new();
 
@@ -62,9 +61,7 @@ public static class GlobalSettings {
           };
           _DefaultJsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TAboutJsonConverter());
-          _DefaultJsonSerializerOptions.Converters.Add(new TDateOnlyJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TFilterJsonConverter());
-          _DefaultJsonSerializerOptions.Converters.Add(new TIPAddressJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TMovieJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TMoviesPageJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TUserAccountJsonConverter());

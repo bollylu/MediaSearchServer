@@ -9,14 +9,14 @@ public class TMediaSearchLoggerFile : TFileLogger, IMediaSearchLogger {
   }
 
   public TMediaSearchLoggerFile(TFileLogger logger) : base(logger) {
-  } 
+  }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public virtual object Clone() {
     return (TMediaSearchLoggerFile)Clone();
   }
 
-  public string Name { get; set; } = "";
+  public new string Name { get; set; } = "";
   public string Description { get; set; } = "";
 }
 
@@ -27,7 +27,7 @@ public class TMediaSearchLoggerFile<T> : TMediaSearchLoggerFile, IMediaSearchLog
   }
 
   public TMediaSearchLoggerFile(TFileLogger logger) : base(logger) {
-  } 
+  }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public override object Clone() {

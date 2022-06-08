@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using BLTools.Text;
+﻿using BLTools.Text;
 
 namespace MediaSearch.Client.Services;
 
-public class TAboutService : IAboutService, IMediaSearchLoggable<TAboutService> {
+public class TAboutService : IAboutService, ILoggable {
 
   public IApiServer ApiServer { get; set; } = new TApiServer();
-  public IMediaSearchLogger<TAboutService> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TAboutService>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TAboutService>();
 
   public TAboutService() { }
 

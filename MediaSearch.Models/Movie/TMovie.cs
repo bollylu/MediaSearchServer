@@ -2,10 +2,10 @@
 
 namespace MediaSearch.Models;
 
-public class TMovie : AMedia, IMovie, IJson<TMovie>, IDirty, IMediaSearchLoggable<TMovie> {
+public class TMovie : AMedia, IMovie, IJson<TMovie>, IDirty, ILoggable {
 
-  
-  public IMediaSearchLogger<TMovie> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovie>();
+
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMovie>();
 
   #region --- Public properties ------------------------------------------------------------------------------
 

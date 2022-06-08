@@ -1,4 +1,3 @@
-using MediaSearch.Models.Logging;
 namespace MediaSearch.Database.Test;
 
 [TestClass]
@@ -23,7 +22,7 @@ public class TableHeaderSerializationTests {
 
     Source.SetMediaSource(MediaSource);
 
-    TraceBox($"{nameof(Source)} : {Source.GetType().Name}", Source);
+    Dump(Source);
 
     JsonSerializerOptions Options = new JsonSerializerOptions(IJson.DefaultJsonSerializerOptions);
     Options.Converters.Add(new TMSTableHeaderJsonConverter());
@@ -32,7 +31,7 @@ public class TableHeaderSerializationTests {
     string Target = Source.ToJson(Options);
     Assert.IsNotNull(Target);
 
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    Dump(Target);
   }
 
   [TestMethod]
@@ -46,7 +45,7 @@ public class TableHeaderSerializationTests {
     };
     Header.SetMediaSource(MediaSource);
 
-    TraceBox($"{nameof(Header)} : {Header.GetType().Name}", Header);
+    Dump(Header);
 
     JsonSerializerOptions Options = new JsonSerializerOptions(IJson.DefaultJsonSerializerOptions);
     Options.Converters.Add(new TMSTableHeaderJsonConverter());
@@ -55,11 +54,11 @@ public class TableHeaderSerializationTests {
     string Source = Header.ToJson(Options);
     Assert.IsNotNull(Source);
 
-    TraceBox($"{nameof(Source)} : {Source.GetType().Name}", Source);
+    Dump(Source);
 
     IMSTableHeader? Target = IJson<TMSTableHeader>.FromJson(Source, Options);
-    ;
+
     Assert.IsNotNull(Target);
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    Dump(Target);
   }
 }

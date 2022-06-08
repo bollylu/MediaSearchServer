@@ -1,11 +1,11 @@
 ﻿namespace MediaSearch.Models;
 using MediaSearch.Database;
 
-using static MediaSearch.Models.JsonConverterResources;
+using static BLTools.Json.JsonConverterResources;
 
-public class TMSTableHeaderJsonConverter : JsonConverter<TMSTableHeader> {
+public class TMSTableHeaderJsonConverter : JsonConverter<TMSTableHeader>, ILoggable {
 
-  public IMediaSearchLogger<TMSTableHeaderJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMSTableHeaderJsonConverter>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMSTableHeaderJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
     return typeToConvert == typeof(TMSTableHeader) || typeToConvert.GetInterface(nameof(IMSTableHeader)) is not null;

@@ -1,9 +1,9 @@
-﻿using static MediaSearch.Models.JsonConverterResources;
+﻿using static BLTools.Json.JsonConverterResources;
 
 namespace MediaSearch.Models;
 
-public class TMovieInfoContentMetaConverter : JsonConverter<TMovieInfoContentMeta>, IMediaSearchLoggable<TMovieInfoContentMetaConverter> {
-  public IMediaSearchLogger<TMovieInfoContentMetaConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovieInfoContentMetaConverter>();
+public class TMovieInfoContentMetaConverter : JsonConverter<TMovieInfoContentMeta>, ILoggable {
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMovieInfoContentMetaConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
     return typeToConvert == typeof(TMovieInfoContentMeta);
@@ -15,7 +15,7 @@ public class TMovieInfoContentMetaConverter : JsonConverter<TMovieInfoContentMet
     }
 
     TMovieInfoContentMeta RetVal = new TMovieInfoContentMeta();
-    
+
     try {
       while (reader.Read()) {
 

@@ -1,9 +1,9 @@
-﻿using static MediaSearch.Models.JsonConverterResources;
+﻿using static BLTools.Json.JsonConverterResources;
 
 namespace MediaSearch.Models;
 
-public class TFilterJsonConverter : JsonConverter<TFilter>, IMediaSearchLoggable<TFilterJsonConverter> {
-  public IMediaSearchLogger<TFilterJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TFilterJsonConverter>();
+public class TFilterJsonConverter : JsonConverter<TFilter>, ILoggable {
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TFilterJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
     return typeToConvert == typeof(TFilter);

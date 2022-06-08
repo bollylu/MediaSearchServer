@@ -1,8 +1,8 @@
 ﻿namespace MediaSearch.Database;
 
-public partial class TMSDatabaseMemory : AMSDatabase, IMediaSearchLoggable<TMSDatabaseMemory> {
+public partial class TMSDatabaseMemory : AMSDatabase, ILoggable {
 
-  public override IMediaSearchLogger<TMSDatabaseMemory> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMSDatabaseMemory>();
+  public override ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMSDatabaseMemory>();
 
   public override string DatabaseFullName {
     get {

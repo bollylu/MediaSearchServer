@@ -1,13 +1,11 @@
-﻿using System.Xml.Linq;
+﻿namespace MediaSearch.Models;
 
-namespace MediaSearch.Models;
-
-public class TMovieInfoFileMeta : IMediaInfoFile, IMediaSearchLoggable<TMovieInfoFileMeta>, IJson<TMovieInfoFileMeta> {
+public class TMovieInfoFileMeta : IMediaInfoFile, ILoggable, IJson<TMovieInfoFileMeta> {
 
   public const string DEFAULT_FILENAME = "media.msmeta";
   public const int TIMEOUT_IN_MS = 5000;
 
-  public IMediaSearchLogger<TMovieInfoFileMeta> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovieInfoFileMeta>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMovieInfoFileMeta>();
 
   #region --- Storage info --------------------------------------------
   public string StoragePath { get; set; } = "";

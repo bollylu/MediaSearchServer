@@ -1,10 +1,8 @@
-﻿using BLTools.Diagnostic.Logging;
-using BLTools.Text;
-
+﻿
 using Microsoft.AspNetCore.Components;
 
 namespace MediaSearch.Client.Pages {
-  public partial class View_MoviesInPages : ComponentBase, IMediaSearchLoggable<View_MoviesInPages> {
+  public partial class View_MoviesInPages : ComponentBase, ILoggable {
 
     [Inject]
     public IMovieService MovieService {
@@ -63,7 +61,7 @@ namespace MediaSearch.Client.Pages {
     #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
     #region --- ILoggable --------------------------------------------
-    public IMediaSearchLogger<View_MoviesInPages> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<View_MoviesInPages>();
+    public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<View_MoviesInPages>();
     #endregion --- ILoggable --------------------------------------------
 
     private TFilter _OldFilter = new TFilter();

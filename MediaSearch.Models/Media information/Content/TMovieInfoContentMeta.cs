@@ -1,12 +1,12 @@
 ﻿namespace MediaSearch.Models;
 
-public class TMovieInfoContentMeta : IMediaInfoContent, 
-                                     IJson<TMovieInfoContentMeta>, 
-                                     IMediaSearchLoggable<TMovieInfoContentMeta>, 
-                                     IMovieInfoContent, 
+public class TMovieInfoContentMeta : IMediaInfoContent,
+                                     IJson<TMovieInfoContentMeta>,
+                                     ILoggable,
+                                     IMovieInfoContent,
                                      IMediaInfoContentTitles {
 
-  public IMediaSearchLogger<TMovieInfoContentMeta> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovieInfoContentMeta>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMovieInfoContentMeta>();
 
   public ILanguageTextInfos Titles { get; } = new TLanguageTextInfos();
   public ILanguageTextInfos Descriptions { get; } = new TLanguageTextInfos();
@@ -20,11 +20,11 @@ public class TMovieInfoContentMeta : IMediaInfoContent,
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMovieInfoContentMeta() { }
   public TMovieInfoContentMeta(IMovie movie) {
-    foreach(var TitleItem in movie.Titles.GetAll()) {
+    foreach (var TitleItem in movie.Titles.GetAll()) {
       Titles.Add(TitleItem);
     }
-    
-  } 
+
+  }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   #region --- Converters -------------------------------------------------------------------------------------
@@ -75,7 +75,7 @@ public class TMovieInfoContentMeta : IMediaInfoContent,
       Descriptions.Add(DescriptionItem);
     }
     Soundtracks.Clear();
-    foreach(var SoundtrackItem in meta.Soundtracks) {
+    foreach (var SoundtrackItem in meta.Soundtracks) {
       Soundtracks.Add(SoundtrackItem);
     }
     Subtitles.Clear();

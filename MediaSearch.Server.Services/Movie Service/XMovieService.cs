@@ -2,14 +2,12 @@
 
 using MediaSearch.Database;
 
-using SkiaSharp;
-
 namespace MediaSearch.Server.Services;
 
 // <summary>
 /// Server Movie service. Provides access to groups, movies and pictures from NAS
 /// </summary>
-public class XMovieService : IMovieService, IName, IMediaSearchLoggable<XMovieService> {
+public class XMovieService : IMovieService, IName, ILoggable {
 
   #region --- Constants --------------------------------------------
   public static int TIMEOUT_TO_SCAN_FILES_IN_MS = (int)TimeSpan.FromMinutes(5).TotalMilliseconds;
@@ -17,7 +15,7 @@ public class XMovieService : IMovieService, IName, IMediaSearchLoggable<XMovieSe
   public static char FOLDER_SEPARATOR = Path.DirectorySeparatorChar;
   #endregion --- Constants --------------------------------------------
 
-  public IMediaSearchLogger<XMovieService> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<XMovieService>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<XMovieService>();
 
   #region --- IName --------------------------------------------
   /// <summary>

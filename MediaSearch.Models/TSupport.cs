@@ -28,74 +28,24 @@ public static class Support {
   }
 
   [Conditional("DEBUG")]
-  public static void IfDebugMessage<T>(this IMediaSearchLogger<T> logger, object? message, [CallerMemberName] string CallerName = "") {
+  public static void IfDebugMessage(this ILogger logger, object? message, [CallerMemberName] string CallerName = "") {
     logger.LogDebug(message?.ToString() ?? "(null)", CallerName);
   }
 
   [Conditional("DEBUG")]
-  public static void IfDebugMessageEx<T>(this IMediaSearchLogger<T> logger, object? message, [CallerMemberName] string CallerName = "") {
+  public static void IfDebugMessageEx(this ILogger logger, object? message, [CallerMemberName] string CallerName = "") {
     logger.LogDebugExBox(message?.ToString() ?? "(null)", CallerName);
   }
 
   [Conditional("DEBUG")]
-  public static void IfDebugMessageBox<T>(this IMediaSearchLogger<T> logger, string title, object? message, [CallerMemberName] string CallerName = "") {
-    logger.LogDebugBox(title, message ?? "(null)", CallerName);
+  public static void IfDebugMessageBox(this ILogger logger, string title, object? message, [CallerMemberName] string CallerName = "") {
+    logger.LogDebugBox(title, message ?? "(null)", GlobalSettings.DEBUG_BOX_WIDTH, CallerName);
   }
 
   [Conditional("DEBUG")]
-  public static void IfDebugMessageExBox<T>(this IMediaSearchLogger<T> logger, string title, object? message, [CallerMemberName] string CallerName = "") {
-    logger.LogDebugExBox(title, message ?? "(null)", CallerName);
+  public static void IfDebugMessageExBox(this ILogger logger, string title, object? message, [CallerMemberName] string CallerName = "") {
+    logger.LogDebugExBox(title, message ?? "(null)", GlobalSettings.DEBUG_BOX_WIDTH, CallerName);
   }
 
-
-  public static string DisplayTime(this TimeSpan source) {
-    if (source.TotalMilliseconds < 1_000) { // 1 second
-      return $"{source.TotalMilliseconds} ms";
-    }
-    if (source.TotalMilliseconds < 60_000) { // 1 minute
-      return $"{source.Seconds} s {source.Milliseconds} ms";
-    }
-    if (source.TotalMilliseconds < 3_600_000) { // 1 hour
-      return $"{source.Hours} h {source.Seconds} s {source.Milliseconds} ms";
-    }
-
-    return $"{source.Days} d {source.Hours} h {source.Seconds} s {source.Milliseconds} ms";
-  }
-
-  public static StringBuilder AppendIndent(this StringBuilder builder, string source, int indent = 2) {
-    string IndentSpace = new string(' ', indent);
-    foreach (string LineItem in source.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)) {
-      builder.AppendLine($"{IndentSpace}{LineItem}");
-    }
-    return builder;
-  }
-
-  public static StringBuilder AppendIndent(this StringBuilder builder, object source, int indent = 2) {
-    string IndentSpace = new string(' ', indent);
-    string DisplayData = source?.ToString() ?? "";
-    foreach (string LineItem in DisplayData.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)) {
-      builder.AppendLine($"{IndentSpace}{LineItem}");
-    }
-    return builder;
-  }
-
-  public static string RunWithChrono(Action action) {
-    using (TChrono Chrono = new TChrono()) {
-      Chrono.Start();
-      action();
-      Chrono.Stop();
-      return $"Executed action {action.Method.Name} in {DisplayTime(Chrono.ElapsedTime)}";
-    }
-  }
-
-  public static async Task<string> RunWithChronoAsync(Task task) {
-    using (TChrono Chrono = new TChrono()) {
-      Chrono.Start();
-      await task;
-      Console.WriteLine("Task is done");
-      Chrono.Stop();
-      return $"Executed action {task.GetType().GetGenericName()} in {DisplayTime(Chrono.ElapsedTime)}";
-    }
-  }
 }
 

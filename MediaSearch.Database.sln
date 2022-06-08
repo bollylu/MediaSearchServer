@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaSearch.Database", "Med
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaSearch.Database.Test", "MediaSearch.Database.Test\MediaSearch.Database.Test.csproj", "{5153E421-6791-42E3-9B92-EAC714F850D4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaSearch.Test.Support", "MediaSearch.Test.Support\MediaSearch.Test.Support.csproj", "{8FEBB4BC-44A5-481C-94A4-1D6D28FDD8B4}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaSearch.Models", "MediaSearch.Models\MediaSearch.Models.csproj", "{B57FB75B-0567-4E2D-8990-9E14460785A7}"
 EndProject
 Global
@@ -25,10 +23,6 @@ Global
 		{5153E421-6791-42E3-9B92-EAC714F850D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5153E421-6791-42E3-9B92-EAC714F850D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5153E421-6791-42E3-9B92-EAC714F850D4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8FEBB4BC-44A5-481C-94A4-1D6D28FDD8B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8FEBB4BC-44A5-481C-94A4-1D6D28FDD8B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8FEBB4BC-44A5-481C-94A4-1D6D28FDD8B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8FEBB4BC-44A5-481C-94A4-1D6D28FDD8B4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B57FB75B-0567-4E2D-8990-9E14460785A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B57FB75B-0567-4E2D-8990-9E14460785A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B57FB75B-0567-4E2D-8990-9E14460785A7}.Release|Any CPU.ActiveCfg = Release|Any CPU

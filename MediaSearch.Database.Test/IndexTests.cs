@@ -8,7 +8,7 @@ public class IndexTests {
     IMSIndex<Mockup_Record_IID, string, string> Target = new TMSIndex<Mockup_Record_IID, string, string>();
     Assert.IsNotNull(Target);
 
-    TraceBox($"{nameof(Target)} : {Target.GetType().GetGenericName()}", Target);
+    Dump(Target);
 
     Assert.AreEqual(0, Target.IndexedValues.Count);
   }
@@ -20,7 +20,7 @@ public class IndexTests {
     Target.Add("value1", "1234567890");
     Target.Add("value2", "1234567891");
 
-    TraceBox($"{nameof(Target)} : {Target.GetType().GetGenericName()}", Target);
+    Dump(Target);
 
     Assert.AreEqual(2, Target.IndexedValues.Count);
   }
@@ -32,7 +32,7 @@ public class IndexTests {
     Target.Add("value1", "1234567890");
     Target.Add("value1", "1234567891");
 
-    TraceBox($"{nameof(Target)} : {Target.GetType().GetGenericName()}", Target);
+    Dump(Target);
 
     Assert.AreEqual(2, Target.IndexedValues.Count);
   }
@@ -40,15 +40,14 @@ public class IndexTests {
   [TestMethod]
   public void TMSIndex_GetKey_KeyExist() {
     IMSIndex<Mockup_Record_IID, string, string> Source = new TMSIndex<Mockup_Record_IID, string, string>();
-    
+
     Source.Add("value1", "1234567890");
     Source.Add("value1", "1234567891");
 
-    TraceBox($"{nameof(Source)} : {Source.GetType().GetGenericName()}", Source);
+    Dump(Source);
 
     string? Target = Source.Get("value1");
-    TraceBox($"{nameof(Target)} : {Target?.GetType().Name}", Target);
-
+    Dump(Target);
     Assert.IsNotNull(Target);
   }
 
@@ -59,14 +58,14 @@ public class IndexTests {
     Source.Add("value1", "1234567890");
     Source.Add("value1", "1234567891");
 
-    TraceBox($"{nameof(Source)} : {Source.GetType().GetGenericName()}", Source);
+    Dump(Source);
 
     string? Target = Source.Get("value2");
-    TraceBox($"{nameof(Target)} : {Target?.GetType().Name}", Target);
+    Dump(Target);
     Assert.IsNull(Target);
 
     Target = Source.Get("value2", "000000");
-    TraceBox($"{nameof(Target)} : {Target?.GetType().Name}", Target);
+    Dump(Target);
     Assert.AreEqual(Target, "000000");
   }
 
@@ -76,10 +75,10 @@ public class IndexTests {
 
     Target.Add("value1", "1234567890");
     Target.Add("value1", "1234567891");
-    TraceBox($"{nameof(Target)} : {Target.GetType().GetGenericName()}", Target);
+    Dump(Target);
 
     Target.Clear();
-    TraceBox($"{nameof(Target)} : {Target.GetType().GetGenericName()}", Target);
+    Dump(Target);
 
     Assert.AreEqual(0, Target.IndexedValues.Count);
   }
@@ -90,11 +89,11 @@ public class IndexTests {
 
     Target.Add("value1", "1234567890");
     Target.Add("value2", "1234567891");
-    TraceBox($"{nameof(Target)} : {Target.GetType().GetGenericName()}", Target);
+    Dump(Target);
     Assert.AreEqual(2, Target.IndexedValues.Count);
 
     Target.Delete("value1");
-    TraceBox($"{nameof(Target)} : {Target.GetType().GetGenericName()}", Target);
+    Dump(Target);
 
     Assert.AreEqual(1, Target.IndexedValues.Count);
   }
@@ -105,11 +104,11 @@ public class IndexTests {
 
     Target.Add("value1", "1234567890");
     Target.Add("value2", "1234567891");
-    TraceBox($"{nameof(Target)} : {Target.GetType().GetGenericName()}", Target);
+    Dump(Target);
     Assert.AreEqual(2, Target.IndexedValues.Count);
 
     Target.Delete("value3");
-    TraceBox($"{nameof(Target)} : {Target.GetType().GetGenericName()}", Target);
+    Dump(Target);
 
     Assert.AreEqual(2, Target.IndexedValues.Count);
   }
@@ -120,11 +119,11 @@ public class IndexTests {
 
     Target.Add("value1", "1234567890");
     Target.Add("value1", "1234567891");
-    TraceBox($"{nameof(Target)} : {Target.GetType().GetGenericName()}", Target);
+    Dump(Target);
     Assert.AreEqual(2, Target.IndexedValues.Count);
 
     Target.Delete("value1");
-    TraceBox($"{nameof(Target)} : {Target.GetType().GetGenericName()}", Target);
+    Dump(Target);
 
     Assert.AreEqual(0, Target.IndexedValues.Count);
   }

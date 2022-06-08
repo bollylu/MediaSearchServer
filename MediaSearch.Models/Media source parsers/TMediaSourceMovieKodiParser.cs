@@ -1,13 +1,9 @@
-﻿using System.Xml.Linq;
-
-using BLTools.Text;
-
-namespace MediaSearch.Models;
-public class TMediaSourceMovieKodiParser : IMediaSourceParser, IMediaSearchLoggable<TMediaSourceMovieKodiParser> {
+﻿namespace MediaSearch.Models;
+public class TMediaSourceMovieKodiParser : IMediaSourceParser, ILoggable {
 
   public static char FOLDER_SEPARATOR = Path.DirectorySeparatorChar;
 
-  public IMediaSearchLogger<TMediaSourceMovieKodiParser> Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMediaSourceMovieKodiParser>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMediaSourceMovieKodiParser>();
 
   public IMedia? ParseRow(IFileInfo item, string rootStoragePath) {
     // Standardize directory separator

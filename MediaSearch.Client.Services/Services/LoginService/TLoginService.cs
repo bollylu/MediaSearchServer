@@ -1,14 +1,10 @@
-﻿using System.Diagnostics;
-using System.Runtime.CompilerServices;
+﻿namespace MediaSearch.Client.Services;
 
-using BLTools.Text;
-
-namespace MediaSearch.Client.Services;
-public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> {
+public class TLoginService : ILoginService, ILoggable {
 
   public IApiServer ApiServer { get; set; } = new TApiServer();
 
-  public IMediaSearchLogger<TLoginService> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TLoginService>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TLoginService>();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TLoginService() { }
@@ -69,13 +65,4 @@ public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> 
     throw new NotImplementedException();
   }
 
-  [Conditional("DEBUG")]
-  private void IfDebugMessage(string title, object? message, [CallerMemberName] string CallerName = "") {
-    Logger.LogDebugBox(title, message?.ToString() ?? "", CallerName);
-  }
-
-  [Conditional("DEBUG")]
-  private void IfDebugMessageEx(string title, object? message, [CallerMemberName] string CallerName = "") {
-    Logger.LogDebugExBox(title, message?.ToString() ?? "", CallerName);
-  }
 }

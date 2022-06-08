@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace MediaSearch.Client.Pages;
 
-public partial class About : ComponentBase, IMediaSearchLoggable<About> {
+public partial class About : ComponentBase, ILoggable {
 
   TAbout? AboutClient { get; set; }
   TAbout? AboutClientServices { get; set; }
@@ -49,16 +49,16 @@ public partial class About : ComponentBase, IMediaSearchLoggable<About> {
   }
 
   #region --- ILoggable --------------------------------------------
-  public IMediaSearchLogger<About> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<About>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<About>();
 
   [Conditional("DEBUG")]
   private void IfDebugMessage(string title, object? message, [CallerMemberName] string CallerName = "") {
-    Logger.LogDebugBox(title, message?.ToString() ?? "", CallerName);
+    Logger.LogDebugBox(title, message?.ToString() ?? "", GlobalSettings.DEBUG_BOX_WIDTH, CallerName);
   }
 
   [Conditional("DEBUG")]
   private void IfDebugMessageEx(string title, object? message, [CallerMemberName] string CallerName = "") {
-    Logger.LogDebugExBox(title, message?.ToString() ?? "", CallerName);
+    Logger.LogDebugExBox(title, message?.ToString() ?? "", GlobalSettings.DEBUG_BOX_WIDTH, CallerName);
   }
   #endregion --- ILoggable --------------------------------------------
 }

@@ -1,10 +1,10 @@
 ﻿namespace MediaSearch.Models;
-using static MediaSearch.Models.JsonConverterResources;
+using static BLTools.Json.JsonConverterResources;
 
-public class TMovieJsonConverter : JsonConverter<TMovie> {
+public class TMovieJsonConverter : JsonConverter<TMovie>, ILoggable {
   public const string JSON_MEDIA_TYPE = "MediaType";
 
-  public IMediaSearchLogger<TMovieJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovieJsonConverter>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMovieJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
     return typeToConvert == typeof(TMovie) || typeToConvert.GetInterface(nameof(IMovie)) is not null;

@@ -1,8 +1,8 @@
-﻿using static MediaSearch.Models.JsonConverterResources;
+﻿using static BLTools.Json.JsonConverterResources;
 
 namespace MediaSearch.Models;
-public class TUserTokenJsonConverter : JsonConverter<TUserToken>, IMediaSearchLoggable<TUserTokenJsonConverter> {
-  public IMediaSearchLogger<TUserTokenJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TUserTokenJsonConverter>();
+public class TUserTokenJsonConverter : JsonConverter<TUserToken>, ILoggable {
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TUserTokenJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
     return typeToConvert == typeof(TUserToken);

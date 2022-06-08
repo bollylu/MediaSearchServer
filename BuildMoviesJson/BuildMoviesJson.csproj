@@ -9,7 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BLTools" Version="4.5.28" />
+    <Compile Remove="Display.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BLTools" Version="6.0.1-beta5" />
   </ItemGroup>
 
   <ItemGroup>

@@ -23,9 +23,9 @@ public interface IJson {
           _DefaultJsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TLanguageDictionaryStringConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TAboutJsonConverter());
-          _DefaultJsonSerializerOptions.Converters.Add(new TDateOnlyJsonConverter());
+          //_DefaultJsonSerializerOptions.Converters.Add(new TDateOnlyJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TFilterJsonConverter());
-          _DefaultJsonSerializerOptions.Converters.Add(new TIPAddressJsonConverter());
+          //_DefaultJsonSerializerOptions.Converters.Add(new TIPAddressJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TMovieJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TMoviesPageJsonConverter());
           _DefaultJsonSerializerOptions.Converters.Add(new TUserAccountInfoJsonConverter());

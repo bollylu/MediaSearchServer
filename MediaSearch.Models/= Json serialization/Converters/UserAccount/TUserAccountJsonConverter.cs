@@ -1,10 +1,10 @@
 ﻿using System.Net;
 
-using static MediaSearch.Models.JsonConverterResources;
+using static BLTools.Json.JsonConverterResources;
 
 namespace MediaSearch.Models;
-public class TUserAccountJsonConverter : JsonConverter<TUserAccount>, IMediaSearchLoggable<TUserAccountJsonConverter> {
-  public IMediaSearchLogger<TUserAccountJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TUserAccountJsonConverter>();
+public class TUserAccountJsonConverter : JsonConverter<TUserAccount>, ILoggable {
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TUserAccountJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
     return typeToConvert == typeof(TUserAccount) || typeToConvert.GetInterface(nameof(IUserAccount)) is not null;

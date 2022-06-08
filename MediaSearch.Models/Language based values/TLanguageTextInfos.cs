@@ -1,9 +1,7 @@
-﻿using System.Security.Principal;
+﻿namespace MediaSearch.Models;
+public class TLanguageTextInfos : ILanguageTextInfos, ILoggable {
 
-namespace MediaSearch.Models;
-public class TLanguageTextInfos : ILanguageTextInfos, IMediaSearchLoggable<TLanguageTextInfos> {
-
-  public IMediaSearchLogger<TLanguageTextInfos> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TLanguageTextInfos>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TLanguageTextInfos>();
 
   private readonly List<ILanguageTextInfo> _Items = new();
   private readonly ReaderWriterLockSlim _LockData = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
@@ -148,7 +146,7 @@ public class TLanguageTextInfos : ILanguageTextInfos, IMediaSearchLoggable<TLang
       } finally {
         _LockData.ExitWriteLock();
       }
-      
+
     } finally {
       _LockData.ExitUpgradeableReadLock();
     }

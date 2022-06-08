@@ -4,21 +4,24 @@ public partial class TMSDatabaseJson {
 
   public override bool Create() {
     using (TChrono Chrono = new()) {
-      try {
-        Chrono.Start();
 
-        if (!Directory.Exists(DatabaseFullName)) {
-          Directory.CreateDirectory(DatabaseFullName);
+      return Chrono.ExecuteFunction(() => {
+        try {
+          if (!Directory.Exists(DatabaseFullName)) {
+            Directory.CreateDirectory(DatabaseFullName);
+          }
+
+          Chrono.Stop();
+          Logger.LogDebug("Database creation successful", $"{Chrono.ElapsedTime.DisplayTime()}\n{this}");
+
+          return true;
+        } catch (Exception ex) {
+          Logger.LogErrorBox($"Unable to create database {Name}", ex);
+          return false;
         }
+      });
 
-        Chrono.Stop();
-        Logger.LogDebug("Database creation successful", $"{Chrono.ElapsedTime.DisplayTime()}\n{this}");
 
-        return true;
-      } catch (Exception ex) {
-        Logger.LogErrorBox($"Unable to create database {Name}", ex);
-        return false;
-      }
     }
   }
 
@@ -29,41 +32,43 @@ public partial class TMSDatabaseJson {
     }
 
     using (TChrono Chrono = new()) {
-      try {
-        Chrono.Start();
 
-        if (!Directory.Exists(DatabaseFullName)) {
-          Directory.CreateDirectory(DatabaseFullName);
+      return Chrono.ExecuteFunction(() => {
+        try {
+          if (!Directory.Exists(DatabaseFullName)) {
+            Directory.CreateDirectory(DatabaseFullName);
+          }
+
+          Chrono.Stop();
+          Logger.LogDebug("Database creation successful", $"{Chrono.ElapsedTime.DisplayTime()}\n{this}");
+
+          return true;
+        } catch (Exception ex) {
+          Logger.LogErrorBox($"Unable to create database {Name}", ex);
+          return false;
         }
-
-        Chrono.Stop();
-        Logger.LogDebug("Database creation successful", $"{Chrono.ElapsedTime.DisplayTime()}\n{this}");
-
-        return true;
-      } catch (Exception ex) {
-        Logger.LogErrorBox($"Unable to create database {Name}", ex);
-        return false;
-      }
+      });
     }
   }
 
   public override bool Remove() {
     using (TChrono Chrono = new()) {
-      try {
-        Chrono.Start();
 
-        if (Directory.Exists(DatabaseFullName)) {
-          Directory.Delete(DatabaseFullName, true);
+      return Chrono.ExecuteFunction(() => {
+        try {
+          if (Directory.Exists(DatabaseFullName)) {
+            Directory.Delete(DatabaseFullName, true);
+          }
+
+          Chrono.Stop();
+          Logger.LogDebug("Database removal successful", $"{Chrono.ElapsedTime.DisplayTime()}\n{this}");
+
+          return true;
+        } catch (Exception ex) {
+          Logger.LogErrorBox($"Unable to remove database {Name}", ex);
+          return false;
         }
-
-        Chrono.Stop();
-        Logger.LogDebug("Database removal successful", $"{Chrono.ElapsedTime.DisplayTime()}\n{this}");
-
-        return true;
-      } catch (Exception ex) {
-        Logger.LogErrorBox($"Unable to remove database {Name}", ex);
-        return false;
-      }
+      });
     }
   }
 

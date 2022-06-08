@@ -2,9 +2,9 @@
 
 namespace MediaSearch.Client.Components;
 
-public partial class Movie_TableSmallCards : ComponentBase, IMediaSearchLoggable<Movie_TableSmallCards> {
+public partial class Movie_TableSmallCards : ComponentBase, ILoggable {
 
-  public IMediaSearchLogger<Movie_TableSmallCards> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<Movie_TableSmallCards>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<Movie_TableSmallCards>();
 
   //[Inject]
   //public IMovieService MovieService { get; set; }

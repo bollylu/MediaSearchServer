@@ -9,7 +9,7 @@ namespace MediaSearch.Server.Services;
 /// <summary>
 /// Server Movie service. Provides access to groups, movies and pictures from NAS
 /// </summary>
-public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieService> {
+public class TMovieService : IMovieService, IName, ILoggable {
 
   #region --- Constants --------------------------------------------
   public static int TIMEOUT_TO_SCAN_FILES_IN_MS = (int)TimeSpan.FromMinutes(5).TotalMilliseconds;
@@ -17,7 +17,7 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
   public static char FOLDER_SEPARATOR = Path.DirectorySeparatorChar;
   #endregion --- Constants --------------------------------------------
 
-  public IMediaSearchLogger<TMovieService> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovieService>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMovieService>();
 
   #region --- IName --------------------------------------------
   /// <summary>
@@ -100,7 +100,7 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
 
   public override string ToString() {
     return ToString(0);
-  } 
+  }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
   public void Reset() {
@@ -388,7 +388,7 @@ public class TMovieService : IMovieService, IName, IMediaSearchLoggable<TMovieSe
     // Standardize directory separator
     string ProcessedFileItem = item.FullName.NormalizePath();
 
-    IMovie RetVal = new TMovie(ProcessedFileItem.AfterLast(FOLDER_SEPARATOR).BeforeLast(" (")) ;
+    IMovie RetVal = new TMovie(ProcessedFileItem.AfterLast(FOLDER_SEPARATOR).BeforeLast(" ("));
 
     RetVal.StorageRoot = RootStoragePath.NormalizePath();
     RetVal.StoragePath = ProcessedFileItem.BeforeLast(FOLDER_SEPARATOR).After(RetVal.StorageRoot, System.StringComparison.InvariantCultureIgnoreCase);

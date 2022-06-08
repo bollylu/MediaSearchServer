@@ -6,12 +6,12 @@ namespace MediaSearch.Server.Controllers;
 
 [ApiController]
 [Route("api")]
-public class TLoginController : ControllerBase, IMediaSearchLoggable<TLoginController> {
+public class TLoginController : ControllerBase, ILoggable {
 
   private readonly ILoginService _LoginService;
   private readonly IAuditService _AuditService = GlobalSettings.AuditService;
 
-  public IMediaSearchLogger<TLoginController> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TLoginController>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TLoginController>();
 
   public TLoginController(ILoginService loginService) {
     Logger.LogDebugEx("Building Login controller");

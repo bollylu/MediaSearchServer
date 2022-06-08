@@ -1,10 +1,10 @@
 ﻿namespace MediaSearch.Models;
 
-public class TMovieInfoFileNfo : IMediaInfoFile, IMediaSearchLoggable<TMovieInfoFileNfo> {
+public class TMovieInfoFileNfo : IMediaInfoFile, ILoggable {
 
   public const int TIMEOUT_IN_MS = 5000;
 
-  public IMediaSearchLogger<TMovieInfoFileNfo> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovieInfoFileNfo>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMovieInfoFileNfo>();
 
   #region --- Storage info --------------------------------------------
   public string StoragePath { get; set; } = "";
@@ -32,7 +32,7 @@ public class TMovieInfoFileNfo : IMediaInfoFile, IMediaSearchLoggable<TMovieInfo
     RetVal.AppendLine($"{nameof(Content)} ({Content.GetType().Name})");
     RetVal.AppendLine($"{Content.ToString(2)}");
     return RetVal.ToString();
-  } 
+  }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
   #region --- IFileMediaInfo --------------------------------------------

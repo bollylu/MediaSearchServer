@@ -1,9 +1,9 @@
-﻿using static MediaSearch.Models.JsonConverterResources;
+﻿using static BLTools.Json.JsonConverterResources;
 
 namespace MediaSearch.Models;
 
-public class TLanguageTextInfosConverter : JsonConverter<TLanguageTextInfos>, IMediaSearchLoggable<TLanguageTextInfosConverter> {
-  public IMediaSearchLogger<TLanguageTextInfosConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TLanguageTextInfosConverter>();
+public class TLanguageTextInfosConverter : JsonConverter<TLanguageTextInfos>, ILoggable {
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TLanguageTextInfosConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
     return typeToConvert == typeof(TLanguageTextInfos) || typeToConvert.GetInterface(nameof(ILanguageTextInfos)) is not null;

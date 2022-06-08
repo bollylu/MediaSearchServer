@@ -1,15 +1,16 @@
-﻿using Microsoft.AspNetCore.Components;
-using BLTools.Encryption;
+﻿using BLTools.Encryption;
+
+using Microsoft.AspNetCore.Components;
 
 namespace MediaSearch.Client.Pages;
 
-public partial class Login : ComponentBase, IMediaSearchLoggable<Login> {
+public partial class Login : ComponentBase, ILoggable {
 
   public const string PARAM_ORIGIN = "origin";
   public const string ORIGIN_SETTINGS = "settings";
   public const string ORIGIN_ADMIN = "admincontrol";
 
-  public IMediaSearchLogger<Login> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<Login>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<Login>();
 
   [Inject]
   public ILoginService LoginService {
@@ -30,10 +31,12 @@ public partial class Login : ComponentBase, IMediaSearchLoggable<Login> {
   public string Password {
     get {
       return _Password ?? string.Empty;
-    } set { 
+    }
+    set {
       _Password = value;
       UserAccountSecret.PasswordHash = value.HashToBase64(EHashingMethods.SHA512);
-    } }
+    }
+  }
   private string? _Password;
   protected override void OnInitialized() {
     base.OnInitialized();
@@ -58,12 +61,12 @@ public partial class Login : ComponentBase, IMediaSearchLoggable<Login> {
     }
 
     GlobalSettings.Account = new TUserAccountInfo(ConnectedUser);
-    
+
     if (FromPage != "") {
       NavigationManager?.NavigateTo(FromPage, false, true);
       return;
     }
   }
 
-  
+
 }

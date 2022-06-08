@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Components;
 
 namespace MediaSearch.Client.Components {
-  public partial class Movie_SmallCard : ComponentBase, IMediaSearchLoggable<Movie_SmallCard> {
+  public partial class Movie_SmallCard : ComponentBase, ILoggable {
 
     [Parameter]
     public IMovie Movie {
@@ -37,7 +37,7 @@ namespace MediaSearch.Client.Components {
     [Inject]
     public IMovieService? MovieService { get; set; }
 
-    public IMediaSearchLogger<Movie_SmallCard> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<Movie_SmallCard>();
+    public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<Movie_SmallCard>();
 
     public string? HeaderText => Movie.Name ?? "";
     public string? BodyTitle => Titles;
@@ -85,12 +85,12 @@ namespace MediaSearch.Client.Components {
 
     [Conditional("DEBUG")]
     private void IfDebugMessage(string title, object? message, [CallerMemberName] string CallerName = "") {
-      Logger.LogDebugBox(title, message?.ToString() ?? "", CallerName);
+      Logger.LogDebugBox(title, message?.ToString() ?? "", GlobalSettings.DEBUG_BOX_WIDTH, CallerName);
     }
 
     [Conditional("DEBUG")]
     private void IfDebugMessageEx(string title, object? message, [CallerMemberName] string CallerName = "") {
-      Logger.LogDebugExBox(title, message?.ToString() ?? "", CallerName);
+      Logger.LogDebugExBox(title, message?.ToString() ?? "", GlobalSettings.DEBUG_BOX_WIDTH, CallerName);
     }
   }
 

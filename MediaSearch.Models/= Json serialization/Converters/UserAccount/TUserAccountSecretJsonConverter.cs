@@ -1,8 +1,8 @@
-﻿using static MediaSearch.Models.JsonConverterResources;
+﻿using static BLTools.Json.JsonConverterResources;
 
 namespace MediaSearch.Models;
-public class TUserAccountSecretJsonConverter : JsonConverter<TUserAccountSecret>, IMediaSearchLoggable<TUserAccountSecretJsonConverter> {
-  public IMediaSearchLogger<TUserAccountSecretJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TUserAccountSecretJsonConverter>();
+public class TUserAccountSecretJsonConverter : JsonConverter<TUserAccountSecret>, ILoggable {
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TUserAccountSecretJsonConverter>();
 
   public const string SecurityKey = "bla bla bla";
 

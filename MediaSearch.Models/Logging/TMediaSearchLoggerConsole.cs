@@ -5,13 +5,13 @@ public class TMediaSearchLoggerConsole : TConsoleLogger, IMediaSearchLogger {
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMediaSearchLoggerConsole() { }
-  public TMediaSearchLoggerConsole(TConsoleLogger logger) : base(logger) { } 
+  public TMediaSearchLoggerConsole(TConsoleLogger logger) : base(logger) { }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public virtual object Clone() {
     return (TMediaSearchLoggerConsole)Clone();
   }
-  public string Name { get; set; } = "";
+  public new string Name { get; set; } = "";
   public string Description { get; set; } = "";
 }
 
@@ -21,11 +21,11 @@ public class TMediaSearchLoggerConsole<T> : TMediaSearchLoggerConsole, IMediaSea
   public TMediaSearchLoggerConsole() { }
   public TMediaSearchLoggerConsole(TConsoleLogger logger) : base(logger) {
     SeverityLimit = logger.SeverityLimit;
-  } 
+  }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public override object Clone() {
     return (TMediaSearchLoggerConsole<T>)Clone();
   }
-  
+
 }

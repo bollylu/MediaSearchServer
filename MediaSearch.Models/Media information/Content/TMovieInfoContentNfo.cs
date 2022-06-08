@@ -1,7 +1,9 @@
-﻿namespace MediaSearch.Models;
+﻿using BLTools.Storage.Xml;
+
+namespace MediaSearch.Models;
 
 public class TMovieInfoContentNfo : IToXml,
-                                    IMediaSearchLoggable<TMovieInfoContentNfo> {
+                                    ILoggable {
 
   #region --- XML constants ----------------------------------------------------------------------------------
   public const string XML_THIS_ELEMENT = "movie";
@@ -19,7 +21,7 @@ public class TMovieInfoContentNfo : IToXml,
   public const string XML_ELEMENT_CREATION_YEAR = "year";
   #endregion --- XML constants -------------------------------------------------------------------------------
 
-  public IMediaSearchLogger<TMovieInfoContentNfo> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovieInfoContentNfo>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMovieInfoContentNfo>();
 
   public string Title { get; set; } = "";
   public string OriginalTitle { get; set; } = "";
@@ -70,7 +72,7 @@ public class TMovieInfoContentNfo : IToXml,
     } catch {
       RetVal.CreationDate = DateOnly.MinValue;
     }
-    
+
     RLanguage LanguageFromCountry = Languages.GetLanguageFromCode(Country);
     RetVal.Titles.Add(LanguageFromCountry.Language, Title);
     RetVal.Descriptions.Add(LanguageFromCountry.Language, Description);

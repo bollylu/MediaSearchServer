@@ -11,23 +11,27 @@
   <ItemGroup>
     <Compile Remove="Converters\**" />
     <Compile Remove="Databases\**" />
+    <Compile Remove="Logging\**" />
     <Compile Remove="Output formatters\**" />
     <EmbeddedResource Remove="Converters\**" />
     <EmbeddedResource Remove="Databases\**" />
+    <EmbeddedResource Remove="Logging\**" />
     <EmbeddedResource Remove="Output formatters\**" />
     <None Remove="Converters\**" />
     <None Remove="Databases\**" />
+    <None Remove="Logging\**" />
     <None Remove="Output formatters\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="= Json serialization\Converters\Generics\JsonConverterResources.cs" />
+    <Compile Remove="= Json serialization\Converters\Generics\TDateOnlyJsonConverter.cs" />
+    <Compile Remove="= Json serialization\Converters\Generics\TIpAddressJsonConverter.cs" />
     <Compile Remove="ADataModel.cs" />
     <Compile Remove="Interfaces\IDuplicate.cs" />
     <Compile Remove="= Json serialization\AJson.cs" />
     <Compile Remove="= Json serialization\Converters\TMediaInfoHeaderConverter.cs" />
     <Compile Remove="= Json serialization\Converters\TMovieInfoContentMetaConverter_1.cs" />
-    <Compile Remove="Logging\AMediaSearchLoggable.cs" />
-    <Compile Remove="Logging\AMediaSearchLogger.cs" />
     <Compile Remove="Media sources\TMediaSourceMovie.cs" />
     <Compile Remove="Movie\TMovieJson.cs" />
   </ItemGroup>
@@ -46,11 +50,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BLTools" Version="4.5.28" />
+    <PackageReference Include="BLTools" Version="6.0.1-beta5" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
-    <PackageReference Include="System.Text.Json" Version="6.0.2" />
+    <PackageReference Include="System.Text.Json" Version="6.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="= Json serialization\Converters\Generics\" />
   </ItemGroup>
 
 

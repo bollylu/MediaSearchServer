@@ -1,8 +1,7 @@
-﻿using BLTools.Text;
-
-using System.Diagnostics;
-using System.Net.Http.Json;
+﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
+
+using BLTools.Text;
 
 namespace MediaSearch.Client.Services;
 
@@ -10,10 +9,10 @@ namespace MediaSearch.Client.Services;
 /// Client Movie service. Provides access to groups, movies and pictures from a REST server
 /// </summary>
 
-public class TMovieService : IMovieService, IMediaSearchLoggable<TMovieService> {
+public class TMovieService : IMovieService, ILoggable {
 
   public IApiServer ApiServer { get; set; } = new TApiServer();
-  public IMediaSearchLogger<TMovieService> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovieService>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMovieService>();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   private readonly TImageCache _ImagesCache = new TImageCache();
@@ -183,17 +182,17 @@ public class TMovieService : IMovieService, IMediaSearchLoggable<TMovieService> 
       }
       return new List<string>();
     }
-  } 
+  }
   #endregion --- Groups --------------------------------------------
 
   [Conditional("DEBUG")]
   private void IfDebugMessage(string title, object? message, [CallerMemberName] string CallerName = "") {
-    Logger.LogDebugBox(title, message?.ToString() ?? "", CallerName);
+    Logger.LogDebugBox(title, message?.ToString() ?? "", GlobalSettings.DEBUG_BOX_WIDTH, CallerName);
   }
 
   [Conditional("DEBUG")]
   private void IfDebugMessageEx(string title, object? message, [CallerMemberName] string CallerName = "") {
-    Logger.LogDebugExBox(title, message?.ToString() ?? "", CallerName);
+    Logger.LogDebugExBox(title, message?.ToString() ?? "", GlobalSettings.DEBUG_BOX_WIDTH, CallerName);
   }
 
 }

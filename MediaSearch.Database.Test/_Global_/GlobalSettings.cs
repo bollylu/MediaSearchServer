@@ -1,13 +1,9 @@
-﻿using System.Reflection;
-
-using MediaSearch.Models.Logging;
-
-namespace MediaSearch.Database.Test;
+﻿namespace MediaSearch.Database.Test;
 
 public static class GlobalSettings {
   public const int DEBUG_BOX_WIDTH = 110;
 
-  public static IMediaSearchLogger GlobalLogger { get; set; } = new TMediaSearchLoggerConsole();
+  public static ILogger GlobalLogger { get; set; } = new TConsoleLogger();
 
   public static TLoggerPool LoggerPool { get; } = new();
 
@@ -42,5 +38,5 @@ public static class GlobalSettings {
   }
   private static TAbout? _ExecutingAbout;
 
-  
+
 }

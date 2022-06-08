@@ -2,13 +2,11 @@
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 
-using BLTools.Text;
-
 namespace MediaSearch.Client.Services;
 
-public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
+public class TApiServer : IApiServer, ILoggable {
 
-  public IMediaSearchLogger<TApiServer> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TApiServer>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TApiServer>();
 
   private readonly HttpClient _HttpClient;
   public HttpResponseMessage? LastResponse { get; private set; }
@@ -52,14 +50,14 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
       if (!LastResponse.IsSuccessStatusCode) {
-        IfDebugMessage($"Response #{LocalRequestId} : { LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+        IfDebugMessage($"Response #{LocalRequestId} : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
         return default;
       }
 
       string StringContent = await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
       T? JsonContent = IJson<T>.FromJson(StringContent);
 
-      IfDebugMessageEx($"Response #{LocalRequestId} : { LastResponse.StatusCode}", StringContent);
+      IfDebugMessageEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
 
       return JsonContent;
 
@@ -318,12 +316,12 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
 
   [Conditional("DEBUG")]
   private void IfDebugMessage(string title, object? message, [CallerMemberName] string CallerName = "") {
-    Logger.LogDebugBox(title, message?.ToString() ?? "", CallerName);
+    Logger.LogDebugBox(title, message?.ToString() ?? "", GlobalSettings.DEBUG_BOX_WIDTH, CallerName);
   }
 
   [Conditional("DEBUG")]
   private void IfDebugMessageEx(string title, object? message, [CallerMemberName] string CallerName = "") {
-    Logger.LogDebugExBox(title, message?.ToString() ?? "", CallerName);
+    Logger.LogDebugExBox(title, message?.ToString() ?? "", GlobalSettings.DEBUG_BOX_WIDTH, CallerName);
   }
 
 }

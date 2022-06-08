@@ -1,9 +1,9 @@
 ﻿using BLTools.Encryption;
 
 namespace MediaSearch.Server.Services;
-public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> {
+public class TLoginService : ILoginService, ILoggable {
 
-  public IMediaSearchLogger<TLoginService> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TLoginService>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TLoginService>();
 
   private readonly List<IUserAccount> _UserAccounts = new();
   private readonly ReaderWriterLockSlim _LockUserAccounts = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);

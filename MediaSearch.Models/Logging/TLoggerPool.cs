@@ -2,7 +2,7 @@
 public class TLoggerPool {
 
   public const string DEFAULT_LOGGER_NAME = "(default)";
-  private List<IMediaSearchLogger> _Items { get; } = new();
+  private List<ILogger> _Items { get; } = new();
   public Type DefaultLoggerType { get; set; } = typeof(TMediaSearchLoggerConsole);
 
   private readonly object _Lock = new object();

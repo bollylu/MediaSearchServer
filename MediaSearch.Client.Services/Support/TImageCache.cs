@@ -1,22 +1,20 @@
 ﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-using BLTools.Diagnostic.Logging;
-
 namespace MediaSearch.Client.Services;
 
-public class TImageCache : IDisposable, IMediaSearchLoggable<TImageCache> {
+public class TImageCache : IDisposable, ILoggable {
 
   public static int MAX_ITEMS = 250;
 
   private readonly List<TCachedItem> _CachedImages = new();
   private readonly ReaderWriterLockSlim _LockData = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
-  public IMediaSearchLogger<TImageCache> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TImageCache>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TImageCache>();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TImageCache() {
-    IfDebugMessageEx("Creating cache","");
+    IfDebugMessageEx("Creating cache", "");
     Logger.SeverityLimit = ESeverity.Debug;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -74,12 +72,12 @@ public class TImageCache : IDisposable, IMediaSearchLoggable<TImageCache> {
 
   [Conditional("DEBUG")]
   private void IfDebugMessage(string title, object? message, [CallerMemberName] string CallerName = "") {
-    Logger.LogDebugBox(title, message?.ToString() ?? "", CallerName);
+    Logger.LogDebugBox(title, message?.ToString() ?? "", GlobalSettings.DEBUG_BOX_WIDTH, CallerName);
   }
 
   [Conditional("DEBUG")]
   private void IfDebugMessageEx(string title, object? message, [CallerMemberName] string CallerName = "") {
-    Logger.LogDebugExBox(title, message?.ToString() ?? "", CallerName);
+    Logger.LogDebugExBox(title, message?.ToString() ?? "", GlobalSettings.DEBUG_BOX_WIDTH, CallerName);
   }
 }
 

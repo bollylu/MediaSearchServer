@@ -2,9 +2,9 @@
 
 namespace MediaSearch.Database;
 
-public partial class TMSDatabaseJson : AMSDatabase, IMediaSearchLoggable<TMSDatabaseJson> {
+public partial class TMSDatabaseJson : AMSDatabase, ILoggable {
 
-  public override IMediaSearchLogger<TMSDatabaseJson> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMSDatabaseJson>();
+  public override ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMSDatabaseJson>();
 
   public string RootPath { get; set; } = ".\\";
 
@@ -62,7 +62,7 @@ public partial class TMSDatabaseJson : AMSDatabase, IMediaSearchLoggable<TMSData
         TableItem.Dispose();
       }
     }
-  } 
+  }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public override string Dump() {
