@@ -11,7 +11,7 @@ public class TMovieInfoFileNfoTests {
     Assert.IsNotNull(Target);
     Assert.IsNotInstanceOfType(Target, typeof(IToXml));
 
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
+    Dump(Target);
   }
 
   [TestMethod]
@@ -31,7 +31,7 @@ public class TMovieInfoFileNfoTests {
 
     Assert.IsNotNull(Target);
 
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
+    Dump(Target);
   }
 
   [TestMethod]
@@ -53,11 +53,11 @@ public class TMovieInfoFileNfoTests {
 
     Target.Write();
     Assert.IsTrue(Target.Exists());
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", File.ReadAllText(Target.FullStorageName));
+    MessageBox($"{nameof(Target)} : {Target.GetType().Name}", File.ReadAllText(Target.FullStorageName));
 
     Target.Remove();
     Assert.IsFalse(Target.Exists());
-
+    Ok();
   }
 
   [TestMethod]
@@ -75,12 +75,12 @@ public class TMovieInfoFileNfoTests {
     Source.NfoContent.Genres.Add("WW2");
     Source.NfoContent.Genres.Add("Comédie");
 
-    TraceBox($"{nameof(Source)} : {Source.GetType().Name}", Source.ToString());
+    Dump(Source);
 
     Assert.IsTrue(Source.Write());
     Assert.IsTrue(Source.Exists());
 
-    TraceBox("Source file raw content", File.ReadAllText(Source.FullStorageName));
+    MessageBox("Source file raw content", File.ReadAllText(Source.FullStorageName));
 
     TMovieInfoFileNfo Target = new TMovieInfoFileNfo() {
       StoragePath = Source.StoragePath,
@@ -90,7 +90,7 @@ public class TMovieInfoFileNfoTests {
     Assert.IsTrue(Target.Exists());
     Assert.IsTrue(Target.Read());
 
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
+    Dump(Target);
 
     Target.Remove();
     Assert.IsFalse(Target.Exists());
@@ -115,7 +115,7 @@ public class TMovieInfoFileNfoTests {
 
     await Target.WriteAsync(CancellationToken.None);
     Assert.IsTrue(Target.Exists());
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", File.ReadAllText(Target.FullStorageName));
+    MessageBox($"{nameof(Target)} : {Target.GetType().Name}", File.ReadAllText(Target.FullStorageName));
 
     Target.Remove();
     Assert.IsFalse(Target.Exists());
@@ -139,8 +139,8 @@ public class TMovieInfoFileNfoTests {
     await Source.WriteAsync(CancellationToken.None);
     Assert.IsTrue(Source.Exists());
 
-    TraceBox($"{nameof(Source)} : {Source.GetType().Name}", Source.ToString());
-    TraceBox("Source file raw content", File.ReadAllText(Source.FullStorageName));
+    Dump(Source);
+    MessageBox("Source file raw content", File.ReadAllText(Source.FullStorageName));
 
     TMovieInfoFileNfo Target = new TMovieInfoFileNfo() {
       StoragePath = Source.StoragePath,
@@ -150,9 +150,11 @@ public class TMovieInfoFileNfoTests {
     Assert.IsTrue(Target.Exists());
     await Target.ReadAsync(CancellationToken.None);
 
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
+    Dump(Target);
 
     Target.Remove();
     Assert.IsFalse(Target.Exists());
+
+    Ok();
   }
 }

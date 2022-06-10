@@ -28,5 +28,5 @@ public class TJsonOutputFormatter : TextOutputFormatter {
       await httpContext.Response.WriteAsync(JsonItem.ToJson());
     }
   }
-  
+
 }

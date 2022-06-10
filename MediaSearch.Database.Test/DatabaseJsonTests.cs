@@ -5,13 +5,13 @@ public class DatabaseJsonTests {
 
   [ClassInitialize]
   public static void ClassInitialize(TestContext context) {
-    GlobalSettings.LoggerPool.AddLogger(new TConsoleLogger());
-    GlobalSettings.Initialize().Wait();
-    Models.GlobalSettings.LoggerPool.SetDefaultLogger(new TConsoleLogger());
-    Models.GlobalSettings.Initialize().Wait();
-    Database.GlobalSettings.LoggerPool.AddLogger(new TConsoleLogger<TMSDatabaseJson>() { SeverityLimit = ESeverity.Debug });
-    Database.GlobalSettings.LoggerPool.AddLogger(new TConsoleLogger<TMSTable>() { SeverityLimit = ESeverity.Debug });
-    Database.GlobalSettings.Initialize().Wait();
+    //GlobalSettings.LoggerPool.AddLogger(new TConsoleLogger());
+    //GlobalSettings.Initialize().Wait();
+    //Models.GlobalSettings.LoggerPool.SetDefaultLogger(new TConsoleLogger());
+    //Models.GlobalSettings.Initialize().Wait();
+    //Database.GlobalSettings.LoggerPool.AddLogger(new TConsoleLogger<TMSDatabaseJson>() { SeverityLimit = ESeverity.Debug });
+    //Database.GlobalSettings.LoggerPool.AddLogger(new TConsoleLogger<TMSTable>() { SeverityLimit = ESeverity.Debug });
+    //Database.GlobalSettings.Initialize().Wait();
   }
 
   [TestMethod]

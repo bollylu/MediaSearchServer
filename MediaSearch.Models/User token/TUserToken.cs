@@ -1,5 +1,4 @@
-﻿using BLTools;
-using BLTools.Encryption;
+﻿using BLTools.Encryption;
 
 namespace MediaSearch.Models;
 
@@ -14,7 +13,7 @@ public class TUserToken : IUserToken, IJson<TUserToken> {
   public DateTime Expiration { get; set; } = DateTime.MaxValue;
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TUserToken() { 
+  public TUserToken() {
     TokenId = Random.Shared.NextInt64().ToString().HashToBase64();
     Expiration = DateTime.UtcNow.AddMinutes(SESSION_DURATION_IN_MIN);
   }

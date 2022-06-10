@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-
-namespace MediaSearch.Models.MediaInfoContent.Test;
+﻿namespace MediaSearch.Models.MediaInfoContent.Test;
 
 [TestClass]
 public class TMovieInfoFileMetaTests {
@@ -12,7 +10,7 @@ public class TMovieInfoFileMetaTests {
     Assert.IsNotNull(Target);
     Assert.IsInstanceOfType(Target, typeof(IJson));
 
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
+    Dump(Target);
   }
 
   [TestMethod]
@@ -32,7 +30,7 @@ public class TMovieInfoFileMetaTests {
 
     Assert.IsNotNull(Target);
 
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
+    Dump(Target);
   }
 
   [TestMethod]
@@ -55,7 +53,7 @@ public class TMovieInfoFileMetaTests {
 
     Target.Write();
     Assert.IsTrue(Target.Exists());
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", File.ReadAllText(Target.FullStorageName));
+    MessageBox($"{nameof(Target)} : {Target.GetType().Name}", File.ReadAllText(Target.FullStorageName));
 
     Target.Remove();
     Assert.IsFalse(Target.Exists());
@@ -82,7 +80,7 @@ public class TMovieInfoFileMetaTests {
 
     await Target.WriteAsync(CancellationToken.None);
     Assert.IsTrue(Target.Exists());
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", File.ReadAllText(Target.FullStorageName));
+    MessageBox($"{nameof(Target)} : {Target.GetType().Name}", File.ReadAllText(Target.FullStorageName));
 
     Target.Remove();
     Assert.IsFalse(Target.Exists());
@@ -92,7 +90,7 @@ public class TMovieInfoFileMetaTests {
   public void TMovieInfoFileMeta_Read() {
     TMovieInfoFileMeta Source = new() {
       StoragePath = Path.GetTempPath(),
-      StorageName = $"{Random.Shared.Next()}.msmeta", 
+      StorageName = $"{Random.Shared.Next()}.msmeta",
     };
 
     Source.MetaContent.Titles.Add(ELanguage.French, "La grande vadrouille");
@@ -108,8 +106,8 @@ public class TMovieInfoFileMetaTests {
     Source.Write();
     Assert.IsTrue(Source.Exists());
 
-    TraceBox($"{nameof(Source)} : {Source.GetType().Name}", Source);
-    TraceBox("Source file raw content", File.ReadAllText(Source.FullStorageName));
+    Dump(Source);
+    MessageBox("Source file raw content", File.ReadAllText(Source.FullStorageName));
 
     TMovieInfoFileMeta Target = new TMovieInfoFileMeta() {
       StoragePath = Source.StoragePath,
@@ -119,7 +117,7 @@ public class TMovieInfoFileMetaTests {
     Assert.IsTrue(Target.Exists());
     Target.Read();
 
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    Dump(Target);
 
     Target.Remove();
     Assert.IsFalse(Target.Exists());
@@ -145,8 +143,8 @@ public class TMovieInfoFileMetaTests {
     Source.Write();
     Assert.IsTrue(Source.Exists());
 
-    TraceBox($"{nameof(Source)} : {Source.GetType().Name}", Source);
-    TraceBox("Source file raw content", File.ReadAllText(Source.FullStorageName));
+    Dump(Source);
+    MessageBox("Source file raw content", File.ReadAllText(Source.FullStorageName));
 
     TMovieInfoFileMeta Target = new TMovieInfoFileMeta() {
       StoragePath = Source.StoragePath,
@@ -156,10 +154,10 @@ public class TMovieInfoFileMetaTests {
     Assert.IsTrue(Target.Exists());
     await Target.ReadAsync(CancellationToken.None);
 
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    Dump(Target);
 
     Target.Remove();
     Assert.IsFalse(Target.Exists());
   }
-  
+
 }

@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-
-namespace MediaSearch.Models.MediaInfoContent.Test;
+﻿namespace MediaSearch.Models.MediaInfoContent.Test;
 
 [TestClass]
 public class TMovieInfoContentMetaTests {
@@ -12,7 +10,9 @@ public class TMovieInfoContentMetaTests {
     Assert.IsInstanceOfType(Target, typeof(IJson));
     Assert.IsNotNull(Target);
 
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
+    Dump(Target);
+
+    Ok();
   }
 
   [TestMethod]
@@ -35,7 +35,9 @@ public class TMovieInfoContentMetaTests {
     Assert.AreEqual(1966, Target.CreationYear);
     Assert.AreEqual(1234567890, Target.Size);
 
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    Dump(Target);
+
+    Ok();
   }
 
   [TestMethod]
@@ -50,11 +52,12 @@ public class TMovieInfoContentMetaTests {
     Source.Genres.Add("Guerre");
     Source.Genres.Add("WW2");
     Source.Genres.Add("Comédie");
+    Dump(Source);
 
     string Target = ((IJson)Source).ToJson();
+    Dump(Target);
 
-    TraceBox($"{nameof(Source)} : {Source.GetType().Name}", Source.ToString());
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
+    Ok();
   }
 
   [TestMethod]
@@ -92,11 +95,10 @@ public class TMovieInfoContentMetaTests {
 ";
 
     Assert.IsNotNull(Source);
+    Dump(Source);
 
     TMovieInfoContentMeta? Target = IJson<TMovieInfoContentMeta>.FromJson(Source);
     Assert.IsNotNull(Target);
-
-    TraceBox($"{nameof(Source)} : {Source.GetType().Name}", Source.ToString());
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
+    Dump(Target);
   }
 }

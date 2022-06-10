@@ -27,7 +27,7 @@ public partial class TMSDatabaseJson {
       return false;
     }
   }
-  
+
   public override bool TableRemove(string name) {
     try {
       string TableDirectory = Path.Join(DatabaseFullName, name);
@@ -42,7 +42,7 @@ public partial class TMSDatabaseJson {
     }
   }
 
-  public override bool TableCheck (string name) {
+  public override bool TableCheck(string name) {
     try {
       return TableExists(name) && File.Exists(Path.Join(DatabaseFullName, name, TABLE_HEADER_FILENAME));
     } catch {
@@ -67,7 +67,7 @@ public partial class TMSDatabaseJson {
   }
 
   public override bool TableWriteHeader(IMSTable table) {
-    
+
     if (!TableExists(table.Name)) {
       Logger.LogErrorBox($"Unable to write header for table {table.Name.WithQuotes()}", "Table is missing");
       return false;
@@ -87,5 +87,5 @@ public partial class TMSDatabaseJson {
   public override bool TableReindex(string table) {
     throw new NotImplementedException();
   }
-  
+
 }

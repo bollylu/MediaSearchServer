@@ -19,13 +19,13 @@ public class TMovieInfoContentMetaSerializationTest {
 
     Source.Subtitles.Add(ELanguage.French);
 
-    TraceBox("Source", Source);
+    Dump(Source);
 
     string Target = ((IJson)Source).ToJson();
-
-    TraceBox("Target", Target);
-
     Assert.IsNotNull(Target);
+    Dump(Target);
+
+    Ok();
 
   }
 
@@ -64,15 +64,17 @@ public class TMovieInfoContentMetaSerializationTest {
 }                                                                                               
 ";
 
-    TraceBox("Source", Source);
+    Dump(Source);
 
     TMovieInfoContentMeta? Target = IJson<TMovieInfoContentMeta>.FromJson(Source);
     Assert.IsNotNull(Target);
-    TraceBox("Target", Target);
+
+    Dump(Target);
 
     Assert.AreEqual(2, Target.Titles.Count());
     Assert.AreEqual(2, Target.Soundtracks.Count);
 
+    Ok();
   }
 
 }

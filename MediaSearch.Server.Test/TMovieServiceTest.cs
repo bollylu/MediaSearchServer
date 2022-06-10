@@ -1,8 +1,5 @@
-﻿using BLTools.Text;
-
+﻿
 using MediaSearch.Database;
-
-using static MediaSearch.Models.Support;
 
 namespace MediaSearch.Server.Services.Test;
 
@@ -12,7 +9,8 @@ public class TMovieServiceTest {
   [TestMethod]
   public void Instanciate_TMovieService_Empty() {
     IMovieService Target = new TMovieService();
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    Dump(Target);
+    Ok();
   }
 
   [TestMethod]
@@ -22,7 +20,8 @@ public class TMovieServiceTest {
     IMSTable<IMovie>? Table = Database.GetTable("movies") as IMSTable<IMovie>;
     Assert.IsNotNull(Table);
     IMovieService Target = new TMovieService(Table);
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    Dump(Target);
+    Ok();
   }
 
   [TestMethod]
@@ -32,7 +31,8 @@ public class TMovieServiceTest {
     IMSTable<IMovie>? Table = Database.GetTable("movies") as IMSTable<IMovie>;
     Assert.IsNotNull(Table);
     IMovieService Target = new TMovieService(Table) { Name = "test db", Description = "the db for the tests" };
-    TraceBox("Target", Target);
+    Dump(Target);
+    Ok();
   }
 
   [TestMethod]
@@ -47,12 +47,14 @@ public class TMovieServiceTest {
       Page = 1,
       PageSize = TMoviesPage.DEFAULT_PAGE_SIZE
     };
-    TraceBox($"{nameof(DefaultFilter)} : {DefaultFilter.GetType().Name}", DefaultFilter);
+    Dump(DefaultFilter);
 
     IMoviesPage? Target = await Source.GetMoviesPage(DefaultFilter).ConfigureAwait(false);
     Assert.IsNotNull(Target);
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    Dump(Target);
+
     Assert.AreEqual(TMoviesPage.DEFAULT_PAGE_SIZE, Target.Movies.Count);
+    Ok();
   }
 
   [TestMethod]
@@ -67,11 +69,12 @@ public class TMovieServiceTest {
       Page = 1,
       PageSize = TMoviesPage.DEFAULT_PAGE_SIZE
     };
-    TraceBox($"{nameof(DefaultFilter)} : {DefaultFilter.GetType().Name}", DefaultFilter);
+    Dump(DefaultFilter);
 
     IMoviesPage? Target = await Source.GetMoviesLastPage(DefaultFilter).ConfigureAwait(false);
     Assert.IsNotNull(Target);
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    Dump(Target);
+    Ok();
   }
 
   [TestMethod]
@@ -87,12 +90,14 @@ public class TMovieServiceTest {
       Page = 1,
       PageSize = TMoviesPage.DEFAULT_PAGE_SIZE
     };
-    TraceBox($"{nameof(DefaultFilter)} : {DefaultFilter.GetType().Name}", DefaultFilter);
+    Dump(DefaultFilter);
 
     IMoviesPage? Target = await Source.GetMoviesPage(DefaultFilter).ConfigureAwait(false);
     Assert.IsNotNull(Target);
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    Dump(Target);
+
     Assert.AreEqual(TMoviesPage.DEFAULT_PAGE_SIZE, Target.Movies.Count);
+    Ok();
   }
 
   [TestMethod]
@@ -108,11 +113,12 @@ public class TMovieServiceTest {
       Page = 1,
       PageSize = TMoviesPage.DEFAULT_PAGE_SIZE
     };
-    TraceBox($"{nameof(DefaultFilter)} : {DefaultFilter.GetType().Name}", DefaultFilter);
+    Dump(DefaultFilter);
 
     IMoviesPage? Target = await Source.GetMoviesLastPage(DefaultFilter).ConfigureAwait(false);
     Assert.IsNotNull(Target);
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    Dump(Target);
+    Ok();
   }
 
 }

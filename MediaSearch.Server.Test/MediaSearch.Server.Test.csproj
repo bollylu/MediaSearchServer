@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BLTools" Version="6.0.1-beta5" />
+    <PackageReference Include="BLTools" Version="6.0.1-beta8" />
     <PackageReference Include="BLTools.Json.dns.20" Version="4.5.28" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />
@@ -28,7 +28,6 @@
     <ProjectReference Include="..\MediaSearch.Models\MediaSearch.Models.csproj" />
     <ProjectReference Include="..\MediaSearch.Server.Services\MediaSearch.Server.Services.csproj" />
     <ProjectReference Include="..\MediaSearch.Server\MediaSearch.Server.csproj" />
-    <ProjectReference Include="..\MediaSearch.Test.Support\MediaSearch.Test.Support.csproj" />
   </ItemGroup>
 
   <ItemGroup>

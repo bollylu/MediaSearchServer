@@ -9,13 +9,10 @@ public class TMoviesPageSerializationTest {
   [TestMethod]
   public void Serialize() {
 
-    Assert.IsTrue(Database.Exists());
-    Assert.IsTrue(Database.Open());
-
-    IMSTable<IMovie>? MovieTable = Database.GetTable("movies") as IMSTable<IMovie>;
-    Assert.IsNotNull(MovieTable);
-
-    IList<IMovie> Movies = MovieTable.GetAll(2).Cast<IMovie>().ToList();
+    IList<IMovie> Movies = new List<IMovie> {
+      new TMovie("Le chat noir", 1960),
+      new TMovie("Le chat blanc", 1962)
+    };
 
     IMoviesPage Source = new TMoviesPage() {
       Name = "Sélection",
@@ -26,23 +23,23 @@ public class TMoviesPageSerializationTest {
     };
     Source.Movies.AddRange(Movies);
 
-    TraceBox($"{nameof(Source)} : {Source.GetType().Name}", Source);
+    Dump(Source);
 
     string Target = Source.ToJson();
 
     Assert.IsNotNull(Target);
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    Dump(Target);
+
+    Ok();
   }
 
   [TestMethod]
   public void Deserialize() {
-    Assert.IsTrue(Database.Exists());
-    Assert.IsTrue(Database.Open());
 
-    IMSTable<IMovie>? MovieTable = Database.GetTable("movies") as IMSTable<IMovie>;
-    Assert.IsNotNull(MovieTable);
-
-    IList<IMovie> Movies = MovieTable.GetAll(2).Cast<IMovie>().ToList();
+    IList<IMovie> Movies = new List<IMovie> {
+      new TMovie("Le chat noir", 1960),
+      new TMovie("Le chat blanc", 1962)
+    };
 
     IMoviesPage MoviesPage = new TMoviesPage() {
       Name = "Sélection",
@@ -54,11 +51,12 @@ public class TMoviesPageSerializationTest {
     MoviesPage.Movies.AddRange(Movies);
 
     string Source = MoviesPage.ToJson();
-    TraceBox($"{nameof(Source)} : {Source.GetType().Name}", Source);
+    Dump(Source);
 
     IMoviesPage? Target = IJson<TMoviesPage>.FromJson(Source);
     Assert.IsNotNull(Target);
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target);
+    Dump(Target);
+    Ok();
   }
 
 }

@@ -9,17 +9,17 @@ public class TAboutSerializationTest {
     IAbout Source = new TAbout() {
       Name = "LibTest",
       Description = "Test library",
-      CurrentVersion = new Version(0,0,1), 
-      ChangeLog="1st version"
+      CurrentVersion = new Version(0, 0, 1),
+      ChangeLog = "1st version"
     };
-    TraceBox("Source", Source);
+    Dump(Source);
 
     string Target = Source.ToJson();
 
-    TraceBox("Target", Target);
+    Dump(Target);
 
     Assert.IsNotNull(Target);
-
+    Ok();
 
   }
 
@@ -33,15 +33,16 @@ public class TAboutSerializationTest {
       " \"ChangeLog\":\"No news\"" +
       "}";
 
-    TraceBox("Source", Source);
+    Dump(Source);
 
     TAbout? Target = IJson<TAbout>.FromJson(Source);
     Assert.IsNotNull(Target);
-    TraceBox("Target", Target);
+    Dump(Target);
 
     Assert.AreEqual(Target.CurrentVersion.ToString(), "0.0.1");
     Assert.AreEqual(Target.ChangeLog, "No news");
 
+    Ok();
   }
 
 }

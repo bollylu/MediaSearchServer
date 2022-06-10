@@ -17,7 +17,6 @@ public interface ILanguageTextInfos {
   void SetPrincipal(ILanguageTextInfo languageTextInfo);
 
   bool HasMoreThanOnePrincipal();
-  bool HasMoreThanOneTextPerLanguage();
 
   string ToString(int indent);
 }

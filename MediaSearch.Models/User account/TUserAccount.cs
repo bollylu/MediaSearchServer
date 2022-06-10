@@ -23,7 +23,7 @@ public class TUserAccount : IUserAccount, IJson<TUserAccount> {
   #endregion --- IUserAccountSecret --------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TUserAccount() {}
+  public TUserAccount() { }
 
   public TUserAccount(IUserAccountSecret secret) {
     Secret = new TUserAccountSecret(secret);
@@ -31,9 +31,9 @@ public class TUserAccount : IUserAccount, IJson<TUserAccount> {
   }
 
   public TUserAccount(IUserAccount user) {
-    Name= user.Name;
-    Description= user.Description;
-    RemoteIp= user.RemoteIp;
+    Name = user.Name;
+    Description = user.Description;
+    RemoteIp = user.RemoteIp;
     LastSuccessfulLogin = user.LastSuccessfulLogin;
     LastFailedLogin = user.LastFailedLogin;
     Secret = new TUserAccountSecret(user.Secret);

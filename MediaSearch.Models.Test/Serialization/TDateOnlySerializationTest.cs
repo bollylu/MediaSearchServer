@@ -1,6 +1,4 @@
-﻿using BLTools.Text;
-
-namespace MediaSearch.Models.Serialization.Test;
+﻿namespace MediaSearch.Models.Serialization.Test;
 
 [TestClass]
 public class TDateOnlySerializationTest {
@@ -9,11 +7,11 @@ public class TDateOnlySerializationTest {
   public void Serialize() {
 
     DateOnly Source = DateOnly.FromDateTime(DateTime.Parse("2022-02-22 22:22:22"));
-    TraceBox("Source", Source);
+    Dump(Source);
 
     string Target = JsonSerializer.Serialize(Source, IJson.DefaultJsonSerializerOptions);
 
-    TraceBox("Target", Target);
+    Dump(Target);
 
     Assert.IsNotNull(Target);
 
@@ -25,11 +23,11 @@ public class TDateOnlySerializationTest {
 
     string Source = @"""20220222""";
 
-    TraceBox("Source", Source);
+    Dump(Source);
 
     DateOnly? Target = JsonSerializer.Deserialize<DateOnly>(Source, IJson.DefaultJsonSerializerOptions);
     Assert.IsNotNull(Target);
-    TraceBox("Target", Target);
+    Dump(Target);
 
     Assert.AreEqual(DateOnly.Parse("2022-02-22"), Target);
 

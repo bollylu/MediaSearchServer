@@ -6,15 +6,21 @@ public class TLanguageTextInfoConverter : JsonConverter<TLanguageTextInfo>, ILog
   public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TLanguageTextInfoConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
-    return typeToConvert == typeof(TLanguageTextInfo) || typeToConvert.GetInterface(nameof(ILanguageTextInfo)) is not null;
+    if (typeToConvert == typeof(TLanguageTextInfo)) {
+      return true;
+    }
+    if (typeToConvert.IsInterface && typeToConvert.Name == nameof(ILanguageTextInfo)) {
+      return true;
+    }
+    return false;
   }
 
-  public override TLanguageTextInfo Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+  public override TLanguageTextInfo? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
 
     if (reader.TokenType != JsonTokenType.StartObject) {
       throw new JsonException();
     }
-
+    bool HasContent = false;
     TLanguageTextInfo RetVal = new TLanguageTextInfo();
 
     try {
@@ -23,12 +29,17 @@ public class TLanguageTextInfoConverter : JsonConverter<TLanguageTextInfo>, ILog
         JsonTokenType TokenType = reader.TokenType;
 
         if (TokenType == JsonTokenType.EndObject) {
-          Logger.IfDebugMessageExBox($"Converted {nameof(TLanguageTextInfo)}", RetVal);
-          return RetVal;
+          if (HasContent) {
+            Logger.IfDebugMessageExBox($"Converted {nameof(TLanguageTextInfo)}", RetVal);
+            return RetVal;
+          } else {
+            return null;
+          }
         }
 
         if (TokenType == JsonTokenType.PropertyName) {
 
+          HasContent = true;
           string Property = reader.GetString() ?? "";
           reader.Read();
 

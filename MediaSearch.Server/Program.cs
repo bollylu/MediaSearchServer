@@ -51,7 +51,9 @@ public class Program {
     if (LogFile is null) {
       Usage();
     }
+#pragma warning disable CS8604 // Possible null reference argument.
     GlobalSettings.LoggerPool.SetDefaultLogger(new TFileLogger(LogFile) { SeverityLimit = ESeverity.Debug });
+#pragma warning restore CS8604 // Possible null reference argument.
     GlobalSettings.LoggerPool.AddLogger(new TFileLogger<Program>(LogFile) { SeverityLimit = ESeverity.Debug });
     GlobalSettings.LoggerPool.AddLogger(new TFileLogger<TLoginController>(LogFile) { SeverityLimit = ESeverity.Debug });
     GlobalSettings.LoggerPool.AddLogger(new TFileLogger<TMovieController>(LogFile) { SeverityLimit = ESeverity.Debug });

@@ -12,5 +12,5 @@ public interface IMoviesPage : IJson<IMoviesPage> {
   int AvailableMovies { get; set; }
 
   string ToString(int indent);
-  
+
 }

@@ -6,7 +6,13 @@ public class TLanguageTextInfosConverter : JsonConverter<TLanguageTextInfos>, IL
   public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TLanguageTextInfosConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
-    return typeToConvert == typeof(TLanguageTextInfos) || typeToConvert.GetInterface(nameof(ILanguageTextInfos)) is not null;
+    if (typeToConvert == typeof(TLanguageTextInfos)) {
+      return true;
+    }
+    if (typeToConvert.IsInterface && typeToConvert.Name == nameof(ILanguageTextInfos)) {
+      return true;
+    }
+    return false;
   }
 
   public override TLanguageTextInfos Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {

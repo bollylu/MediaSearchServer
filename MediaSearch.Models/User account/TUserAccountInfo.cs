@@ -15,12 +15,12 @@ public class TUserAccountInfo : IUserAccountInfo, IJson<TUserAccountInfo> {
   public DateTime LastFailedLogin { get; set; } = DateTime.MinValue;
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TUserAccountInfo() {}
+  public TUserAccountInfo() { }
 
   public TUserAccountInfo(IUserAccount user) {
-    Name= user.Name;
-    Description= user.Description;
-    RemoteIp= user.RemoteIp;
+    Name = user.Name;
+    Description = user.Description;
+    RemoteIp = user.RemoteIp;
     LastSuccessfulLogin = user.LastSuccessfulLogin;
     LastFailedLogin = user.LastFailedLogin;
   }
@@ -45,4 +45,3 @@ public class TUserAccountInfo : IUserAccountInfo, IJson<TUserAccountInfo> {
     return RetVal.ToString();
   }
 }
-   

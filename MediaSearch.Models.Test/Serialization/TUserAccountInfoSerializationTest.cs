@@ -1,7 +1,4 @@
 ﻿using System.Net;
-using System.Xml.Linq;
-
-using BLTools.Text;
 
 namespace MediaSearch.Models.Serialization.Test;
 
@@ -18,15 +15,14 @@ public class TUserAccountInfoSerializationTest {
       LastSuccessfulLogin = DateTime.Now.AddDays(-1),
       LastFailedLogin = DateTime.Now.AddDays(-1).AddMinutes(-10)
     };
-    TraceBox("Source", Source);
+    Dump(Source);
 
     string Target = Source.ToJson();
-
-    TraceBox("Target", Target);
-
     Assert.IsNotNull(Target);
 
+    Dump(Target);
 
+    Ok();
   }
 
   [TestMethod]
@@ -42,14 +38,15 @@ public class TUserAccountInfoSerializationTest {
   }                                              
 ";
 
-    TraceBox("Source", Source);
+    Dump(Source);
 
     TUserAccountInfo? Target = IJson<TUserAccountInfo>.FromJson(Source);
     Assert.IsNotNull(Target);
-    TraceBox("Target", Target);
+    Dump(Target);
 
-    Assert.AreEqual("192.168.10.11",Target.RemoteIp.ToString());
+    Assert.AreEqual("192.168.10.11", Target.RemoteIp.ToString());
 
+    Ok();
   }
 
 }

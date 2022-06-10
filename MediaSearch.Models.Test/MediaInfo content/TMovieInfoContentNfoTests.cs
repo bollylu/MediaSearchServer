@@ -14,7 +14,7 @@ public class TMovieInfoContentNfoTests {
     Assert.IsInstanceOfType(Target, typeof(IToXml));
     Assert.IsNotNull(Target);
 
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
+    Dump(Target);
   }
 
   [TestMethod]
@@ -31,7 +31,7 @@ public class TMovieInfoContentNfoTests {
 
     Assert.IsNotNull(Target);
 
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
+    Dump(Target);
   }
 
   [TestMethod]
@@ -45,11 +45,12 @@ public class TMovieInfoContentNfoTests {
     Source.Genres.Add("Guerre");
     Source.Genres.Add("WW2");
     Source.Genres.Add("Comédie");
+    Dump(Source);
 
     XElement Target = Source.ToXml();
+    Dump(Target);
 
-    TraceBox($"{nameof(Source)} : {Source.GetType().Name}", Source.ToString());
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
+    Ok();
   }
 
   [TestMethod]
@@ -70,11 +71,12 @@ public class TMovieInfoContentNfoTests {
     XDocument Source = XDocument.Parse(RawSource);
     Assert.IsNotNull(Source);
     Assert.IsNotNull(Source.Root);
+    Dump(Source);
 
     TMovieInfoContentNfo Target = new();
     Target.FromXml(Source.Root);
+    Dump(Target);
 
-    TraceBox($"{nameof(Source)} : {Source.GetType().Name}", Source.ToString());
-    TraceBox($"{nameof(Target)} : {Target.GetType().Name}", Target.ToString());
+    Ok();
   }
 }

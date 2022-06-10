@@ -1,7 +1,5 @@
 ﻿using System.Net;
 
-using BLTools.Text;
-
 namespace MediaSearch.Models.Serialization.Test;
 
 [TestClass]
@@ -11,13 +9,15 @@ public class TIPAddressSerializationTest {
   public void Serialize() {
 
     IPAddress Source = IPAddress.Parse("192.168.132.160");
-    TraceBox("Source", Source);
+    Dump(Source);
 
     string Target = JsonSerializer.Serialize(Source, IJson.DefaultJsonSerializerOptions);
 
-    TraceBox("Target", Target);
+    Dump(Target);
 
     Assert.IsNotNull(Target);
+
+    Ok();
   }
 
   [TestMethod]
@@ -25,13 +25,15 @@ public class TIPAddressSerializationTest {
 
     string Source = @"""192.168.132.160""";
 
-    TraceBox("Source", Source);
+    Dump(Source);
 
     IPAddress? Target = JsonSerializer.Deserialize<IPAddress>(Source, IJson.DefaultJsonSerializerOptions);
     Assert.IsNotNull(Target);
-    TraceBox("Target", Target);
+    Dump(Target);
 
     Assert.AreEqual(IPAddress.Parse("192.168.132.160"), Target);
+
+    Ok();
 
   }
 

@@ -30,7 +30,15 @@ public class TLanguageTextInfos : ILanguageTextInfos, ILoggable {
     try {
       _LockData.EnterWriteLock();
       languageTextInfo.IsPrincipal = GetPrincipal() is null;
-      _Items.Add(languageTextInfo);
+
+      ILanguageTextInfo? Existing = _Items.FirstOrDefault(l => l.Language == languageTextInfo.Language);
+      if (Existing is null) {
+        _Items.Add(languageTextInfo);
+      } else {
+        Logger.LogErrorBox("Unable to add text info : Language already exists", languageTextInfo);
+        return;
+      }
+
       if (HasMoreThanOnePrincipal()) {
         Logger.LogWarningBox($"More than one {nameof(ILanguageTextInfo)} is principal", languageTextInfo);
       }
@@ -173,10 +181,6 @@ public class TLanguageTextInfos : ILanguageTextInfos, ILoggable {
 
   public bool HasMoreThanOnePrincipal() {
     return _Items.Count(x => x.IsPrincipal) > 1;
-  }
-
-  public bool HasMoreThanOneTextPerLanguage() {
-    return _Items.GroupBy(x => x.Language).Where(x => x.Count() > 1).Any();
   }
 
 }

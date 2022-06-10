@@ -1,6 +1,4 @@
-﻿using BLTools.Text;
-
-namespace MediaSearch.Models.Serialization.Test;
+﻿namespace MediaSearch.Models.Serialization.Test;
 
 [TestClass]
 public class TFilterSerializationTest {
@@ -18,17 +16,17 @@ public class TFilterSerializationTest {
     Source.GroupMemberships.Add("Group 1");
     Source.GroupMemberships.Add("Group 2");
 
-    TraceBox("Source", Source);
+    Dump(Source);
 
     string Target = Source.ToJson();
     Assert.IsNotNull(Target);
-    TraceBox("Target", Target);
+    Dump(Target);
 
     Assert.IsTrue(Target.Contains("\"Keywords\": \"maman tous\""));
     Assert.IsTrue(Target.Contains("\"KeywordsSelection\": \"All\""));
     Assert.IsTrue(Target.Contains("\"Tags\": \"Comédie Famille\""));
     Assert.IsTrue(Target.Contains("\"TagSelection\": \"Any\""));
-    
+
   }
 
   [TestMethod]
@@ -43,14 +41,17 @@ public class TFilterSerializationTest {
     };
     Source.GroupMemberships.Add("Group 1");
     Source.GroupMemberships.Add("Group 2");
+    Dump(Source);
+
     string JsonSource = Source.ToJson();
-    TraceBox("Source", JsonSource);
+    Dump(JsonSource);
 
     IFilter? Target = IJson<TFilter>.FromJson(JsonSource);
     Assert.IsNotNull(Target);
+    Dump(Target);
 
-    TraceBox("Target", Target);
     Assert.AreEqual(2, Target.GroupMemberships.Count);
+    Ok();
   }
 
 }
