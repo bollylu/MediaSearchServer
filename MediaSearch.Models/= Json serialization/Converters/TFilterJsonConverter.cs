@@ -6,7 +6,9 @@ public class TFilterJsonConverter : JsonConverter<TFilter>, ILoggable {
   public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TFilterJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
-    return typeToConvert == typeof(TFilter);
+    if (typeToConvert == typeof(TFilter)) { return true; }
+    if (typeToConvert == typeof(IFilter)) { return true; }
+    return false;
   }
 
   public override TFilter Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {

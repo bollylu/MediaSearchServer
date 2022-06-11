@@ -2,7 +2,7 @@
 
 namespace MediaSearch.Models;
 
-public class TUserToken : IUserToken, IJson<TUserToken> {
+public class TUserToken : IUserToken {
   public const int SESSION_DURATION_IN_MIN = 15;
   public const string TOKEN_NONE = "(none)";
 

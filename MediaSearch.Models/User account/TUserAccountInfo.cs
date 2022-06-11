@@ -2,7 +2,7 @@
 
 namespace MediaSearch.Models;
 
-public class TUserAccountInfo : IUserAccountInfo, IJson<TUserAccountInfo> {
+public class TUserAccountInfo : IUserAccountInfo {
 
   public string Name { get; set; } = "";
 

@@ -8,8 +8,6 @@ public class TMovieInfoFileMetaTests {
     TMovieInfoFileMeta Target = new();
 
     Assert.IsNotNull(Target);
-    Assert.IsInstanceOfType(Target, typeof(IJson));
-
     Dump(Target);
   }
 

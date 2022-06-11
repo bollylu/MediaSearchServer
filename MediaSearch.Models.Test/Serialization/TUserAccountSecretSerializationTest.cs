@@ -17,7 +17,7 @@ public class TUserAccountSecretSerializationTest {
     };
     Dump(Source);
 
-    string Target = Source.ToJson();
+    string Target = IJson.ToJson(Source);
 
     Assert.IsNotNull(Target);
 
@@ -43,7 +43,7 @@ public class TUserAccountSecretSerializationTest {
 
     Dump(Source);
 
-    TUserAccountSecret? Target = IJson<TUserAccountSecret>.FromJson(Source);
+    TUserAccountSecret? Target = IJson.FromJson<TUserAccountSecret>(Source);
     Assert.IsNotNull(Target);
     Dump(Target);
 

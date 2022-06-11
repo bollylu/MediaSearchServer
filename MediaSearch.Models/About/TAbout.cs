@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public class TAbout : IAbout, IJson<TAbout>, ILoggable {
+public class TAbout : IAbout, ILoggable {
 
   public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TAbout>();
 

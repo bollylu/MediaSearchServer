@@ -7,7 +7,9 @@ public class TMoviesPageJsonConverter : JsonConverter<TMoviesPage>, ILoggable {
   public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMoviesPageJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
-    return typeToConvert == typeof(TMoviesPage);
+    if (typeToConvert == typeof(TMoviesPage)) { return true; }
+    if (typeToConvert == typeof(IMoviesPage)) { return true; }
+    return false;
   }
 
   public override TMoviesPage Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {

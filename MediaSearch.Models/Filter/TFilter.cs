@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public class TFilter : IFilter, IJson<TFilter>, IEquatable<TFilter> {
+public class TFilter : IFilter, IEquatable<TFilter> {
 
   public const int DEFAULT_PAGE_SIZE = 20;
   public const int DEFAULT_OUTPUT_DATE_MIN = 1900;

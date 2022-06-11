@@ -18,7 +18,7 @@ public class TFilterSerializationTest {
 
     Dump(Source);
 
-    string Target = Source.ToJson();
+    string Target = IJson.ToJson(Source);
     Assert.IsNotNull(Target);
     Dump(Target);
 
@@ -43,10 +43,10 @@ public class TFilterSerializationTest {
     Source.GroupMemberships.Add("Group 2");
     Dump(Source);
 
-    string JsonSource = Source.ToJson();
+    string JsonSource = IJson.ToJson(Source);
     Dump(JsonSource);
 
-    IFilter? Target = IJson<TFilter>.FromJson(JsonSource);
+    IFilter? Target = IJson.FromJson<TFilter>(JsonSource);
     Assert.IsNotNull(Target);
     Dump(Target);
 

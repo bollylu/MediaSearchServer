@@ -1,7 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
 public class TMovieInfoContentMeta : IMediaInfoContent,
-                                     IJson<TMovieInfoContentMeta>,
                                      ILoggable,
                                      IMovieInfoContent,
                                      IMediaInfoContentTitles {

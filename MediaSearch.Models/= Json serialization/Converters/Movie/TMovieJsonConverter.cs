@@ -7,7 +7,10 @@ public class TMovieJsonConverter : JsonConverter<TMovie>, ILoggable {
   public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMovieJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
-    return typeToConvert == typeof(TMovie) || typeToConvert.GetInterface(nameof(IMovie)) is not null;
+    if (typeToConvert == typeof(TMovie)) { return true; }
+    if (typeToConvert == typeof(IMovie)) { return true; }
+    if (typeToConvert.IsAssignableFrom(typeof(IMovie))) { return true; }
+    return false;
   }
 
   public override TMovie Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
@@ -34,7 +37,7 @@ public class TMovieJsonConverter : JsonConverter<TMovie>, ILoggable {
 
           switch (Property) {
 
-            case nameof(TMovie.ID):
+            case nameof(IMovie.ID):
             case nameof(IMovie.MediaType):
               reader.GetString();
               break;

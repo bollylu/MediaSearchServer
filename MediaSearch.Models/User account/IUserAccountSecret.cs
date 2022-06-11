@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public interface IUserAccountSecret : IJson<IUserAccountSecret> {
+public interface IUserAccountSecret {
 
   string Name { get; set; }
 

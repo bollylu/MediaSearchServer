@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Database;
 
-public class TMSTableHeader : IMSTableHeader, IJson<TMSTableHeader> {
+public class TMSTableHeader : IMSTableHeader {
   public string Name { get; set; } = "";
   public string Description { get; set; } = "";
   public DateTime LastUpdate { get; set; } = DateTime.MinValue;
@@ -44,7 +44,7 @@ public class TMSTableHeader : IMSTableHeader, IJson<TMSTableHeader> {
 
 
 
-public class TMSTableHeader<RECORD> : TMSTableHeader, IMSTableHeader<RECORD>, IJson<TMSTableHeader<RECORD>> where RECORD : IID<string> {
+public class TMSTableHeader<RECORD> : TMSTableHeader, IMSTableHeader<RECORD> where RECORD : IID<string> {
 
   public override Type TableType => typeof(RECORD);
 

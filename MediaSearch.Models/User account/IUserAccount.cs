@@ -2,7 +2,7 @@
 
 namespace MediaSearch.Models;
 
-public interface IUserAccount : IJson<IUserAccount> {
+public interface IUserAccount {
 
   string Name { get; set; }
   string Description { get; set; }

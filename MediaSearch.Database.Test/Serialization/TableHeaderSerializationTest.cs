@@ -28,7 +28,7 @@ public class TableHeaderSerializationTests {
     Options.Converters.Add(new TMSTableHeaderJsonConverter());
     Options.Converters.Add(new TMediaSourceJsonConverter());
 
-    string Target = Source.ToJson(Options);
+    string Target = IJson.ToJson(Source, Options);
     Assert.IsNotNull(Target);
 
     Dump(Target);
@@ -51,12 +51,12 @@ public class TableHeaderSerializationTests {
     Options.Converters.Add(new TMSTableHeaderJsonConverter());
     Options.Converters.Add(new TMediaSourceJsonConverter());
 
-    string Source = Header.ToJson(Options);
+    string Source = IJson.ToJson(Header, Options);
     Assert.IsNotNull(Source);
 
     Dump(Source);
 
-    IMSTableHeader? Target = IJson<TMSTableHeader>.FromJson(Source, Options);
+    IMSTableHeader? Target = IJson.FromJson<TMSTableHeader>(Source, Options);
 
     Assert.IsNotNull(Target);
     Dump(Target);

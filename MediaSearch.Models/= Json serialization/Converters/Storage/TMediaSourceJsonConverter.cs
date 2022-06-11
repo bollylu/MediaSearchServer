@@ -6,7 +6,9 @@ public class TMediaSourceJsonConverter : JsonConverter<TMediaSource>, ILoggable 
   public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMediaSourceJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
-    return typeToConvert == typeof(TMediaSource);
+    if (typeToConvert == typeof(TMediaSource)) { return true; }
+    if (typeToConvert == typeof(IMediaSource)) { return true; }
+    return false;
   }
 
   public override TMediaSource Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {

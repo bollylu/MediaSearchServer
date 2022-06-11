@@ -1,5 +1,5 @@
 ﻿namespace MediaSearch.Models;
-public class TUserAccountSecret : IUserAccountSecret, IJson<TUserAccountSecret> {
+public class TUserAccountSecret : IUserAccountSecret {
 
   public string Name { get; set; } = "";
 

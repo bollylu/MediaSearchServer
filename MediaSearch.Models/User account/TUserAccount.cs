@@ -2,7 +2,7 @@
 
 namespace MediaSearch.Models;
 
-public class TUserAccount : IUserAccount, IJson<TUserAccount> {
+public class TUserAccount : IUserAccount {
 
   #region --- IName --------------------------------------------
   public string Name { get; set; } = "";

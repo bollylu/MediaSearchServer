@@ -1,73 +1,56 @@
-﻿namespace MediaSearch.Database.Test;
+﻿using MediaSearch.Database;
+
+namespace MediaSearch.Test.Database;
 
 [TestClass]
 public class TMSRecordTests {
-  private static IMSDatabase CreateTestDatabase() {
-    IMSDatabase Database = new TMSDatabaseJson() { RootPath = Path.GetTempPath(), Name = $"{Random.Shared.Next()}" };
-    IMSTable<IMovie> MovieTable = new TMSTable<IMovie>() { Name = "Movies" };
-
-    IMovie Record1 = new TMovie("Wargames", 1986);
-    Record1.Descriptions.Add(ELanguage.French, "Un gamin joue avec un ordi");
-
-    IMovie Record2 = new TMovie("Jeux interdits", 1959);
-    Record2.Descriptions.Add(ELanguage.French, "Des enfants et des morts");
-
-    IMovie Record3 = new TMovie("Top gun", 1988);
-    Record3.Descriptions.Add(ELanguage.French, "Des pilotes et des avions");
-
-    IMovie Record4 = new TMovie("Le hobbit", 2012);
-    Record4.Descriptions.Add(ELanguage.French, "Un monde de fantaisie");
-
-    Assert.IsTrue(Database.Create());
-    Assert.IsTrue(Database.Open());
-
-    Assert.IsTrue(Database.TableCreate(MovieTable));
-
-    MovieTable.Add(Record1);
-    MovieTable.Add(Record2);
-    MovieTable.Add(Record3);
-    MovieTable.Add(Record4);
-
-    Database.Close();
-
-    return Database;
-  }
 
   [TestMethod]
   public void Instanciate_TMSRecord() {
-    Message("Create Record");
+    Message("Create IMSRecord");
     IMSRecord Target = new TMovie();
     Dump(Target);
+    Assert.IsNotNull(Target);
+    Ok();
   }
 
   [TestMethod]
   public void TMSRecord_Write_JsonDatabase() {
     IMSDatabase Database = new TMSDatabaseJson() { RootPath = Path.GetTempPath(), Name = $"{Random.Shared.Next()}" };
     IMSTable<IMovie> MovieTable = new TMSTable<IMovie>() { Name = "Movies" };
-    IMovie Record = new TMovie();
 
     Message("Creating database Json");
     Assert.IsTrue(Database.Create());
     Assert.IsTrue(Database.Exists());
 
-    Message("Opening database Json");
-    Assert.IsTrue(Database.Open());
-    Dump(Database);
+    try {
+      Message("Opening database Json");
+      Assert.IsTrue(Database.Open());
+      Dump(Database);
 
-    Message("Creating table");
-    Assert.IsTrue(Database.TableCreate(MovieTable));
-    Dump(MovieTable);
+      Message("Creating table");
+      Assert.IsTrue(Database.TableCreate(MovieTable));
+      Dump(MovieTable);
 
-    DumpWithMessage("Write record", Record);
-    Database.Write(MovieTable, Record);
+      IMSRecord Record = IMSRecordSource.GetMovieRecord("Hello Dolly", "Nice musical", 1956);
+      Message("Write record");
+      Dump(Record);
+      Database.Write(MovieTable, Record);
 
-    DumpWithMessage("Table content", Directory.GetFiles(Path.Join(Database.DatabaseFullName, MovieTable.Name), "*.*"));
+      Dump(MovieTable);
 
-    DumpWithMessage("Raw record", File.ReadAllText(Path.Join(Database.DatabaseFullName, MovieTable.Name, $"{Record.ID}.json")));
+      DumpWithMessage("Table content", Directory.GetFiles(Path.Join(Database.DatabaseFullName, MovieTable.Name), "*.*"));
 
-    Message("Closing and cleanup");
-    Database.Close();
-    Database.Remove();
+      string RawRecord = File.ReadAllText(Path.Join(Database.DatabaseFullName, MovieTable.Name, $"{Record.ID}.json"));
+      Dump(RawRecord);
+      Assert.AreNotEqual("{}", RawRecord);
+    } finally {
+      Message("Closing and cleanup");
+      Database.Close();
+      Database.Remove();
+    }
+
+    Ok();
   }
 
   [TestMethod]
@@ -102,15 +85,21 @@ public class TMSRecordTests {
 
   [TestMethod]
   public void TMSRecord_Dump_JsonDatabase() {
-    IMSDatabase Database = CreateTestDatabase();
-    DumpWithMessage("Raw database", Database.Dump());
+    IMSDatabase Database = IMSDatabaseSource.CreateTestDatabase();
+    Dump(Database);
 
+    Message("Verify that database exists");
+    Assert.IsTrue(Database.Exists());
+
+    Message("Remove database");
     Database.Remove();
+
+    Ok();
   }
 
   [TestMethod]
   public void TMSRecord_ReadRecord_JsonDatabase() {
-    IMSDatabase Database = CreateTestDatabase();
+    IMSDatabase Database = IMSDatabaseSource.CreateTestDatabase();
     Dump(Database);
 
     DumpWithMessage("Raw database", Database.Dump());

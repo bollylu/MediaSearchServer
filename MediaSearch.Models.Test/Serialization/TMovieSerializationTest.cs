@@ -27,7 +27,7 @@ public class TMovieSerializationTest {
 
     Dump(Source);
 
-    string Target = Source.ToJson();
+    string Target = IJson.ToJson(Source);
 
     Assert.IsNotNull(Target);
     Dump(Target);
@@ -54,10 +54,10 @@ public class TMovieSerializationTest {
 
     Dump(Source);
 
-    string JsonSource = Source.ToJson();
+    string JsonSource = IJson.ToJson(Source);
     Dump(JsonSource);
 
-    IMovie? Target = IJson<TMovie>.FromJson(JsonSource);
+    IMovie? Target = IJson.FromJson<TMovie>(JsonSource);
 
     Assert.IsNotNull(Target);
     Dump(Target);

@@ -21,7 +21,7 @@ public class TMovieInfoContentMetaSerializationTest {
 
     Dump(Source);
 
-    string Target = ((IJson)Source).ToJson();
+    string Target = IJson.ToJson(Source);
     Assert.IsNotNull(Target);
     Dump(Target);
 
@@ -66,7 +66,7 @@ public class TMovieInfoContentMetaSerializationTest {
 
     Dump(Source);
 
-    TMovieInfoContentMeta? Target = IJson<TMovieInfoContentMeta>.FromJson(Source);
+    TMovieInfoContentMeta? Target = IJson.FromJson<TMovieInfoContentMeta>(Source);
     Assert.IsNotNull(Target);
 
     Dump(Target);

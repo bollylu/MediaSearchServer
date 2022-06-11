@@ -25,7 +25,7 @@ public class TMoviesPageSerializationTest {
 
     Dump(Source);
 
-    string Target = Source.ToJson();
+    string Target = IJson.ToJson(Source);
 
     Assert.IsNotNull(Target);
     Dump(Target);
@@ -50,10 +50,10 @@ public class TMoviesPageSerializationTest {
     };
     MoviesPage.Movies.AddRange(Movies);
 
-    string Source = MoviesPage.ToJson();
+    string Source = IJson.ToJson(MoviesPage);
     Dump(Source);
 
-    IMoviesPage? Target = IJson<TMoviesPage>.FromJson(Source);
+    IMoviesPage? Target = IJson.FromJson<TMoviesPage>(Source);
     Assert.IsNotNull(Target);
     Dump(Target);
     Ok();

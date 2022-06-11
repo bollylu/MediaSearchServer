@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public class TMoviesPage : IMoviesPage, IJson<TMoviesPage> {
+public class TMoviesPage : IMoviesPage {
 
   public const int DEFAULT_PAGE_SIZE = 20;
 

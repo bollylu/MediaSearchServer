@@ -6,7 +6,9 @@ public class TAboutJsonConverter : JsonConverter<TAbout>, ILoggable {
   public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TAboutJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
-    return typeToConvert == typeof(TAbout);
+    if (typeToConvert == typeof(TAbout)) { return true; }
+    if (typeToConvert == typeof(IAbout)) { return true; }
+    return false;
   }
 
   public override TAbout Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {

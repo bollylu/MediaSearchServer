@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public class TMovieInfoFileMeta : IMediaInfoFile, ILoggable, IJson<TMovieInfoFileMeta> {
+public class TMovieInfoFileMeta : IMediaInfoFile, ILoggable {
 
   public const string DEFAULT_FILENAME = "media.msmeta";
   public const int TIMEOUT_IN_MS = 5000;
@@ -84,7 +84,7 @@ public class TMovieInfoFileMeta : IMediaInfoFile, ILoggable, IJson<TMovieInfoFil
   public bool Read() {
     try {
       RawContent = File.ReadAllText(FullStorageName);
-      TMovieInfoFileMeta? Converted = IJson<TMovieInfoFileMeta>.FromJson(RawContent);
+      TMovieInfoFileMeta? Converted = IJson.FromJson<TMovieInfoFileMeta>(RawContent);
       if (Converted is null) {
         Logger.LogErrorBox("Unable to deserialize Json", RawContent);
         return false;
@@ -102,7 +102,7 @@ public class TMovieInfoFileMeta : IMediaInfoFile, ILoggable, IJson<TMovieInfoFil
   public async Task<bool> ReadAsync(CancellationToken token) {
     try {
       RawContent = await File.ReadAllTextAsync(FullStorageName, token).ConfigureAwait(false);
-      TMovieInfoFileMeta? Converted = IJson<TMovieInfoFileMeta>.FromJson(RawContent);
+      TMovieInfoFileMeta? Converted = IJson.FromJson<TMovieInfoFileMeta>(RawContent);
       if (Converted is null) {
         Logger.LogErrorBox("Unable to deserialize Json", RawContent);
         return false;
@@ -119,7 +119,7 @@ public class TMovieInfoFileMeta : IMediaInfoFile, ILoggable, IJson<TMovieInfoFil
 
   public bool Write() {
     try {
-      RawContent = ((IJson)this).ToJson();
+      RawContent = IJson.ToJson(this);
       Logger.IfDebugMessageExBox($"Writing content to {FullStorageName}", RawContent);
       File.WriteAllText(FullStorageName, RawContent);
       return true;
@@ -131,7 +131,7 @@ public class TMovieInfoFileMeta : IMediaInfoFile, ILoggable, IJson<TMovieInfoFil
 
   public async Task<bool> WriteAsync(CancellationToken token) {
     try {
-      RawContent = ((IJson)this).ToJson();
+      RawContent = IJson.ToJson(this);
       Logger.IfDebugMessageExBox($"Writing content to {FullStorageName}", RawContent);
       await File.WriteAllTextAsync(FullStorageName, RawContent, token).ConfigureAwait(false);
       return true;
@@ -143,7 +143,7 @@ public class TMovieInfoFileMeta : IMediaInfoFile, ILoggable, IJson<TMovieInfoFil
 
   public bool Export(string newFilename) {
     try {
-      RawContent = ((IJson)this).ToJson();
+      RawContent = IJson.ToJson(this);
       Logger.IfDebugMessageExBox($"Writing content to {newFilename}", RawContent);
       File.WriteAllText(newFilename, RawContent);
       return true;
@@ -155,7 +155,7 @@ public class TMovieInfoFileMeta : IMediaInfoFile, ILoggable, IJson<TMovieInfoFil
 
   public async Task<bool> ExportAsync(string newFilename, CancellationToken token) {
     try {
-      RawContent = ((IJson)this).ToJson();
+      RawContent = IJson.ToJson(this);
       Logger.IfDebugMessageExBox($"Writing content to {newFilename}", RawContent);
       await File.WriteAllTextAsync(newFilename, RawContent, token).ConfigureAwait(false);
       return true;

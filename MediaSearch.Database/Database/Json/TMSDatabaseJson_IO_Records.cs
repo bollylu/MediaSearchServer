@@ -12,13 +12,8 @@ public partial class TMSDatabaseJson {
       return false;
     }
 
-    if (record is not IJson JsonRecord) {
-      Logger.LogErrorBox($"Unable to write record in table {table.Name.WithQuotes()} : Record is not IJson", record);
-      return false;
-    }
-
     try {
-      string RawData = JsonRecord.ToJson(SerializerOptions);
+      string RawData = IJson.ToJson(record, SerializerOptions);
       string RecordName = Path.Join(DatabaseFullName, table.Name, $"{record.ID}.json");
       File.WriteAllText(RecordName, RawData);
       return true;
@@ -41,7 +36,7 @@ public partial class TMSDatabaseJson {
     try {
       string RecordName = Path.Join(DatabaseFullName, table.Name, $"{key}.json");
       string RawContent = File.ReadAllText(RecordName);
-      RECORD? RetVal = IJson<RECORD>.FromJson(RawContent, SerializerOptions);
+      RECORD? RetVal = IJson.FromJson<RECORD>(RawContent, SerializerOptions);
 
       return RetVal;
     } catch (Exception ex) {

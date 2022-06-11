@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public interface IFilter : IJson<IFilter>, IFilterDaysBack, IFilterKeywords, IFilterTags, IFilterOutputDate, IFilterGroup {
+public interface IFilter : IFilterDaysBack, IFilterKeywords, IFilterTags, IFilterOutputDate, IFilterGroup {
 
 
   int PageSize { get; }

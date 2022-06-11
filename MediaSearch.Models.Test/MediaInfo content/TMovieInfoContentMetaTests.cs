@@ -6,8 +6,6 @@ public class TMovieInfoContentMetaTests {
   [TestMethod]
   public void Instanciate_TMovieInfoContentMeta() {
     TMovieInfoContentMeta Target = new();
-
-    Assert.IsInstanceOfType(Target, typeof(IJson));
     Assert.IsNotNull(Target);
 
     Dump(Target);
@@ -54,7 +52,7 @@ public class TMovieInfoContentMetaTests {
     Source.Genres.Add("Comédie");
     Dump(Source);
 
-    string Target = ((IJson)Source).ToJson();
+    string Target = IJson.ToJson(Source);
     Dump(Target);
 
     Ok();
@@ -97,7 +95,7 @@ public class TMovieInfoContentMetaTests {
     Assert.IsNotNull(Source);
     Dump(Source);
 
-    TMovieInfoContentMeta? Target = IJson<TMovieInfoContentMeta>.FromJson(Source);
+    TMovieInfoContentMeta? Target = IJson.FromJson<TMovieInfoContentMeta>(Source);
     Assert.IsNotNull(Target);
     Dump(Target);
   }

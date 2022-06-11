@@ -5,7 +5,7 @@ public class TAboutSerializationTest {
 
   [TestMethod]
   public void Serialize() {
-
+    Message("Create new TAbout");
     IAbout Source = new TAbout() {
       Name = "LibTest",
       Description = "Test library",
@@ -14,11 +14,13 @@ public class TAboutSerializationTest {
     };
     Dump(Source);
 
-    string Target = Source.ToJson();
+    string Target = IJson.ToJson(Source);
 
     Dump(Target);
 
     Assert.IsNotNull(Target);
+    Assert.IsTrue(Target.Contains("\"Name\": \"LibTest\","));
+
     Ok();
 
   }
@@ -35,7 +37,7 @@ public class TAboutSerializationTest {
 
     Dump(Source);
 
-    TAbout? Target = IJson<TAbout>.FromJson(Source);
+    TAbout? Target = IJson.FromJson<TAbout>(Source);
     Assert.IsNotNull(Target);
     Dump(Target);
 

@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Database;
 
-public interface IMSTableHeader : IJson<IMSTableHeader> {
+public interface IMSTableHeader {
   /// <summary>
   /// The name of the table
   /// </summary>
