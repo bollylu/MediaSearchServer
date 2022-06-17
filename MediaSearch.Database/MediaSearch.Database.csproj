@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="Table\AMSTable.cs" />
     <Compile Include="Table\IMSTable.cs" />
     <Compile Include="Table\TMSTable.cs" />
   </ItemGroup>

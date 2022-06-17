@@ -2,8 +2,15 @@
 
 public partial class TMSDatabaseMemory {
 
-  public override string GetSchema() {
-    return "";
+  public override bool BuildSchema() {
+    return true;
+  }
+
+  public override bool ReadSchema() {
+    return true;
+  }
+  public override bool SaveSchema() {
+    return true;
   }
 
 }

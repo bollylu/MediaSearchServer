@@ -12,10 +12,7 @@ public partial interface IMSDatabase : IDisposable {
   /// </summary>
   string Description { get; set; }
 
-  /// <summary>
-  /// The full name of the database, including rootpath and name
-  /// </summary>
-  string DatabaseFullName { get; }
+
 
   /// <summary>
   /// Transforms the database into a string with indentation for inner values
@@ -34,7 +31,7 @@ public partial interface IMSDatabase : IDisposable {
   /// <returns>A string describing the raw content</returns>
   string Dump();
 
-  
-  
+
+
 
 }

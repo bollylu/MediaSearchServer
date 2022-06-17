@@ -33,4 +33,7 @@ public abstract partial class AMSDatabase {
     return RetVal.ToString();
   }
 
+  public abstract IEnumerable<IMSTable> TableList();
+  public abstract IEnumerable<IMSTable> TableSystemList();
+
 }

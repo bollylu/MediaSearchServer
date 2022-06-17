@@ -23,7 +23,7 @@ public partial class TMSDatabaseMemory {
       return null;
     }
 
-    IMSTableHeader? Header = new TMSTableHeader();
+    IMSTableHeader? Header = TMSTableHeader.Create(table.Name, typeof(IMSRecord));
     return Header;
 
   }
@@ -32,7 +32,7 @@ public partial class TMSDatabaseMemory {
       return null;
     }
 
-    IMSTableHeader? Header = new TMSTableHeader();
+    IMSTableHeader? Header = TMSTableHeader.Create(name, typeof(IMSRecord));
     return Header;
   }
 
@@ -47,6 +47,14 @@ public partial class TMSDatabaseMemory {
   }
 
   public override bool TableReindex(string table) {
+    throw new NotImplementedException();
+  }
+
+  public override IEnumerable<IMSTable> TableList() {
+    throw new NotImplementedException();
+  }
+
+  public override IEnumerable<IMSTable> TableSystemList() {
     throw new NotImplementedException();
   }
 }

@@ -62,5 +62,10 @@ public static class GlobalSettings {
   }
   private static TAbout? _ExecutingAbout;
 
+  public static string AssemblyName => _AssemblyName ??= $"{nameof(MediaSearch)}.{nameof(Models)}";
+  private static string? _AssemblyName;
 
+  public static Type? GetType(string typeName) {
+    return Type.GetType($"{AssemblyName}.{typeName},{AssemblyName}");
+  }
 }

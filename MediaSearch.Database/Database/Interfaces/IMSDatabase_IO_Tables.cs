@@ -15,7 +15,7 @@ public partial interface IMSDatabase {
   /// <param name="table">The table to test</param>
   /// <returns><see langword="true"/> if ok, <see langword="false"/> otherwise</returns>
   bool TableExists(IMSTable table);
-  
+
   /// <summary>
   /// Test the existence of a table in storage
   /// </summary>
@@ -29,7 +29,7 @@ public partial interface IMSDatabase {
   /// <param name="table">The table to test</param>
   /// <returns><see langword="true"/> if ok, <see langword="false"/> otherwise</returns>
   bool TableCheck(IMSTable table);
-  
+
   /// <summary>
   /// Test the integrity of a table in storage
   /// </summary>
@@ -84,5 +84,16 @@ public partial interface IMSDatabase {
   /// <returns>A string describing the raw content</returns>
   string TableDump(IMSTable table);
 
+  /// <summary>
+  /// List all the user tables from the database
+  /// </summary>
+  /// <returns></returns>
+  IEnumerable<IMSTable> TableList();
+
+  /// <summary>
+  /// List all the system tables from the database
+  /// </summary>
+  /// <returns></returns>
+  IEnumerable<IMSTable> TableSystemList();
 
 }

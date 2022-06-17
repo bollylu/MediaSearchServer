@@ -1,11 +1,7 @@
-﻿using System.Text;
+﻿namespace MediaSearch.Database;
 
-using MediaSearch.Models;
-
-namespace MediaSearch.Database;
-
-public class TMSIndex<RECORD, INDEX_KEY, INDEX_VALUE> : IMSIndex<RECORD, INDEX_KEY, INDEX_VALUE> 
-  where RECORD : IID<string>
+public class TMSIndex<RECORD, INDEX_KEY, INDEX_VALUE> : IMSIndex<RECORD, INDEX_KEY, INDEX_VALUE>
+  where RECORD : IMSRecord
   where INDEX_KEY : notnull
   where INDEX_VALUE : notnull {
 
@@ -27,7 +23,7 @@ public class TMSIndex<RECORD, INDEX_KEY, INDEX_VALUE> : IMSIndex<RECORD, INDEX_K
   /// <returns>A string representing the table</returns>
   public string ToString(int indent) {
     StringBuilder RetVal = new();
-    RetVal.AppendIndent($"- {nameof(IndexType)} = {this.GetType().GetGenericName()}")
+    RetVal.AppendIndent($"- {nameof(IndexType)} = {this.GetType().GetNameEx()}")
           .AppendIndent($"- {nameof(LastUpdate)} = {LastUpdate}")
           .AppendIndent($"- {nameof(IndexedValues)} = {IndexedValues.Count} value(s)");
     return RetVal.ToString();
@@ -35,7 +31,7 @@ public class TMSIndex<RECORD, INDEX_KEY, INDEX_VALUE> : IMSIndex<RECORD, INDEX_K
 
   public override string ToString() {
     return ToString(0);
-  } 
+  }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
   public List<KeyValuePair<INDEX_KEY, INDEX_VALUE>> IndexedValues { get; } = new();

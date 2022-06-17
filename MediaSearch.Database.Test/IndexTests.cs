@@ -1,5 +1,4 @@
-﻿namespace MediaSearch.Database.Test;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿namespace MediaSearch.Test.Database;
 
 [TestClass]
 public class IndexTests {

@@ -1,8 +1,9 @@
 ﻿namespace MediaSearch.Database;
 
-public interface IMSTable : IDisposable {
-
+public interface IMSTable {
   string Name { get; }
+  IMSDatabase? Database { get; set; }
+  IMSTableHeader? Header { get; }
 
   #region --- Converters -------------------------------------------------------------------------------------
   /// <summary>
@@ -10,7 +11,7 @@ public interface IMSTable : IDisposable {
   /// </summary>
   /// <param name="indent">The number of spaces to indent content</param>
   /// <returns>A string representation of the object</returns>
-  string ToString(int indent);
+  public string ToString(int indent);
   #endregion --- Converters -------------------------------------------------------------------------------------
 
   #region --- Content information --------------------------------------------
@@ -38,92 +39,11 @@ public interface IMSTable : IDisposable {
   void Clear();
   #endregion --- Content information --------------------------------------------
 
-  //#region --- I/O --------------------------------------------
-  ///// <summary>
-  ///// Determine if the database exists
-  ///// </summary>
-  ///// <returns>true if the database exists, false otherwise</returns>
-  //public bool Exists();
-
-  ///// <summary>
-  ///// Create a new database
-  ///// </summary>
-  ///// <returns>true if successful, false otherwise</returns>
-  //public bool Create();
-
-  ///// <summary>
-  ///// Remove the database
-  ///// </summary>
-  //public void Remove();
-
-  ///// <summary>
-  ///// Open the access to the persistent storage
-  ///// </summary>
-  ///// <returns><see langword="true"/> if ok, <see langword="false"/> otherwise</returns>
-  //bool OpenOrCreate();
-
-  ///// <summary>
-  ///// Flushes all data to the persistence layer
-  ///// </summary>
-  ///// <returns>An awaitable task</returns>
-  //void Close();
-
-  ///// <summary>
-  ///// Flushes all data to the persistence layer, asynchronously
-  ///// </summary>
-  ///// <param name="token">Token for optional cancellation</param>
-  ///// <returns>An awaitable task</returns>
-  //Task CloseAsync(CancellationToken token);
-
-  ///// <summary>
-  ///// Load the data (if the storage is available)
-  ///// </summary>
-  ///// <param name="token">A token to cancel operation</param>
-  ///// <returns>true when ok, false otherwise</returns>
-  //bool Load();
-
-  ///// <summary>
-  ///// Load the data (if the storage is available), asynchronously
-  ///// </summary>
-  ///// <param name="token">A token to cancel operation</param>
-  ///// <returns>true if ok, false otherwise</returns>
-  //Task<bool> LoadAsync(CancellationToken token);
-
-  ///// <summary>
-  ///// When set to true, any update is automatically replicated to storage
-  ///// </summary>
-  //bool AutoSave { get; set; }
-
-  ///// <summary>
-  ///// Commit all modifications to storage
-  ///// </summary>
-  ///// <param name="token">Token for optional cancellation</param>
-  ///// <returns>true if ok, false otherwise</returns>
-  //bool Save();
-
-  ///// <summary>
-  ///// Commit all modifications to storage, asynchronously
-  ///// </summary>
-  ///// <param name="token">Token for optional cancellation</param>
-  ///// <returns>true if ok, false otherwise</returns>
-  //Task<bool> SaveAsync(CancellationToken token);
-
-  ///// <summary>
-  ///// Commit all modifications to storage, asynchronously, with a CancellationToken.None
-  ///// </summary>
-  ///// <returns>true if ok, false otherwise</returns>
-  //Task<bool> SaveAsync();
-
-  //bool IsDirty { get; }
-  //#endregion --- I/O --------------------------------------------
-
-  IMSDatabase? Database { get; set; }
-
-  IMSTableHeader Header { get; }
-
 }
 
-public interface IMSTable<RECORD> : IMSTable where RECORD : IID<string> {
+public interface IMSTable<RECORD> : IMSTable, IDisposable where RECORD : class, IMSRecord {
+
+  List<IMSIndex<RECORD>> Indexes { get; }
 
   #region --- Content management --------------------------------------------
   /// <summary>
@@ -131,7 +51,7 @@ public interface IMSTable<RECORD> : IMSTable where RECORD : IID<string> {
   /// </summary>
   /// <param name="item">The media to add</param>
   void Add(RECORD item);
-  
+
   /// <summary>
   /// Add a media when it is not yet in the list, otherwise update its properties (all but Id)
   /// </summary>
@@ -220,5 +140,8 @@ public interface IMSTable<RECORD> : IMSTable where RECORD : IID<string> {
   IAsyncEnumerable<RECORD> GetFilteredAsync(TFilter filter, CancellationToken token);
   #endregion --- Content management async -------------------------------------------
 
-  List<IMSIndex<RECORD>> Indexes { get; }
 }
+
+public interface IMSTableGeneric : IMSTable<IMSRecord> { }
+
+public interface IMSTableMovie : IMSTable<IMovie> { }

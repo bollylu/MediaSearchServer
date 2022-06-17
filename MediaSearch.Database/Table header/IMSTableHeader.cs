@@ -17,14 +17,9 @@ public interface IMSTableHeader {
   public DateTime LastUpdate { get; set; }
 
   /// <summary>
-  /// Table can contain only only data type
-  /// </summary>
-  public Type? TableType { get; }
-
-  /// <summary>
   /// Where are stored the original data
   /// </summary>
-  IMediaSource MediaSource { get; }
+  IMediaSource? MediaSource { get; }
 
   /// <summary>
   /// Transforms the table to a string, with indentation
@@ -39,12 +34,23 @@ public interface IMSTableHeader {
   /// <param name="mediaSource">The media source to assign</param>
   bool SetMediaSource(IMediaSource mediaSource);
 
+  /// <summary>
+  /// Table can contain only only data type
+  /// </summary>
+  public Type TableType { get; }
 }
 
-public interface IMSTableHeader<RECORD> : IMSTableHeader where RECORD : IID<string> {
+
+public interface IMSTableHeader<RECORD> : IMSTableHeader where RECORD : IMSRecord {
 
   /// <summary>
   /// The index of the records of the table, Name <=> Id
   /// </summary>
   TMSIndex<RECORD, string, string> IndexByName { get; }
+
 }
+
+public interface IMSTableHeaderGeneric : IMSTableHeader<IMSRecord> { }
+
+public interface IMSTableHeaderMovie : IMSTableHeader<IMovie> { }
+

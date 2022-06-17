@@ -3,36 +3,60 @@
 public partial interface IMSDatabase {
 
   /// <summary>
-  /// Get the schema of the database (in json)
+  /// Get the schema
   /// </summary>
-  /// <returns>A json string representing the database schema</returns>
-  string GetSchema();
+  /// <returns></returns>
+  ISchema Schema { get; }
 
   /// <summary>
-  /// Add a table to the database
+  /// Build the schema of the database from a discovery of its tables
   /// </summary>
-  /// <param name="table">The table to add</param>
   /// <returns><see langword="true"/> if ok, <see langword="false"/> otherwise</returns>
-  public bool AddTable(IMSTable table);
+  bool BuildSchema();
 
   /// <summary>
-  /// Remove a table from the database
+  /// Read the schema of the database
   /// </summary>
-  /// <param name="table">The table to remove</param>
   /// <returns><see langword="true"/> if ok, <see langword="false"/> otherwise</returns>
-  public bool RemoveTable(IMSTable table);
+  bool ReadSchema();
 
   /// <summary>
-  /// Remove a table from the database
+  /// Save the schema of the database
   /// </summary>
-  /// <param name="table">The name of the table to remove</param>
   /// <returns><see langword="true"/> if ok, <see langword="false"/> otherwise</returns>
-  public bool RemoveTable(string table);
+  bool SaveSchema();
 
-  /// <summary>
-  /// Retrieve a table for the list of tables
-  /// </summary>
-  /// <param name="tableName">The name of the table (case insensitive)</param>
-  /// <returns>The table or <see langword="null"/></returns>
-  public IMSTable? GetTable(string tableName);
+  ///// <summary>
+  ///// Add a table to the database
+  ///// </summary>
+  ///// <param name="table">The table to add</param>
+  ///// <returns><see langword="true"/> if ok, <see langword="false"/> otherwise</returns>
+  //bool AddTableToSchema(IMSTable table);
+
+  ///// <summary>
+  ///// Remove a table from the database
+  ///// </summary>
+  ///// <param name="table">The table to remove</param>
+  ///// <returns><see langword="true"/> if ok, <see langword="false"/> otherwise</returns>
+  //bool RemoveTable(IMSTable table);
+
+  ///// <summary>
+  ///// Remove a table from the database
+  ///// </summary>
+  ///// <param name="table">The name of the table to remove</param>
+  ///// <returns><see langword="true"/> if ok, <see langword="false"/> otherwise</returns>
+  //bool RemoveTable(string table);
+
+  ///// <summary>
+  ///// Retrieve a table from the list of tables
+  ///// </summary>
+  ///// <param name="tableName">The name of the table (case insensitive)</param>
+  ///// <returns>The table or <see langword="null"/></returns>
+  //IMSTable? GetTable(string tableName);
+
+  ///// <summary>
+  ///// Retrieve the complete list of user tables
+  ///// </summary>
+  ///// <returns>An enumeration of the user tables</returns>
+  //IEnumerable<IMSTable> GetTables();
 }

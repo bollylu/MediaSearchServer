@@ -7,7 +7,7 @@ public abstract partial class AMSDatabase {
   public abstract bool Remove();
   public abstract bool Exists();
   public virtual bool DbCheck() {
-    return Tables.All(t => TableCheck(t));
+    return Schema.GetAll().All(t => TableCheck(t));
   }
   public abstract void Dispose();
 

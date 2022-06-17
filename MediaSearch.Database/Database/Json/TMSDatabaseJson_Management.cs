@@ -9,10 +9,11 @@ public partial class TMSDatabaseJson {
         try {
           if (!Directory.Exists(DatabaseFullName)) {
             Directory.CreateDirectory(DatabaseFullName);
+            SaveSchema();
           }
 
           Chrono.Stop();
-          Logger.LogDebug("Database creation successful", $"{Chrono.ElapsedTime.DisplayTime()}\n{this}");
+          Logger.LogDebugBox($"Database creation successful : {Chrono.ElapsedTime.DisplayTime()}", this);
 
           return true;
         } catch (Exception ex) {
@@ -20,7 +21,6 @@ public partial class TMSDatabaseJson {
           return false;
         }
       });
-
 
     }
   }

@@ -24,6 +24,9 @@ public static class GlobalSettings {
     }
     _IsInitializing = true;
 
+    IJson.DefaultJsonSerializerOptions.Converters.Add(new TMSTableHeaderJsonConverter());
+    IJson.DefaultJsonSerializerOptions.Converters.Add(new TMediaSourceJsonConverter());
+
     await ExecutingAbout.Initialize().ConfigureAwait(false);
 
     _IsInitializing = false;
@@ -39,5 +42,10 @@ public static class GlobalSettings {
   }
   private static TAbout? _ExecutingAbout;
 
+  public static string AssemblyName => _AssemblyName ??= $"{nameof(MediaSearch)}.{nameof(Database)}";
+  private static string? _AssemblyName;
 
+  public static Type? GetType(string typeName) {
+    return Type.GetType($"{AssemblyName}.{typeName},{AssemblyName}");
+  }
 }

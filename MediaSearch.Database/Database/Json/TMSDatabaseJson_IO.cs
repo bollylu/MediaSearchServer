@@ -8,17 +8,27 @@ public partial class TMSDatabaseJson {
     }
 
     foreach (string TableNameItem in Directory.EnumerateDirectories(DatabaseFullName)) {
-      Logger.LogDebug($"Found table {TableNameItem.AfterLast('\\').WithQuotes()}");
-      AddTable(new TMSTable(TableNameItem));
+      string TableName = TableNameItem.AfterLast(Path.DirectorySeparatorChar);
+      Logger.LogDebug($"Found table {TableName.WithQuotes()}");
+      IMSTableHeader? Header = TableReadHeader(TableName);
+      if (Header is null) {
+        return false;
+      }
+      IMSTable? Table = TMSTable.Create(Header.Name, Header.TableType, this);
+      if (Table is null) {
+        return false;
+      }
+      Schema.Add(Table);
     }
     IsOpened = true;
     return true;
   }
 
   public override bool Close() {
+    Schema?.Dispose();
     IsOpened = false;
     return true;
   }
 
-  
+
 }

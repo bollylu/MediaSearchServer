@@ -1,32 +1,38 @@
-namespace MediaSearch.Database.Test;
+namespace MediaSearch.Test.Database;
+
 [TestClass]
 public class TableTests {
 
   [TestMethod]
-  public void Instanciate_TMSTable_NotTyped_Empty() {
-    Message("Instanciate empty untyped table");
-    IMSTable Target = new TMSTable() { Name = "Test table" };
+  public void Instanciate_TMSTable_IMovie_Empty() {
+    Message("Instanciate empty IMovie table");
+    IMSTable Target = IMSTableSource.InstanciateRandomTable();
     Dump(Target);
-
     Assert.IsNotNull(Target);
   }
 
   [TestMethod]
-  public void Instanciate_TMSTable_IMovie_Empty() {
-    Message("Instanciate empty IMovie table");
-    IMSTable Target = new TMSTable<IMovie>() { Name = "Movie table" };
-    Dump(Target);
+  public void TMSTable_IMovie_WriteHeader() {
+    Message("Create a Json database");
+    TMSDatabaseJson Database = IMSDatabaseSource.CreateJsonTestDatabaseEmpty();
+    Message("Create an IMovie table");
+    IMSTable Table = IMSTableSource.CreateTestTable(Database);
+    Message("Write the table header");
+    Assert.IsTrue(Database.TableWriteHeader(Table));
+    Dump(Table);
+    DumpWithMessage("Header raw value", File.ReadAllText(Path.Join(Database.DatabaseFullName, Table.Name, TMSDatabaseJson.TABLE_HEADER_FILENAME)));
+    Assert.IsTrue(Database.Remove());
+    Ok();
 
-    Assert.IsNotNull(Target);
   }
 
   [TestMethod]
   public void TMSTable_IMovie_SetMediaSource() {
     Message("Instanciate IMovie table and add Mediasource");
-    IMSTable Target = new TMSTable<IMovie>() { Name = "Movie table" };
-    IMediaSource<IMovie> Source = new TMediaSource<IMovie>() {
-      RootStorage = "\\\\andromeda.sharenet.priv\\movies"
-    };
+    IMSTable Target = new TMSTableMovie() { Name = "Movie table" };
+    Assert.IsNotNull(Target);
+    Assert.IsNotNull(Target.Header);
+    IMediaSource Source = new TMediaSourceMovie("\\\\andromeda.sharenet.priv\\movies");
     Target.Header.SetMediaSource(Source);
     Dump(Target);
   }
@@ -34,32 +40,15 @@ public class TableTests {
   [TestMethod]
   public void TMSTable_IMovie_SetInvalidMediaSource() {
     Message("Instanciate IMovie table and add invalid Mediasource");
-    IMSTable Target = new TMSTable<IMovie>() { Name = "Movie table" };
+    IMSTable Target = new TMSTableMovie() { Name = "Movie table" };
     Dump(Target);
+    Assert.IsNotNull(Target);
+    Assert.IsNotNull(Target.Header);
 
-    IMediaSource<IMedia> Source = new TMediaSource<IMedia>() {
-      RootStorage = "\\\\andromeda.sharenet.priv\\movies"
-    };
+    IMediaSource? Source = TMediaSource.Create("\\\\andromeda.sharenet.priv\\movies", typeof(IMedia));
+    Dump(Source);
+    Assert.IsNotNull(Source);
     Assert.IsFalse(Target.Header.SetMediaSource(Source));
   }
 
-  //[TestMethod]
-  //public void Instanciate_TMSDatabaseJson_WithName() {
-  //  IMSDatabase Target = new TMSDatabaseJson() { RootPath = Path.GetTempPath(), Name="missing.db", Description = "Missing database" };
-  //  TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
-
-  //  Assert.IsFalse(Target.Exists());
-  //}
-
-  //[TestMethod]
-  //public void TMSDatabaseJson_CreateThenRemove() {
-  //  IMSDatabase Target = new TMSDatabaseJson() { RootPath = Path.GetTempPath(), Name = "missing.db" };
-  //  TraceMessage($"{nameof(Target)} : {Target.GetType().Name}", Target);
-
-  //  Assert.IsFalse(Target.Exists());
-  //  Assert.IsTrue(Target.Create());
-  //  Assert.IsTrue(Target.Exists());
-  //  Assert.IsTrue(Target.Remove());
-  //  Assert.IsFalse(Target.Exists());
-  //}
 }

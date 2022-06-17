@@ -1,4 +1,4 @@
-﻿namespace MediaSearch.Database.Test;
+﻿namespace MediaSearch.Test.Database;
 
 public static class GlobalSettings {
   public const int DEBUG_BOX_WIDTH = 110;
@@ -23,6 +23,7 @@ public static class GlobalSettings {
     }
     _IsInitializing = true;
 
+    await MediaSearch.Models.GlobalSettings.Initialize().ConfigureAwait(false);
     await ExecutingAbout.Initialize().ConfigureAwait(false);
 
     _IsInitializing = false;
@@ -33,7 +34,7 @@ public static class GlobalSettings {
 
   public static TAbout ExecutingAbout {
     get {
-      return _ExecutingAbout ??= new TAbout(AppDomain.CurrentDomain.GetAssemblies().Single(a => a.GetName().Name == "MediaSearch.Database.Test"));
+      return _ExecutingAbout ??= new TAbout(AppDomain.CurrentDomain.GetAssemblies().Single(a => a.GetName().Name == "MediaSearch.Test.Database"));
     }
   }
   private static TAbout? _ExecutingAbout;

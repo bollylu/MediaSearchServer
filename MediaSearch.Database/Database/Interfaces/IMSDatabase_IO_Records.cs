@@ -24,7 +24,7 @@ public partial interface IMSDatabase {
   /// <param name="table">The table to read the record from</param>
   /// <param name="key">The key to access the record</param>
   /// <returns>The record already casted to RECORD type or <see langword="null"/> in case of error</returns>
-  RECORD? Read<RECORD>(IMSTable table, string key) where RECORD : class;
+  RECORD? Read<RECORD>(IMSTable table, string key) where RECORD : class, IMSRecord;
 
   /// <summary>
   /// Read a record from the table
@@ -32,7 +32,7 @@ public partial interface IMSDatabase {
   /// <param name="table">The name of the table to read the record from</param>
   /// <param name="key">The key to access the record</param>
   /// <returns>The record already casted to RECORD type or <see langword="null"/> in case of error</returns>
-  RECORD? Read<RECORD>(string table, string key) where RECORD : class;
+  RECORD? Read<RECORD>(string table, string key) where RECORD : class, IMSRecord;
 
   /// <summary>
   /// Dump the raw content of a table for debug purpose

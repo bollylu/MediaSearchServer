@@ -9,23 +9,24 @@ public class IEnumerableMediaExtensionsTests {
   internal IMSDatabase Database => _Database ??= new TMSDatabaseJson("data", "demo");
   private IMSDatabase? _Database;
 
-  internal IMSTable<IMovie> MovieTable;
+  internal IMSTableMovie MovieTable;
 
   public IEnumerableMediaExtensionsTests() {
     Dump(Database);
     Assert.IsTrue(Database.Exists());
+
     Message("Opening database");
     Assert.IsTrue(Database.Open());
+
     Message("Get table Movies");
-    IMSTable? Table = Database.GetTable("movies");
+    IMSTable? Table = Database.Schema.Get("movies");
     if (Table is null) {
       Failed("Unable to obtain the Movies table");
       throw new ApplicationException("Unable to obtain the table");
     }
-    MovieTable = (IMSTable<IMovie>)Table;
 
-    //Assert.IsTrue(Database.OpenOrCreate());
-    //Assert.IsTrue(Database.Load());
+    MovieTable = (IMSTableMovie)Table;
+
   }
 
   #region --- Any tag --------------------------------------------

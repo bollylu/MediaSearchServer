@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -6,16 +6,6 @@
     <EnablePreviewFeatures>true</EnablePreviewFeatures>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="IMediaSearchDatabase\**" />
-    <EmbeddedResource Remove="IMediaSearchDatabase\**" />
-    <None Remove="IMediaSearchDatabase\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Serialization\TMediaInfoContentMetaSerializationTest.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="BLTools" Version="6.0.2-beta02" />
@@ -29,14 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MediaSearch.Models\MediaSearch.Models.csproj" />
-    <ProjectReference Include="..\MediaSearch.Server.Services\MediaSearch.Server.Services.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Data\**">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\MediaSearch.Database\MediaSearch.Database.csproj" />
   </ItemGroup>
 
 </Project>

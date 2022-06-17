@@ -8,13 +8,17 @@ public partial class TMSDatabaseJson : AMSDatabase, ILoggable {
 
   public string RootPath { get; set; } = ".\\";
 
-  public override string DatabaseFullName {
+  /// <summary>
+  /// The full name of the database, including rootpath and name
+  /// </summary>
+  public string DatabaseFullName {
     get {
       return Path.Join(RootPath, Name);
     }
   }
 
   public JsonSerializerOptions SerializerOptions { get; } = new JsonSerializerOptions(IJson.DefaultJsonSerializerOptions);
+
   #region --- Converters -------------------------------------------------------------------------------------
   public override string ToString(int indent) {
     StringBuilder RetVal = new();
@@ -22,9 +26,9 @@ public partial class TMSDatabaseJson : AMSDatabase, ILoggable {
           .AppendIndent($"- {nameof(Description)} = {Description.WithQuotes()}", indent)
           .AppendIndent($"- {nameof(RootPath)} = {RootPath.WithQuotes()}", indent)
           .AppendIndent($"- {nameof(DatabaseFullName)} = {DatabaseFullName.WithQuotes()}", indent);
-    if (Tables.Any()) {
-      RetVal.AppendIndent($"- {nameof(Tables)}", indent);
-      foreach (IMSTable TableItem in Tables) {
+    if (Schema.GetAll().Any()) {
+      RetVal.AppendIndent($"- {nameof(Schema)}", indent);
+      foreach (IMSTableGeneric TableItem in Schema.GetAll()) {
         RetVal.AppendIndent($"- {TableItem.Name.WithQuotes()}", indent + 2);
         RetVal.AppendIndent(TableItem.ToString(indent), indent + 4);
       }
@@ -57,8 +61,8 @@ public partial class TMSDatabaseJson : AMSDatabase, ILoggable {
       Close();
     }
 
-    if (Tables.Any()) {
-      foreach (IMSTable TableItem in Tables) {
+    if (Schema.GetAll().Any()) {
+      foreach (IMSTableGeneric TableItem in Schema.GetAll()) {
         TableItem.Dispose();
       }
     }
@@ -67,6 +71,7 @@ public partial class TMSDatabaseJson : AMSDatabase, ILoggable {
 
   public override string Dump() {
     StringBuilder RetVal = new(base.Dump());
+    RetVal.AppendLine($"{nameof(DatabaseFullName)} = {DatabaseFullName.WithQuotes()}");
     IEnumerable<string> TableList = Directory.EnumerateDirectories(DatabaseFullName);
     RetVal.AppendLine(".");
     RetVal.AppendLine($"=== Tables raw directories : {TableList.Count()} item(s) ===".AlignedCenter(GlobalSettings.DEBUG_BOX_WIDTH - 4));

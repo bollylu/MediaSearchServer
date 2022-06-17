@@ -4,21 +4,14 @@ public partial class TMSDatabaseMemory : AMSDatabase, ILoggable {
 
   public override ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMSDatabaseMemory>();
 
-  public override string DatabaseFullName {
-    get {
-      return Name;
-    }
-  }
-
   #region --- Converters -------------------------------------------------------------------------------------
   public override string ToString(int indent) {
     StringBuilder RetVal = new();
     RetVal.AppendIndent($"- {nameof(Name)} = {Name.WithQuotes()}", indent)
-          .AppendIndent($"- {nameof(Description)} = {Description.WithQuotes()}", indent)
-          .AppendIndent($"- {nameof(DatabaseFullName)} = {DatabaseFullName.WithQuotes()}", indent);
-    if (Tables.Any()) {
-      RetVal.AppendIndent($"- {nameof(Tables)}", indent);
-      foreach (IMSTable TableItem in Tables) {
+          .AppendIndent($"- {nameof(Description)} = {Description.WithQuotes()}", indent);
+    if (Schema.GetAll().Any()) {
+      RetVal.AppendIndent($"- {nameof(Schema)}", indent);
+      foreach (IMSTableGeneric TableItem in Schema.GetAll()) {
         RetVal.AppendIndent(TableItem.ToString(indent), indent + 2);
       }
     } else {
@@ -39,8 +32,8 @@ public partial class TMSDatabaseMemory : AMSDatabase, ILoggable {
       Close();
     }
 
-    if (Tables.Any()) {
-      foreach (IMSTable TableItem in Tables) {
+    if (Schema.GetAll().Any()) {
+      foreach (IMSTableGeneric TableItem in Schema.GetAll()) {
         TableItem.Dispose();
       }
     }

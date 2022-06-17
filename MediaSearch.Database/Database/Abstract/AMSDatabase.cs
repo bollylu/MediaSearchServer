@@ -5,7 +5,6 @@ public abstract partial class AMSDatabase : IMSDatabase, ILoggable {
 
   public string Name { get; set; } = "";
   public string Description { get; set; } = "";
-  public abstract string DatabaseFullName { get; }
 
   public abstract string ToString(int indent);
 
@@ -13,9 +12,9 @@ public abstract partial class AMSDatabase : IMSDatabase, ILoggable {
 
   public virtual string Dump() {
     StringBuilder RetVal = new();
-    RetVal.AppendLine($"{nameof(Name)} = {Name}");
-    RetVal.AppendLine($"{nameof(Description)} = {Description}");
-    RetVal.AppendLine($"{nameof(DatabaseFullName)} = {DatabaseFullName}");
+    RetVal.AppendLine($"{nameof(Name)} = {Name.WithQuotes()}");
+    RetVal.AppendLine($"{nameof(Description)} = {Description.WithQuotes()}");
+
 
     return RetVal.ToString();
   }

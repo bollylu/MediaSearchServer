@@ -1,6 +1,4 @@
-﻿using MediaSearch.Database;
-
-namespace MediaSearch.Test.Database;
+﻿namespace MediaSearch.Test.Database;
 
 [TestClass]
 public class TMSRecordTests {
@@ -16,8 +14,8 @@ public class TMSRecordTests {
 
   [TestMethod]
   public void TMSRecord_Write_JsonDatabase() {
-    IMSDatabase Database = new TMSDatabaseJson() { RootPath = Path.GetTempPath(), Name = $"{Random.Shared.Next()}" };
-    IMSTable<IMovie> MovieTable = new TMSTable<IMovie>() { Name = "Movies" };
+    TMSDatabaseJson Database = new TMSDatabaseJson() { RootPath = Path.GetTempPath(), Name = $"{Random.Shared.Next()}" };
+    IMSTable MovieTable = new TMSTableMovie() { Name = "Movies" };
 
     Message("Creating database Json");
     Assert.IsTrue(Database.Create());
@@ -56,7 +54,7 @@ public class TMSRecordTests {
   [TestMethod]
   public void TMSRecord_Write_JsonDatabaseTable() {
     IMSDatabase Database = new TMSDatabaseJson() { RootPath = Path.GetTempPath(), Name = $"{Random.Shared.Next()}" };
-    IMSTable<IMovie> MovieTable = new TMSTable<IMovie>() { Name = "Movies" };
+    IMSTableMovie MovieTable = new TMSTableMovie() { Name = "Movies" };
     IMovie Record = new TMovie("Wargames", 1986);
     Record.Descriptions.Add(ELanguage.French, "Un gamin joue avec un ordi");
 
@@ -85,11 +83,13 @@ public class TMSRecordTests {
 
   [TestMethod]
   public void TMSRecord_Dump_JsonDatabase() {
-    IMSDatabase Database = IMSDatabaseSource.CreateTestDatabase();
+    TMSDatabaseJson Database = IMSDatabaseSource.CreateJsonTestDatabase();
     Dump(Database);
 
     Message("Verify that database exists");
     Assert.IsTrue(Database.Exists());
+
+    DumpWithMessage("Table list", Database.TableList());
 
     Message("Remove database");
     Database.Remove();
@@ -99,16 +99,21 @@ public class TMSRecordTests {
 
   [TestMethod]
   public void TMSRecord_ReadRecord_JsonDatabase() {
-    IMSDatabase Database = IMSDatabaseSource.CreateTestDatabase();
+    TMSDatabaseJson Database = IMSDatabaseSource.CreateJsonTestDatabase();
     Dump(Database);
 
+    Assert.IsTrue(Database.Close());
+
+    Message("=-=-=-=-=-=-=--==--====-");
     DumpWithMessage("Raw database", Database.Dump());
+    Message("=-=-=-=-=-=-=--==--====-");
+
     Database.Open();
 
-    IMovie? Target = Database.Read<TMovie>("movies", "4C6E47324F65594C6E75314A55663631486C384A446B516E7871677830424844324C30577A30646E4359593D");
+    IMovie? Target = Database.Read<TMovie>("movies", IMSRecordSource.GetMovieRecords().First().ID);
     Assert.IsNotNull(Target);
 
-    Database.Close();
+    Assert.IsTrue(Database.Close());
 
     Dump(Target);
     Database.Remove();

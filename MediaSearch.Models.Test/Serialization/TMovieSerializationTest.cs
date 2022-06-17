@@ -3,8 +3,8 @@
 [TestClass]
 public class TMovieSerializationTest {
 
-  internal IMSDatabase Database => _Database ??= new TMSDatabaseJson("data", "demo");
-  private IMSDatabase? _Database;
+  //internal IMSDatabase Database => _Database ??= new TMSDatabaseJson("data", "demo");
+  //private IMSDatabase? _Database;
 
   [TestMethod]
   public void Serialize() {
@@ -69,7 +69,6 @@ public class TMovieSerializationTest {
     Assert.AreEqual(Source.Tags.Count, Target.Tags.Count);
     Assert.AreEqual(Source.CreationYear, Target.CreationYear);
 
-    Database.Close();
   }
 
 }

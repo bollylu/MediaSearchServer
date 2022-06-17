@@ -1,96 +1,6 @@
-﻿namespace MediaSearch.Database.Test;
+﻿namespace MediaSearch.Test.Database;
 
-public class Mockup_Table : IMSTable<Mockup_Record_IID> {
-  public IMSTableHeader Header { get; } = new TMSTableHeader<Mockup_Record_IID>();
-
-  public IMSDatabase? Database {
-    get {
-      return _Database;
-    }
-    set {
-      _Database = value;
-    }
-  }
-  private IMSDatabase? _Database;
-
-  public void Dispose() {
-  }
-
-  public void Add(Mockup_Record_IID item) {
-    throw new NotImplementedException();
-  }
-
-  public void AddOrUpdate(Mockup_Record_IID item) {
-    throw new NotImplementedException();
-  }
-
-  public void Update(Mockup_Record_IID item) {
-    throw new NotImplementedException();
-  }
-
-  public void Clear() {
-    throw new NotImplementedException();
-  }
-
-  public void Delete(Mockup_Record_IID item) {
-    throw new NotImplementedException();
-  }
-
-  public IEnumerable<Mockup_Record_IID> GetAll(int maxRecords = 0) {
-    throw new NotImplementedException();
-  }
-
-  public IEnumerable<Mockup_Record_IID> GetFiltered(IFilter filter, int maxRecords = 0) {
-    throw new NotImplementedException();
-  }
-
-  public Mockup_Record_IID? Get(string id) {
-    throw new NotImplementedException();
-  }
-
-  public Task AddAsync(Mockup_Record_IID item, CancellationToken token) {
-    throw new NotImplementedException();
-  }
-
-  public Task AddOrUpdateAsync(Mockup_Record_IID item, CancellationToken token) {
-    throw new NotImplementedException();
-  }
-
-  public Task UpdateAsync(Mockup_Record_IID item, CancellationToken token) {
-    throw new NotImplementedException();
-  }
-
-  public Task ClearAsync(CancellationToken token) {
-    throw new NotImplementedException();
-  }
-
-  public Task DeleteAsync(Mockup_Record_IID item, CancellationToken token) {
-    throw new NotImplementedException();
-  }
-
-  public IAsyncEnumerable<Mockup_Record_IID> GetAllAsync(CancellationToken token) {
-    throw new NotImplementedException();
-  }
-
-  public IAsyncEnumerable<Mockup_Record_IID> GetFilteredAsync(TFilter filter, CancellationToken token) {
-    throw new NotImplementedException();
-  }
-
-  public string ToString(int indent) {
-    throw new NotImplementedException();
-  }
-
-  public bool IsEmpty() {
-    throw new NotImplementedException();
-  }
-
-  public bool Any() {
-    throw new NotImplementedException();
-  }
-
-  public long Count() {
-    throw new NotImplementedException();
-  }
+public class Mockup_Table : AMSTable<Mockup_Record_IID> {
 
   public bool Exists() {
     throw new NotImplementedException();
@@ -139,6 +49,4 @@ public class Mockup_Table : IMSTable<Mockup_Record_IID> {
   }
 
   public bool IsDirty { get; }
-  public List<IMSIndex<Mockup_Record_IID>> Indexes { get; } = new();
-  public string Name { get; set; } = "MockupTable";
 }

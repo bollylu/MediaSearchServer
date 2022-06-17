@@ -9,7 +9,7 @@ public partial class TMSDatabaseJson {
         throw new ApplicationException($"Unable to create table {table.Name.WithQuotes()} : Directory {TableDirectory.WithQuotes()} already exists");
       }
       Directory.CreateDirectory(TableDirectory);
-      AddTable(table);
+      Schema.Add(table);
       TableWriteHeader(table);
       return true;
     } catch (Exception ex) {
@@ -58,8 +58,14 @@ public partial class TMSDatabaseJson {
     string HeaderFullname = Path.Join(DatabaseFullName, name, TABLE_HEADER_FILENAME);
     try {
       string RawContent = File.ReadAllText(HeaderFullname);
-      IMSTableHeader? Header = IJson.FromJson<IMSTableHeader>(RawContent, SerializerOptions);
-      return Header;
+      JsonDocument JsonContent = JsonDocument.Parse(RawContent);
+      string MediaTypeName = JsonContent.RootElement.GetProperty("MediaSource").GetPropertyEx("MediaType").GetString() ?? "";
+      Type? MediaType = Type.GetType($"{nameof(MediaSearch)}.{nameof(MediaSearch.Models)}.{MediaTypeName},{nameof(MediaSearch)}.{nameof(MediaSearch.Models)}");
+      if (MediaType is null) {
+        throw new Exception($"Unable to read header : invalid media type");
+      }
+      Type TableType = typeof(AMSTableHeader<>).MakeGenericType(MediaType);
+      return (IMSTableHeader?)IJson.FromJson(TableType, RawContent, SerializerOptions);
     } catch (Exception ex) {
       Logger.LogErrorBox($"Unable to read header for table {name.WithQuotes()}", ex);
       return null;
@@ -88,4 +94,14 @@ public partial class TMSDatabaseJson {
     throw new NotImplementedException();
   }
 
+  public override IEnumerable<IMSTableGeneric> TableList() {
+    foreach (string TablePathItem in Directory.EnumerateDirectories(DatabaseFullName).Where(d => !d.EndsWith(TABLE_HEADER_FILENAME))) {
+      //yield return new AMSTable(Path.GetFileName(TablePathItem));
+    }
+    yield break;
+  }
+
+  public override IEnumerable<IMSTableGeneric> TableSystemList() {
+    throw new NotImplementedException();
+  }
 }

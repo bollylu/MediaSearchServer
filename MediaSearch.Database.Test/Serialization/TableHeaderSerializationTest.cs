@@ -1,24 +1,21 @@
-namespace MediaSearch.Database.Test;
+namespace MediaSearch.Test.Database;
 
 [TestClass]
 public class TableHeaderSerializationTests {
 
-  //[ClassInitialize]
-  //public static void ClassInitialize(TestContext context) {
-  //  GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerConsole());
-  //  Models.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerConsole());
-  //  Database.GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerConsole<TMSTable>() { SeverityLimit = ESeverity.Debug });
-  //}
+  [ClassInitialize]
+  public static async Task ClassInitialize(TestContext context) {
+    await MediaSearch.Test.Database.GlobalSettings.Initialize().ConfigureAwait(false);
+  }
 
   [TestMethod]
   public void TableHeader_Serialize() {
-    IMSTableHeader Source = new TMSTableHeader();
-    Source.Name = "Test name";
-    Source.Description = "All my movies";
-
-    IMediaSource MediaSource = new TMediaSource<IMedia>() {
-      RootStorage = "\\\\Server\\path"
+    IMSTableHeader Source = new TMSTableHeaderMovie {
+      Name = "Test name",
+      Description = "All my movies"
     };
+
+    IMediaSource MediaSource = new TMediaSourceMovie("\\\\Server\\path");
 
     Source.SetMediaSource(MediaSource);
 
@@ -36,13 +33,12 @@ public class TableHeaderSerializationTests {
 
   [TestMethod]
   public void TableHeader_Deserialize() {
-    IMSTableHeader Header = new TMSTableHeader();
-    Header.Name = "Test name";
-    Header.Description = "All my movies";
-
-    IMediaSource MediaSource = new TMediaSource<IMedia>() {
-      RootStorage = "\\\\Server\\path"
+    IMSTableHeader Header = new TMSTableHeaderMovie {
+      Name = "Test name",
+      Description = "All my movies"
     };
+
+    IMediaSource MediaSource = new TMediaSourceMovie("\\\\Server\\path");
     Header.SetMediaSource(MediaSource);
 
     Dump(Header);
@@ -56,7 +52,7 @@ public class TableHeaderSerializationTests {
 
     Dump(Source);
 
-    IMSTableHeader? Target = IJson.FromJson<TMSTableHeader>(Source, Options);
+    IMSTableHeader? Target = IJson.FromJson<IMSTableHeader>(Source, Options);
 
     Assert.IsNotNull(Target);
     Dump(Target);

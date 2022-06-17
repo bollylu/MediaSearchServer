@@ -10,7 +10,6 @@ public class TFilter : IFilter, IEquatable<TFilter> {
   /// <summary>
   /// The number of the page to request. Must be positive.
   /// </summary>
-  [JsonPropertyName(nameof(Page))]
   public int Page {
     get {
       return _Page;
@@ -24,7 +23,6 @@ public class TFilter : IFilter, IEquatable<TFilter> {
   /// <summary>
   /// The maximum number of items on the page. Must be positive.
   /// </summary>
-  [JsonPropertyName(nameof(PageSize))]
   public int PageSize {
     get {
       return _PageSize;
@@ -44,13 +42,10 @@ public class TFilter : IFilter, IEquatable<TFilter> {
   /// <summary>
   /// Keywords to use for the search in the Movie name
   /// </summary>
-  [JsonPropertyName(nameof(Keywords))]
   public string Keywords { get; set; } = "";
   /// <summary>
   /// How to use the keywords for the search
   /// </summary>
-  [JsonConverter(typeof(JsonStringEnumConverter))]
-  [JsonPropertyName(nameof(KeywordsSelection))]
   public EFilterType KeywordsSelection { get; set; }
   #endregion --- Keywords in movie name --------------------------------------------
 
@@ -71,7 +66,6 @@ public class TFilter : IFilter, IEquatable<TFilter> {
   /// <summary>
   /// When selecting a movie, how many days in the past of it addition to the library should we look
   /// </summary>
-  [JsonPropertyName(nameof(DaysBack))]
   public int DaysBack {
     get {
       return _DaysBack;
@@ -117,8 +111,6 @@ public class TFilter : IFilter, IEquatable<TFilter> {
 
   #endregion --- Output date --------------------------------------------
 
-  [JsonConverter(typeof(JsonStringEnumConverter))]
-  [JsonPropertyName(nameof(SortOrder))]
   public EFilterSortOrder SortOrder { get; set; } = EFilterSortOrder.Name;
 
   #region --- Groups --------------------------------------------
@@ -191,7 +183,7 @@ public class TFilter : IFilter, IEquatable<TFilter> {
     if (GroupMemberships.Any()) {
       RetVal.AppendLine($"- {nameof(GroupMemberships)}");
       foreach (string GroupMembershipItem in GroupMemberships) {
-        RetVal.AppendIndent($"- {GroupMembershipItem}", 2);
+        RetVal.AppendIndent($"- {GroupMembershipItem}", indent + 2);
       }
     }
     return RetVal.ToString();
@@ -256,93 +248,6 @@ public class TFilter : IFilter, IEquatable<TFilter> {
     return !a.Equals(b);
   }
   #endregion --- Equality comparison --------------------------------------------
-
-  //#region --- IJson<IFilter> --------------------------------------------
-  //public static JsonSerializerOptions DefaultJsonSerializerOptions {
-  //  get {
-  //    lock (_DefaultJsonSerializerOptionsLock) {
-  //      if (_DefaultJsonSerializerOptions is null) {
-  //        _DefaultJsonSerializerOptions = new JsonSerializerOptions() {
-  //          WriteIndented = true,
-  //          NumberHandling = JsonNumberHandling.Strict
-  //        };
-  //        _DefaultJsonSerializerOptions.Converters.Add(new TFilterJsonConverter());
-  //        _DefaultJsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-  //        _DefaultJsonSerializerOptions.Converters.Add(new TDateOnlyJsonConverter());
-
-  //      }
-  //      return _DefaultJsonSerializerOptions;
-  //    }
-  //  }
-  //  set {
-  //    lock (_DefaultJsonSerializerOptionsLock) {
-  //      _DefaultJsonSerializerOptions = value;
-  //    }
-  //  }
-  //}
-  //private static JsonSerializerOptions? _DefaultJsonSerializerOptions;
-  //private static readonly object _DefaultJsonSerializerOptionsLock = new object();
-
-  //public string ToJson() {
-  //  return ToJson(DefaultJsonSerializerOptions);
-  //}
-
-  //public string ToJson(JsonSerializerOptions options) {
-  //  return JsonSerializer.Serialize(this, options);
-  //}
-
-  //public IFilter ParseJson(string source) {
-  //  return ParseJson(source, DefaultJsonSerializerOptions);
-  //}
-
-  //public IFilter ParseJson(string source, JsonSerializerOptions options) {
-  //  #region === Validate parameters ===
-  //  if (string.IsNullOrWhiteSpace(source)) {
-  //    throw new JsonException("Json filter source is null");
-  //  }
-  //  #endregion === Validate parameters ===
-
-  //  TFilter? Deserialized = JsonSerializer.Deserialize<TFilter>(source, options);
-
-  //  if (Deserialized is not null) {
-  //    Page = Deserialized.Page;
-  //    PageSize = Deserialized.PageSize;
-  //    Keywords = Deserialized.Keywords;
-  //    KeywordsSelection = Deserialized.KeywordsSelection;
-  //    Tags = Deserialized.Tags;
-  //    TagSelection = Deserialized.TagSelection;
-  //    DaysBack = Deserialized.DaysBack;
-  //    OutputDateMin = Deserialized.OutputDateMin;
-  //    OutputDateMax = Deserialized.OutputDateMax;
-  //    GroupOnly = Deserialized.GroupOnly;
-  //    Group = Deserialized.Group;
-  //    SubGroup = Deserialized.SubGroup;
-  //    SortOrder = Deserialized.SortOrder;
-  //    GroupFilter = Deserialized.GroupFilter;
-  //    GroupMemberships.AddRange(Deserialized.GroupMemberships);
-  //  }
-  //  return this;
-  //}
-
-  //#region --- Static Deserializer --------------------------------------------
-
-  //public static IFilter? FromJson(string source) {
-  //  if (string.IsNullOrWhiteSpace(source)) {
-  //    throw new ArgumentNullException(nameof(source));
-  //  }
-  //  return JsonSerializer.Deserialize<TFilter>(source, DefaultJsonSerializerOptions);
-  //}
-
-  //public static IFilter? FromJson(string source, JsonSerializerOptions options) {
-  //  if (string.IsNullOrWhiteSpace(source)) {
-  //    throw new ArgumentNullException(nameof(source));
-  //  }
-  //  return JsonSerializer.Deserialize<TFilter>(source, options);
-  //}
-
-
-  //#endregion --- Static Deserializer --------------------------------------------
-  //#endregion --- IJson --------------------------------------------
 
   public void Clear() {
     FirstPage();

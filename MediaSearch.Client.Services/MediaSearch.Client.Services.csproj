@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BLTools" Version="6.0.1-beta9" />
+    <PackageReference Include="BLTools" Version="6.0.2-beta02" />
     <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
   </ItemGroup>
 

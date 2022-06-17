@@ -3,31 +3,42 @@ using MediaSearch.Database;
 
 using static BLTools.Json.JsonConverterResources;
 
-public class TMSTableHeaderJsonConverter : JsonConverter<TMSTableHeader>, ILoggable {
+public class TMSTableHeaderJsonConverter : JsonConverter<IMSTableHeader>, ILoggable {
 
   public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMSTableHeaderJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
-    return typeToConvert == typeof(TMSTableHeader) || typeToConvert.GetInterface(nameof(IMSTableHeader)) is not null;
+    if (typeToConvert == typeof(TMSTableHeader)) { return true; }
+    if (typeToConvert == typeof(IMSTableHeader)) { return true; }
+    if (typeToConvert.IsAssignableFrom(typeof(IMSTableHeader))) { return true; }
+    return false;
   }
 
-  public override TMSTableHeader Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+  public override IMSTableHeader? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
 
+    // check that first token is ok
     if (reader.TokenType != JsonTokenType.StartObject) {
       throw new JsonException();
     }
 
-    TMSTableHeader RetVal = new TMSTableHeader();
+    IMSTableHeader TableHeader = new TMSTableHeader();
 
     try {
       while (reader.Read()) {
 
         JsonTokenType TokenType = reader.TokenType;
 
+        // check if reading is complete
         if (TokenType == JsonTokenType.EndObject) {
+          Type? FinalType = MediaSearch.Models.GlobalSettings.GetType(TableHeader.MediaSource?.MediaType?.Name ?? "");
+          if (FinalType is null) {
+            throw new JsonConverterInvalidDataException("MediaType", TableHeader);
+          }
+          var RetVal = TMSTableHeader.Create(TableHeader.Name, FinalType);
           return RetVal;
         }
 
+        // Do we have a new property token ?
         if (TokenType == JsonTokenType.PropertyName) {
 
           string Property = reader.GetString() ?? "";
@@ -36,21 +47,21 @@ public class TMSTableHeaderJsonConverter : JsonConverter<TMSTableHeader>, ILogga
           switch (Property) {
 
             case nameof(IMSTableHeader.Name):
-              RetVal.Name = reader.GetString() ?? "";
+              TableHeader.Name = reader.GetString() ?? "";
               break;
 
             case nameof(IMSTableHeader.Description):
-              RetVal.Description = reader.GetString() ?? "";
+              TableHeader.Description = reader.GetString() ?? "";
               break;
 
             case nameof(IMSTableHeader.LastUpdate):
-              RetVal.LastUpdate = DateTime.Parse(reader.GetString() ?? DateTime.MinValue.ToYMDHMS());
+              TableHeader.LastUpdate = DateTime.Parse(reader.GetString() ?? DateTime.MinValue.ToYMDHMS());
               break;
 
-            case nameof(IMSTableHeader.MediaSource):
-              TMediaSource? MediaSource = JsonSerializer.Deserialize<TMediaSource>(ref reader, options);
+            case nameof(IMSTableHeader<IMSRecord>.MediaSource):
+              AMediaSource<IMSRecord>? MediaSource = JsonSerializer.Deserialize<AMediaSource<IMSRecord>>(ref reader, options);
               if (MediaSource is not null) {
-                RetVal.SetMediaSource(MediaSource);
+                TableHeader.SetMediaSource(MediaSource);
               }
               break;
 
@@ -61,7 +72,8 @@ public class TMSTableHeaderJsonConverter : JsonConverter<TMSTableHeader>, ILogga
         }
       }
 
-      return RetVal;
+      Logger.LogErrorBox(ERROR_CONVERSION, TableHeader);
+      return null;
 
     } catch (Exception ex) {
       Logger.LogErrorBox(ERROR_CONVERSION, ex);
@@ -71,7 +83,7 @@ public class TMSTableHeaderJsonConverter : JsonConverter<TMSTableHeader>, ILogga
   }
 
 
-  public override void Write(Utf8JsonWriter writer, TMSTableHeader value, JsonSerializerOptions options) {
+  public override void Write(Utf8JsonWriter writer, IMSTableHeader value, JsonSerializerOptions options) {
     if (value is null) {
       writer.WriteNullValue();
       return;
@@ -82,7 +94,7 @@ public class TMSTableHeaderJsonConverter : JsonConverter<TMSTableHeader>, ILogga
     writer.WriteString(nameof(IMSTableHeader.Description), value.Description);
     writer.WriteString(nameof(IMSTableHeader.LastUpdate), value.LastUpdate.ToYMDHMS());
 
-    writer.WritePropertyName(nameof(IMSTableHeader.MediaSource));
+    writer.WritePropertyName(nameof(IMSTableHeader<IMSRecord>.MediaSource));
     JsonSerializer.Serialize(writer, value.MediaSource, options);
 
     writer.WriteEndObject();

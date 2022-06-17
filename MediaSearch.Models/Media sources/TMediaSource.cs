@@ -1,53 +1,19 @@
 ﻿namespace MediaSearch.Models;
 
-public class TMediaSource : IMediaSource {
-  public Type? MediaType { get; protected set; }
 
-  public string RootStorage { get; set; } = "";
-
-  #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMediaSource() { }
-
-  public TMediaSource(string rootStorage) {
-    RootStorage = rootStorage;
+public class TMediaSource : AMediaSource<IMSRecord> {
+  public static IMediaSource? Create(string rootStorage, Type mediaType) {
+    return mediaType.Name switch {
+      nameof(IMovie) => new TMediaSourceMovie(rootStorage),
+      _ => throw new ApplicationException($"Unable to create MediaSource of type {mediaType.Name}"),
+    };
   }
-  #endregion --- Constructor(s) ------------------------------------------------------------------------------
-
-  #region --- Converters -------------------------------------------------------------------------------------
-  public virtual string ToString(int indent) {
-    StringBuilder RetVal = new StringBuilder();
-    RetVal.AppendIndent($"- {nameof(RootStorage)} : {RootStorage.WithQuotes()}", indent);
-    return RetVal.ToString();
-  }
-
-  public override string ToString() {
-    return ToString(0);
-  }
-  #endregion --- Converters -------------------------------------------------------------------------------------
 }
 
-public class TMediaSource<RECORD> : TMediaSource, IMediaSource<RECORD> where RECORD : IID {
-
+public class TMediaSourceMovie : AMediaSource<IMovie> {
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMediaSource() : base() {
-    MediaType = typeof(RECORD);
-  }
+  public TMediaSourceMovie() { }
 
-  public TMediaSource(string rootStorage) : base(rootStorage) {
-    MediaType = typeof(RECORD);
-  }
-
-  public TMediaSource(IMediaSource<RECORD> source) {
-    MediaType = typeof(RECORD);
-    RootStorage = source.RootStorage;
-  }
+  public TMediaSourceMovie(string rootStorage) : base(rootStorage) { }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
-
-  #region --- Converters -------------------------------------------------------------------------------------
-  public override string ToString(int indent) {
-    StringBuilder RetVal = new StringBuilder(base.ToString(indent));
-    RetVal.AppendIndent($"- {nameof(MediaType)} : {MediaType}", indent);
-    return RetVal.ToString();
-  }
-  #endregion --- Converters -------------------------------------------------------------------------------------
 }

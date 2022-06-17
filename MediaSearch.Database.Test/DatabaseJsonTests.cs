@@ -1,5 +1,5 @@
 
-namespace MediaSearch.Database.Test;
+namespace MediaSearch.Test.Database;
 [TestClass]
 public class DatabaseJsonTests {
 
@@ -28,31 +28,41 @@ public class DatabaseJsonTests {
   }
 
   [TestMethod]
-  public void TMSDatabaseJson_CreateThenRemove() {
-    IMSDatabase Target = new TMSDatabaseJson() { RootPath = Path.GetTempPath(), Name = $"{Random.Shared.Next()}" };
+  public void TMSDatabaseJson_CreateDatabaseThenRemove() {
+    TMSDatabaseJson Target = new TMSDatabaseJson() { RootPath = Path.GetTempPath(), Name = $"{Random.Shared.Next()}" };
     Dump(Target);
 
     Assert.IsFalse(Target.Exists());
-    Message("Table does not exist and needs creation");
+    Message("Database does not exist and needs creation");
+
     Assert.IsTrue(Target.Create());
-    Message("Table is created");
+    Message("Database is created");
+
+    DumpWithMessage("Database schema", Target.Schema);
+
     Assert.IsTrue(Target.Exists());
-    Message("Table exists");
+    Message("Database exists");
+
     Assert.IsTrue(Target.Remove());
-    Message("Table is removed");
+    Message("Database is removed");
+
     Assert.IsFalse(Target.Exists());
-    Message("Table does not exist");
+    Message("Database does not exist");
+
     Ok();
   }
 
   [TestMethod]
-  public void TMSDatabaseJson_CreateTable() {
-    IMSDatabase Target = new TMSDatabaseJson() { RootPath = Path.GetTempPath(), Name = $"{Random.Shared.Next()}" };
-    IMSTable<IMovie> MovieTable = new TMSTable<IMovie>() { Name = "Movies" };
+  public void TMSDatabaseJson_CreateDatabase_AddTable() {
+    TMSDatabaseJson Target = new TMSDatabaseJson() { RootPath = Path.GetTempPath(), Name = $"{Random.Shared.Next()}" };
+    IMSTableMovie MovieTable = new TMSTableMovie() { Name = "Movies" };
 
     Message("Creating database Json");
     Assert.IsTrue(Target.Create());
+
     Assert.IsTrue(Target.Exists());
+    Message("Database exists");
+
     Message("Opening database Json");
     Assert.IsTrue(Target.Open());
     Dump(Target);
@@ -80,7 +90,67 @@ public class DatabaseJsonTests {
 
     Message("Removing database Json");
     Assert.IsTrue(Target.Remove());
+
     Assert.IsFalse(Target.Exists());
+    Message("Database does not exist");
+
     Dump(Target);
+
+    Ok();
+  }
+
+  [TestMethod]
+  public void TMSDatabaseJson_CreateDatabase_AddTables() {
+    TMSDatabaseJson Target = new TMSDatabaseJson() { RootPath = Path.GetTempPath(), Name = $"{Random.Shared.Next()}" };
+    Target.Logger.SeverityLimit = ESeverity.Debug;
+    IMSTableMovie MovieTable = new TMSTableMovie() { Name = "Movies" };
+    IMSTableMovie TheatreTable = new TMSTableMovie() { Name = "Theatre" };
+
+    Message("Creating database Json");
+    Assert.IsTrue(Target.Create());
+
+    Assert.IsTrue(Target.Exists());
+    Message("Database exists");
+
+    Message("Opening database Json");
+    Assert.IsTrue(Target.Open());
+    Dump(Target);
+
+    Message($"Adding table {nameof(MovieTable)}");
+    Assert.IsTrue(Target.TableCreate(MovieTable));
+
+    Message($"Adding table {nameof(TheatreTable)}");
+    Assert.IsTrue(Target.TableCreate(TheatreTable));
+
+    Dump(Target);
+
+    DumpWithMessage("Schema", Target.Schema);
+
+    Message("Checking table");
+    Assert.IsTrue(Target.TableCheck(MovieTable));
+
+    Message("Closing database Json");
+    Assert.IsTrue(Target.Close());
+    Dump(Target);
+
+    Message("Opening database Json");
+    Assert.IsTrue(Target.Open());
+    Dump(Target);
+
+    Message("Checking table");
+    Assert.IsTrue(Target.TableCheck(MovieTable));
+
+    Message("Closing database Json");
+    Assert.IsTrue(Target.Close());
+
+    Message("Removing database Json");
+    Assert.IsTrue(Target.Remove());
+
+    Assert.IsFalse(Target.Exists());
+    Message("Database does not exist");
+
+    Dump(Target);
+
+    Ok();
   }
 }

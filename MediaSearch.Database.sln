@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.32414.318
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaSearch.Database", "MediaSearch.Database\MediaSearch.Database.csproj", "{EB5C2C80-0189-4404-B346-2458AC54057C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaSearch.Database.Test", "MediaSearch.Database.Test\MediaSearch.Database.Test.csproj", "{5153E421-6791-42E3-9B92-EAC714F850D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaSearch.Test.Database", "MediaSearch.Database.Test\MediaSearch.Test.Database.csproj", "{5153E421-6791-42E3-9B92-EAC714F850D4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaSearch.Models", "MediaSearch.Models\MediaSearch.Models.csproj", "{B57FB75B-0567-4E2D-8990-9E14460785A7}"
 EndProject

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -8,7 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BLTools" Version="6.0.1-beta9" />
+    <Compile Remove="IMediaSearchDatabase\**" />
+    <EmbeddedResource Remove="IMediaSearchDatabase\**" />
+    <None Remove="IMediaSearchDatabase\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Serialization\TMediaInfoContentMetaSerializationTest.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BLTools" Version="6.0.2-beta01" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />
     <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
@@ -19,7 +29,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MediaSearch.Database\MediaSearch.Database.csproj" />
+    <ProjectReference Include="..\MediaSearch.Models\MediaSearch.Models.csproj" />
+    <ProjectReference Include="..\MediaSearch.Server.Services\MediaSearch.Server.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Data\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

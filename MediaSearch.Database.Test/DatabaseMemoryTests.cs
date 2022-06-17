@@ -1,4 +1,4 @@
-namespace MediaSearch.Database.Test;
+namespace MediaSearch.Test.Database;
 
 [TestClass]
 public class DatabaseMemoryTests {
