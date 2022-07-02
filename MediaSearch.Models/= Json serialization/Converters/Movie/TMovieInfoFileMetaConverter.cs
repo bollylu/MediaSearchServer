@@ -2,8 +2,8 @@
 
 namespace MediaSearch.Models;
 
-public class TMovieInfoFileMetaConverter : JsonConverter<TMovieInfoFileMeta>, ILoggable {
-  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMovieInfoFileMetaConverter>();
+public class TMovieInfoFileMetaJsonConverter : JsonConverter<TMovieInfoFileMeta>, ILoggable {
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMovieInfoFileMetaJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
     return typeToConvert == typeof(TMovieInfoFileMeta);

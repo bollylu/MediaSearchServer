@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Test.Database;
 
-public class Mockup_Table : AMSTable<Mockup_Record_IID> {
+public class Mockup_Table : ATable<Mockup_Record_IID> {
 
   public bool Exists() {
     throw new NotImplementedException();

@@ -24,7 +24,7 @@ public static class GlobalSettings {
     }
     _IsInitializing = true;
 
-    IJson.DefaultJsonSerializerOptions.Converters.Add(new TMSTableHeaderJsonConverter());
+    IJson.DefaultJsonSerializerOptions.Converters.Add(new TTableHeaderJsonConverter());
     IJson.DefaultJsonSerializerOptions.Converters.Add(new TMediaSourceJsonConverter());
 
     await ExecutingAbout.Initialize().ConfigureAwait(false);

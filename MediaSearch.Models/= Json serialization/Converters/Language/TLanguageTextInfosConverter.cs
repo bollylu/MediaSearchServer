@@ -2,8 +2,8 @@
 
 namespace MediaSearch.Models;
 
-public class TLanguageTextInfosConverter : JsonConverter<TLanguageTextInfos>, ILoggable {
-  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TLanguageTextInfosConverter>();
+public class TLanguageTextInfosJsonConverter : JsonConverter<TLanguageTextInfos>, ILoggable {
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TLanguageTextInfosJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
     if (typeToConvert == typeof(TLanguageTextInfos)) {

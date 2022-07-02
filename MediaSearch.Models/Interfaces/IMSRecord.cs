@@ -1,5 +1,5 @@
 ﻿namespace MediaSearch.Models;
-public interface IMSRecord : IID<string> {
+public interface IRecord : IID<string> {
 
   #region --- Converters -------------------------------------------------------------------------------------
   /// <summary>

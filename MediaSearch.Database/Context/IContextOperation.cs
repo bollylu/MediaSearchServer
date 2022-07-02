@@ -14,6 +14,6 @@ public interface IContextOperation {
 
 }
 
-public interface IContextOperation<RECORD> : IContextOperation where RECORD : IMSRecord {
+public interface IContextOperation<RECORD> : IContextOperation where RECORD : IRecord {
   RECORD? Record { get; }
 }

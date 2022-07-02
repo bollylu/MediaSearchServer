@@ -43,10 +43,11 @@ public static class GlobalSettings {
     IJson.DefaultJsonSerializerOptions.Converters.Add(new TUserAccountJsonConverter());
     IJson.DefaultJsonSerializerOptions.Converters.Add(new TUserAccountSecretJsonConverter());
     IJson.DefaultJsonSerializerOptions.Converters.Add(new TUserTokenJsonConverter());
-    IJson.DefaultJsonSerializerOptions.Converters.Add(new TMovieInfoContentMetaConverter());
-    IJson.DefaultJsonSerializerOptions.Converters.Add(new TLanguageTextInfoConverter());
-    IJson.DefaultJsonSerializerOptions.Converters.Add(new TLanguageTextInfosConverter());
-    IJson.DefaultJsonSerializerOptions.Converters.Add(new TMovieInfoFileMetaConverter());
+    IJson.DefaultJsonSerializerOptions.Converters.Add(new TMovieInfoContentMetaJsonConverter());
+    IJson.DefaultJsonSerializerOptions.Converters.Add(new TLanguageTextInfoJsonConverter());
+    IJson.DefaultJsonSerializerOptions.Converters.Add(new TLanguageTextInfosJsonConverter());
+    IJson.DefaultJsonSerializerOptions.Converters.Add(new TMovieInfoFileMetaJsonConverter());
+    IJson.DefaultJsonSerializerOptions.Converters.Add(new TMediaSourceJsonConverter());
     await ExecutingAbout.Initialize().ConfigureAwait(false);
 
     _IsInitializing = false;

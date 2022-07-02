@@ -18,7 +18,44 @@ public class TMediaSourceJsonConverter : JsonConverter<IMediaSource>, ILoggable 
       throw new JsonException();
     }
 
-    IMediaSource MediaSource = new TMediaSource();
+    #region --- Identify the kind of IMediaSource by finding the MediaType token --------------------------------------------
+    Utf8JsonReader SecondReader = reader;
+    string? MediaTypeValue = null;
+
+    while (SecondReader.Read()) {
+      if (SecondReader.TokenType == JsonTokenType.EndObject) {
+        break;
+      }
+
+      if (SecondReader.TokenType == JsonTokenType.PropertyName) {
+        string? PropertyName = SecondReader.GetString();
+        if (string.IsNullOrEmpty(PropertyName)) {
+          continue;
+        }
+        if (PropertyName == nameof(IMediaSource.MediaType)) {
+          SecondReader.Read();
+          MediaTypeValue = SecondReader.GetString();
+          break;
+        }
+      }
+    }
+    if (MediaTypeValue is null) {
+      Logger.LogError("Unable to identify IMediaSource from null value");
+      return null;
+    }
+
+    #endregion --- Identify the kind of IMediaSource by finding the MediaType token --------------------------------------------
+    IMediaSource? MediaSource;
+
+    try {
+      MediaSource = TMediaSource.Create(MediaTypeValue);
+      if (MediaSource is null) {
+        throw new JsonConverterInvalidDataException(nameof(IMediaSource.MediaType), MediaTypeValue);
+      }
+    } catch (Exception ex) {
+      Logger.LogErrorBox($"Unable to identify IMediaSource from {MediaTypeValue.WithQuotes()}", ex);
+      throw new JsonConverterInvalidDataException(nameof(IMediaSource.MediaType), MediaTypeValue, ex);
+    }
 
     try {
       while (reader.Read()) {
@@ -27,16 +64,7 @@ public class TMediaSourceJsonConverter : JsonConverter<IMediaSource>, ILoggable 
 
         if (TokenType == JsonTokenType.EndObject) {
           Logger.IfDebugMessageExBox($"Converted {nameof(IMediaSource)}", MediaSource);
-          if (MediaSource is null) {
-            Logger.LogErrorBox(ERROR_CONVERSION, "(null)");
-            return null;
-          }
-          Type? FinalType = MediaSearch.Models.GlobalSettings.GetType(MediaSource.MediaType?.Name ?? "");
-          if (FinalType is null) {
-            throw new JsonConverterInvalidDataException("MediaType", MediaSource);
-          }
-          var RetVal = TMediaSource.Create(MediaSource.RootStorage, FinalType);
-          return RetVal;
+          return MediaSource;
         }
 
         if (TokenType == JsonTokenType.PropertyName) {
@@ -46,12 +74,11 @@ public class TMediaSourceJsonConverter : JsonConverter<IMediaSource>, ILoggable 
 
           switch (Property) {
 
-            case nameof(IMediaSourceGeneric.MediaType):
+            case nameof(IMediaSource.MediaType):
               string TypeOfMedia = reader.GetString() ?? "";
-              MediaSource.MediaType = Type.GetType(TypeOfMedia);
               break;
 
-            case nameof(IMediaSourceGeneric.RootStorage):
+            case nameof(IMediaSource.RootStorage):
               MediaSource.RootStorage = reader.GetString() ?? "";
               break;
 
@@ -77,10 +104,11 @@ public class TMediaSourceJsonConverter : JsonConverter<IMediaSource>, ILoggable 
       writer.WriteNullValue();
       return;
     }
+
     writer.WriteStartObject();
 
-    writer.WriteString(nameof(TMediaSource.MediaType), value.MediaType?.Name ?? "");
-    writer.WriteString(nameof(TMediaSource.RootStorage), value.RootStorage);
+    writer.WriteString(nameof(IMediaSource.MediaType), value.MediaType?.Name ?? "");
+    writer.WriteString(nameof(IMediaSource.RootStorage), value.RootStorage);
 
     writer.WriteEndObject();
   }

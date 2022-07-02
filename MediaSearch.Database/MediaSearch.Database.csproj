@@ -17,14 +17,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Schema\TSchemaJsonConverter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="_Global_\changelog.txt" />
     <None Remove="_Global_\version.txt" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="Table\AMSTable.cs" />
-    <Compile Include="Table\IMSTable.cs" />
-    <Compile Include="Table\TMSTable.cs" />
+    <Compile Include="Table\ATable.cs" />
+    <Compile Include="Table\ITable.cs" />
+    <Compile Include="Table\TTable.cs" />
   </ItemGroup>
 
   <ItemGroup>

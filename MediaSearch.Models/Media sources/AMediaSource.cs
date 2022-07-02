@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public abstract class AMediaSource<RECORD> : IMediaSource, IMediaSource<RECORD> where RECORD : class, IMSRecord {
+public abstract class AMediaSource<RECORD> : IMediaSource, IMediaSource<RECORD> where RECORD : class, IRecord {
 
   public Type MediaType => typeof(RECORD);
 

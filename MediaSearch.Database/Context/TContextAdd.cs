@@ -1,5 +1,5 @@
 ﻿namespace MediaSearch.Database;
-public class TContextAdd<RECORD> : IContextOperation<RECORD> where RECORD : IMSRecord, new() {
+public class TContextAdd<RECORD> : IContextOperation<RECORD> where RECORD : IRecord, new() {
   public EContextOperation Operation { get; } = EContextOperation.Add;
   public RECORD Record { get; } = new();
 

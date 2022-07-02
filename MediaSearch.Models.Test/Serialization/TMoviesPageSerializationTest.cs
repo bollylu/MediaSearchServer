@@ -3,8 +3,8 @@
 [TestClass]
 public class TMoviesPageSerializationTest {
 
-  internal IMSDatabase Database => _Database ??= new TMSDatabaseJson("data", "demo");
-  private IMSDatabase? _Database;
+  internal IDatabase Database => _Database ??= new TDatabaseJson("data", "demo");
+  private IDatabase? _Database;
 
   [TestMethod]
   public void Serialize() {

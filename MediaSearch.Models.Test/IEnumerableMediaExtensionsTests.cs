@@ -6,8 +6,8 @@ public class IEnumerableMediaExtensionsTests {
   /// <summary>
   /// Internal source of data
   /// </summary>
-  internal IMSDatabase Database => _Database ??= new TMSDatabaseJson("data", "demo");
-  private IMSDatabase? _Database;
+  internal IDatabase Database => _Database ??= new TDatabaseJson("data", "demo");
+  private IDatabase? _Database;
 
   internal IMSTableMovie MovieTable;
 
@@ -19,7 +19,7 @@ public class IEnumerableMediaExtensionsTests {
     Assert.IsTrue(Database.Open());
 
     Message("Get table Movies");
-    IMSTable? Table = Database.Schema.Get("movies");
+    ITable? Table = Database.Schema.Get("movies");
     if (Table is null) {
       Failed("Unable to obtain the Movies table");
       throw new ApplicationException("Unable to obtain the table");

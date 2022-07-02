@@ -1,4 +1,4 @@
-namespace MediaSearch.Test.Database;
+namespace MediaSearch.Test.Database.Serialization;
 
 [TestClass]
 public class TableHeaderSerializationTests {
@@ -10,7 +10,7 @@ public class TableHeaderSerializationTests {
 
   [TestMethod]
   public void TableHeader_Serialize() {
-    IMSTableHeader Source = new TMSTableHeaderMovie {
+    ITableHeader Source = new TMSTableHeaderMovie {
       Name = "Test name",
       Description = "All my movies"
     };
@@ -22,7 +22,7 @@ public class TableHeaderSerializationTests {
     Dump(Source);
 
     JsonSerializerOptions Options = new JsonSerializerOptions(IJson.DefaultJsonSerializerOptions);
-    Options.Converters.Add(new TMSTableHeaderJsonConverter());
+    Options.Converters.Add(new TTableHeaderJsonConverter());
     Options.Converters.Add(new TMediaSourceJsonConverter());
 
     string Target = IJson.ToJson(Source, Options);
@@ -33,7 +33,7 @@ public class TableHeaderSerializationTests {
 
   [TestMethod]
   public void TableHeader_Deserialize() {
-    IMSTableHeader Header = new TMSTableHeaderMovie {
+    ITableHeader Header = new TMSTableHeaderMovie {
       Name = "Test name",
       Description = "All my movies"
     };
@@ -44,7 +44,7 @@ public class TableHeaderSerializationTests {
     Dump(Header);
 
     JsonSerializerOptions Options = new JsonSerializerOptions(IJson.DefaultJsonSerializerOptions);
-    Options.Converters.Add(new TMSTableHeaderJsonConverter());
+    Options.Converters.Add(new TTableHeaderJsonConverter());
     Options.Converters.Add(new TMediaSourceJsonConverter());
 
     string Source = IJson.ToJson(Header, Options);
@@ -52,7 +52,7 @@ public class TableHeaderSerializationTests {
 
     Dump(Source);
 
-    IMSTableHeader? Target = IJson.FromJson<IMSTableHeader>(Source, Options);
+    ITableHeader? Target = IJson.FromJson<ITableHeader>(Source, Options);
 
     Assert.IsNotNull(Target);
     Dump(Target);

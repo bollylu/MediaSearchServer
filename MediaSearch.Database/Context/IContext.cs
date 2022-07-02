@@ -1,7 +1,7 @@
 ﻿namespace MediaSearch.Database;
-public interface IContext<RECORD> : IDisposable where RECORD : IMSRecord {
+public interface IContext<RECORD> : IDisposable where RECORD : IRecord {
 
-  IMSDatabase Database { get; }
+  IDatabase Database { get; }
   string Table { get; }
 
   void Execute(IContextOperation operation);

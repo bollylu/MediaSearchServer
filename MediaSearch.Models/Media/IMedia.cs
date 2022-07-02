@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public interface IMedia : IMSRecord,
+public interface IMedia : IRecord,
                           IStorage, 
                           ITags, 
                           ITitles, 

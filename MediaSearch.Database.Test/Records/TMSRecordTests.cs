@@ -6,7 +6,7 @@ public class TMSRecordTests {
   [TestMethod]
   public void Instanciate_TMSRecord() {
     Message("Create IMSRecord");
-    IMSRecord Target = new TMovie();
+    IRecord Target = new TMovie();
     Dump(Target);
     Assert.IsNotNull(Target);
     Ok();
@@ -14,8 +14,8 @@ public class TMSRecordTests {
 
   [TestMethod]
   public void TMSRecord_Write_JsonDatabase() {
-    TMSDatabaseJson Database = new TMSDatabaseJson() { RootPath = Path.GetTempPath(), Name = $"{Random.Shared.Next()}" };
-    IMSTable MovieTable = new TMSTableMovie() { Name = "Movies" };
+    TDatabaseJson Database = new TDatabaseJson() { RootPath = Path.GetTempPath(), Name = $"{Random.Shared.Next()}" };
+    ITable MovieTable = new TTableMovie() { Name = "Movies" };
 
     Message("Creating database Json");
     Assert.IsTrue(Database.Create());
@@ -30,7 +30,7 @@ public class TMSRecordTests {
       Assert.IsTrue(Database.TableCreate(MovieTable));
       Dump(MovieTable);
 
-      IMSRecord Record = IMSRecordSource.GetMovieRecord("Hello Dolly", "Nice musical", 1956);
+      IRecord Record = TRecordSource.GetMovieRecord("Hello Dolly", "Nice musical", 1956);
       Message("Write record");
       Dump(Record);
       Database.Write(MovieTable, Record);
@@ -53,8 +53,8 @@ public class TMSRecordTests {
 
   [TestMethod]
   public void TMSRecord_Write_JsonDatabaseTable() {
-    IMSDatabase Database = new TMSDatabaseJson() { RootPath = Path.GetTempPath(), Name = $"{Random.Shared.Next()}" };
-    IMSTableMovie MovieTable = new TMSTableMovie() { Name = "Movies" };
+    IDatabase Database = new TDatabaseJson() { RootPath = Path.GetTempPath(), Name = $"{Random.Shared.Next()}" };
+    IMSTableMovie MovieTable = new TTableMovie() { Name = "Movies" };
     IMovie Record = new TMovie("Wargames", 1986);
     Record.Descriptions.Add(ELanguage.French, "Un gamin joue avec un ordi");
 
@@ -83,7 +83,7 @@ public class TMSRecordTests {
 
   [TestMethod]
   public void TMSRecord_Dump_JsonDatabase() {
-    TMSDatabaseJson Database = IMSDatabaseSource.CreateJsonTestDatabase();
+    TDatabaseJson Database = TDatabaseSource.CreateJsonTestDatabase();
     Dump(Database);
 
     Message("Verify that database exists");
@@ -99,7 +99,7 @@ public class TMSRecordTests {
 
   [TestMethod]
   public void TMSRecord_ReadRecord_JsonDatabase() {
-    TMSDatabaseJson Database = IMSDatabaseSource.CreateJsonTestDatabase();
+    TDatabaseJson Database = TDatabaseSource.CreateJsonTestDatabase();
     Dump(Database);
 
     Assert.IsTrue(Database.Close());
@@ -110,7 +110,7 @@ public class TMSRecordTests {
 
     Database.Open();
 
-    IMovie? Target = Database.Read<TMovie>("movies", IMSRecordSource.GetMovieRecords().First().ID);
+    IMovie? Target = Database.Read<TMovie>("movies", TRecordSource.GetMovieRecords().First().ID);
     Assert.IsNotNull(Target);
 
     Assert.IsTrue(Database.Close());

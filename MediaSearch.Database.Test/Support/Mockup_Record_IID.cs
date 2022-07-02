@@ -1,5 +1,5 @@
 ﻿namespace MediaSearch.Test.Database;
-public class Mockup_Record_IID : IMSRecord {
+public class Mockup_Record_IID : IRecord {
   public string ID { get; set; } = "";
   public string Name { get; set; } = "";
 

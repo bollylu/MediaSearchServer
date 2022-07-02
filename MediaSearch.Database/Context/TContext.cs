@@ -1,10 +1,10 @@
 ﻿namespace MediaSearch.Database;
-public class TContext<RECORD> : IContext<RECORD>, IDisposable where RECORD : class, IMSRecord {
-  public IMSDatabase Database { get; init; }
+public class TContext<RECORD> : IContext<RECORD>, IDisposable where RECORD : class, IRecord {
+  public IDatabase Database { get; init; }
   public string Table { get; init; }
   public List<RECORD> Records { get; } = new();
 
-  public TContext(IMSDatabase database, string table) {
+  public TContext(IDatabase database, string table) {
     Database = database;
     Table = table;
   }

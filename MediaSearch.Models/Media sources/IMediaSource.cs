@@ -15,9 +15,8 @@ public interface IMediaSource {
   public Type? MediaType { get; }
 }
 
-public interface IMediaSource<RECORD> : IMediaSource where RECORD : class, IMSRecord {
+public interface IMediaSource<RECORD> : IMediaSource where RECORD : class, IRecord {
 
 }
 
-public interface IMediaSourceGeneric : IMediaSource<IMSRecord> { }
 public interface IMediaSourceMovie : IMediaSource<IMovie> { }
