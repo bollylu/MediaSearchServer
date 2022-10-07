@@ -3,28 +3,17 @@ namespace MediaSearch.Test.Database.Serialization;
 [TestClass]
 public class SchemaSerializationTests {
 
-  //[ClassInitialize]
-  //public static async Task ClassInitialize(TestContext context) {
-  //  await MediaSearch.Test.Database.GlobalSettings.Initialize().ConfigureAwait(false);
-  //}
-
   [TestMethod]
   public void Schema_Serialize() {
-    IDatabase Database = TDatabaseSource.CreateJsonTestDatabase();
-    Dump(Database);
+    const int TableCount = 3;
+    Message($"Creating a database with {TableCount} tables");
+    TDatabaseJson Database = TDatabaseSource.CreateJsonTestDatabaseWithMultipleTables(TableCount, 2);
 
-    _ = TTableSource.CreateTestTable<IMovie>(Database, "Theatre");
+    Message("Opening database");
+    Assert.IsTrue(Database.Open());
 
-    JsonSerializerOptions Options = new JsonSerializerOptions(IJson.DefaultJsonSerializerOptions);
-    Options.Converters.Add(new TTableHeaderJsonConverter());
-    Options.Converters.Add(new TMediaSourceJsonConverter());
-    Options.Converters.Add(new TTableJsonConverter());
-    Options.Converters.Add(new TSchemaJsonConverter());
-
-    Database.Open();
-    string Target = IJson.ToJson(Database.Schema, Options);
+    string Target = IJson.ToJson(Database.Schema, Database.SerializerOptions);
     Assert.IsNotNull(Target);
-
     Dump(Target);
 
     Message("Cleanup");

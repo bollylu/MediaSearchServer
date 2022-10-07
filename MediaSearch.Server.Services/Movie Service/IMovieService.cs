@@ -1,6 +1,4 @@
-﻿using MediaSearch.Database;
-
-namespace MediaSearch.Server.Services;
+﻿namespace MediaSearch.Server.Services;
 
 public interface IMovieService {
 
@@ -14,11 +12,6 @@ public interface IMovieService {
   public const string DEFAULT_PICTURE_NAME = "folder.jpg";
 
   string RootStoragePath { get; }
-
-  /// <summary>
-  /// The source of the data for the service
-  /// </summary>
-  IMSTable<IMovie> MovieTable { get; }
 
   #region --- Database I/O --------------------------------------------
   /// <summary>

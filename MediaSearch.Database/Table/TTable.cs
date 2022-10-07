@@ -12,7 +12,7 @@ public static class TTable {
 
   public static ITable? Create(string tableName, string tableType) {
     return tableType switch {
-      nameof(IMovie) => new TTableMovie(tableName),
+      nameof(IMovie) => new TTable.Create<IMovie>(tableName),
       _ => throw new ApplicationException($"Unable to create Table of type {tableType}"),
     };
   }
@@ -35,14 +35,14 @@ public static class TTable {
 
 }
 
-public class TTableMovie : ATable<IMovie>, ITable<IMovie>, IMSTableMovie {
+//public class TTableMovie : ATable<IMovie>, ITable<IMovie>, ITable {
 
-  public TTableMovie() { }
-  public TTableMovie(string tableName) : base(tableName) {
+//  public TTableMovie() { }
+//  public TTableMovie(string tableName) : base(tableName) {
 
-  }
-  public TTableMovie(string tableName, IDatabase database) : base(tableName, database) {
+//  }
+//  public TTableMovie(string tableName, IDatabase database) : base(tableName, database) {
 
-  }
+//  }
 
-}
+//}

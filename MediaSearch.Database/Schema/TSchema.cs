@@ -5,10 +5,17 @@ public class TSchema : ISchema, IDisposable {
   private readonly List<ITable> Tables = new();
   private readonly object _Lock = new object();
 
+  public IDatabase? Database { get; set; }
+
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TSchema() { }
+  public TSchema(IDatabase? database) {
+    Database = database;
+  }
+
   public void Dispose() {
     Tables?.Clear();
+    Database = null;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
@@ -25,7 +32,7 @@ public class TSchema : ISchema, IDisposable {
 
   public ILogger Logger { get; set; } = new TConsoleLogger<TSchema>();
 
-  public IEnumerable<ITable> GetAll() {
+  public IEnumerable<ITable> GetAllTables() {
     ITable[] Retval;
     lock (_Lock) {
       Retval = Tables.ToArray();
@@ -55,7 +62,11 @@ public class TSchema : ISchema, IDisposable {
     }
   }
 
-  public bool Add(ITable table) {
+  public bool AddTable(ITable table) {
+    if (Database is null) {
+      return false;
+    }
+
     lock (_Lock) {
 
       if (Tables.Any(t => t.Name.Equals(table.Name, StringComparison.InvariantCultureIgnoreCase))) {
@@ -63,6 +74,7 @@ public class TSchema : ISchema, IDisposable {
         return false;
       }
 
+      table.Database = Database;
       Tables.Add(table);
       return true;
     }
@@ -92,4 +104,31 @@ public class TSchema : ISchema, IDisposable {
     }
   }
 
+  public bool Exists() {
+    if (Database is null) {
+      return false;
+    }
+    return Database.SchemaExists();
+  }
+
+  public bool Read() {
+    if (Database is null) {
+      return false;
+    }
+    return Database.SchemaRead();
+  }
+
+  public bool Save() {
+    if (Database is null) {
+      return false;
+    }
+    return Database.SchemaSave();
+  }
+
+  public bool Build() {
+    if (Database is null) {
+      return false;
+    }
+    return Database.SchemaBuild();
+  }
 }

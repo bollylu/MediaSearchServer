@@ -40,7 +40,7 @@ public class TApiServer : IApiServer, ILoggable {
   }
 
   #region --- Get Json --------------------------------------------
-  public async Task<T?> GetJsonAsync<T>(string uriRequest, CancellationToken cancellationToken) where T : class, IJson<T> {
+  public async Task<T?> GetJsonAsync<T>(string uriRequest, CancellationToken cancellationToken) where T : class {
     int LocalRequestId = ++RequestId;
 
     try {
@@ -55,7 +55,7 @@ public class TApiServer : IApiServer, ILoggable {
       }
 
       string StringContent = await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-      T? JsonContent = IJson<T>.FromJson(StringContent);
+      T? JsonContent = IJson.FromJson<T>(StringContent);
 
       IfDebugMessageEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
 
@@ -74,13 +74,13 @@ public class TApiServer : IApiServer, ILoggable {
     }
   }
 
-  public async Task<T?> GetJsonAsync<C, T>(string uriRequest, IJson<C> additionalContent, CancellationToken cancellationToken) where T : class, IJson<T> where C : class, IJson<C> {
+  public async Task<T?> GetJsonAsync<C, T>(string uriRequest, C additionalContent, CancellationToken cancellationToken) where T : class where C : class {
     int LocalRequestId = ++RequestId;
 
     try {
 
       TMscPostRequestMessage RequestMessage = new TMscPostRequestMessage(uriRequest);
-      RequestMessage.Content = new StringContent(additionalContent.ToJson());
+      RequestMessage.Content = new StringContent(IJson.ToJson(additionalContent));
       RequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
       IfDebugMessage($"Request #{LocalRequestId} : {uriRequest} - Content is {additionalContent.GetType().Name}", additionalContent);
@@ -92,7 +92,7 @@ public class TApiServer : IApiServer, ILoggable {
       }
 
       string StringContent = await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-      T? JsonContent = IJson<T>.FromJson(StringContent);
+      T? JsonContent = IJson.FromJson<T>(StringContent);
 
       IfDebugMessageEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
 
@@ -176,7 +176,7 @@ public class TApiServer : IApiServer, ILoggable {
 
       switch (additionalContent) {
         case IJson AdditionalJsonContent: {
-            RequestMessage.Content = new StringContent(AdditionalJsonContent.ToJson());
+            RequestMessage.Content = new StringContent(IJson.ToJson(AdditionalJsonContent));
             RequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
             break;
           }

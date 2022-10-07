@@ -9,7 +9,8 @@ public partial class TDatabaseJson {
         try {
           if (!Directory.Exists(DatabaseFullName)) {
             Directory.CreateDirectory(DatabaseFullName);
-            SaveSchema();
+            Schema.Database = this;
+            SchemaSave();
           }
 
           Chrono.Stop();
@@ -38,6 +39,8 @@ public partial class TDatabaseJson {
           if (!Directory.Exists(DatabaseFullName)) {
             Directory.CreateDirectory(DatabaseFullName);
           }
+
+          //TODO: Create db from schema
 
           Chrono.Stop();
           Logger.LogDebug("Database creation successful", $"{Chrono.ElapsedTime.DisplayTime()}\n{this}");

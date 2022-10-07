@@ -2,6 +2,9 @@
 
 public partial class TDatabaseMemory : ADatabase, ILoggable {
 
+  /// <summary>
+  /// The logger for this class
+  /// </summary>
   public override ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TDatabaseMemory>();
 
   #region --- Converters -------------------------------------------------------------------------------------
@@ -9,9 +12,9 @@ public partial class TDatabaseMemory : ADatabase, ILoggable {
     StringBuilder RetVal = new();
     RetVal.AppendIndent($"- {nameof(Name)} = {Name.WithQuotes()}", indent)
           .AppendIndent($"- {nameof(Description)} = {Description.WithQuotes()}", indent);
-    if (Schema.GetAll().Any()) {
+    if (Schema.GetAllTables().Any()) {
       RetVal.AppendIndent($"- {nameof(Schema)}", indent);
-      foreach (ITable TableItem in Schema.GetAll()) {
+      foreach (ITable TableItem in Schema.GetAllTables()) {
         RetVal.AppendIndent(TableItem.ToString(indent), indent + 2);
       }
     } else {
@@ -30,12 +33,6 @@ public partial class TDatabaseMemory : ADatabase, ILoggable {
   public override void Dispose() {
     if (IsOpened) {
       Close();
-    }
-
-    if (Schema.GetAll().Any()) {
-      foreach (ITable TableItem in Schema.GetAll()) {
-        TableItem.Dispose();
-      }
     }
   }
 }

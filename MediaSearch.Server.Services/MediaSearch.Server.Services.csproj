@@ -35,7 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MediaSearch.Database\MediaSearch.Database.csproj" />
     <ProjectReference Include="..\MediaSearch.Models\MediaSearch.Models.csproj" />
   </ItemGroup>
 

@@ -5,9 +5,11 @@ public abstract partial class ADatabase {
   public ISchema Schema { get; } = new TSchema();
   protected readonly object _LockTable = new object();
 
-  public abstract bool BuildSchema();
-  public abstract bool ReadSchema();
-  public abstract bool SaveSchema();
+  public abstract bool SchemaBuild();
+  public abstract bool SchemaRead();
+  public abstract bool SchemaSave();
+
+  public abstract bool SchemaExists();
 
   //public virtual bool AddTableToSchema(IMSTable table) {
   //  lock (_LockTable) {

@@ -35,10 +35,18 @@ public class TTableJsonConverter : JsonConverter<ITable>, ILoggable {
         // check if reading is complete
         if (TokenType == JsonTokenType.EndObject) {
           try {
-            ITable? RetVal = TTable.Create(TableName, TableType);
-            if (RetVal is null) {
-              throw new JsonConverterInvalidDataException(nameof(IMediaSource.MediaType), TableType);
+
+            if (TableHeader is null) {
+              throw new JsonConverterInvalidDataException(nameof(IMediaSource.MediaType), "Table header is (null)");
             }
+
+            ITable? RetVal = TTable.Create(TableName, TableHeader.TableType);
+            if (RetVal is null) {
+              throw new JsonConverterInvalidDataException(nameof(IMediaSource.MediaType), TableHeader.TableType);
+            }
+
+            return RetVal;
+
           } catch (Exception ex) {
             Logger.LogErrorBox($"Unable to identify ITable from {TableType.WithQuotes()}", ex);
             throw new JsonConverterInvalidDataException(nameof(IMediaSource.MediaType), TableType, ex);
@@ -87,7 +95,7 @@ public class TTableJsonConverter : JsonConverter<ITable>, ILoggable {
 
     writer.WriteStartObject();
     writer.WriteString(nameof(ITable.Name), value.Name);
-    writer.WriteString(nameof(ITable.Database), value.Database?.Name ?? "(no database)");
+    //writer.WriteString(nameof(ITable.Database), value.Database?.Name ?? "(no database)");
     writer.WritePropertyName(nameof(ITable.Header));
     JsonSerializer.Serialize(writer, value.Header, options);
 

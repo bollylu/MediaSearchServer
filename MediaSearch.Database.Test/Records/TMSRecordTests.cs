@@ -54,7 +54,7 @@ public class TMSRecordTests {
   [TestMethod]
   public void TMSRecord_Write_JsonDatabaseTable() {
     IDatabase Database = new TDatabaseJson() { RootPath = Path.GetTempPath(), Name = $"{Random.Shared.Next()}" };
-    IMSTableMovie MovieTable = new TTableMovie() { Name = "Movies" };
+    ITable<IMovie> MovieTable = new TTableMovie() { Name = "Movies" };
     IMovie Record = new TMovie("Wargames", 1986);
     Record.Descriptions.Add(ELanguage.French, "Un gamin joue avec un ordi");
 
@@ -83,7 +83,7 @@ public class TMSRecordTests {
 
   [TestMethod]
   public void TMSRecord_Dump_JsonDatabase() {
-    TDatabaseJson Database = TDatabaseSource.CreateJsonTestDatabase();
+    TDatabaseJson Database = TDatabaseSource.CreateJsonTestDatabaseWithOneTable();
     Dump(Database);
 
     Message("Verify that database exists");
@@ -99,7 +99,7 @@ public class TMSRecordTests {
 
   [TestMethod]
   public void TMSRecord_ReadRecord_JsonDatabase() {
-    TDatabaseJson Database = TDatabaseSource.CreateJsonTestDatabase();
+    TDatabaseJson Database = TDatabaseSource.CreateJsonTestDatabaseWithOneTable();
     Dump(Database);
 
     Assert.IsTrue(Database.Close());

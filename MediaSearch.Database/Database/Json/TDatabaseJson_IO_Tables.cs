@@ -10,7 +10,7 @@ public partial class TDatabaseJson {
       }
       Directory.CreateDirectory(TableDirectory);
       table.Database = this;
-      Schema.Add(table);
+      Schema.AddTable(table);
       TableWriteHeader(table);
       return true;
     } catch (Exception ex) {

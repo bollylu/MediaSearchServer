@@ -9,7 +9,7 @@ public class IEnumerableMediaExtensionsTests {
   internal IDatabase Database => _Database ??= new TDatabaseJson("data", "demo");
   private IDatabase? _Database;
 
-  internal IMSTableMovie MovieTable;
+  private ITable<IMovie> MovieTable;
 
   public IEnumerableMediaExtensionsTests() {
     Dump(Database);
@@ -25,7 +25,7 @@ public class IEnumerableMediaExtensionsTests {
       throw new ApplicationException("Unable to obtain the table");
     }
 
-    MovieTable = (IMSTableMovie)Table;
+    //MovieTable = (IMSTableMovie)Table;
 
   }
 

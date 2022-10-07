@@ -2,70 +2,77 @@
 
 public interface ISchema : IDisposable {
 
-  IEnumerable<ITable> GetAll();
+  /// <summary>
+  /// Get The list of tables from the schema
+  /// </summary>
+  /// <returns>A enumerable list of ITable</returns>
+  IEnumerable<ITable> GetAllTables();
+
+  /// <summary>
+  /// Get one table from the schema
+  /// </summary>
+  /// <param name="name">The name of the table</param>
+  /// <returns>The trable or <see langword="null"/> if unavailable</returns>
   ITable? Get(string name);
+
+  /// <summary>
+  /// Get the text list of tables from the schema
+  /// </summary>
+  /// <returns>A list of string</returns>
   IEnumerable<string> List();
-  bool Add(ITable table);
+
+  /// <summary>
+  /// Add a table to the schema
+  /// </summary>
+  /// <param name="table">The table to add</param>
+  /// <returns><see langword="true"/> if ok, <see langword="false"/> otherwise</returns>
+  bool AddTable(ITable table);
+
+  /// <summary>
+  /// Remove a table from the schema
+  /// </summary>
+  /// <param name="table">The table to remove</param>
+  /// <returns><see langword="true"/> if ok, <see langword="false"/> otherwise</returns>
   bool Remove(ITable table);
+
+  /// <summary>
+  /// Remove a table from the schema
+  /// </summary>
+  /// <param name="table">The table to remove</param>
+  /// <returns><see langword="true"/> if ok, <see langword="false"/> otherwise</returns>
   bool Remove(string tableName);
 
+  /// <summary>
+  /// Clear the schema content
+  /// </summary>
   void Clear();
 
-  ///// <summary>
-  ///// Convert to schema to a Json representation
-  ///// </summary>
-  ///// <returns>A Json string representation</returns>
-  //JsonObject ToJson() {
+  /// <summary>
+  /// The database that the schema belongs to
+  /// </summary>
+  IDatabase? Database { get; set; }
 
-  //  JsonArray Tables = new();
+  /// <summary>
+  /// Indicate if the schema exists physically
+  /// </summary>
+  /// <returns><see langword="true"/> when the schema is available, <see langword="false"/> otherwise</returns>
+  bool Exists();
 
-  //  foreach (ITable TableItem in GetAll()) {
-  //    Tables.Add(TableItem.ToJson());
-  //  }
+  /// <summary>
+  /// Read the content of the schema
+  /// </summary>
+  /// <returns><see langword="true"/> when ok, <see langword="false"/> otherwise</returns>
+  bool Read();
 
-  //  return new JsonObject(Tables);
+  /// <summary>
+  /// Save the content of the schema
+  /// </summary>
+  /// <returns><see langword="true"/> when ok, <see langword="false"/> otherwise</returns>
+  bool Save();
 
-
-
-  //  //JsonWriterOptions JsonWriterOptions = new JsonWriterOptions() {
-  //  //  Indented = true,
-  //  //  Encoder = IJson.DefaultJsonSerializerOptions.Encoder
-  //  //};
-
-  //  //using (MemoryStream RetVal = new MemoryStream()) {
-  //  //  using (Utf8JsonWriter Writer = new Utf8JsonWriter(RetVal, JsonWriterOptions)) {
-  //  //    Writer.WriteStartArray("Tables");
-  //  //    foreach (ITable TableItem in GetAll()) {
-  //  //      Writer.WriteRawValue(TableItem.ToJson());
-  //  //    }
-  //  //    Writer.WriteEndArray();
-  //  //    Writer.Flush();
-  //  //  }
-  //  //  return Encoding.UTF8.GetString(RetVal.ToArray());
-  //  //}
-  //}
-
-  ///// <summary>
-  ///// Convert a Json string representing a schema into an actual schema object
-  ///// </summary>
-  ///// <param name="source">The Json source</param>
-  ///// <returns>A new ISchema</returns>
-  ///// <exception cref="JsonConverterInvalidDataException"></exception>
-  //static ISchema FromJson(string source) {
-  //  try {
-  //    ISchema? Retval = new TSchema();
-  //    JsonDocument Json = JsonDocument.Parse(source);
-  //    JsonElement Root = Json.RootElement;
-  //    foreach (JsonElement TableItem in Root.EnumerateArray()) {
-  //      ITable? Table = IJson.FromJson<ITable>(TableItem.GetRawText());
-  //      if (Table is not null) {
-  //        Retval.Add(Table);
-  //      }
-  //    }
-  //    return Retval;
-  //  } catch (Exception ex) {
-  //    throw new JsonConverterInvalidDataException("Error converting Schema", source, ex);
-  //  }
-  //}
-
+  /// <summary>
+  /// Build the content of the schema
+  /// </summary>
+  /// <returns><see langword="true"/> when ok, <see langword="false"/> otherwise</returns>
+  bool Build();
 }

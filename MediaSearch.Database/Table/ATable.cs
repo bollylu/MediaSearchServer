@@ -1,5 +1,10 @@
 ﻿namespace MediaSearch.Database;
 
+public abstract class ATable : ATable<IRecord>, IDisposable {
+
+}
+
+
 public abstract class ATable<RECORD> : IDisposable, ITable<RECORD> where RECORD : class, IRecord {
 
   public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<ITable>();

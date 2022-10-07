@@ -42,7 +42,19 @@ public class TSchemaJsonConverter : JsonConverter<ISchema>, ILoggable {
 
           switch (Property) {
 
-
+            case "Tables":
+              reader.Read();
+              if (TokenType == JsonTokenType.StartArray) {
+                reader.Read();
+                while (TokenType != JsonTokenType.EndArray) {
+                  ITable? Table = JsonSerializer.Deserialize<ITable>(ref reader, options);
+                  if (Table is not null) {
+                    RetVal.AddTable(Table);
+                  }
+                  reader.Read();
+                }
+              }
+              break;
 
             default:
               Logger.LogWarningBox(ERROR_INVALID_PROPERTY, Property);
@@ -69,7 +81,7 @@ public class TSchemaJsonConverter : JsonConverter<ISchema>, ILoggable {
 
     writer.WriteStartObject();
     writer.WriteStartArray("Tables");
-    foreach (ITable TableItem in value.GetAll()) {
+    foreach (ITable TableItem in value.GetAllTables()) {
       JsonSerializer.Serialize(writer, TableItem, options);
     }
     writer.WriteEndArray();

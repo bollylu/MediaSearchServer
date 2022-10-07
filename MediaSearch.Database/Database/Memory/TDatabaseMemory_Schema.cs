@@ -2,15 +2,18 @@
 
 public partial class TDatabaseMemory {
 
-  public override bool BuildSchema() {
+  public override bool SchemaBuild() {
     return true;
   }
 
-  public override bool ReadSchema() {
+  public override bool SchemaRead() {
     return true;
   }
-  public override bool SaveSchema() {
+  public override bool SchemaSave() {
     return true;
   }
 
+  public override bool SchemaExists() {
+    return true;
+  }
 }

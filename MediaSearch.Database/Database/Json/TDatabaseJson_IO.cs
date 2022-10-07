@@ -7,26 +7,31 @@ public partial class TDatabaseJson {
       return false;
     }
 
-    Schema.Clear();
-    foreach (string TableNameItem in Directory.EnumerateDirectories(DatabaseFullName)) {
-      string TableName = TableNameItem.AfterLast(Path.DirectorySeparatorChar);
-      Logger.LogDebug($"Found table {TableName.WithQuotes()}");
-      ITableHeader? Header = TableReadHeader(TableName);
-      if (Header is null) {
-        return false;
-      }
-      ITable? Table = TTable.Create(Header.Name, Header.TableType, this);
-      if (Table is null) {
-        return false;
-      }
-      Schema.Add(Table);
+    if (Schema.Exists()) {
+      IsOpened = Schema.Read();
+    } else {
+      IsOpened = Schema.Build();
     }
-    IsOpened = true;
-    return true;
+
+    return IsOpened;
+
+    //foreach (string TableNameItem in Directory.EnumerateDirectories(DatabaseFullName)) {
+    //  string TableName = TableNameItem.AfterLast(Path.DirectorySeparatorChar);
+    //  Logger.LogDebug($"Found table {TableName.WithQuotes()}");
+    //  ITableHeader? Header = TableReadHeader(TableName);
+    //  if (Header is null) {
+    //    return false;
+    //  }
+    //  ITable? Table = TTable.Create(Header.Name, Header.TableType, this);
+    //  if (Table is null) {
+    //    return false;
+    //  }
+    //  Schema.Add(Table);
+    //}
   }
 
   public override bool Close() {
-    Schema?.Dispose();
+    Schema.Save();
     IsOpened = false;
     return true;
   }

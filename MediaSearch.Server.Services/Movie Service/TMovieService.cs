@@ -1,7 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 
-using MediaSearch.Database;
-
 using SkiaSharp;
 
 namespace MediaSearch.Server.Services;
@@ -41,19 +39,12 @@ public class TMovieService : IMovieService, IName, ILoggable {
   /// </summary>
   public List<string> MoviesExtensions { get; } = new() { ".mkv", ".avi", ".mp4", ".iso" };
 
-  public IMSTable<IMovie> MovieTable { get; protected set; } = new TMSTable<IMovie>();
-
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMovieService() {
   }
 
   public TMovieService(string storage) : this() {
     RootStoragePath = storage;
-  }
-
-  public TMovieService(IMSTable<IMovie> table) : this() {
-    MovieTable = table;
-    RootStoragePath = table.Header.MediaSource.RootStorage;
   }
 
   private bool _IsInitialized = false;
@@ -104,7 +95,7 @@ public class TMovieService : IMovieService, IName, ILoggable {
   #endregion --- Converters -------------------------------------------------------------------------------------
 
   public void Reset() {
-    MovieTable.Clear();
+    //MovieTable.Clear();
     _IsInitialized = false;
   }
 
@@ -117,7 +108,8 @@ public class TMovieService : IMovieService, IName, ILoggable {
     if (_IsInitialized) {
       return -1;
     }
-    return (int)MovieTable.Count();
+    //return (int)MovieTable.Count();
+    return 0;
   }
 
   #region --- Movies --------------------------------------------

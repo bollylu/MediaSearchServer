@@ -1,14 +1,17 @@
-﻿using BLTools.Encryption;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+using BLTools.Encryption;
 
 namespace MediaSearch.Models;
 
 public class TMovie : AMedia, IMovie, IDirty, ILoggable {
 
-
+  [NotMapped]
   public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMovie>();
 
   #region --- Public properties ------------------------------------------------------------------------------
 
+  [NotMapped]
   public EMovieExtension Extension {
     get {
       return (FileExtension?.TrimStart('.') ?? "") switch {
@@ -28,6 +31,7 @@ public class TMovie : AMedia, IMovie, IDirty, ILoggable {
   #endregion --- Public properties ---------------------------------------------------------------------------
 
   #region --- Picture --------------------------------------------
+  [NotMapped]
   public static byte[] PictureMissing {
     get {
       return _PictureMissingBytes ??= Support.GetPicture("missing", ".jpg");

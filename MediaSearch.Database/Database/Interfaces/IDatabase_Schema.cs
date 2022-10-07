@@ -12,19 +12,25 @@ public partial interface IDatabase {
   /// Build the schema of the database from a discovery of its tables
   /// </summary>
   /// <returns><see langword="true"/> if ok, <see langword="false"/> otherwise</returns>
-  bool BuildSchema();
+  bool SchemaBuild();
 
   /// <summary>
   /// Read the schema of the database
   /// </summary>
   /// <returns><see langword="true"/> if ok, <see langword="false"/> otherwise</returns>
-  bool ReadSchema();
+  bool SchemaRead();
 
   /// <summary>
   /// Save the schema of the database
   /// </summary>
   /// <returns><see langword="true"/> if ok, <see langword="false"/> otherwise</returns>
-  bool SaveSchema();
+  bool SchemaSave();
+
+  /// <summary>
+  /// Check if the schema if physically present
+  /// </summary>
+  /// <returns><see langword="true"/> if schema if available, <see langword="false"/> otherwise</returns>
+  bool SchemaExists();
 
   ///// <summary>
   ///// Add a table to the database

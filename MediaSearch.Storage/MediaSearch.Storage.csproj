@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnablePreviewFeatures>true</EnablePreviewFeatures>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="_Global_\changelog.txt" />
+    <None Remove="_Global_\version.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="_Global_\changelog.txt" />
+    <EmbeddedResource Include="_Global_\version.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MediaSearch.Models\MediaSearch.Models.csproj" />
+  </ItemGroup>
+
+</Project>

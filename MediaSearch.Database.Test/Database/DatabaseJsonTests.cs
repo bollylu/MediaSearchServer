@@ -55,7 +55,7 @@ public class DatabaseJsonTests {
   [TestMethod]
   public void TMSDatabaseJson_CreateDatabase_AddTable() {
     TDatabaseJson Target = new TDatabaseJson() { RootPath = Path.GetTempPath(), Name = $"{Random.Shared.Next()}" };
-    IMSTableMovie MovieTable = new TTableMovie() { Name = "Movies" };
+    ITable MovieTable = new TTableMovie() { Name = "Movies" };
 
     Message("Creating database Json");
     Assert.IsTrue(Target.Create());
@@ -104,8 +104,8 @@ public class DatabaseJsonTests {
     TDatabaseJson Target = new TDatabaseJson() { RootPath = Path.GetTempPath(), Name = $"{Random.Shared.Next()}" };
     Target.Logger.SeverityLimit = ESeverity.Debug;
 
-    IMSTableMovie MovieTable = new TTableMovie() { Name = "Movies" };
-    IMSTableMovie TheatreTable = new TTableMovie() { Name = "Theatre" };
+    ITable MovieTable = new TTableMovie() { Name = "Movies" };
+    ITable TheatreTable = new TTableMovie() { Name = "Theatre" };
 
     Message("Creating database Json");
     Assert.IsTrue(Target.Create());

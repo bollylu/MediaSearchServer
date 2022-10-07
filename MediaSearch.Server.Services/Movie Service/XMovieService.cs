@@ -1,7 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 
-using MediaSearch.Database;
-
 namespace MediaSearch.Server.Services;
 
 // <summary>
@@ -39,12 +37,7 @@ public class XMovieService : IMovieService, IName, ILoggable {
   /// </summary>
   public List<string> MoviesExtensions { get; } = new() { ".mkv", ".avi", ".mp4", ".iso" };
 
-  public IMSTable<IMovie> MovieTable { get; protected set; } = new TMSTable<IMovie>();
-
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public XMovieService(IMSTable<IMovie> table) {
-    MovieTable = table;
-  }
 
   private bool _IsInitialized = false;
   private bool _IsInitializing = false;
@@ -54,10 +47,6 @@ public class XMovieService : IMovieService, IName, ILoggable {
     }
 
     if (_IsInitializing) {
-      return;
-    }
-
-    if (MovieTable.Any()) {
       return;
     }
 

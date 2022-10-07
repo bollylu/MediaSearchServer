@@ -15,7 +15,7 @@ public class SchemaTests {
   public void BuildSchemaFromEmptyDatabase() {
 
     IDatabase Database = TDatabaseSource.CreateJsonTestDatabaseEmpty();
-    Assert.IsTrue(Database.BuildSchema());
+    Assert.IsTrue(Database.SchemaBuild());
 
     Dump(Database);
     Dump(Database.Schema);
@@ -27,10 +27,10 @@ public class SchemaTests {
   [TestMethod]
   public void BuildSchemaFromDatabase() {
 
-    IDatabase Database = TDatabaseSource.CreateJsonTestDatabase();
+    IDatabase Database = TDatabaseSource.CreateJsonTestDatabaseWithOneTable();
 
     Message("Building the schema");
-    Assert.IsTrue(Database.BuildSchema());
+    Assert.IsTrue(Database.SchemaBuild());
 
     Dump(Database);
     Dump(Database.Schema);
@@ -42,16 +42,16 @@ public class SchemaTests {
   [TestMethod]
   public void SaveSchemaFromDatabase() {
 
-    TDatabaseJson Database = TDatabaseSource.CreateJsonTestDatabase();
+    TDatabaseJson Database = TDatabaseSource.CreateJsonTestDatabaseWithOneTable();
 
     Message("Building the schema");
-    Assert.IsTrue(Database.BuildSchema());
+    Assert.IsTrue(Database.SchemaBuild());
 
     Dump(Database);
     Dump(Database.Schema);
 
     Assert.IsTrue(Database.Open());
-    Assert.IsTrue(Database.SaveSchema());
+    Assert.IsTrue(Database.SchemaSave());
 
     string RawSchemaContent = File.ReadAllText(Path.Join(Database.DatabaseFullName, TDatabaseJson.DATABASE_SCHEMA_NAME));
     MessageBox("Raw schema", RawSchemaContent);

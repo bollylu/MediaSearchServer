@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Database;
 
-public interface ITable : IDisposable {
+public interface ITable : ITable<IRecord>, IDisposable {
   string Name { get; }
   IDatabase? Database { get; set; }
   ITableHeader? Header { get; }
@@ -12,9 +12,6 @@ public interface ITable : IDisposable {
   /// <param name="indent">The number of spaces to indent content</param>
   /// <returns>A string representation of the object</returns>
   string ToString(int indent);
-
-
-
   #endregion --- Converters -------------------------------------------------------------------------------------
 
   #region --- Content information --------------------------------------------
@@ -44,7 +41,7 @@ public interface ITable : IDisposable {
 
 }
 
-public interface ITable<RECORD> : ITable where RECORD : class, IRecord {
+public interface ITable<RECORD> where RECORD : class, IRecord {
 
   List<IIndex<RECORD>> Indexes { get; }
 
@@ -145,4 +142,3 @@ public interface ITable<RECORD> : ITable where RECORD : class, IRecord {
 
 }
 
-public interface IMSTableMovie : ITable<IMovie> { }
