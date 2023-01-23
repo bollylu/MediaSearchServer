@@ -40,5 +40,5 @@ public static class GlobalSettings {
 
   public static TAbout CallingAbout => TAbout.Calling;
 
-  public static IAuditService AuditService { get; set; }
+  public static IAuditService? AuditService { get; set; }
 }

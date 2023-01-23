@@ -7,8 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-using System.Reflection;
-
 namespace MediaSearch.Server;
 
 public class Program {
@@ -27,16 +25,18 @@ public class Program {
 
   public const string DEFAULT_AUDITFILE_LINUX = "/var/log/MediaSearch/MediaSearch.Server.audit";
   public const string DEFAULT_AUDITFILE_WINDOWS = @"c:\logs\MediaSearch\MediaSearch.Server.audit";
+
+  public const string DEFAULT_SERVER_NAME = "http://localhost:4567";
   #endregion --- Parameters --------------------------------------------
 
   #region --- Global variables --------------------------------------------
   public static IConfiguration? Configuration { get; private set; }
   #endregion --- Global variables --------------------------------------------
 
-  const string DEFAULT_SERVER_NAME = "http://localhost:4567";
-
   #region -----------------------------------------------
   public static void Main(string[] args) {
+
+    Configuration = _BuildConfiguration(args);
 
     if (OperatingSystem.IsWindows()) {
       Console.SetWindowSize(132, 50);
@@ -75,20 +75,6 @@ public class Program {
 
     GlobalSettings.AuditService.Audit("", "Server startup");
 
-    #region --- Configuration --------------------------------------------
-    IConfigurationBuilder ConfigurationBuilder = new ConfigurationBuilder();
-    ConfigurationBuilder.SetBasePath(Directory.GetCurrentDirectory());
-    ConfigurationBuilder.AddJsonFile("appsettings.json");
-    ConfigurationBuilder.AddJsonFile("appsettings.Development.json");
-    if (OperatingSystem.IsWindows()) {
-      ConfigurationBuilder.AddJsonFile("appsettings.windows.json");
-    } else {
-      ConfigurationBuilder.AddJsonFile("appsettings.linux.json");
-    }
-    ConfigurationBuilder.AddCommandLine(args);
-    Configuration = ConfigurationBuilder.Build();
-    #endregion --- Configuration --------------------------------------------
-
     Console.WriteLine(GlobalSettings.ListAbout());
     Logger.Log(GlobalSettings.ListAbout());
 
@@ -105,10 +91,15 @@ public class Program {
 
   public static IHostBuilder CreateHostBuilder(string[] args) {
 
-    string Server = Configuration.GetValue("server", DEFAULT_SERVER_NAME);
-    if (!(Server.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase) ||
-          Server.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))) {
-      Usage($"Invalid [server] parameter : {Server} is invalid, default to {DEFAULT_SERVER_NAME}");
+    if (Configuration is null) {
+      Usage($"Invalid [server] parameter : default to {DEFAULT_SERVER_NAME}");
+      throw new ApplicationException($"Invalid [server] parameter : default to {DEFAULT_SERVER_NAME}");
+    }
+
+    string Server = Configuration.GetValue<string>("server", DEFAULT_SERVER_NAME) ?? DEFAULT_SERVER_NAME;
+
+    if (!(Server.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase) || Server.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))) {
+      Usage($"Invalid [server] parameter : {Server} is invalid, default to {DEFAULT_SERVER_NAME}", false);
       Server = DEFAULT_SERVER_NAME;
     }
 
@@ -128,7 +119,7 @@ public class Program {
                });
   }
 
-  public static void Usage(string message = "") {
+  public static void Usage(string message = "", bool stopRunning = true) {
     if (message != "") {
       Console.WriteLine(message);
     }
@@ -140,6 +131,23 @@ public class Program {
     Console.WriteLine("  [audit=<auditfile path and name>]");
     Console.WriteLine("  [datasource=<root data source>]");
 
-    Environment.Exit(1);
+    if (stopRunning) {
+      Environment.Exit(1);
+    }
+  }
+
+  private static IConfiguration _BuildConfiguration(string[] args) {
+    IConfigurationBuilder ConfigurationBuilder = new ConfigurationBuilder();
+    ConfigurationBuilder.SetBasePath(Directory.GetCurrentDirectory());
+    ConfigurationBuilder.AddJsonFile("appsettings.json");
+    ConfigurationBuilder.AddJsonFile("appsettings.Development.json");
+    if (OperatingSystem.IsWindows()) {
+      ConfigurationBuilder.AddJsonFile("appsettings.windows.json");
+    } else {
+      ConfigurationBuilder.AddJsonFile("appsettings.linux.json");
+    }
+    ConfigurationBuilder.AddCommandLine(args);
+
+    return ConfigurationBuilder.Build();
   }
 }

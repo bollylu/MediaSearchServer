@@ -9,7 +9,7 @@ namespace MediaSearch.Server.Controllers;
 public class TLoginController : ControllerBase, IMediaSearchLoggable<TLoginController> {
 
   private readonly ILoginService _LoginService;
-  private readonly IAuditService _AuditService = GlobalSettings.AuditService;
+  private readonly IAuditService _AuditService = GlobalSettings.AuditService ?? throw new ApplicationException("Missing audit service");
 
   public IMediaSearchLogger<TLoginController> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TLoginController>();
 

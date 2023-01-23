@@ -8,7 +8,7 @@ public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> 
   private readonly List<IUserAccount> _UserAccounts = new();
   private readonly ReaderWriterLockSlim _LockUserAccounts = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
-  private readonly IAuditService _AuditService = GlobalSettings.AuditService;
+  private readonly IAuditService _AuditService = GlobalSettings.AuditService ?? throw new ApplicationException("Missing audit service");
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TLoginService() {

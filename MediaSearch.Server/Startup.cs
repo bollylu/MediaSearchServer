@@ -7,8 +7,6 @@ using Microsoft.OpenApi.Models;
 
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-using System.Reflection;
-
 namespace MediaSearch.Server;
 
 public class Startup {
@@ -31,8 +29,6 @@ public class Startup {
   // This method gets called by the runtime. Use this method to add services to the container.
   public void ConfigureServices(IServiceCollection services) {
 
-    string DataSource = Configuration.GetValue("datasource", DEFAULT_DATASOURCE);
-
     #region --- Log startup info --------------------------------------------
     StringBuilder StartupInfo = new StringBuilder();
     StartupInfo.AppendLine($"Version {GlobalSettings.EntryAbout.CurrentVersion}");
@@ -44,6 +40,12 @@ public class Startup {
     #endregion --- Log startup info --------------------------------------------
 
     Logger.Log("MediaSearch.Server startup...");
+    string DataSource;
+    if (Configuration is not null) {
+      DataSource = Configuration.GetValue("datasource", DEFAULT_DATASOURCE) ?? DEFAULT_DATASOURCE;
+    } else {
+      DataSource = DEFAULT_DATASOURCE;
+    }
     Logger.Log($"Data source is {DataSource}");
 
     services.AddControllers(options => {

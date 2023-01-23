@@ -86,7 +86,7 @@ public abstract class AMovieCache : IMovieCache, IMediaSearchLoggable<TMovieCach
         RetVal.SubGroup = "";
         break;
       case 1:
-        RetVal.Group = GroupTags[0]; 
+        RetVal.Group = GroupTags[0];
         RetVal.SubGroup = "";
         break;
       case 2:
@@ -191,7 +191,7 @@ public abstract class AMovieCache : IMovieCache, IMediaSearchLoggable<TMovieCach
   }
 
   public TMoviesPage? GetMoviesPage(IFilter filter) {
-    Logger.LogDebug(filter.ToString().BoxFixedWidth("Filter", GlobalSettings.DEBUG_BOX_WIDTH));
+    Logger.LogDebug(filter.ToString() ?? "".BoxFixedWidth("Filter", GlobalSettings.DEBUG_BOX_WIDTH));
 
     TMoviesPage RetVal = new TMoviesPage() {
       Source = RootStoragePath,
@@ -237,7 +237,7 @@ public abstract class AMovieCache : IMovieCache, IMediaSearchLoggable<TMovieCach
       //LogDebugEx($"<== GetSubGroups() from cache");
       _LockCache.ExitReadLock();
     }
-  } 
+  }
   #endregion --- Groups --------------------------------------------
 }
 

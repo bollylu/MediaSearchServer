@@ -15,7 +15,7 @@ public static class HttpRequestExtensions {
   public static Dictionary<string, string> GetHeaders(this HttpRequest request) {
     Dictionary<string, string> RetVal = new();
     foreach (var HeaderItem in request.Headers) {
-      RetVal.Add(HeaderItem.Key, HeaderItem.Value);
+      RetVal.Add(HeaderItem.Key, HeaderItem.Value.ToString() ?? "");
     }
     return RetVal;
   }
@@ -31,7 +31,7 @@ public static class HttpRequestExtensions {
   public static Dictionary<string, string> GetHeaders(this HttpResponse response) {
     Dictionary<string, string> RetVal = new();
     foreach (var HeaderItem in response.Headers) {
-      RetVal.Add(HeaderItem.Key, HeaderItem.Value);
+      RetVal.Add(HeaderItem.Key, HeaderItem.Value.ToString() ?? "");
     }
     return RetVal;
   }

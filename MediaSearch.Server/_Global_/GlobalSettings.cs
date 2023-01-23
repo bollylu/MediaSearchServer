@@ -9,7 +9,7 @@ public static class GlobalSettings {
 
   public static IMediaSearchLogger GlobalLogger { get; set; } = new TMediaSearchLoggerConsole();
 
-  public static TLoggerPool LoggerPool { get; } = new ();
+  public static TLoggerPool LoggerPool { get; } = new();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   static GlobalSettings() {
@@ -40,7 +40,7 @@ public static class GlobalSettings {
   }
 
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
-  
+
   public static TAbout EntryAbout => TAbout.Entry;
 
   public static TAbout ExecutingAbout {
@@ -62,5 +62,5 @@ public static class GlobalSettings {
     return RetVal.ToString();
   }
 
-  public static IAuditService AuditService {get; set;}
+  public static IAuditService? AuditService { get; set; }
 }
