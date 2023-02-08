@@ -1,24 +1,21 @@
 ﻿using BLTools.Text;
 
-using System.Diagnostics;
-using System.Net.Http.Json;
-using System.Runtime.CompilerServices;
-
 namespace MediaSearch.Client.Services;
 
 /// <summary>
 /// Client Movie service. Provides access to groups, movies and pictures from a REST server
 /// </summary>
 
-public class TMovieService : IMovieService, IMediaSearchLoggable<TMovieService> {
+public class TMovieService : ALoggable, IMovieService {
 
   public IApiServer ApiServer { get; set; } = new TApiServer();
-  public IMediaSearchLogger<TMovieService> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovieService>();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   private readonly TImageCache _ImagesCache = new TImageCache();
 
-  public TMovieService() { }
+  public TMovieService() {
+    Logger = GlobalSettings.LoggerPool.GetLogger<TMovieService>();
+  }
 
   public TMovieService(IApiServer apiServer, TImageCache imagesCache) : this() {
     Logger.Log($"Api server = {apiServer}");
@@ -67,7 +64,7 @@ public class TMovieService : IMovieService, IMediaSearchLoggable<TMovieService> 
 
       string RequestUrl = $"movie";
       Logger.LogDebugEx(RequestUrl.BoxFixedWidth($"get movie page request", GlobalSettings.DEBUG_BOX_WIDTH));
-      Logger.LogDebug(filter.ToString().BoxFixedWidth($"Movies page filter", GlobalSettings.DEBUG_BOX_WIDTH));
+      Logger.LogDebug(filter.ToString() ?? "".BoxFixedWidth($"Movies page filter", GlobalSettings.DEBUG_BOX_WIDTH));
 
       using (CancellationTokenSource Timeout = new CancellationTokenSource(GlobalSettings.HTTP_TIMEOUT_IN_MS)) {
 
@@ -80,10 +77,9 @@ public class TMovieService : IMovieService, IMediaSearchLoggable<TMovieService> 
 
       }
     } catch (Exception ex) {
-      Logger.LogError($"Unable to get movies data : {ex.Message}");
+      LogErrorBox("Unable to get movies data", ex);
       if (ex.InnerException is not null) {
-        Logger.LogError($"  Inner exception : {ex.InnerException.Message}");
-        Logger.LogError($"  Inner call stack : {ex.InnerException.StackTrace}");
+        LogErrorBox("  Inner exception", ex.InnerException, GlobalSettings.DEBUG_BOX_WIDTH, nameof(GetMoviesPage), true);
       }
       return null;
     }
@@ -94,7 +90,7 @@ public class TMovieService : IMovieService, IMediaSearchLoggable<TMovieService> 
   public async Task<byte[]> GetPicture(string id, CancellationToken cancelToken, int w = 128, int h = 160) {
 
     string RequestUrl = $"movie/getPicture?movieId={id.ToUrl64()}&width={w}&height={h}";
-    IfDebugMessageEx("Requesting picture", RequestUrl);
+    Logger.IfDebugMessageEx("Requesting picture", RequestUrl);
 
     try {
       using (CancellationTokenSource Timeout = new CancellationTokenSource(GlobalSettings.HTTP_TIMEOUT_IN_MS)) {
@@ -105,13 +101,13 @@ public class TMovieService : IMovieService, IMediaSearchLoggable<TMovieService> 
         return RetVal;
       }
     } catch (TaskCanceledException) {
-      Logger.LogError("Task is cancelled.");
+      LogError("Task is cancelled.");
       return Array.Empty<byte>();
     } catch (OperationCanceledException) {
-      Logger.LogError("Operation is cancelled.");
+      LogError("Operation is cancelled.");
       return Array.Empty<byte>();
     } catch (Exception ex) {
-      Logger.LogError($"Unable to get picture : {ex.Message}");
+      LogError($"Unable to get picture : {ex.Message}");
       return Array.Empty<byte>();
     } finally {
       //LogDebug("Completed getpicture");
@@ -154,9 +150,9 @@ public class TMovieService : IMovieService, IMediaSearchLoggable<TMovieService> 
       }
 
     } catch (Exception ex) {
-      Logger.LogErrorBox($"Unable to get groups data", ex);
+      LogErrorBox($"Unable to get groups data", ex);
       if (ex.InnerException is not null) {
-        Logger.LogErrorBox($"  Inner exception", ex.InnerException);
+        LogErrorBox($"  Inner exception", ex.InnerException);
       }
       return new List<string>();
     }
@@ -177,23 +173,13 @@ public class TMovieService : IMovieService, IMediaSearchLoggable<TMovieService> 
       }
 
     } catch (Exception ex) {
-      Logger.LogErrorBox($"Unable to get subgroups data", ex);
+      LogErrorBox($"Unable to get subgroups data", ex);
       if (ex.InnerException is not null) {
-        Logger.LogErrorBox($"  Inner exception", ex.InnerException);
+        LogErrorBox($"  Inner exception", ex.InnerException);
       }
       return new List<string>();
     }
-  } 
+  }
   #endregion --- Groups --------------------------------------------
-
-  [Conditional("DEBUG")]
-  private void IfDebugMessage(string title, object? message, [CallerMemberName] string CallerName = "") {
-    Logger.LogDebugBox(title, message?.ToString() ?? "", CallerName);
-  }
-
-  [Conditional("DEBUG")]
-  private void IfDebugMessageEx(string title, object? message, [CallerMemberName] string CallerName = "") {
-    Logger.LogDebugExBox(title, message?.ToString() ?? "", CallerName);
-  }
 
 }

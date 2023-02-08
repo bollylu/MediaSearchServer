@@ -15,9 +15,9 @@ public class TMovieService : AMovieService {
   private readonly IMovieCache _MoviesCache = new TMovieCache();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMovieService() {
+  public TMovieService() : base() {
   }
-  
+
   public TMovieService(string storage) : this() {
     RootStoragePath = storage;
     _MoviesCache = new TMovieCache() { RootStoragePath = storage };
@@ -116,7 +116,7 @@ public class TMovieService : AMovieService {
   public override async IAsyncEnumerable<string> GetGroups() {
     await Initialize().ConfigureAwait(false);
 
-    await foreach(string GroupItem in _MoviesCache.GetGroups().ConfigureAwait(false)) {
+    await foreach (string GroupItem in _MoviesCache.GetGroups().ConfigureAwait(false)) {
       yield return GroupItem;
     }
   }

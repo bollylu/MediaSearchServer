@@ -28,13 +28,13 @@ public static class Support {
   }
 
   [Conditional("DEBUG")]
-  public static void IfDebugMessage<T>(this IMediaSearchLogger<T> logger, string title, object? message, [CallerMemberName] string CallerName = "") {
-    logger.LogDebugBox(title, message ?? "(null)", CallerName);
+  public static void IfDebugMessage(this ILogger logger, string title, object? message, [CallerMemberName] string CallerName = "") {
+    logger.LogDebugBox(title, message ?? "(null)", GlobalSettings.DEBUG_BOX_WIDTH, CallerName);
   }
 
   [Conditional("DEBUG")]
-  public static void IfDebugMessageEx<T>(this IMediaSearchLogger<T> logger, string title, object? message, [CallerMemberName] string CallerName = "") {
-    logger.LogDebugExBox(title, message ?? "(null)", CallerName);
+  public static void IfDebugMessageEx(this ILogger logger, string title, object? message, [CallerMemberName] string CallerName = "") {
+    logger.LogDebugExBox(title, message ?? "(null)", GlobalSettings.DEBUG_BOX_WIDTH, CallerName);
   }
 
 }

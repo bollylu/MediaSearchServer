@@ -1,14 +1,9 @@
-﻿using System.Reflection;
-using System.Text.Encodings.Web;
-using System.Text.Json.Serialization;
-using System.Text.Unicode;
-
-namespace MediaSearch.Client;
+﻿namespace MediaSearch.Client;
 
 public static class GlobalSettings {
   public const int DEBUG_BOX_WIDTH = 100;
 
-  public static IMediaSearchLogger GlobalLogger { get; set; } = new TMediaSearchLoggerConsole();
+  public static BLTools.Diagnostic.Logging.ILogger GlobalLogger { get; set; } = new TConsoleLogger();
 
   public static TLoggerPool LoggerPool { get; } = new();
 
@@ -43,7 +38,7 @@ public static class GlobalSettings {
   }
   private static TAbout? _ExecutingAbout;
 
-  public static IUserAccountInfo? Account {get; set; }
+  public static IUserAccountInfo? Account { get; set; }
 
   public static IApiServer? ApiServer { get; set; }
 }

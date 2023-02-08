@@ -1,12 +1,12 @@
 ﻿using static MediaSearch.Models.JsonConverterResources;
 
 namespace MediaSearch.Models;
-public class TLanguageDictionaryStringConverter : JsonConverter<TLanguageDictionary<string>>, IMediaSearchLoggable<TLanguageDictionaryStringConverter> {
+public class TLanguageDictionaryStringConverter : JsonConverter<TLanguageDictionary<string>>, ILoggable {
 
   public const string PROPERTY_KEY = "key";
   public const string PROPERTY_VALUE = "value";
 
-  public IMediaSearchLogger<TLanguageDictionaryStringConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TLanguageDictionaryStringConverter>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TLanguageDictionaryStringConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
     return typeToConvert == typeof(TLanguageDictionary<string>);

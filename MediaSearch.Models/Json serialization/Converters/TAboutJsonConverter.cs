@@ -2,8 +2,8 @@
 
 namespace MediaSearch.Models;
 
-public class TAboutJsonConverter : JsonConverter<TAbout>, IMediaSearchLoggable<TAboutJsonConverter> {
-  public IMediaSearchLogger<TAboutJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TAboutJsonConverter>();
+public class TAboutJsonConverter : JsonConverter<TAbout>, ILoggable {
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TAboutJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
     return typeToConvert == typeof(TAbout);
@@ -44,12 +44,12 @@ public class TAboutJsonConverter : JsonConverter<TAbout>, IMediaSearchLoggable<T
 
             case nameof(TAbout.CurrentVersion):
               RetVal.CurrentVersion = Version.Parse(reader.GetString() ?? "0.0");
-              Logger.IfDebugMessageEx($"Found {nameof(RetVal.CurrentVersion)}", RetVal.CurrentVersion);
+              Logger.LogDebugExBox($"Found {nameof(RetVal.CurrentVersion)}", RetVal.CurrentVersion);
               break;
 
             case nameof(TAbout.ChangeLog):
               RetVal.ChangeLog = reader.GetString() ?? "";
-              Logger.IfDebugMessageEx($"Found {nameof(RetVal.ChangeLog)}", RetVal.ChangeLog);
+              Logger.LogDebugExBox($"Found {nameof(RetVal.ChangeLog)}", RetVal.ChangeLog);
               break;
 
             default:

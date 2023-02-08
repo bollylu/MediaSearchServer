@@ -1,17 +1,12 @@
-﻿using System.Diagnostics;
-using System.Runtime.CompilerServices;
-
-using BLTools.Text;
-
-namespace MediaSearch.Client.Services;
-public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> {
+﻿namespace MediaSearch.Client.Services;
+public class TLoginService : ALoggable, ILoginService {
 
   public IApiServer ApiServer { get; set; } = new TApiServer();
 
-  public IMediaSearchLogger<TLoginService> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TLoginService>();
-
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TLoginService() { }
+  public TLoginService() {
+    Logger = GlobalSettings.LoggerPool.GetLogger<TLoginService>();
+  }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public async Task<IUserAccountInfo?> Login(IUserAccountSecret user) {
@@ -30,16 +25,15 @@ public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> 
         if (Result is null) {
           return null;
         }
-        Logger.LogDebugExBox("Login result", Result);
+        LogDebugExBox("Login result", Result);
 
         return Result;
 
       }
     } catch (Exception ex) {
-      Logger.LogError($"Unable to log in server : {ex.Message}");
+      LogErrorBox("Unable to log in server", ex);
       if (ex.InnerException is not null) {
-        Logger.LogError($"  Inner exception : {ex.InnerException.Message}");
-        Logger.LogError($"  Inner call stack : {ex.InnerException.StackTrace}");
+        LogErrorBox("  Inner exception :", ex.InnerException, 110, "Login", true);
       }
       return null;
     }
@@ -69,13 +63,4 @@ public class TLoginService : ILoginService, IMediaSearchLoggable<TLoginService> 
     throw new NotImplementedException();
   }
 
-  [Conditional("DEBUG")]
-  private void IfDebugMessage(string title, object? message, [CallerMemberName] string CallerName = "") {
-    Logger.LogDebugBox(title, message?.ToString() ?? "", CallerName);
-  }
-
-  [Conditional("DEBUG")]
-  private void IfDebugMessageEx(string title, object? message, [CallerMemberName] string CallerName = "") {
-    Logger.LogDebugExBox(title, message?.ToString() ?? "", CallerName);
-  }
 }

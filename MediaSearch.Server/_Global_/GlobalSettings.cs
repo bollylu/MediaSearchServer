@@ -7,7 +7,7 @@ public static class GlobalSettings {
 
   public static ISplitArgs AppArgs { get; } = new SplitArgs();
 
-  public static IMediaSearchLogger GlobalLogger { get; set; } = new TMediaSearchLoggerConsole();
+  public static ILogger GlobalLogger { get; set; } = new TConsoleLogger();
 
   public static TLoggerPool LoggerPool { get; } = new();
 

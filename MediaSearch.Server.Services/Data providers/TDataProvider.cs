@@ -1,9 +1,12 @@
 ﻿
 namespace MediaSearch.Server.Services;
 
-public class TDataProvider : IDataProvider, IMediaSearchLoggable<TDataProvider> {
+public class TDataProvider : ALoggable, IDataProvider {
 
-  public IMediaSearchLogger<TDataProvider> Logger { get; } = GlobalSettings.LoggerPool.GetLogger <TDataProvider>();
+  public TDataProvider() {
+    Logger = GlobalSettings.LoggerPool.GetLogger<TDataProvider>();
+  }
+
 
   public string RootStoragePath { get; } = "";
   public string Name { get; } = "";

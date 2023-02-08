@@ -1,8 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public class TMediaInfoFileNfo : IMediaInfoFile, IToXml, IMediaSearchLoggable<TMediaInfoFileNfo> {
-
-  public IMediaSearchLogger<TMediaInfoFileNfo> Logger { get; } = GlobalSettings.LoggerPool.GetLogger <TMediaInfoFileNfo>();
+public class TMediaInfoFileNfo : ALoggable<TMediaInfoFileNfo>, IMediaInfoFile, IToXml {
 
   public const string XML_THIS_ELEMENT = "movie";
   public const string XML_ELEMENT_TITLE = "title";
@@ -18,9 +16,13 @@ public class TMediaInfoFileNfo : IMediaInfoFile, IToXml, IMediaSearchLoggable<TM
   public string StoragePath { get; set; } = "";
   public string StorageName { get; set; } = "";
 
+  public TMediaInfoFileNfo() {
+    Logger = GlobalSettings.LoggerPool.GetLogger<TMediaInfoFileNfo>();
+  }
+
   #region --- IFileMediaInfo --------------------------------------------
   public IMediaInfoContent Content { get; } = new TMediaInfoContentNfo();
-  
+
   public string Country { get; set; } = "";
 
   #region --- IName --------------------------------------------
@@ -54,7 +56,7 @@ public class TMediaInfoFileNfo : IMediaInfoFile, IToXml, IMediaSearchLoggable<TM
 
     Country = source.SafeReadElementValue(XML_ELEMENT_COUNTRY, "FR");
     switch (Country) {
-      
+
       case "FR": {
           Content.Titles.Add(ELanguage.French, source.SafeReadElementValue(XML_ELEMENT_TITLE, ""));
           break;
@@ -70,7 +72,7 @@ public class TMediaInfoFileNfo : IMediaInfoFile, IToXml, IMediaSearchLoggable<TM
 
   }
 
-  
+
 
   public Task<bool> Exists() {
     throw new NotImplementedException();

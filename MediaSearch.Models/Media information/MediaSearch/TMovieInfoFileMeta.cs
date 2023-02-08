@@ -1,11 +1,9 @@
 ﻿namespace MediaSearch.Models;
 
-public class TMovieInfoFileMeta : IMediaInfoFile {
+public class TMovieInfoFileMeta : ALoggable, IMediaInfoFile {
 
   public const string DEFAULT_FILENAME = "media.meta";
   public const int TIMEOUT_IN_MS = 5000;
-
-  public IMediaSearchLogger<TMovieInfoFileMeta> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovieInfoFileMeta>();
 
   public string StoragePath { get; set; } = "";
   public string StorageName { get; set; } = DEFAULT_FILENAME;
@@ -15,8 +13,10 @@ public class TMovieInfoFileMeta : IMediaInfoFile {
   public string RawContent { get; private set; } = "";
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMovieInfoFileMeta() { }
-  public TMovieInfoFileMeta(string storagePath, string storageName = DEFAULT_FILENAME) {
+  public TMovieInfoFileMeta() {
+    Logger = GlobalSettings.LoggerPool.GetLogger<TMovieInfoFileMeta>();
+  }
+  public TMovieInfoFileMeta(string storagePath, string storageName = DEFAULT_FILENAME) : this() {
     StoragePath = storagePath;
     StorageName = storageName;
   }

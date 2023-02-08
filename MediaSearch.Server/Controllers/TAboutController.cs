@@ -4,9 +4,9 @@ namespace MediaSearch.Server.Controllers;
 
 [ApiController]
 [Route("api")]
-public class TAboutController : ControllerBase, IMediaSearchLoggable<TAboutController> {
+public class TAboutController : ControllerBase, ILoggable {
 
-  public IMediaSearchLogger<TAboutController> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TAboutController>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TAboutController>();
 
   [HttpGet()]
   public ActionResult Index() {
@@ -36,5 +36,5 @@ public class TAboutController : ControllerBase, IMediaSearchLoggable<TAboutContr
     };
   }
 
-  
+
 }

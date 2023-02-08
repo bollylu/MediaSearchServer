@@ -2,14 +2,14 @@
 
 namespace MediaSearch.Server.Services;
 
-public abstract class AMovieCache : IMovieCache, IMediaSearchLoggable<TMovieCache> {
+public abstract class AMovieCache : IMovieCache, ILoggable {
 
   public const int DEFAULT_START_PAGE = 1;
   public const int DEFAULT_PAGE_SIZE = 20;
 
   public static char FOLDER_SEPARATOR = Path.DirectorySeparatorChar;
 
-  public IMediaSearchLogger<TMovieCache> Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMovieCache>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMovieCache>();
 
   #region --- Internal data storage --------------------------------------------
   /// <summary>

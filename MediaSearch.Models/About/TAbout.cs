@@ -1,8 +1,8 @@
 ﻿namespace MediaSearch.Models;
 
-public class TAbout : IAbout, IJson<TAbout>, IMediaSearchLoggable<TAbout> {
+public class TAbout : ALoggable<TAbout>, IAbout, IJson<TAbout> {
 
-  public IMediaSearchLogger<TAbout> Logger { get; } = GlobalSettings.LoggerPool.GetLogger <TAbout>();
+
 
   private readonly Assembly? _Assembly;
 
@@ -49,9 +49,11 @@ public class TAbout : IAbout, IJson<TAbout>, IMediaSearchLoggable<TAbout> {
   private string? _ChangeLog;
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TAbout() { }
+  public TAbout() {
+    Logger = GlobalSettings.LoggerPool.GetLogger<TAbout>();
+  }
 
-  public TAbout(Assembly? assembly) {
+  public TAbout(Assembly? assembly) : this() {
     _Assembly = assembly;
   }
 

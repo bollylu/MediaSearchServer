@@ -2,10 +2,10 @@
 
 namespace MediaSearch.Client.Components;
 
-public partial class Movie_TableSimple : ComponentBase, IMediaSearchLoggable<Movie_TableSimple> {
+public partial class Movie_TableSimple : ComponentBase, ILoggable {
 
   #region --- ILoggable --------------------------------------------
-  public IMediaSearchLogger<Movie_TableSimple> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<Movie_TableSimple>();
+  public BLTools.Diagnostic.Logging.ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<Movie_TableSimple>();
   #endregion --- ILoggable --------------------------------------------
 
   [Parameter]

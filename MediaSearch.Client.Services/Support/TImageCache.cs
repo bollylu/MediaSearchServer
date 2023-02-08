@@ -1,22 +1,16 @@
-﻿using System.Diagnostics;
-using System.Runtime.CompilerServices;
+﻿namespace MediaSearch.Client.Services;
 
-using BLTools.Diagnostic.Logging;
-
-namespace MediaSearch.Client.Services;
-
-public class TImageCache : IDisposable, IMediaSearchLoggable<TImageCache> {
+public class TImageCache : ALoggable, IDisposable {
 
   public static int MAX_ITEMS = 250;
 
   private readonly List<TCachedItem> _CachedImages = new();
   private readonly ReaderWriterLockSlim _LockData = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
-  public IMediaSearchLogger<TImageCache> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TImageCache>();
-
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TImageCache() {
-    IfDebugMessageEx("Creating cache","");
+    Logger = GlobalSettings.LoggerPool.GetLogger<TImageCache>();
+    Logger.IfDebugMessageEx("Creating cache", "");
     Logger.SeverityLimit = ESeverity.Debug;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -24,10 +18,10 @@ public class TImageCache : IDisposable, IMediaSearchLoggable<TImageCache> {
   public byte[] GetImage(string key) {
     try {
       _LockData.EnterReadLock();
-      IfDebugMessageEx("Looking for image", key);
+      Logger.IfDebugMessageEx("Looking for image", key);
       TCachedItem? FoundIt = _CachedImages.FirstOrDefault(c => c.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
       if (FoundIt is null) {
-        IfDebugMessageEx("Image not found", key);
+        Logger.IfDebugMessageEx("Image not found", key);
         return Array.Empty<byte>();
       }
       return FoundIt.Data;
@@ -44,7 +38,7 @@ public class TImageCache : IDisposable, IMediaSearchLoggable<TImageCache> {
       }
 
       // If cache count already at maximum, remove the oldest image prior to add the new one
-      IfDebugMessageEx($"Cache count", _CachedImages.Count);
+      Logger.IfDebugMessageEx($"Cache count", _CachedImages.Count);
       if (_CachedImages.Count > MAX_ITEMS) {
         DateTime Latest = DateTime.MaxValue;
         int Index = 0;
@@ -54,11 +48,11 @@ public class TImageCache : IDisposable, IMediaSearchLoggable<TImageCache> {
             Index = i;
           }
         }
-        IfDebugMessageEx("Remove from cache", _CachedImages[Index].Key);
+        Logger.IfDebugMessageEx("Remove from cache", _CachedImages[Index].Key);
         _CachedImages.RemoveAt(Index);
       }
 
-      IfDebugMessageEx("Add to cache", key);
+      Logger.IfDebugMessageEx("Add to cache", key);
 
       _CachedImages.Add(new TCachedItem() { Key = key, AddedTime = DateTime.Now, Data = image });
     } finally {
@@ -72,15 +66,6 @@ public class TImageCache : IDisposable, IMediaSearchLoggable<TImageCache> {
     _LockData.ExitWriteLock();
   }
 
-  [Conditional("DEBUG")]
-  private void IfDebugMessage(string title, object? message, [CallerMemberName] string CallerName = "") {
-    Logger.LogDebugBox(title, message?.ToString() ?? "", CallerName);
-  }
-
-  [Conditional("DEBUG")]
-  private void IfDebugMessageEx(string title, object? message, [CallerMemberName] string CallerName = "") {
-    Logger.LogDebugExBox(title, message?.ToString() ?? "", CallerName);
-  }
 }
 
 internal record TCachedItem {

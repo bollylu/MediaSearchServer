@@ -1,17 +1,15 @@
-﻿using MediaSearch.Models;
-
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace MediaSearch.Server.Controllers;
 
 [ApiController]
 [Route("api/movie")]
 [Produces("application/json")]
-public class TMovieController : ControllerBase, IMediaSearchLoggable<TMovieController> {
+public class TMovieController : ControllerBase, ILoggable {
 
   private readonly IMovieService _MovieService;
 
-  public IMediaSearchLogger<TMovieController> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMovieController>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMovieController>();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMovieController(IMovieService movieService) {
@@ -110,14 +108,14 @@ public class TMovieController : ControllerBase, IMediaSearchLoggable<TMovieContr
 
     try {
       string MovieId = movieId.FromUrl64();
-      
+
       byte[]? Result = await _MovieService.GetPicture(MovieId, "folder.jpg", width, height).ConfigureAwait(false);
       if (Result is null || Result.IsEmpty()) {
         Logger.LogWarning($"Picture {movieId} not found");
         byte[] MissingPicture = MediaSearch.Models.Support.GetPicture("missing", ".jpg");
         return File(MissingPicture, "image/jpeg");
       }
-      
+
       return File(Result, "image/jpeg");
 
     } catch (Exception ex) {

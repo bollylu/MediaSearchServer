@@ -5,11 +5,11 @@ namespace MediaSearch.Server.Controllers;
 
 [ApiController]
 [Route("api/system")]
-public class TSystemController : ControllerBase, IMediaSearchLoggable<TSystemController> {
+public class TSystemController : ControllerBase, ILoggable {
 
   private readonly IMovieService _MovieService;
 
-  public IMediaSearchLogger<TSystemController> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TSystemController>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TSystemController>();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TSystemController(IMovieService movieService) {

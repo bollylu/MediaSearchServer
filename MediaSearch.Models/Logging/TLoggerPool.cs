@@ -1,41 +1,21 @@
-﻿namespace MediaSearch.Models.Logging;
-public class TLoggerPool {
+﻿using BLTools.Diagnostic.Logging;
 
-  public const string DEFAULT_LOGGER_NAME = "(default)";
-  private List<IMediaSearchLogger> _Items { get; } = new();
-  public Type DefaultLoggerType { get; set; } = typeof(TMediaSearchLoggerConsole);
+namespace MediaSearch.Models.Logging;
+
+public class TLoggerPool : BLTools.Diagnostic.Logging.TLoggerPool {
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TLoggerPool() { }
+  public TLoggerPool() {
+    DefaultLogger = new TMediaSearchConsoleLogger();
+  }
 
-  public TLoggerPool(IEnumerable<IMediaSearchLogger> Items) {
+  public TLoggerPool(IEnumerable<IMediaSearchLogger> Items) : this() {
     _Items.AddRange(Items);
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  public void AddLogger(IMediaSearchLogger logger) {
-    if (logger.GetType().IsGenericType) {
-      logger.Name = logger.GetType().GetTypeInfo().GenericTypeArguments[0].FullName ?? logger.GetType().GetTypeInfo().GenericTypeArguments[0].Name;
-    }
-    if (string.IsNullOrWhiteSpace(logger.Name)) {
-      logger.Name = logger.GetType().FullName ?? logger.GetType().Name;
-    }
 
-    if (_Items.Any(x => x.Name.Equals(logger.Name, StringComparison.InvariantCultureIgnoreCase))) {
-      throw new ApplicationException($"Attempt to create two logger with the same name : {logger.Name}");
-    }
-    _Items.Add(logger);
-  }
-
-  public void AddDefaultLogger(IMediaSearchLogger logger) {
-    logger.Name = DEFAULT_LOGGER_NAME;
-    if (_Items.Any(x => x.Name.Equals(logger.Name, StringComparison.InvariantCultureIgnoreCase))) {
-      throw new ApplicationException($"Attempt to create two logger with the same name : {logger.Name}");
-    }
-    _Items.Add(logger);
-  }
-
-  public IMediaSearchLogger<T> GetDefaultLogger<T>() {
+  public override IMediaSearchLogger<T> GetDefaultLogger<T>() {
 
     if (_Items.IsEmpty()) {
       IMediaSearchLogger? NewLogger = Activator.CreateInstance(DefaultLoggerType) as IMediaSearchLogger;
@@ -48,11 +28,11 @@ public class TLoggerPool {
       }
     }
 
-    IMediaSearchLogger? DefaultLogger = _Items.SingleOrDefault(l => l.Name.Equals(DEFAULT_LOGGER_NAME, StringComparison.InvariantCultureIgnoreCase));
+    IMediaSearchLogger? DefaultLogger = _Items.OfType<IMediaSearchLogger>().SingleOrDefault(l => l.Name.Equals(DEFAULT_LOGGER_NAME, StringComparison.InvariantCultureIgnoreCase));
     if (DefaultLogger is not null) {
       return DefaultLogger switch {
-        TMediaSearchLoggerFile Logger => new TMediaSearchLoggerFile<T>(Logger),
-        TMediaSearchLoggerConsole Logger => new TMediaSearchLoggerConsole<T>(Logger),
+        TMediaSearchFileLogger Logger => new TMediaSearchLoggerFile<T>(Logger),
+        TMediaSearchConsoleLogger Logger => new TMediaSearchLoggerConsole<T>(Logger),
         _ => throw new ApplicationException("Invalid logger<T> type")
       };
     } else {
@@ -68,19 +48,7 @@ public class TLoggerPool {
 
   }
 
-  private IMediaSearchLogger<T> _MakeLogger<T>(IMediaSearchLogger? source) {
-    return source switch {
-      TMediaSearchLoggerFile FileLogger => new TMediaSearchLoggerFile<T>(FileLogger),
-      TMediaSearchLoggerConsole ConsoleLogger => new TMediaSearchLoggerConsole<T>(ConsoleLogger),
-      _ => throw new ApplicationException("Invalid logger<T> type")
-    };
-  }
-
-
-
-
-
-  public IMediaSearchLogger<T> GetLogger<T>() {
+  public override IMediaSearchLogger<T> GetLogger<T>() {
     if (_Items.IsEmpty()) {
       return new TMediaSearchLoggerConsole<T>();
     }
@@ -98,8 +66,12 @@ public class TLoggerPool {
     throw new ApplicationException("Default logger is missing or invalid");
   }
 
-  public void Clear() {
-    _Items.Clear();
+  protected override ILogger<T> _MakeLogger<T>(ILogger source) where T : class {
+    return source switch {
+      TMediaSearchFileLogger FileLogger => new TMediaSearchLoggerFile<T>(FileLogger),
+      TMediaSearchConsoleLogger ConsoleLogger => new TMediaSearchLoggerConsole<T>(ConsoleLogger),
+      _ => throw new ApplicationException("Invalid logger<T> type : {source?.GetType().GetNameEx() ?? \"(unknown)\"}")
+    };
   }
 
 }

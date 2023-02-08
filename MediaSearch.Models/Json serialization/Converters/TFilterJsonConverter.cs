@@ -2,8 +2,8 @@
 
 namespace MediaSearch.Models;
 
-public class TFilterJsonConverter : JsonConverter<TFilter>, IMediaSearchLoggable<TFilterJsonConverter> {
-  public IMediaSearchLogger<TFilterJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TFilterJsonConverter>();
+public class TFilterJsonConverter : JsonConverter<TFilter>, ILoggable {
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TFilterJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
     return typeToConvert == typeof(TFilter);
@@ -106,7 +106,7 @@ public class TFilterJsonConverter : JsonConverter<TFilter>, IMediaSearchLoggable
                   RetVal.GroupMemberships.Add(GroupMembershipItem);
                 }
               }
-              Logger.IfDebugMessageEx($"Found {nameof(RetVal.GroupMemberships)}", string.Join(", ", RetVal.GroupMemberships));
+              Logger.LogDebugExBox($"Found {nameof(RetVal.GroupMemberships)}", string.Join(", ", RetVal.GroupMemberships));
               break;
 
             case nameof(TFilter.GroupFilter):

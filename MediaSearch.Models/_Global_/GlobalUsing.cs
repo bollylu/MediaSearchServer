@@ -11,9 +11,7 @@ global using System.Threading.Tasks;
 global using System.Xml.Linq;
 
 global using BLTools;
+global using BLTools.Diagnostic.Logging;
 global using BLTools.Storage.Xml;
 
 global using MediaSearch.Models.Language;
-//global using BLTools.Diagnostic.Logging;
-
-global using MediaSearch.Models.Logging;

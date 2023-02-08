@@ -12,8 +12,7 @@ namespace MediaSearch.Server;
 public class Startup {
 
   public const string DEFAULT_DATASOURCE = @"\\andromeda.sharenet.priv\multimedia\films\";
-
-  IMediaSearchLogger<Startup> Logger = GlobalSettings.LoggerPool.GetLogger<Startup>();
+  public readonly ILogger Logger = GlobalSettings.LoggerPool.GetLogger<Startup>();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public Startup(IConfiguration configuration) {
@@ -62,8 +61,8 @@ public class Startup {
 
     services.AddCors(options => {
       options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin()
-                                                                      .AllowAnyMethod()
-                                                                      .AllowAnyHeader()
+                                                                  .AllowAnyMethod()
+                                                                  .AllowAnyHeader()
                        );
     });
     services.AddControllers();
@@ -72,8 +71,8 @@ public class Startup {
         Title = "MediaSearch.Server",
         Version = GlobalSettings.EntryAbout.CurrentVersion.ToString()
       }
-                  );
-      //c.SchemaFilter<MySwaggerSchemaFilter>();
+      );
+      c.SchemaFilter<MySwaggerSchemaFilter>();
     });
 
     Logger.Log($"MediaSearch.Server {GlobalSettings.EntryAbout.CurrentVersion} startup complete. Running.");
@@ -107,14 +106,14 @@ public class Startup {
         return;
       }
 
-      //RemoveFromSchema(context.SchemaRepository.Schemas, "ILogger");
-      //RemoveFromSchema(context.SchemaRepository.Schemas, "TraceOptions");
-      //RemoveFromSchema(context.SchemaRepository.Schemas, "TraceListener");
-      //RemoveFromSchema(context.SchemaRepository.Schemas, "TraceFilter");
-      //RemoveFromSchema(context.SchemaRepository.Schemas, "ESeverity");
-      //RemoveFromSchema(context.SchemaRepository.Schemas, "DayOfWeek");
-      //RemoveFromSchema(context.SchemaRepository.Schemas, "DateOnly");
-      //RemoveFromSchema(context.SchemaRepository.Schemas, "Version");
+      RemoveFromSchema(context.SchemaRepository.Schemas, "ILogger");
+      RemoveFromSchema(context.SchemaRepository.Schemas, "TraceOptions");
+      RemoveFromSchema(context.SchemaRepository.Schemas, "TraceListener");
+      RemoveFromSchema(context.SchemaRepository.Schemas, "TraceFilter");
+      RemoveFromSchema(context.SchemaRepository.Schemas, "ESeverity");
+      RemoveFromSchema(context.SchemaRepository.Schemas, "DayOfWeek");
+      RemoveFromSchema(context.SchemaRepository.Schemas, "DateOnly");
+      RemoveFromSchema(context.SchemaRepository.Schemas, "Version");
 
     }
 

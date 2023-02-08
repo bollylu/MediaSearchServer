@@ -14,7 +14,7 @@ public static class Display {
     if (item is null) {
       Console.WriteLine($"null object".BoxFixedWidth(title ?? "", GlobalSettings.DEBUG_BOX_WIDTH));
     } else {
-      Console.WriteLine(item.ToString().BoxFixedWidth(title ?? "", GlobalSettings.DEBUG_BOX_WIDTH));
+      Console.WriteLine(item.ToString() ?? "".BoxFixedWidth(title ?? "", GlobalSettings.DEBUG_BOX_WIDTH));
     }
   }
 

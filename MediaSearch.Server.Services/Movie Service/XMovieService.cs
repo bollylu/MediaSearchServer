@@ -1,6 +1,4 @@
-﻿using SkiaSharp;
-
-namespace MediaSearch.Server.Services;
+﻿namespace MediaSearch.Server.Services;
 
 // <summary>
 /// Server Movie service. Provides access to groups, movies and pictures from NAS
@@ -14,7 +12,7 @@ public class XMovieService : AMovieService {
   private readonly IMovieCache _MoviesCache;
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public XMovieService(IMovieCache movieCache) {
+  public XMovieService(IMovieCache movieCache) : base() {
     _MoviesCache = movieCache;
   }
 

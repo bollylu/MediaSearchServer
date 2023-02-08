@@ -3,8 +3,8 @@
 using static MediaSearch.Models.JsonConverterResources;
 
 namespace MediaSearch.Models;
-public class TUserAccountInfoJsonConverter : JsonConverter<TUserAccountInfo>, IMediaSearchLoggable<TUserAccountInfoJsonConverter> {
-  public IMediaSearchLogger<TUserAccountInfoJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TUserAccountInfoJsonConverter>();
+public class TUserAccountInfoJsonConverter : JsonConverter<TUserAccountInfo>, ILoggable {
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TUserAccountInfoJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
     return typeToConvert == typeof(TUserAccountInfo);

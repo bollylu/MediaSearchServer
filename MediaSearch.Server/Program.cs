@@ -1,4 +1,4 @@
-using BLTools.Diagnostic.Logging;
+using BLTools.Debugging;
 
 using MediaSearch.Server.Controllers;
 
@@ -44,6 +44,8 @@ public class Program {
 
     GlobalSettings.AppArgs.Parse(args);
 
+    ApplicationInfo.ApplicationStart(new TConsoleLogger(), true);
+
     if (GlobalSettings.AppArgs.IsDefined(ARG_HELP) || GlobalSettings.AppArgs.IsDefined(ARG_HELP2)) {
       Usage();
     }
@@ -51,21 +53,21 @@ public class Program {
     #region --- Log configuration --------------------------------------------
     string LogFile = GlobalSettings.AppArgs.GetValue("log", OperatingSystem.IsWindows() ? DEFAULT_LOGFILE_WINDOWS : DEFAULT_LOGFILE_LINUX);
 
-    GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerFile(LogFile) { SeverityLimit = ESeverity.Debug });
-    GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<Program>(LogFile) { SeverityLimit = ESeverity.Debug });
-    GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<TLoginController>(LogFile) { SeverityLimit = ESeverity.Debug });
-    GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<TMovieController>(LogFile) { SeverityLimit = ESeverity.Debug });
-    GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<TSystemController>(LogFile) { SeverityLimit = ESeverity.Debug });
+    GlobalSettings.LoggerPool.AddDefaultLogger(new TFileLogger(LogFile) { SeverityLimit = ESeverity.Debug });
+    GlobalSettings.LoggerPool.AddLogger(new TFileLogger<Program>(LogFile) { SeverityLimit = ESeverity.Debug });
+    GlobalSettings.LoggerPool.AddLogger(new TFileLogger<TLoginController>(LogFile) { SeverityLimit = ESeverity.Debug });
+    GlobalSettings.LoggerPool.AddLogger(new TFileLogger<TMovieController>(LogFile) { SeverityLimit = ESeverity.Debug });
+    GlobalSettings.LoggerPool.AddLogger(new TFileLogger<TSystemController>(LogFile) { SeverityLimit = ESeverity.Debug });
 
-    IMediaSearchLogger<Program> Logger = GlobalSettings.LoggerPool.GetLogger<Program>();
+    BLTools.Diagnostic.Logging.ILogger Logger = GlobalSettings.LoggerPool.GetLogger<Program>();
 
-    MediaSearch.Models.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerFile(LogFile) { SeverityLimit = ESeverity.Debug });
-    MediaSearch.Models.GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<TAbout>(LogFile) { SeverityLimit = ESeverity.Debug });
+    MediaSearch.Models.GlobalSettings.LoggerPool.AddDefaultLogger(new TFileLogger(LogFile) { SeverityLimit = ESeverity.Debug });
+    MediaSearch.Models.GlobalSettings.LoggerPool.AddLogger(new TFileLogger<TAbout>(LogFile) { SeverityLimit = ESeverity.Debug });
 
-    MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerFile(LogFile) { SeverityLimit = ESeverity.Debug });
-    MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<TLoginService>(LogFile) { SeverityLimit = ESeverity.Debug });
-    MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<TMovieService>(LogFile) { SeverityLimit = ESeverity.Debug });
-    MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerFile<TMovieCache>(LogFile) { SeverityLimit = ESeverity.Debug });
+    MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddDefaultLogger(new TFileLogger(LogFile) { SeverityLimit = ESeverity.Debug });
+    MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TFileLogger<TLoginService>(LogFile) { SeverityLimit = ESeverity.Debug });
+    MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TFileLogger<TMovieService>(LogFile) { SeverityLimit = ESeverity.Debug });
+    MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TFileLogger<TMovieCache>(LogFile) { SeverityLimit = ESeverity.Debug });
     #endregion --- Log configuration --------------------------------------------
 
     string AuditFile = GlobalSettings.AppArgs.GetValue("audit", OperatingSystem.IsWindows() ? DEFAULT_AUDITFILE_WINDOWS : DEFAULT_AUDITFILE_LINUX);
@@ -86,6 +88,7 @@ public class Program {
     CreateHostBuilder(args).Build().Run();
 
     GlobalSettings.AuditService.Audit("", "Server stopped gracefully.");
+    ApplicationInfo.ApplicationStop(new TConsoleLogger());
   }
   #endregion -----------------------------------------------
 

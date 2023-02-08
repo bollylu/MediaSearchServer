@@ -1,9 +1,9 @@
 ﻿namespace MediaSearch.Client.Services;
 
-public class THttpClientEx : HttpClient, IMediaSearchLoggable<THttpClientEx> {
+public class THttpClientEx : HttpClient, ILoggable {
 
   public HttpResponseMessage? LastResponse { get; private set; }
-  public IMediaSearchLogger<THttpClientEx> Logger { get;  } = GlobalSettings.LoggerPool.GetLogger<THttpClientEx>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<THttpClientEx>();
 
   public async Task<string?> GetStringAsync(string request, int timeoutInMs) {
 

@@ -1,16 +1,14 @@
-using BLTools.Diagnostic.Logging;
-
 using MediaSearch.Client;
 
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
-MediaSearch.Client.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerConsole() { SeverityLimit = ESeverity.Debug });
-MediaSearch.Client.Services.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerConsole() { SeverityLimit = ESeverity.Debug });
-MediaSearch.Client.Services.GlobalSettings.LoggerPool.AddLogger(new TMediaSearchLoggerConsole<TApiServer>() { SeverityLimit = ESeverity.Debug });
-MediaSearch.Models.GlobalSettings.LoggerPool.AddDefaultLogger(new TMediaSearchLoggerConsole() { SeverityLimit = ESeverity.Debug });
+MediaSearch.Client.GlobalSettings.LoggerPool.AddDefaultLogger(new TConsoleLogger() { SeverityLimit = ESeverity.Debug });
+MediaSearch.Client.Services.GlobalSettings.LoggerPool.AddDefaultLogger(new TConsoleLogger() { SeverityLimit = ESeverity.Debug });
+MediaSearch.Client.Services.GlobalSettings.LoggerPool.AddLogger(new TConsoleLogger<TApiServer>() { SeverityLimit = ESeverity.Debug });
+MediaSearch.Models.GlobalSettings.LoggerPool.AddDefaultLogger(new TConsoleLogger() { SeverityLimit = ESeverity.Debug });
 
-IMediaSearchLogger<Program> Logger = MediaSearch.Client.GlobalSettings.LoggerPool.GetLogger<Program>();
+BLTools.Diagnostic.Logging.ILogger Logger = MediaSearch.Client.GlobalSettings.LoggerPool.GetLogger<Program>();
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.Logging.SetMinimumLevel(LogLevel.Information);

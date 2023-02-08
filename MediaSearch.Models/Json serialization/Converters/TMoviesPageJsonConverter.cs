@@ -2,9 +2,9 @@
 
 namespace MediaSearch.Models;
 
-public class TMoviesPageJsonConverter : JsonConverter<TMoviesPage> {
+public class TMoviesPageJsonConverter : JsonConverter<TMoviesPage>, ILoggable {
 
-  public IMediaSearchLogger<TMoviesPageJsonConverter> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMoviesPageJsonConverter>();
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMoviesPageJsonConverter>();
 
   public override bool CanConvert(Type typeToConvert) {
     return typeToConvert == typeof(TMoviesPage);

@@ -1,10 +1,7 @@
-﻿using System.Diagnostics;
-using System.Runtime.CompilerServices;
-
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 
 namespace MediaSearch.Client.Components {
-  public partial class Movie_SmallCard : ComponentBase, IMediaSearchLoggable<Movie_SmallCard> {
+  public partial class Movie_SmallCard : ComponentBase, ILoggable {
 
     [Parameter]
     public IMovie Movie {
@@ -37,7 +34,7 @@ namespace MediaSearch.Client.Components {
     [Inject]
     public IMovieService? MovieService { get; set; }
 
-    public IMediaSearchLogger<Movie_SmallCard> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<Movie_SmallCard>();
+    public BLTools.Diagnostic.Logging.ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<Movie_SmallCard>();
 
     public string? HeaderText => Movie.Name ?? "";
     public string? BodyTitle => AltNames;
@@ -49,7 +46,7 @@ namespace MediaSearch.Client.Components {
     private List<CancellationTokenSource> _CancellationTokenSources = new();
 
     protected override async Task OnParametersSetAsync() {
-      IfDebugMessageEx("Download tasks", $"{_CancellationTokenSources.Count} tasks awaiting, Page={Page}, LastPage={LastPage}");
+      Logger.IfDebugMessageEx("Download tasks", $"{_CancellationTokenSources.Count} tasks awaiting, Page={Page}, LastPage={LastPage}");
       if (Page != LastPage) {
         LastPage = Page;
         foreach (CancellationTokenSource CancellationtokenSourceItem in _CancellationTokenSources) {
@@ -83,15 +80,6 @@ namespace MediaSearch.Client.Components {
 
     public bool IsPictureLoaded = false;
 
-    [Conditional("DEBUG")]
-    private void IfDebugMessage(string title, object? message, [CallerMemberName] string CallerName = "") {
-      Logger.LogDebugBox(title, message?.ToString() ?? "", CallerName);
-    }
-
-    [Conditional("DEBUG")]
-    private void IfDebugMessageEx(string title, object? message, [CallerMemberName] string CallerName = "") {
-      Logger.LogDebugExBox(title, message?.ToString() ?? "", CallerName);
-    }
   }
 
 }

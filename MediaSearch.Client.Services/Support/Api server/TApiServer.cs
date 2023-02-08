@@ -1,14 +1,8 @@
-﻿using System.Diagnostics;
-using System.Net.Http.Headers;
-using System.Runtime.CompilerServices;
-
-using BLTools.Text;
+﻿using System.Net.Http.Headers;
 
 namespace MediaSearch.Client.Services;
 
-public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
-
-  public IMediaSearchLogger<TApiServer> Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TApiServer>();
+public class TApiServer : ALoggable, IApiServer {
 
   private readonly HttpClient _HttpClient;
   public HttpResponseMessage? LastResponse { get; private set; }
@@ -19,17 +13,19 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TApiServer() {
-    IfDebugMessageEx("New TApiServer", "");
+    Logger = GlobalSettings.LoggerPool.GetLogger<TApiServer>();
+
+    Logger.IfDebugMessageEx("New TApiServer", "");
     _HttpClient = new HttpClient();
   }
 
   public TApiServer(Uri baseAddress) : this() {
-    IfDebugMessageEx("New TApiServer", baseAddress);
+    Logger.IfDebugMessageEx("New TApiServer", baseAddress);
     _HttpClient.BaseAddress = baseAddress;
   }
 
   public TApiServer(string baseAddress) : this() {
-    IfDebugMessageEx("New TApiServer", baseAddress);
+    Logger.IfDebugMessageEx("New TApiServer", baseAddress);
     _HttpClient.BaseAddress = new Uri(baseAddress);
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -48,18 +44,18 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
     try {
 
       TMscGetRequestMessage RequestMessage = new TMscGetRequestMessage(uriRequest);
-      IfDebugMessage($"Request #{LocalRequestId}", uriRequest);
+      Logger.IfDebugMessage($"Request #{LocalRequestId}", uriRequest);
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
       if (!LastResponse.IsSuccessStatusCode) {
-        IfDebugMessage($"Response #{LocalRequestId} : { LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+        Logger.IfDebugMessage($"Response #{LocalRequestId} : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
         return default;
       }
 
       string StringContent = await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
       T? JsonContent = IJson<T>.FromJson(StringContent);
 
-      IfDebugMessageEx($"Response #{LocalRequestId} : { LastResponse.StatusCode}", StringContent);
+      Logger.IfDebugMessageEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
 
       return JsonContent;
 
@@ -85,18 +81,18 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
       RequestMessage.Content = new StringContent(additionalContent.ToJson());
       RequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
-      IfDebugMessage($"Request #{LocalRequestId} : {uriRequest} - Content is {additionalContent.GetType().Name}", additionalContent);
+      Logger.IfDebugMessage($"Request #{LocalRequestId} : {uriRequest} - Content is {additionalContent.GetType().Name}", additionalContent);
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
       if (!LastResponse.IsSuccessStatusCode) {
-        IfDebugMessage($"Response #{LocalRequestId} : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+        Logger.IfDebugMessage($"Response #{LocalRequestId} : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
         return default;
       }
 
       string StringContent = await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
       T? JsonContent = IJson<T>.FromJson(StringContent);
 
-      IfDebugMessageEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
+      Logger.IfDebugMessageEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
 
       return JsonContent;
 
@@ -138,18 +134,18 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
     try {
 
       TMscGetRequestMessage RequestMessage = new TMscGetRequestMessage(uriRequest);
-      IfDebugMessage($"Request #{LocalRequestId} : {uriRequest}", "No content");
+      Logger.IfDebugMessage($"Request #{LocalRequestId} : {uriRequest}", "No content");
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
 
       if (!LastResponse.IsSuccessStatusCode) {
-        IfDebugMessage($"Response #{LocalRequestId} : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+        Logger.IfDebugMessage($"Response #{LocalRequestId} : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
         return default;
       }
 
       string StringContent = await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
-      IfDebugMessageEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
+      Logger.IfDebugMessageEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
 
       return StringContent;
     } catch (Exception ex) {
@@ -192,18 +188,18 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
           }
       }
 
-      IfDebugMessage($"Request #{LocalRequestId} : {uriRequest} - Content is {additionalContent?.GetType().Name ?? "(null)"}", additionalContent);
+      Logger.IfDebugMessage($"Request #{LocalRequestId} : {uriRequest} - Content is {additionalContent?.GetType().Name ?? "(null)"}", additionalContent);
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
 
       if (!LastResponse.IsSuccessStatusCode) {
-        IfDebugMessage($"Response #{LocalRequestId} : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+        Logger.IfDebugMessage($"Response #{LocalRequestId} : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
         return default;
       }
 
       string StringContent = await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
-      IfDebugMessageEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
+      Logger.IfDebugMessageEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
 
       return StringContent;
     } catch (Exception ex) {
@@ -225,17 +221,17 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
 
     int LocalRequestId = ++RequestId;
     try {
-      IfDebugMessageEx($"Probing server #{LocalRequestId}", BaseAddress);
+      Logger.IfDebugMessageEx($"Probing server #{LocalRequestId}", BaseAddress);
 
       TMscGetRequestMessage RequestMessage = new TMscGetRequestMessage();
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
 
-      IfDebugMessageEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", $"Probing {BaseAddress}");
+      Logger.IfDebugMessageEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", $"Probing {BaseAddress}");
 
       return LastResponse.IsSuccessStatusCode;
     } catch (Exception ex) {
-      Logger.LogErrorBox($"Unable to probe server  ({LocalRequestId})", ex, true);
+      Logger.LogErrorBox($"Unable to probe server  ({LocalRequestId})", ex, GlobalSettings.DEBUG_BOX_WIDTH, nameof(ProbeServerAsync), true);
       return false;
     }
 
@@ -257,7 +253,7 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
 
       Stream ContentStream = await LastResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
 
-      IfDebugMessage($"Response : {LastResponse.StatusCode}", $"Stream length is {ContentStream.Length} bytes");
+      Logger.IfDebugMessage($"Response : {LastResponse.StatusCode}", $"Stream length is {ContentStream.Length} bytes");
 
       return ContentStream;
 
@@ -277,12 +273,12 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
   public async Task<byte[]?> GetByteArrayAsync(string uriRequest, CancellationToken cancellationToken) {
     int LocalRequestId = ++RequestId;
     try {
-      IfDebugMessage($"Request #{LocalRequestId}", uriRequest);
+      Logger.IfDebugMessage($"Request #{LocalRequestId}", uriRequest);
 
       TMscGetRequestMessage RequestMessage = new TMscGetRequestMessage(uriRequest);
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
-      IfDebugMessage($"Response #{LocalRequestId}", $"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
+      Logger.IfDebugMessage($"Response #{LocalRequestId}", $"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
 
       if (!LastResponse.IsSuccessStatusCode) {
         throw new HttpRequestException($"Error loading {uriRequest} : {LastResponse.StatusCode} {LastResponse.ReasonPhrase}");
@@ -290,7 +286,7 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
 
       byte[] BytesContent = await LastResponse.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
 
-      IfDebugMessageEx($"Response #{LocalRequestId} content", BytesContent.ToHexString());
+      Logger.IfDebugMessageEx($"Response #{LocalRequestId} content", BytesContent.ToHexString());
 
       return BytesContent;
 
@@ -314,16 +310,6 @@ public class TApiServer : IApiServer, IMediaSearchLoggable<TApiServer> {
       }
       throw;
     }
-  }
-
-  [Conditional("DEBUG")]
-  private void IfDebugMessage(string title, object? message, [CallerMemberName] string CallerName = "") {
-    Logger.LogDebugBox(title, message?.ToString() ?? "", CallerName);
-  }
-
-  [Conditional("DEBUG")]
-  private void IfDebugMessageEx(string title, object? message, [CallerMemberName] string CallerName = "") {
-    Logger.LogDebugExBox(title, message?.ToString() ?? "", CallerName);
   }
 
 }
