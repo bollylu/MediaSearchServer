@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnablePreviewFeatures>true</EnablePreviewFeatures>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Display.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BLTools" Version="6.1.0-beta8d" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MediaSearch.Models\MediaSearch.Models.csproj" />
+    <ProjectReference Include="..\MediaSearch.Server.Services\MediaSearch.Server.Services.csproj" />
+    <ProjectReference Include="..\MediaSearch.Storage\MediaSearch.Storage.csproj" />
+  </ItemGroup>
+
+</Project>
