@@ -4,6 +4,8 @@ public interface IMediaInfoFile {
   string StoragePath { get; }
   string StorageName { get; }
 
+  string Name { get; }
+
   Task<bool> Exists();
   Task<bool> Read();
   Task<bool> Write();

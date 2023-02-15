@@ -1,5 +1,5 @@
 ﻿namespace MediaSearch.Storage;
-public class TStorageMemoryMovies : AStorageMemory, IStorageMovie {
+public partial class TStorageMemoryMovies : AStorageMemory, IStorageMovie {
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TStorageMemoryMovies() : base() {
@@ -7,27 +7,28 @@ public class TStorageMemoryMovies : AStorageMemory, IStorageMovie {
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  public async Task<IMovie?> GetMovieAsync(string movieId) {
-    await Task.Yield();
+  #region --- Converters -------------------------------------------------------------------------------------
+  public override string ToString() {
+    StringBuilder RetVal = new StringBuilder();
+    RetVal.AppendLine($"{nameof(PhysicalDataPath)} = {PhysicalDataPath.WithQuotes()}");
+    RetVal.AppendLine($"{nameof(Medias)} = {Medias.Count} item(s))");
+    return RetVal.ToString();
+  }
+  #endregion --- Converters -------------------------------------------------------------------------------------
+
+  public IAsyncEnumerable<IMovie> GetAllMoviesAsync() {
     try {
       _lock.EnterReadLock();
-      return Medias.OfType<IMovie>().FirstOrDefault(x => x.Id == movieId);
+      return Medias.OfType<IMovie>().ToAsyncEnumerable();
     } finally {
       _lock.ExitReadLock();
     }
   }
 
-  public Task<byte[]?> GetMoviePictureAsync(string movieId, string pictureName, int width, int height) {
-    throw new NotImplementedException();
-  }
-
-  public async IAsyncEnumerable<IMovie> GetAllMoviesAsync() {
-    await Task.Yield();
+  public Task<IMovie?> GetMovieAsync(string movieId) {
     try {
       _lock.EnterReadLock();
-      foreach (IMovie MovieItem in Medias.OfType<IMovie>()) {
-        yield return MovieItem;
-      }
+      return Task.FromResult(Medias.OfType<IMovie>().FirstOrDefault(x => x.Id == movieId));
     } finally {
       _lock.ExitReadLock();
     }
@@ -62,7 +63,15 @@ public class TStorageMemoryMovies : AStorageMemory, IStorageMovie {
   }
 
   public ValueTask<int> MoviesCount(IFilter filter) {
-    return ValueTask.FromResult(Medias.OfType<IMovie>().WithFilter(filter).Count());
+    try {
+      _lock.EnterReadLock();
+      return ValueTask.FromResult(Medias.OfType<IMovie>().WithFilter(filter).Count());
+    } catch (Exception ex) {
+      LogErrorBox("Unable to count movies", ex);
+      return ValueTask.FromResult(-1);
+    } finally {
+      _lock.ExitReadLock();
+    }
   }
 
   public async ValueTask<int> PagesCount(IFilter filter) {
@@ -80,13 +89,42 @@ public class TStorageMemoryMovies : AStorageMemory, IStorageMovie {
     }
   }
 
-  public ValueTask<bool> RemoveMovieAsync(IMovie movie) {
+  public async ValueTask<bool> RemoveMovieAsync(IMovie movie) {
+    return await RemoveMovieAsync(movie.Id);
+  }
+
+  public ValueTask<bool> UpdateMovieAsync(IMovie movie) {
     try {
       _lock.EnterWriteLock();
-      Medias.Remove(movie);
+      int Index = Medias.FindIndex(x => x.Id == movie.Id);
+      if (Index == -1) {
+        LogWarningBox("Unable to locate movie for update", movie);
+        return ValueTask.FromResult(false);
+      }
+      Medias[Index] = movie;
       return ValueTask.FromResult(true);
     } finally {
       _lock.ExitWriteLock();
     }
+  }
+
+
+  public ValueTask<bool> RemoveMovieAsync(string movieId) {
+    try {
+      _lock.EnterWriteLock();
+      int Index = Medias.FindIndex(x => x.Id == movieId);
+      if (Index == -1) {
+        LogWarningBox("Unable to locate movie for removal", movieId);
+        return ValueTask.FromResult(false);
+      }
+      Medias.RemoveAt(Index);
+      return ValueTask.FromResult(true);
+    } finally {
+      _lock.ExitWriteLock();
+    }
+  }
+
+  public ValueTask<bool> RemoveAllMoviesAsync() {
+    throw new NotImplementedException();
   }
 }

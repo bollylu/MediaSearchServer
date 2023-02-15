@@ -15,11 +15,11 @@ public class TUserAccountSerializationTest {
       LastSuccessfulLogin = DateTime.Now.AddDays(-1),
       LastFailedLogin = DateTime.Now.AddDays(-1).AddMinutes(-10)
     };
-    TraceMessage("Source", Source);
+    Dump(Source, "Source");
 
     string Target = Source.ToJson();
 
-    TraceMessage("Target", Target);
+    Dump(Target, "Target");
 
     Assert.IsNotNull(Target);
 
@@ -48,13 +48,13 @@ public class TUserAccountSerializationTest {
   }                                              
 ";
 
-    TraceMessage("Source", Source);
+    Dump(Source, "Source");
 
     TUserAccount? Target = IJson<TUserAccount>.FromJson(Source);
     Assert.IsNotNull(Target);
-    TraceMessage("Target", Target);
+    Dump(Target, "Target");
 
-    Assert.AreEqual("192.168.10.11",Target.RemoteIp.ToString());
+    Assert.AreEqual("192.168.10.11", Target.RemoteIp.ToString());
 
   }
 

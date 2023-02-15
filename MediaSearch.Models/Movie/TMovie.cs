@@ -6,7 +6,7 @@ public class TMovie : AMedia, IMovie, IJson<TMovie> {
 
   #region --- Public properties ------------------------------------------------------------------------------
   public EMovieExtension Extension =>
-    FileExtension switch {
+    FileExtension.ToLowerInvariant() switch {
       "avi" => EMovieExtension.AVI,
       "mkv" => EMovieExtension.MKV,
       "mp4" => EMovieExtension.MP4,
@@ -37,7 +37,7 @@ public class TMovie : AMedia, IMovie, IJson<TMovie> {
   #endregion --- Picture --------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMovie() : base() {}
+  public TMovie() : base() { }
 
   public TMovie(IMovie movie) : base(movie) {
     Size = movie.Size;
@@ -52,7 +52,7 @@ public class TMovie : AMedia, IMovie, IJson<TMovie> {
 
   #region --- Converters -------------------------------------------------------------------------------------
   public override string ToString() {
-    StringBuilder RetVal = new StringBuilder();
+    StringBuilder RetVal = new StringBuilder(base.ToString());
     RetVal.AppendLine($"{nameof(Extension)} = {Extension}");
     if (IsGroupMember) {
       RetVal.AppendLine($"{nameof(Group)} = {Group}");
@@ -62,7 +62,75 @@ public class TMovie : AMedia, IMovie, IJson<TMovie> {
     RetVal.AppendLine($"{nameof(OutputYear)} = {OutputYear}");
 
     return RetVal.ToString();
-  } 
+  }
   #endregion --- Converters ----------------------------------------------------------------------------------
+
+  public static async Task<IMovie?> Parse(string moviePath, string rootStoragePath, ILogger logger) {
+    return await Parse(new TFileInfo(moviePath), rootStoragePath, logger);
+  }
+
+  public static async Task<IMovie?> Parse(IFileInfo fileInfo, string rootStoragePath, ILogger logger) {
+
+    char FOLDER_SEPARATOR = Path.DirectorySeparatorChar;
+
+    // Standardize directory separator
+    string ProcessedFileItem = fileInfo.FullName.NormalizePath();
+
+    TMovie RetVal = new TMovie() { Name = ProcessedFileItem.AfterLast(FOLDER_SEPARATOR).BeforeLast(" (") };
+
+    RetVal.StorageRoot = rootStoragePath.NormalizePath();
+    RetVal.StoragePath = ProcessedFileItem.BeforeLast(FOLDER_SEPARATOR).After(RetVal.StorageRoot, System.StringComparison.InvariantCultureIgnoreCase);
+
+    RetVal.FileName = fileInfo.Name;
+    RetVal.FileExtension = RetVal.FileName.AfterLast('.').ToLowerInvariant();
+
+    string[] Tags = RetVal.StoragePath.BeforeLast(FOLDER_SEPARATOR).Split(FOLDER_SEPARATOR, StringSplitOptions.RemoveEmptyEntries);
+    string[] GroupTags = Tags.Where(t => t.EndsWith(" #")).ToArray();
+    switch (GroupTags.Length) {
+      case 0:
+        RetVal.Group = "";
+        RetVal.SubGroup = "";
+        break;
+      case 1:
+        RetVal.Group = GroupTags[0];
+        RetVal.SubGroup = "";
+        break;
+      case 2:
+        RetVal.Group = GroupTags[0];
+        RetVal.SubGroup = GroupTags[1];
+        break;
+      default:
+        RetVal.Group = GroupTags[0];
+        RetVal.SubGroup = GroupTags[1];
+        logger.LogWarningBox($"Too much groups in path name", string.Join(", ", Tags));
+        break;
+    }
+
+    foreach (string TagItem in Tags) {
+      RetVal.Tags.Add(TagItem);
+    }
+
+    try {
+      RetVal.OutputYear = int.Parse(RetVal.FileName.AfterLast('(').BeforeLast(')'));
+    } catch (FormatException ex) {
+      logger.LogErrorBox("Unable to find output year for {item.FullName}", ex);
+      RetVal.OutputYear = 0;
+    }
+
+    RetVal.Size = fileInfo.Length;
+
+    IMediaInfoFile DataFile = new TMovieInfoFileMeta(Path.Join(RetVal.StorageRoot, RetVal.StoragePath));
+    if (await DataFile.Exists()) {
+      logger.LogDebugExBox("Found datafile", DataFile);
+      if (!await DataFile.Read()) {
+        logger.LogWarning($"Unable to read datafile {DataFile.StorageName}");
+      }
+    }
+
+    string CoverName = Path.Join(RetVal.StorageRoot, RetVal.StoragePath);
+
+    return RetVal;
+
+  }
 
 }

@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public class TMediaInfoFileNfo : ALoggable<TMediaInfoFileNfo>, IMediaInfoFile, IToXml {
+public class TMediaInfoFileNfo : ALoggable, IMediaInfoFile, IToXml {
 
   public const string XML_THIS_ELEMENT = "movie";
   public const string XML_ELEMENT_TITLE = "title";
@@ -25,10 +25,7 @@ public class TMediaInfoFileNfo : ALoggable<TMediaInfoFileNfo>, IMediaInfoFile, I
 
   public string Country { get; set; } = "";
 
-  #region --- IName --------------------------------------------
-  public string Name { get; set; } = "";
-  public string Description { get; set; } = "";
-  #endregion --- IName --------------------------------------------
+  public string Name => Path.Combine(StoragePath, StorageName);
 
   public Task<bool> Export(string newFilename) {
     throw new NotImplementedException();

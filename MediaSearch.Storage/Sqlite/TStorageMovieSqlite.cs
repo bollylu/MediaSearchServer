@@ -48,7 +48,7 @@ public class TStorageMovieSqlite : AStorage, IStorageMovie {
 
   public async Task<IMovie?> GetMovieAsync(string movieId) {
     using (TMovieContext Context = new TMovieContext(DbFullName)) {
-      return await Context.Movies.FirstAsync(x => x.ID == movieId, CancellationToken.None).ConfigureAwait(false);
+      return await Context.Movies.FirstAsync(x => x.Id == movieId, CancellationToken.None).ConfigureAwait(false);
     }
   }
 
@@ -88,7 +88,7 @@ public class TStorageMovieSqlite : AStorage, IStorageMovie {
         return true;
       }
     } catch (Exception ex) {
-      Logger.LogErrorBox($"Unable to add movie record {movie.ID.WithQuotes()}", ex);
+      Logger.LogErrorBox($"Unable to add movie record {movie.Id.WithQuotes()}", ex);
       return false;
     }
 
@@ -99,6 +99,54 @@ public class TStorageMovieSqlite : AStorage, IStorageMovie {
   }
 
   public ValueTask<bool> AddMovieAsync(IMovie movie) {
+    throw new NotImplementedException();
+  }
+
+  public ValueTask<bool> UpdateMovieAsync(IMovie movie) {
+    throw new NotImplementedException();
+  }
+
+  public ValueTask<bool> AddMoviePictureAsync(IMovie movie, string pictureName, byte[] picture) {
+    throw new NotImplementedException();
+  }
+
+  public ValueTask<bool> RemovePictureAsync(string movieId, string pictureName) {
+    throw new NotImplementedException();
+  }
+
+  public ValueTask<bool> RemovePictureAsync(IMovie movie, string pictureName) {
+    throw new NotImplementedException();
+  }
+
+  public ValueTask<bool> RemoveMovieAsync(string id) {
+    throw new NotImplementedException();
+  }
+
+  public ValueTask<bool> RemoveAllMoviesAsync() {
+    throw new NotImplementedException();
+  }
+
+  public Task<byte[]?> GetMoviePictureAsync(IMovie movie, string pictureName, int width, int height) {
+    throw new NotImplementedException();
+  }
+
+  public ValueTask<bool> AddMoviePictureAsync(string movieId, string pictureName, byte[] picture) {
+    throw new NotImplementedException();
+  }
+
+  public Task<IDictionary<string, byte[]>> GetMoviePicturesAsync(string movieId) {
+    throw new NotImplementedException();
+  }
+
+  public Task<IDictionary<string, byte[]>> GetMoviePicturesAsync(IMovie movie) {
+    throw new NotImplementedException();
+  }
+
+  public ValueTask<int> GetMoviePictureCountAsync(string movieId) {
+    throw new NotImplementedException();
+  }
+
+  public ValueTask<int> GetMoviePictureCountAsync(IMovie movie) {
     throw new NotImplementedException();
   }
 }

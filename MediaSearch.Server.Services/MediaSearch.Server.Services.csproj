@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="FileInfo\**" />
+    <EmbeddedResource Remove="FileInfo\**" />
+    <None Remove="FileInfo\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="_Global_\changelog.txt" />
     <None Remove="_Global_\version.txt" />
   </ItemGroup>
@@ -17,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BLTools" Version="6.1.0-beta8d" />
+    <PackageReference Include="BLTools" Version="6.1.0-beta8e" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
     <PackageReference Include="SkiaSharp" Version="2.88.3" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3" />

@@ -1,7 +1,7 @@
 namespace MediaSearch.Storage.Test;
 
 [TestClass]
-public class TStorageTests {
+public class TStorageSqLiteTests {
   [TestMethod]
   public void Instanciate_TStorageMovieSqlite() {
 

@@ -22,12 +22,12 @@ public class TMoviesPageSerializationTest {
     };
     Source.Movies.AddRange(Movies);
 
-    TraceMessage("Source", Source);
+    Dump(Source, "Source");
 
     string Target = Source.ToJson();
 
     Assert.IsNotNull(Target);
-    TraceMessage("Target", Target);
+    Dump(Target, "Target");
   }
 
   [TestMethod]
@@ -44,11 +44,11 @@ public class TMoviesPageSerializationTest {
     MoviesPage.Movies.AddRange(Movies);
 
     string Source = MoviesPage.ToJson();
-    TraceMessage("Source", Source);
+    Dump(Source, "Source");
 
     IMoviesPage? Target = IJson<TMoviesPage>.FromJson(Source);
     Assert.IsNotNull(Target);
-    TraceMessage("Target", Target);
+    Dump(Target, "Target");
   }
 
 }

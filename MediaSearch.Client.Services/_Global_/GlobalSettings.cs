@@ -2,6 +2,8 @@
 using System.Text.Json.Serialization;
 using System.Text.Unicode;
 
+using BLTools.Json;
+
 namespace MediaSearch.Client.Services;
 
 public static class GlobalSettings {

@@ -8,6 +8,7 @@ public class TMovieInfoFileMeta : ALoggable, IMediaInfoFile {
   public string StoragePath { get; set; } = "";
   public string StorageName { get; set; } = DEFAULT_FILENAME;
 
+  public string Name => FullStorageName;
   public string FullStorageName => Path.Join(StoragePath.NormalizePath(), StorageName);
 
   public string RawContent { get; private set; } = "";
@@ -49,7 +50,7 @@ public class TMovieInfoFileMeta : ALoggable, IMediaInfoFile {
       }
       return true;
     } catch (Exception ex) {
-      Logger.LogErrorBox("Unable to write MediaFile", ex);
+      LogErrorBox("Unable to write MediaFile", ex);
       return false;
     }
   }
@@ -62,7 +63,7 @@ public class TMovieInfoFileMeta : ALoggable, IMediaInfoFile {
       }
       return true;
     } catch (Exception ex) {
-      Logger.LogErrorBox("Unable to export MediaFile", ex);
+      LogErrorBox("Unable to export MediaFile", ex);
       return false;
     }
   }

@@ -5,9 +5,9 @@ using MediaSearch.Models;
 namespace MediaSearch.Test.Support;
 public static class Display {
 
-  public static void TraceMessage(string? title, string? message) {
+  public static void TraceMessage(string title, string message) {
     message ??= "";
-    Console.WriteLine(message.BoxFixedWidth(title ?? "", GlobalSettings.DEBUG_BOX_WIDTH));
+    Console.WriteLine(message.BoxFixedWidth(title, GlobalSettings.DEBUG_BOX_WIDTH));
   }
 
   public static void TraceMessage(string? title, object item) {

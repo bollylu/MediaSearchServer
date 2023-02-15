@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace MediaSearch.Models.Serialization.Test;
+﻿namespace MediaSearch.Models.Serialization.Test;
 
 [TestClass]
 public class TUserAccountSecretSerializationTest {
@@ -17,11 +15,11 @@ public class TUserAccountSecretSerializationTest {
         Expiration = DateTime.Now
       }
     };
-    TraceMessage("Source", Source);
+    Dump(Source, "Source");
 
     string Target = Source.ToJson();
 
-    TraceMessage("Target", Target);
+    Dump(Target, "Target");
 
     Assert.IsNotNull(Target);
 
@@ -43,11 +41,11 @@ public class TUserAccountSecretSerializationTest {
 }                                              
 ";
 
-    TraceMessage("Source", Source);
+    Dump(Source, "Source");
 
     TUserAccountSecret? Target = IJson<TUserAccountSecret>.FromJson(Source);
     Assert.IsNotNull(Target);
-    TraceMessage("Target", Target);
+    Dump(Target, "Target");
 
     Assert.AreEqual("blabla", Target.PasswordHash);
     Assert.AreEqual("testuser", Target.Name);

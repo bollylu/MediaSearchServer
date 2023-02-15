@@ -33,4 +33,6 @@ public interface IMovie : IMedia, IJson<IMovie> {
 
   IMovieInfoContent MovieInfoContent { get; }
 
+
+
 }

@@ -1,6 +1,4 @@
-﻿using BLTools.Text;
-
-using MediaSearch.Server.Services;
+﻿using MediaSearch.Server.Services;
 
 namespace MediaSearch.Models.Serialization.Test;
 
@@ -14,12 +12,12 @@ public class TMovieSerializationTest {
   public async Task Serialize() {
 
     IMovie Source = await MovieService.GetAllMovies().FirstAsync().ConfigureAwait(false);
-    TraceMessage("Source", Source);
+    Dump(Source, "Source");
 
     string Target = Source.ToJson();
 
     Assert.IsNotNull(Target);
-    TraceMessage("Target", Target);
+    Dump(Target, "Target");
   }
 
   [TestMethod]
@@ -27,7 +25,7 @@ public class TMovieSerializationTest {
     IMovie Movie = await MovieService.GetAllMovies().FirstAsync().ConfigureAwait(false);
 
     string Source = Movie.ToJson();
-    TraceMessage("Source", Source);
+    Dump(Source, "Source");
 
     IMovie? Target = IJson<TMovie>.FromJson(Source);
 

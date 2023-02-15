@@ -1,9 +1,11 @@
 ﻿using BLTools;
-using BLTools.Diagnostic;
+using BLTools.Diagnostic.Logging;
 
 using MediaSearch.Models;
-using MediaSearch.Server.Services;
 using MediaSearch.Storage;
+
+using static BLTools.ConsoleExtension.ConsoleExtension;
+using static BLTools.Diagnostic.TraceInfo;
 
 namespace BuildMoviesJson;
 
@@ -37,42 +39,58 @@ class Program {
     string ParamDbName = Args.GetValue(PARAM_DB_NAME, PARAM_DEFAULT_DB_NAME);
     string ParamTableName = Args.GetValue(PARAM_TABLE_NAME, PARAM_DEFAULT_TABLE_NAME);
 
-    TraceInfo.Message($"{nameof(ParamDataSource)} = {ParamDataSource.WithQuotes()}");
-    TraceInfo.Message($"{nameof(ParamDbPath)} = {ParamDbPath.WithQuotes()}");
-    TraceInfo.Message($"{nameof(ParamDbName)} = {ParamDbName.WithQuotes()}");
-    TraceInfo.Message($"{nameof(ParamTableName)} = {ParamTableName.WithQuotes()}");
+    Message($"{nameof(ParamDataSource)} = {ParamDataSource.WithQuotes()}");
+    Message($"{nameof(ParamDbPath)} = {ParamDbPath.WithQuotes()}");
+    Message($"{nameof(ParamDbName)} = {ParamDbName.WithQuotes()}");
+    Message($"{nameof(ParamTableName)} = {ParamTableName.WithQuotes()}");
 
     #endregion --- Parameters --------------------------------------------
 
-    IStorage Database = new TStorageMemory();
+    #region --- Initialize storage --------------------------------------------
+    Message("Instanciate storage");
+    IStorageMovie Storage = new TStorageMemoryMovies() { PhysicalDataPath = ParamDataSource };
 
     try {
-      if (Database.Exists()) {
-        Database.Remove();
+      Message("Check for storage, if exists, remove it");
+      if (Storage.Exists()) {
+        Storage.Remove();
       }
-      Database.Create();
+      Message("Create storage");
+      Storage.Create();
     } catch (Exception ex) {
-      Usage($"Problem accessing database : {ex.Message}");
+      Usage($"Problem accessing storage : {ex.Message}");
     }
+    Dump(Storage);
+    #endregion --- Initialize storage --------------------------------------------
 
-    Database.Open();
-    IMSTable<IMovie> MovieTable = new TMSTable<IMovie>(ParamTableName);
-    IMediaSource<IMovie> MovieSource = new TMediaSource<IMovie>(ParamDataSource);
-    MovieTable.Header.SetMediaSource(MovieSource);
-    Database.TableCreate(MovieTable);
-
-    TraceInfo.DumpWithMessage("Database", Database);
-
-    IMovieService MovieService = new TMovieService(MovieTable);
-
-    TraceInfo.Dump(MovieService);
-
+    ILogger Logger = new TConsoleLogger<Program>();
+    IEnumerable<IFileInfo> AvailableMovies = Support.FetchFiles(ParamDataSource, CancellationToken.None);
+    TCounter Counter = new();
     using (TChrono Chrono = new()) {
-      await Chrono.ExecuteTaskAsync(MovieService.Initialize()).ConfigureAwait(false);
-      TraceInfo.Message($"Initialization done in {Chrono.ElapsedTime.DisplayTime()}");
+      Chrono.Reset();
+      //await Parallel.ForEachAsync(AvailableMovies, new ParallelOptions() { MaxDegreeOfParallelism = 10 }, async (f, t) => {
+      AvailableMovies.AsParallel().ForAll(async f => {
+        IMovie? NewMovie = await TMovie.Parse(f, Storage.PhysicalDataPath, Logger).ConfigureAwait(false);
+        if (NewMovie is not null) {
+          await NewMovie.LoadPicture().ConfigureAwait(false);
+          await Storage.AddMovieAsync(NewMovie).ConfigureAwait(false);
+        }
+        Counter.Increment();
+      });
+
+      Chrono.Stop();
+      Message($"Initialization done in {Chrono.ElapsedTime.DisplayTime()}");
     }
 
-    Database.Close();
+    Dump(Storage);
+
+    //using (TChrono Chrono = new()) {
+    //  await Chrono.ExecuteTaskAsync(MovieService.Initialize()).ConfigureAwait(false);
+    //  TraceInfo.Message($"Initialization done in {Chrono.ElapsedTime.DisplayTime()}");
+    //}
+
+    //Database.Close();
+    await Pause();
     Environment.Exit(0);
   }
 
@@ -86,4 +104,6 @@ class Program {
     Console.WriteLine("                       /datasource=<path to the data source>");
     Environment.Exit(1);
   }
+
+
 }

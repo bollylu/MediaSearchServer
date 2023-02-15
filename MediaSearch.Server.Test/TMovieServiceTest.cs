@@ -1,8 +1,4 @@
-﻿using BLTools.Text;
-
-using static MediaSearch.Models.Support;
-
-namespace MediaSearch.Server.Services.Test;
+﻿namespace MediaSearch.Server.Services.Test;
 
 [TestClass]
 public class TMovieServiceTest {
@@ -25,7 +21,7 @@ public class TMovieServiceTest {
 
     int Count = await Global.MovieService.GetAllMovies().CountAsync().ConfigureAwait(false);
 
-    TraceMessage("Movie count", Count);
+    Dump(Count, "Movie count");
     Assert.IsTrue(Count > 0);
   }
 
@@ -35,7 +31,7 @@ public class TMovieServiceTest {
       Page = 1,
       PageSize = AMovieCache.DEFAULT_PAGE_SIZE
     };
-    TraceMessage("Filter", DefaultFilter);
+    Dump(DefaultFilter, "Filter");
     IMoviesPage? Target = await Global.MovieService.GetMoviesPage(DefaultFilter).ConfigureAwait(false);
     Assert.IsNotNull(Target);
     TraceMoviesName(Target.Movies);
@@ -50,7 +46,7 @@ public class TMovieServiceTest {
     StringBuilder Message = new();
     Message.AppendLine($"Movies count = {MovieCount}");
     Message.AppendLine($"Last page = {PageCount}");
-    TraceMessage("Result", Message);
+    Dump(Message, "Result");
 
     IMoviesPage? Target = await Global.MovieService.GetMoviesLastPage(TFilter.Empty).ConfigureAwait(false);
     Assert.IsNotNull(Target);
@@ -61,7 +57,7 @@ public class TMovieServiceTest {
   [TestMethod]
   public async Task Service_GetFilteredFirstPage() {
     TFilter Filter = new TFilter() { Keywords = "The", Page = 1, PageSize = IMovieService.DEFAULT_PAGE_SIZE };
-    TraceMessage("Filter", Filter);
+    Dump(Filter, "Filter");
     IMoviesPage? Target = await Global.MovieService.GetMoviesPage(Filter).ConfigureAwait(false);
     Assert.IsNotNull(Target);
     TraceMoviesName(Target.Movies);
@@ -71,16 +67,16 @@ public class TMovieServiceTest {
   [TestMethod]
   public async Task Service_GetFilteredLastPage() {
     TFilter Filter = new TFilter() { Keywords = "The", PageSize = IMovieService.DEFAULT_PAGE_SIZE };
-    TraceMessage("Filter", Filter);
+    Dump(Filter, "Filter");
 
     int MovieCount = (await Global.MovieService.GetMoviesPage(Filter).ConfigureAwait(false) ?? TMoviesPage.Empty).Movies.Count;
     int PageCount = (MovieCount / IMovieService.DEFAULT_PAGE_SIZE) + (MovieCount % IMovieService.DEFAULT_PAGE_SIZE) > 0 ? 1 : 0;
 
-    
+
     StringBuilder Message = new();
     Message.AppendLine($"Movies count = {MovieCount}");
     Message.AppendLine($"Last page = {PageCount}");
-    TraceMessage("Result", Message);
+    Dump(Message, "Result");
 
     IMoviesPage? Target = await Global.MovieService.GetMoviesLastPage(Filter).ConfigureAwait(false);
     Assert.IsNotNull(Target);

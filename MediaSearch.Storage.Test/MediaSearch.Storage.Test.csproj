@@ -24,4 +24,16 @@
     <ProjectReference Include="..\MediaSearch.Storage\MediaSearch.Storage.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="data\folder.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="data\other.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="data\Sac de noeuds (1984).avi">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public interface IMedia : IName, ITags, IMultiNames {
+public interface IMedia : IName, ITags, IMultiNames, IPictureContainer {
 
   /// <summary>
   /// Identifier for this item

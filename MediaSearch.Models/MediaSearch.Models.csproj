@@ -24,7 +24,10 @@
     <Compile Remove="ADataModel.cs" />
     <Compile Remove="Interfaces\IDuplicate.cs" />
     <Compile Remove="Json serialization\AJson.cs" />
+    <Compile Remove="Json serialization\Converters\TDateOnlyJsonConverter.cs" />
+    <Compile Remove="Json serialization\Converters\TIpAddressJsonConverter.cs" />
     <Compile Remove="Json serialization\Converters\TMovieInfoContentMetaConverter_1.cs" />
+    <Compile Remove="Json serialization\TIdenticalJsonNamingPolicy.cs" />
     <Compile Remove="Media information\MediaSearch\TMediaInfoContentMeta.cs" />
     <Compile Remove="Movie\TMovieJson.cs" />
   </ItemGroup>
@@ -43,11 +46,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BLTools" Version="6.1.0-beta8d" />
+    <PackageReference Include="BLTools" Version="6.1.0-beta8e" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
+    <PackageReference Include="SkiaSharp" Version="2.88.3" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3" />
     <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
-    <PackageReference Include="System.Text.Json" Version="7.0.1" />
+    <PackageReference Include="System.Text.Json" Version="7.0.2" />
   </ItemGroup>
 
   <ItemGroup>

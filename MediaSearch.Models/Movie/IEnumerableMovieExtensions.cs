@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
-using System.Xml.Linq;
+﻿using System.Globalization;
 
 namespace MediaSearch.Models;
 
 public static class IEnumerableMovieExtensions {
 
   public static IEnumerable<IMovie> WithFilter(this IEnumerable<IMovie> movies, IFilter filter) {
+
     IEnumerable<IMovie> Filtered = movies.FilterByDays(filter)
                                          .FilterByOutputDate(filter)
                                          .FilterByKeywords(filter)
