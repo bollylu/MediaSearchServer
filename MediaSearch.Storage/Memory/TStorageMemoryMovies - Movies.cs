@@ -62,6 +62,18 @@ public partial class TStorageMemoryMovies : AStorageMemory, IStorageMovie {
     throw new NotImplementedException();
   }
 
+  public ValueTask<int> MoviesCount() {
+    try {
+      _lock.EnterReadLock();
+      return ValueTask.FromResult(Medias.OfType<IMovie>().Count());
+    } catch (Exception ex) {
+      LogErrorBox("Unable to count movies", ex);
+      return ValueTask.FromResult(-1);
+    } finally {
+      _lock.ExitReadLock();
+    }
+  }
+
   public ValueTask<int> MoviesCount(IFilter filter) {
     try {
       _lock.EnterReadLock();

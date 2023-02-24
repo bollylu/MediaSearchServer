@@ -72,6 +72,9 @@ public class TStorageMovieSqlite : AStorage, IStorageMovie {
     throw new NotImplementedException();
   }
 
+  public ValueTask<int> MoviesCount() {
+    throw new NotImplementedException();
+  }
   public ValueTask<int> MoviesCount(IFilter filter) {
     throw new NotImplementedException();
   }

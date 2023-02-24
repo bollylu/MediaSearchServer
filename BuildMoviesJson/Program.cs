@@ -68,7 +68,6 @@ class Program {
     TCounter Counter = new();
     using (TChrono Chrono = new()) {
       Chrono.Reset();
-      //await Parallel.ForEachAsync(AvailableMovies, new ParallelOptions() { MaxDegreeOfParallelism = 10 }, async (f, t) => {
       AvailableMovies.AsParallel().ForAll(async f => {
         IMovie? NewMovie = await TMovie.Parse(f, Storage.PhysicalDataPath, Logger).ConfigureAwait(false);
         if (NewMovie is not null) {
@@ -78,18 +77,13 @@ class Program {
         Counter.Increment();
       });
 
+      Message($"{await Storage.MoviesCount()} movies available");
       Chrono.Stop();
       Message($"Initialization done in {Chrono.ElapsedTime.DisplayTime()}");
     }
 
     Dump(Storage);
 
-    //using (TChrono Chrono = new()) {
-    //  await Chrono.ExecuteTaskAsync(MovieService.Initialize()).ConfigureAwait(false);
-    //  TraceInfo.Message($"Initialization done in {Chrono.ElapsedTime.DisplayTime()}");
-    //}
-
-    //Database.Close();
     await Pause();
     Environment.Exit(0);
   }

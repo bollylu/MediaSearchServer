@@ -31,6 +31,12 @@ public partial interface IStorageMovie : IStorage {
   Task<IMoviesPage?> GetMoviesLastPageAsync(IFilter filter);
 
   /// <summary>
+  /// Calculate the number of movies
+  /// </summary>
+  /// <returns>The number of movies related to the filter</returns>
+  ValueTask<int> MoviesCount();
+
+  /// <summary>
   /// Calculate the number of movies for a given filter
   /// </summary>
   /// <param name="filter">The filter to apply</param>
