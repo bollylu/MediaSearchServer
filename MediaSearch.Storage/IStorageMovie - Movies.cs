@@ -8,7 +8,7 @@ public partial interface IStorageMovie : IStorage {
   /// </summary>
   /// <param name="movieId">The id of the requested movie</param>
   /// <returns>The requested movie or (null) if not available</returns>
-  Task<IMovie?> GetMovieAsync(string movieId);
+  Task<IMovie?> GetMovieAsync(IIdString movieId);
 
   /// <summary>
   /// Get all the movies from storage
@@ -69,7 +69,7 @@ public partial interface IStorageMovie : IStorage {
   /// </summary>
   /// <param name="id">The Id of the movie to remove</param>
   /// <returns><see langword="true"/> if successful, <see langword="false"/> otherwise</returns>
-  ValueTask<bool> RemoveMovieAsync(string id);
+  ValueTask<bool> RemoveMovieAsync(IIdString id);
 
   /// <summary>
   /// Removes all movies and associated records from storage
@@ -78,4 +78,8 @@ public partial interface IStorageMovie : IStorage {
   ValueTask<bool> RemoveAllMoviesAsync();
   #endregion --- Movies --------------------------------------------
 
+  #region --- Groups --------------------------------------------
+  Task<IGroup> GetGroupsAsync(IIdString id);
+  IAsyncEnumerable<IGroup> GetGroupsListAsync(IIdString id);
+  #endregion --- Groups --------------------------------------------
 }

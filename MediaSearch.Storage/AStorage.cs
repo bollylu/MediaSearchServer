@@ -4,7 +4,11 @@ public abstract class AStorage : ALoggable, IStorage {
 
   public string PhysicalDataPath { get; set; } = "";
 
-  public abstract bool Exists();
-  public abstract bool Create();
-  public abstract bool Remove();
+  public abstract ValueTask<bool> Exists();
+  public abstract ValueTask<bool> Create();
+  public abstract ValueTask<bool> Remove();
+  public abstract ValueTask<bool> Any();
+  public abstract ValueTask<bool> IsEmpty();
+
+  public abstract Task Clear();
 }

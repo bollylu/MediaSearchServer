@@ -7,7 +7,7 @@ public abstract class AMovieService : ALoggable, IMovieService, IName {
   /// </summary>
   public string RootStoragePath { get; init; } = "";
 
-  public IDataProvider DataProvider { get; protected set; } = new TDataProvider();
+  //public IDataProvider DataProvider { get; protected set; } = new TDataProvider();
 
   protected AMovieService() {
     Logger = GlobalSettings.LoggerPool.GetLogger<AMovieService>();
@@ -30,17 +30,17 @@ public abstract class AMovieService : ALoggable, IMovieService, IName {
   /// </summary>
   public List<string> MoviesExtensions { get; } = new() { ".mkv", ".avi", ".mp4", ".iso" };
 
-  public abstract IAsyncEnumerable<TMovie> GetAllMovies();
+  public abstract IAsyncEnumerable<IMovie> GetAllMovies();
   public abstract IAsyncEnumerable<string> GetGroups();
   public abstract Task<IMovie?> GetMovie(string id);
-  public abstract Task<TMoviesPage?> GetMoviesLastPage(IFilter filter);
-  public abstract Task<TMoviesPage?> GetMoviesPage(IFilter filter);
+  public abstract Task<IMoviesPage?> GetMoviesLastPage(IFilter filter);
+  public abstract Task<IMoviesPage?> GetMoviesPage(IFilter filter);
   public abstract Task<byte[]> GetPicture(string id, string pictureName, int width, int height);
-  public abstract int GetRefreshStatus();
+  public abstract ValueTask<int> GetRefreshStatus();
   public abstract IAsyncEnumerable<string> GetSubGroups(string group);
   public abstract Task Initialize();
   public abstract ValueTask<int> MoviesCount(IFilter filter);
   public abstract ValueTask<int> PagesCount(IFilter filter);
   public abstract Task RefreshData();
-  public abstract void Reset();
+  public abstract Task Reset();
 }

@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data providers\**" />
     <Compile Remove="FileInfo\**" />
+    <EmbeddedResource Remove="Data providers\**" />
     <EmbeddedResource Remove="FileInfo\**" />
+    <None Remove="Data providers\**" />
     <None Remove="FileInfo\**" />
   </ItemGroup>
 
@@ -32,6 +35,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MediaSearch.Models\MediaSearch.Models.csproj" />
+    <ProjectReference Include="..\MediaSearch.Storage\MediaSearch.Storage.csproj" />
   </ItemGroup>
 
 </Project>

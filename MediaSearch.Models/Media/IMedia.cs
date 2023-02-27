@@ -1,11 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public interface IMedia : IName, ITags, IMultiNames, IPictureContainer {
-
-  /// <summary>
-  /// Identifier for this item
-  /// </summary>
-  string Id { get; }
+public interface IMedia : IIdString, IName, ITags, IMultiNames, IPictureContainer {
 
   /// <summary>
   /// The filename used to store the media
@@ -31,5 +26,6 @@ public interface IMedia : IName, ITags, IMultiNames, IPictureContainer {
   /// The date that the movie was added to the library
   /// </summary>
   DateOnly DateAdded { get; set; }
+
 }
 

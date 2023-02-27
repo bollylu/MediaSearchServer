@@ -22,26 +22,26 @@ public class TStorageMovieSqlite : AStorage, IStorageMovie {
     return RetVal.ToString();
   }
 
-  public override bool Exists() {
+  public override ValueTask<bool> Exists() {
     using (TMovieContext Context = new TMovieContext(DbFullName)) {
-      return Context.Database.CanConnect();
+      return ValueTask.FromResult(Context.Database.CanConnect());
     }
   }
 
-  public override bool Create() {
+  public override ValueTask<bool> Create() {
     using (TMovieContext Context = new TMovieContext(DbFullName)) {
-      return Context.Database.EnsureCreated();
+      return ValueTask.FromResult(Context.Database.EnsureCreated());
     }
   }
 
-  public override bool Remove() {
+  public override ValueTask<bool> Remove() {
     using (TMovieContext Context = new TMovieContext(DbFullName)) {
       try {
         Context.Database.EnsureDeleted();
-        return true;
+        return ValueTask.FromResult(true);
       } catch (Exception ex) {
         Logger.LogErrorBox("Unable to remove sqlite database", ex);
-        return false;
+        return ValueTask.FromResult(false);
       }
     }
   }
@@ -151,5 +151,13 @@ public class TStorageMovieSqlite : AStorage, IStorageMovie {
 
   public ValueTask<int> GetMoviePictureCountAsync(IMovie movie) {
     throw new NotImplementedException();
+  }
+
+  public override ValueTask<bool> Any() {
+    throw new NotImplementedException();
+  }
+
+  public override async ValueTask<bool> IsEmpty() {
+    return !await Any();
   }
 }

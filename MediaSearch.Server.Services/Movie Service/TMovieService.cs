@@ -12,21 +12,24 @@ public class TMovieService : AMovieService {
   public static int TIMEOUT_TO_CONVERT_IN_MS = 5000;
   #endregion --- Constants --------------------------------------------
 
-  private readonly IMovieCache _MoviesCache = new TMovieCache();
+  //private readonly IMovieCache _MoviesCache = new TMovieCache();
+
+  private readonly IStorageMovie _Storage;
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMovieService() : base() {
+  public TMovieService(IStorageMovie storage) : base() {
+    _Storage = storage;
   }
 
-  public TMovieService(string storage) : this() {
-    RootStoragePath = storage;
-    _MoviesCache = new TMovieCache() { RootStoragePath = storage };
-  }
+  //public TMovieService(string storage) : this() {
+  //  RootStoragePath = storage;
+  //  _MoviesCache = new TMovieCache() { RootStoragePath = storage };
+  //}
 
-  public TMovieService(IMovieCache movieCache) : this() {
-    _MoviesCache = movieCache;
-    RootStoragePath = movieCache.RootStoragePath;
-  }
+  //public TMovieService(IMovieCache movieCache) : this() {
+  //  _MoviesCache = movieCache;
+  //  RootStoragePath = movieCache.RootStoragePath;
+  //}
 
   private bool _IsInitialized = false;
   private bool _IsInitializing = false;
@@ -39,7 +42,7 @@ public class TMovieService : AMovieService {
       return;
     }
 
-    if (_MoviesCache.Any()) {
+    if (await _Storage.Any().ConfigureAwait(false)) {
       return;
     }
 
@@ -47,7 +50,7 @@ public class TMovieService : AMovieService {
 
     Logger.Log($"Parsing data source : {RootStoragePath}");
     using (CancellationTokenSource Timeout = new CancellationTokenSource(TIMEOUT_TO_SCAN_FILES_IN_MS)) {
-      await _MoviesCache.Parse(Timeout.Token).ConfigureAwait(false);
+
     }
 
     _IsInitialized = true;
@@ -55,61 +58,59 @@ public class TMovieService : AMovieService {
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  public override void Reset() {
-    _MoviesCache.Clear();
+  public override async Task Reset() {
+    await _Storage.Clear();
     _IsInitialized = false;
   }
 
-  public override Task RefreshData() {
-    Reset();
-    return Task.Run(async () => await Initialize());
+  public override async Task RefreshData() {
+    await Reset().ConfigureAwait(false);
+    await Initialize().ConfigureAwait(false);
   }
 
-  public override int GetRefreshStatus() {
+  public override async ValueTask<int> GetRefreshStatus() {
     if (_IsInitialized) {
       return -1;
     }
-    return _MoviesCache.Count();
+    return await _Storage.MoviesCount().ConfigureAwait(false);
   }
 
   #region --- Movies --------------------------------------------
   public override async ValueTask<int> MoviesCount(IFilter filter) {
     await Initialize().ConfigureAwait(false);
-    return _MoviesCache.GetAllMovies().WithFilter(filter).Count();
+    return await _Storage.MoviesCount(filter).ConfigureAwait(false);
   }
 
   public override async ValueTask<int> PagesCount(IFilter filter) {
-    int FilteredMoviesCount = await MoviesCount(filter).ConfigureAwait(false);
-    return (FilteredMoviesCount / filter.PageSize) + (FilteredMoviesCount % filter.PageSize > 0 ? 1 : 0);
+    return await _Storage.PagesCount(filter).ConfigureAwait(false);
   }
 
-  public override async IAsyncEnumerable<TMovie> GetAllMovies() {
+  public override async IAsyncEnumerable<IMovie> GetAllMovies() {
     await Initialize().ConfigureAwait(false);
 
-    foreach (TMovie MovieItem in _MoviesCache.GetAllMovies()) {
+    await foreach (IMovie MovieItem in _Storage.GetAllMoviesAsync().ConfigureAwait(false)) {
       yield return MovieItem;
     }
   }
 
-  public override async Task<TMoviesPage?> GetMoviesPage(IFilter filter) {
+  public override async Task<IMoviesPage?> GetMoviesPage(IFilter filter) {
     await Initialize().ConfigureAwait(false);
-    return _MoviesCache.GetMoviesPage(filter);
+    return await _Storage.GetMoviesPageAsync(filter).ConfigureAwait(false);
   }
 
-  public override async Task<TMoviesPage?> GetMoviesLastPage(IFilter filter) {
+  public override async Task<IMoviesPage?> GetMoviesLastPage(IFilter filter) {
     await Initialize().ConfigureAwait(false);
     TFilter NewFilter = new TFilter(filter);
     NewFilter.Page = await PagesCount(filter);
-    return _MoviesCache.GetMoviesPage(NewFilter);
+    return await _Storage.GetMoviesPageAsync(NewFilter).ConfigureAwait(false);
   }
 
-  public override Task<IMovie?> GetMovie(string id) {
+  public override async Task<IMovie?> GetMovie(string id) {
     if (string.IsNullOrWhiteSpace(id)) {
       Logger.LogWarning("Unable to retrieve movie : id is null or invalid");
-      return Task.FromResult<IMovie?>(null);
+      return null;
     }
-    IMovie? Movie = _MoviesCache.GetMovie(id);
-    return Task.FromResult<IMovie?>(Movie);
+    return await _Storage.GetMovieAsync(id).ConfigureAwait(false);
   }
   #endregion --- Movies --------------------------------------------
 

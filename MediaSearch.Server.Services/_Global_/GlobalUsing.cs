@@ -11,3 +11,4 @@ global using BLTools;
 global using BLTools.Diagnostic.Logging;
 
 global using MediaSearch.Models;
+global using MediaSearch.Storage;

@@ -16,7 +16,7 @@ public interface IMovieService {
   /// <summary>
   /// The source of the data for the service
   /// </summary>
-  IDataProvider DataProvider { get; }
+  //IDataProvider DataProvider { get; }
 
   #region --- Movies --------------------------------------------
   List<string> MoviesExtensions { get; }
@@ -41,7 +41,7 @@ public interface IMovieService {
   /// Indicate the number of records already processed
   /// </summary>
   /// <returns>The number of processed records or -1 when completed</returns>
-  int GetRefreshStatus();
+  ValueTask<int> GetRefreshStatus();
 
   /// <summary>
   /// The quantity of movies in the cache, optionally matching the filter
@@ -62,14 +62,14 @@ public interface IMovieService {
   /// Get all the movies
   /// </summary>
   /// <returns>The complete list of movies in cache</returns>
-  IAsyncEnumerable<TMovie> GetAllMovies();
+  IAsyncEnumerable<IMovie> GetAllMovies();
 
   /// <summary>
   /// Get a page of movies matching a filter
   /// </summary>
   /// <param name="filter">The data to check in name and alt. names</param>
   /// <returns>A page of IMovie</returns>
-  Task<TMoviesPage?> GetMoviesPage(IFilter filter);
+  Task<IMoviesPage?> GetMoviesPage(IFilter filter);
 
   // <summary>
   /// Get a page of movies matching a filter
@@ -78,7 +78,7 @@ public interface IMovieService {
   /// <param name="startPage">Which page to start with</param>
   /// <param name="pageSize">How many movies on a page</param>
   /// <returns>A page of IMovie</returns>
-  Task<TMoviesPage?> GetMoviesLastPage(IFilter filter);
+  Task<IMoviesPage?> GetMoviesLastPage(IFilter filter);
 
   /// <summary>
   /// Get a movie based on it's Id

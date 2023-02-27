@@ -25,10 +25,10 @@ public partial class TStorageMemoryMovies : AStorageMemory, IStorageMovie {
     }
   }
 
-  public Task<IMovie?> GetMovieAsync(string movieId) {
+  public Task<IMovie?> GetMovieAsync(IIdString movieId) {
     try {
       _lock.EnterReadLock();
-      return Task.FromResult(Medias.OfType<IMovie>().FirstOrDefault(x => x.Id == movieId));
+      return Task.FromResult(Medias.OfType<IMovie>().FirstOrDefault(x => x.Id == movieId.Id));
     } finally {
       _lock.ExitReadLock();
     }
@@ -121,10 +121,10 @@ public partial class TStorageMemoryMovies : AStorageMemory, IStorageMovie {
   }
 
 
-  public ValueTask<bool> RemoveMovieAsync(string movieId) {
+  public ValueTask<bool> RemoveMovieAsync(IIdString movieId) {
     try {
       _lock.EnterWriteLock();
-      int Index = Medias.FindIndex(x => x.Id == movieId);
+      int Index = Medias.FindIndex(x => x.Id == movieId.Id);
       if (Index == -1) {
         LogWarningBox("Unable to locate movie for removal", movieId);
         return ValueTask.FromResult(false);
