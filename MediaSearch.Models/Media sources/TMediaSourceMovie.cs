@@ -1,8 +1,9 @@
 ﻿namespace MediaSearch.Models;
-public class TMediaSourceMovie : IMediaSource, IJson<TMediaSourceMovie>, ILoggable {
 
-  public EMediaSourceType MediaSourceType { get; } = EMediaSourceType.Movie;
-  public IStorage? Storage { get; set; }
+public class TMediaSourceMovie : ALoggable, IMediaSource, IJson<TMediaSourceMovie> {
+
+  public EMediaType MediaSourceType { get; } = EMediaType.Movie;
+  //public IStorage? Storage { get; set; }
   public string Name {
     get {
       return _Name ??= $"{MediaSourceType}";
@@ -13,12 +14,15 @@ public class TMediaSourceMovie : IMediaSource, IJson<TMediaSourceMovie>, ILoggab
   }
   private string? _Name;
   public string Description { get; set; } = "";
-  public ILogger Logger { get; } = GlobalSettings.LoggerPool.GetLogger<TMediaSourceMovie>();
+
+  public string RootStorage { get; set; } = "";
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMediaSourceMovie() { }
-  public TMediaSourceMovie(IStorage storage) {
-    Storage = storage;
+  public TMediaSourceMovie() {
+    Logger = GlobalSettings.LoggerPool.GetLogger<TMediaSourceMovie>();
+  }
+  public TMediaSourceMovie(string rootStorage) : this() {
+    RootStorage = rootStorage;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
@@ -28,7 +32,13 @@ public class TMediaSourceMovie : IMediaSource, IJson<TMediaSourceMovie>, ILoggab
     if (!string.IsNullOrWhiteSpace(Description)) {
       RetVal.AppendLine($"  {nameof(Description)} : {Description.WithQuotes()}");
     }
-    RetVal.AppendLine(Database?.ToString(2));
+    //RetVal.AppendLine(Database?.ToString(2));
     return RetVal.ToString();
   }
+
+  public string ToString(int indent) {
+    throw new NotImplementedException();
+  }
+
+  public Type? MediaType { get; }
 }

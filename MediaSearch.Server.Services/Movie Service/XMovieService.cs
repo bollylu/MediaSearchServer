@@ -43,15 +43,16 @@ public class XMovieService : AMovieService {
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  public override void Reset() {
+  public override Task Reset() {
+    return Task.CompletedTask;
   }
 
   public override Task RefreshData() {
     return Task.CompletedTask;
   }
 
-  public override int GetRefreshStatus() {
-    return -1;
+  public override ValueTask<int> GetRefreshStatus() {
+    return ValueTask.FromResult(-1);
   }
 
   #region --- Movies --------------------------------------------
@@ -66,7 +67,7 @@ public class XMovieService : AMovieService {
     return (FilteredMoviesCount / filter.PageSize) + (FilteredMoviesCount % filter.PageSize > 0 ? 1 : 0);
   }
 
-  public override async IAsyncEnumerable<TMovie> GetAllMovies() {
+  public override async IAsyncEnumerable<IMovie> GetAllMovies() {
     await Initialize().ConfigureAwait(false);
 
     foreach (TMovie MovieItem in _MoviesCache.GetAllMovies()) {
@@ -74,25 +75,25 @@ public class XMovieService : AMovieService {
     }
   }
 
-  public override async Task<TMoviesPage?> GetMoviesPage(IFilter filter) {
+  public override async Task<IMoviesPage?> GetMoviesPage(IFilter filter) {
     await Initialize().ConfigureAwait(false);
     return _MoviesCache.GetMoviesPage(filter);
   }
 
-  public override async Task<TMoviesPage?> GetMoviesLastPage(IFilter filter) {
+  public override async Task<IMoviesPage?> GetMoviesLastPage(IFilter filter) {
     await Initialize().ConfigureAwait(false);
     TFilter NewFilter = new TFilter(filter);
     NewFilter.Page = await PagesCount(filter);
     return _MoviesCache.GetMoviesPage(NewFilter);
   }
 
-  public override async Task<IMovie?> GetMovie(string id) {
+  public override async Task<IMovie?> GetMovie(IRecord movie) {
     await Initialize().ConfigureAwait(false);
-    if (string.IsNullOrWhiteSpace(id)) {
+    if (string.IsNullOrWhiteSpace(movie.Id)) {
       Logger.LogWarning("Unable to retrieve movie : id is null or invalid");
       return null;
     }
-    IMovie? Movie = _MoviesCache.GetMovie(id);
+    IMovie? Movie = _MoviesCache.GetMovie(movie.Id);
     return Movie;
   }
   #endregion --- Movies --------------------------------------------

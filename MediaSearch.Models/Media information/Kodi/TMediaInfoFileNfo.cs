@@ -2,6 +2,7 @@
 
 public class TMediaInfoFileNfo : ALoggable, IMediaInfoFile, IToXml {
 
+  #region --- XML constants ----------------------------------------------------------------------------------
   public const string XML_THIS_ELEMENT = "movie";
   public const string XML_ELEMENT_TITLE = "title";
   public const string XML_ELEMENT_ORIGINAL_TITLE = "originaltitle";
@@ -12,13 +13,16 @@ public class TMediaInfoFileNfo : ALoggable, IMediaInfoFile, IToXml {
   public const string XML_ELEMENT_TAGS = "TAG";
   public const string XML_ELEMENT_COUNTRY = "country";
   public const string XML_ELEMENT_PREMIERED = "premiered";
+  #endregion --- XML constants -------------------------------------------------------------------------------
 
   public string StoragePath { get; set; } = "";
   public string StorageName { get; set; } = "";
 
+  #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMediaInfoFileNfo() {
     Logger = GlobalSettings.LoggerPool.GetLogger<TMediaInfoFileNfo>();
   }
+  #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   #region --- IFileMediaInfo --------------------------------------------
   public IMediaInfoContent Content { get; } = new TMediaInfoContentNfo();
@@ -27,15 +31,29 @@ public class TMediaInfoFileNfo : ALoggable, IMediaInfoFile, IToXml {
 
   public string Name => Path.Combine(StoragePath, StorageName);
 
-  public Task<bool> Export(string newFilename) {
+  public ValueTask<bool> ExportAsync(string newFilename, CancellationToken token) {
     throw new NotImplementedException();
   }
 
-  public Task<bool> Read() {
+  public ValueTask<bool> ExistsAsync(CancellationToken token) {
+    throw new NotImplementedException();
+  }
+  public ValueTask<bool> ReadAsync(CancellationToken token) {
     throw new NotImplementedException();
   }
 
-  public Task<bool> Write() {
+  public ValueTask<bool> WriteAsync(CancellationToken token) {
+    throw new NotImplementedException();
+  }
+
+  public bool Exists() {
+    throw new NotImplementedException();
+  }
+  public bool Read() {
+    throw new NotImplementedException();
+  }
+
+  public bool Write() {
     throw new NotImplementedException();
   }
   #endregion --- IFileMediaInfo --------------------------------------------
@@ -68,13 +86,7 @@ public class TMediaInfoFileNfo : ALoggable, IMediaInfoFile, IToXml {
     }
 
   }
-
-
-
-  public Task<bool> Exists() {
-    throw new NotImplementedException();
-  }
-
+  #endregion --- IToXml --------------------------------------------
 
   IMediaInfoContent? IMediaInfoFile.Content { get; set; }
 
@@ -87,5 +99,5 @@ public class TMediaInfoFileNfo : ALoggable, IMediaInfoFile, IToXml {
   }
 
 
-  #endregion --- IToXml --------------------------------------------
+
 }

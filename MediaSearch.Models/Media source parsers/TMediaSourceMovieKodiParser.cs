@@ -84,7 +84,7 @@ public class TMediaSourceMovieKodiParser : IMediaSourceParser, ILoggable {
     RetVal.Size = item.Length;
 
     IMediaInfoFile DataFile = new TMovieInfoFileMeta(Path.Join(RetVal.StorageRoot, RetVal.StoragePath));
-    if (DataFile.Exists()) {
+    if (await DataFile.ExistsAsync(token)) {
       Logger.LogDebugExBox("Found datafile", DataFile);
       await DataFile.ReadAsync(token);
       //RetVal.MovieInfoContentMeta.Duplicate(DataFile.Content);

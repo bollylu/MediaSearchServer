@@ -1,3 +1,3 @@
-﻿namespace MediaSearch.Models.Language;
+﻿namespace MediaSearch.Models;
 //public class TTranslatedText<T> : KeyValuePair<ELanguage, string> {
 //}

@@ -7,6 +7,8 @@ namespace MediaSearch.Models;
 
 public abstract class AMedia : ALoggable, IMedia {
 
+  public static ELanguage DEFAULT_LANGUAGE = ELanguage.French;
+
   public string Id {
     get {
       return _Id ??= _BuildId();
@@ -21,9 +23,29 @@ public abstract class AMedia : ALoggable, IMedia {
     return Name.HashToBase64();
   }
 
+  public EMediaType MediaType { get; set; }
+
   #region --- IName --------------------------------------------
-  public string Name { get; set; } = "";
-  public string Description { get; set; } = "";
+  public string Name {
+    get {
+      if (Titles.Any()) {
+        return Titles.GetPrincipal()?.Value ?? "";
+      } else {
+        return "";
+      }
+    }
+    set {
+      if (Titles.Any()) {
+        Titles.Clear();
+      }
+      Titles.Add(value);
+    }
+  }
+  public ILanguageTextInfos Titles { get; } = new TLanguageTextInfos();
+
+  public ILanguageTextInfos Descriptions { get; } = new TLanguageTextInfos();
+
+
   #endregion --- IName --------------------------------------------
 
   #region --- IMultiNames --------------------------------------------
@@ -42,75 +64,114 @@ public abstract class AMedia : ALoggable, IMedia {
   [JsonConverter(typeof(TDateOnlyJsonConverter))]
   public DateOnly DateAdded { get; set; } = DateOnly.FromDateTime(DateTime.Today);
 
+  public DateOnly CreationDate { get; set; } = new DateOnly();
+  public int CreationYear {
+    get {
+      return CreationDate.Year;
+    }
+  }
+
+  public long Size { get; set; }
+
+  public string Group { get; set; } = "";
+  public bool IsGroupMember => !string.IsNullOrWhiteSpace(Group);
+
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   protected AMedia() {
     Logger = GlobalSettings.GlobalLogger;
   }
 
   protected AMedia(IMedia media) : this() {
-
+    MediaType = media.MediaType;
     Id = media.Id;
-    Name = media.Name;
-    Description = media.Description;
+    //StorageRoot = media.StorageRoot;
+    //StoragePath = media.StoragePath;
+    //FileName = media.FileName;
+    //FileExtension = media.FileExtension;
+    CreationDate = media.CreationDate;
+    //Size = media.Size;
+    //DateAdded = media.DateAdded;
+    Group = media.Group;
 
-    StorageRoot = media.StorageRoot;
-    StoragePath = media.StoragePath;
-    FileName = media.FileName;
-    FileExtension = media.FileExtension;
+    foreach (ILanguageTextInfo TitleItem in media.Titles.GetAll()) {
+      Titles.Add(TitleItem);
+    }
 
-    foreach (KeyValuePair<string, string> AltNameItem in media.AltNames) {
-      AltNames.Add(AltNameItem.Key, AltNameItem.Value);
+    foreach (ILanguageTextInfo DescriptionItem in media.Descriptions.GetAll()) {
+      Titles.Add(DescriptionItem);
     }
 
     foreach (string TagItem in media.Tags) {
       Tags.Add(TagItem);
     }
+  }
 
-    foreach (IPicture PictureItem in media.GetPictures()) {
-      Pictures.Add(PictureItem.Name, PictureItem);
-    }
+
+  public virtual void Dispose() {
+    Titles?.Clear();
+    Descriptions?.Clear();
+    Tags?.Clear();
+  }
+
+  public virtual ValueTask DisposeAsync() {
+    Titles?.Clear();
+    Descriptions?.Clear();
+    Tags?.Clear();
+    return ValueTask.CompletedTask;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   #region --- Converters -------------------------------------------------------------------------------------
-  public override string ToString() {
+  public virtual string ToString(int indent) {
     StringBuilder RetVal = new();
-    RetVal.AppendLine($"{nameof(Id)} = \"{Id}\"");
-    RetVal.AppendLine($"{nameof(Name)} = {Name.WithQuotes()}");
-    RetVal.AppendLine($"{nameof(Description)} = {Description.WithQuotes()}");
-    RetVal.AppendLine($"{nameof(StorageRoot)} = {StorageRoot.WithQuotes()}");
-    RetVal.AppendLine($"{nameof(StoragePath)} = {StoragePath.WithQuotes()}");
-    RetVal.AppendLine($"{nameof(FileName)} = {FileName.WithQuotes()}");
-    RetVal.AppendLine($"{nameof(FileExtension)} = {FileExtension.WithQuotes()}");
-    RetVal.AppendLine($"{nameof(DateAdded)} = {DateAdded.ToString("dd/MM/yyyy")}");
 
-    if (AltNames.Any()) {
-      RetVal.AppendLine(nameof(AltNames));
-      foreach (KeyValuePair<string, string> AltNameItem in AltNames) {
-        RetVal.AppendLine($"|- {AltNameItem.Key.WithQuotes()}:{AltNameItem.Value.WithQuotes()}");
+    RetVal.AppendIndent($"- {nameof(MediaType)} = {MediaType}", indent)
+          .AppendIndent($"- {nameof(Id)} = {Id.WithQuotes()}", indent)
+          .AppendIndent($"- {nameof(Name)} = {Name.WithQuotes()}", indent)
+          .AppendIndent($"- {nameof(StorageRoot)} = {StorageRoot.WithQuotes()}", indent)
+          .AppendIndent($"- {nameof(StoragePath)} = {StoragePath.WithQuotes()}", indent)
+          .AppendIndent($"- {nameof(FileName)} = {FileName.WithQuotes()}", indent)
+          .AppendIndent($"- {nameof(FileExtension)} = {FileExtension.WithQuotes()}", indent);
+
+    if (Titles.Any()) {
+      RetVal.AppendIndent($"- {nameof(Titles)}", indent);
+      foreach (var TitleItem in Titles.GetAll()) {
+        RetVal.AppendIndent($"- {TitleItem}", indent + 2);
       }
     } else {
-      RetVal.AppendLine($"{nameof(AltNames)} is empty");
+      RetVal.AppendIndent($"- {nameof(Titles)} is empty", indent);
+    }
+    if (Descriptions.Any()) {
+      RetVal.AppendIndent($"- {nameof(Descriptions)}", indent);
+      foreach (var DescriptionItem in Descriptions.GetAll()) {
+        RetVal.AppendIndent($"- {DescriptionItem}", indent + 2);
+      }
+    } else {
+      RetVal.AppendIndent($"- {nameof(Descriptions)} is empty", indent);
     }
 
     if (Tags.Any()) {
-      RetVal.AppendLine(nameof(Tags));
+      RetVal.AppendIndent($"- {nameof(Tags)}", indent);
       foreach (string TagItem in Tags) {
-        RetVal.AppendLine($"|- {TagItem.WithQuotes()}");
+        RetVal.AppendIndent($"- {TagItem.WithQuotes()}", indent + 2);
       }
     } else {
-      RetVal.AppendLine($"{nameof(Tags)} is empty");
+      RetVal.AppendIndent($"- {nameof(Tags)} is empty", indent);
     }
 
-    if (Pictures.Any()) {
-      RetVal.AppendLine(nameof(Pictures));
-      foreach (IPicture PictureItem in Pictures.Values) {
-        RetVal.AppendLine($"|- {PictureItem}");
-      }
+    if (IsGroupMember) {
+      RetVal.AppendIndent($"- {nameof(Group)} = {Group.WithQuotes()}", indent);
     } else {
-      RetVal.AppendLine($"{nameof(Pictures)} is empty");
+      RetVal.AppendIndent($"- No group membership", indent);
     }
+    RetVal.AppendIndent($"- {nameof(Size)} = {Size} bytes", indent)
+          .AppendIndent($"- {nameof(CreationYear)} = {CreationYear}", indent);
     return RetVal.ToString();
+  }
+
+
+  public override string ToString() {
+    return ToString(0);
   }
 
   #endregion --- Converters -------------------------------------------------------------------------------------
@@ -238,6 +299,16 @@ public abstract class AMedia : ALoggable, IMedia {
   }
   #endregion --- IPictureContainer --------------------------------------------
 
+  #region --- IDirty --------------------------------------------
+  public bool IsDirty { get; protected set; } = false;
 
+  public virtual void SetDirty() {
+    IsDirty = true;
+  }
+
+  public virtual void ClearDirty() {
+    IsDirty = false;
+  }
+  #endregion --- IDirty --------------------------------------------
 
 }

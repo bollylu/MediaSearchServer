@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <Compile Remove="ADataModel.cs" />
-    <Compile Remove="Interfaces\IDuplicate.cs" />
+    <Compile Remove="_Global_Interfaces_\IDuplicate.cs" />
     <Compile Remove="Json serialization\AJson.cs" />
     <Compile Remove="Json serialization\Converters\TDateOnlyJsonConverter.cs" />
     <Compile Remove="Json serialization\Converters\TIpAddressJsonConverter.cs" />

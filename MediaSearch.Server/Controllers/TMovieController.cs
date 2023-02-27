@@ -34,7 +34,7 @@ public class TMovieController : ControllerBase, ILoggable {
 
     Logger.LogDebugBox("Filter received in controller", filter);
 
-    TMoviesPage? RetVal = await _MovieService.GetMoviesPage(filter).ConfigureAwait(false);
+    TMoviesPage? RetVal = await _MovieService.GetMoviesPage(filter).ConfigureAwait(false) as TMoviesPage;
 
     if (RetVal is null) {
       return new EmptyResult();
@@ -129,7 +129,7 @@ public class TMovieController : ControllerBase, ILoggable {
   private string _PrintMovies(IEnumerable<IMovie> movies) {
     StringBuilder RetVal = new();
     foreach (IMovie MovieItem in movies) {
-      RetVal.AppendLine($"  {MovieItem.FileName}");
+      RetVal.AppendLine($"  {MovieItem.Name}");
     }
     return RetVal.ToString();
   }

@@ -1,16 +1,28 @@
 ﻿namespace MediaSearch.Storage;
 public class TStorageXml : AStorage {
   #region --- IStorage --------------------------------------------
-  public override bool Exists() {
-    return true;
+  public override ValueTask<bool> Exists() {
+    return ValueTask.FromResult(true);
   }
 
-  public override bool Create() {
-    return true;
+  public override ValueTask<bool> Create() {
+    return ValueTask.FromResult(true);
   }
 
-  public override bool Remove() {
-    return true;
+  public override ValueTask<bool> Remove() {
+    return ValueTask.FromResult(true);
+  }
+
+  public override ValueTask<bool> Any() {
+    throw new NotImplementedException();
+  }
+
+  public override ValueTask<bool> IsEmpty() {
+    throw new NotImplementedException();
+  }
+
+  public override Task Clear() {
+    throw new NotImplementedException();
   }
   #endregion --- IStorage --------------------------------------------
 }

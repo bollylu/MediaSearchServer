@@ -1,3 +1,5 @@
+using MediaSearch.Storage;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -52,7 +54,12 @@ public class Startup {
       options.InputFormatters.Insert(0, new TJsonInputFormatter());
     });
 
-    IMovieService MovieService = new TMovieService(DataSource);
+    IMediaSource? MediaSource = TMediaSource.Create(DataSource, typeof(IMovie));
+    if (MediaSource is null) {
+      Logger.LogErrorBox("Unable to create data source", DataSource);
+    }
+
+    IMovieService MovieService = new TMovieService(new TStorageMemoryMovies(), MediaSource);
     Task.Run(async () => await MovieService.Initialize());
     services.AddSingleton<IMovieService>(MovieService);
 

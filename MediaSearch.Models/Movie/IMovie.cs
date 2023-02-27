@@ -8,13 +8,6 @@ public interface IMovie : IMedia, IJson<IMovie> {
   EMovieExtension Extension { get; }
 
   /// <summary>
-  /// The group where the movie belongs
-  /// </summary>
-  string Group { get; set; }
-
-  bool IsGroupMember { get; }
-
-  /// <summary>
   /// The sub group where the movie belongs
   /// </summary>
   string SubGroup { get; set; }

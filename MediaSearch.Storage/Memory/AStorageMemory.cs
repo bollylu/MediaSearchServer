@@ -3,7 +3,7 @@ public abstract class AStorageMemory : AStorage {
 
   protected readonly List<IMedia> Medias = new List<IMedia>();
 
-  protected readonly Dictionary<IIdString, Dictionary<string, byte[]>> MediaPictures = new Dictionary<IIdString, Dictionary<string, byte[]>>();
+  protected readonly Dictionary<IRecord, Dictionary<string, byte[]>> MediaPictures = new Dictionary<IRecord, Dictionary<string, byte[]>>();
 
   protected readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
@@ -12,18 +12,29 @@ public abstract class AStorageMemory : AStorage {
     return ValueTask.FromResult(true);
   }
 
-  public override ValueTask<bool> Create() {
-    Medias.Clear();
-    return ValueTask.FromResult(true);
+  public override async ValueTask<bool> Create() {
+    await Clear();
+    return true;
   }
 
-  public override ValueTask<bool> Remove() {
-    Medias.Clear();
-    return ValueTask.FromResult(true);
+  public override async ValueTask<bool> Remove() {
+    await Clear();
+    return true;
+  }
+
+  public override Task Clear() {
+    try {
+      _lock.EnterWriteLock();
+      Medias.Clear();
+      return Task.CompletedTask;
+    } finally {
+      _lock.EnterWriteLock();
+    }
+
   }
   #endregion --- IStorage --------------------------------------------
 
-  protected bool AddPicture(IIdString mediaId, string pictureName, byte[] pictureContent) {
+  protected bool AddPicture(IRecord mediaId, string pictureName, byte[] pictureContent) {
     const string ERROR_MSG_UNABLE_TO_ADD_PICTURE = "Unable to add picture";
 
     try {
@@ -32,16 +43,16 @@ public abstract class AStorageMemory : AStorage {
         LogError($"{ERROR_MSG_UNABLE_TO_ADD_PICTURE} : Picture {pictureName.WithQuotes()} cannot be associated with unknown mediaId {mediaId.Id.WithQuotes()}");
         return false;
       }
-      if (!MediaPictures.ContainsKey(mediaId.Id)) {
-        MediaPictures.Add(mediaId.Id, new Dictionary<string, byte[]>());
+      if (!MediaPictures.ContainsKey(mediaId)) {
+        MediaPictures.Add(mediaId, new Dictionary<string, byte[]>());
       }
       try {
         _lock.EnterWriteLock();
-        if (MediaPictures[mediaId.Id].ContainsKey(pictureName)) {
+        if (MediaPictures[mediaId].ContainsKey(pictureName)) {
           LogError($"{ERROR_MSG_UNABLE_TO_ADD_PICTURE} : Picture {pictureName.WithQuotes()} already exists");
           return false;
         }
-        MediaPictures[mediaId.Id].Add(pictureName, pictureContent);
+        MediaPictures[mediaId].Add(pictureName, pictureContent);
         return true;
       } catch (Exception ex) {
         LogErrorBox($"{ERROR_MSG_UNABLE_TO_ADD_PICTURE} {pictureName}", ex);
@@ -54,13 +65,13 @@ public abstract class AStorageMemory : AStorage {
     }
   }
 
-  protected bool RemovePicture(IIdString mediaId, string pictureName) {
+  protected bool RemovePicture(IRecord mediaId, string pictureName) {
     try {
       _lock.EnterUpgradeableReadLock();
-      if (MediaPictures.ContainsKey(mediaId.Id)) {
+      if (MediaPictures.ContainsKey(mediaId)) {
         try {
           _lock.EnterWriteLock();
-          MediaPictures[mediaId.Id].Remove(pictureName);
+          MediaPictures[mediaId].Remove(pictureName);
           return true;
         } catch (Exception ex) {
           LogErrorBox($"Unable to remove picture {pictureName}", ex);
@@ -75,10 +86,10 @@ public abstract class AStorageMemory : AStorage {
     }
   }
 
-  protected byte[]? GetPicture(IIdString mediaId, string pictureName) {
+  protected byte[]? GetPicture(IRecord mediaId, string pictureName) {
     try {
       _lock.EnterReadLock();
-      return MediaPictures[mediaId.Id][pictureName];
+      return MediaPictures[mediaId][pictureName];
     } catch (Exception ex) {
       LogErrorBox($"Unable to retrieve picture {pictureName}", ex);
       return null;
@@ -87,10 +98,10 @@ public abstract class AStorageMemory : AStorage {
     }
   }
 
-  protected IDictionary<string, byte[]> GetAllPictures(IIdString mediaId) {
+  protected IDictionary<string, byte[]> GetAllPictures(IRecord mediaId) {
     try {
       _lock.EnterReadLock();
-      return MediaPictures[mediaId.Id];
+      return MediaPictures[mediaId];
     } catch (Exception ex) {
       LogErrorBox($"Unable to retrieve pictures for {mediaId}", ex);
       return new Dictionary<string, byte[]>();
@@ -99,10 +110,10 @@ public abstract class AStorageMemory : AStorage {
     }
   }
 
-  protected int GetPicturesCount(IIdString mediaId) {
+  protected int GetPicturesCount(IRecord mediaId) {
     try {
       _lock.EnterReadLock();
-      return MediaPictures[mediaId.Id].Count;
+      return MediaPictures[mediaId].Count;
     } catch (Exception ex) {
       LogErrorBox($"Unable to retrieve pictures for {mediaId}", ex);
       return 0;

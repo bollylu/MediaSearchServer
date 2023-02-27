@@ -1,6 +1,5 @@
 ﻿namespace MediaSearch.Models;
-public interface IArtist {
-  string ID { get; init; }
+public interface IArtist : IRecord {
   string Name { get; set; }
   string FirstName { get; set; }
   string LastName { get; set; }

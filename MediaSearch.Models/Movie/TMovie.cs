@@ -14,12 +14,8 @@ public class TMovie : AMedia, IMovie, IJson<TMovie> {
       _ => EMovieExtension.Unknown,
     };
 
-  public string Group { get; set; } = "";
   public string SubGroup { get; set; } = "";
 
-  public bool IsGroupMember => !string.IsNullOrWhiteSpace(Group);
-
-  public long Size { get; set; }
   public int OutputYear { get; set; }
 
   public IMovieInfoContent MovieInfoContent { get; } = new TMovieInfoContentMeta();
@@ -120,9 +116,9 @@ public class TMovie : AMedia, IMovie, IJson<TMovie> {
     RetVal.Size = fileInfo.Length;
 
     IMediaInfoFile DataFile = new TMovieInfoFileMeta(Path.Join(RetVal.StorageRoot, RetVal.StoragePath));
-    if (await DataFile.Exists()) {
+    if (await DataFile.ExistsAsync(CancellationToken.None)) {
       logger.LogDebugExBox("Found datafile", DataFile);
-      if (!await DataFile.Read()) {
+      if (!await DataFile.ReadAsync(CancellationToken.None)) {
         logger.LogWarning($"Unable to read datafile {DataFile.StorageName}");
       }
     }

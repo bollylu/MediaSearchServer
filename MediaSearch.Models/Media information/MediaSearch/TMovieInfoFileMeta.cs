@@ -23,15 +23,13 @@ public class TMovieInfoFileMeta : ALoggable, IMediaInfoFile {
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  public Task<bool> Exists() {
-    return Task.FromResult(File.Exists(FullStorageName));
+  public ValueTask<bool> ExistsAsync(CancellationToken token) {
+    return ValueTask.FromResult(File.Exists(FullStorageName));
   }
 
-  public async Task<bool> Read() {
+  public async ValueTask<bool> ReadAsync(CancellationToken token) {
     try {
-      using (CancellationTokenSource cts = new CancellationTokenSource(TIMEOUT_IN_MS)) {
-        RawContent = await File.ReadAllTextAsync(FullStorageName, cts.Token);
-      }
+      RawContent = await File.ReadAllTextAsync(FullStorageName, token);
       Content = IJson<TMovieInfoContentMeta>.FromJson(RawContent);
       Logger.IfDebugMessageEx($"Read content of {FullStorageName}", RawContent);
       return true;
@@ -41,13 +39,11 @@ public class TMovieInfoFileMeta : ALoggable, IMediaInfoFile {
     }
   }
 
-  public async Task<bool> Write() {
+  public async ValueTask<bool> WriteAsync(CancellationToken token) {
     try {
       Logger.IfDebugMessageEx($"Writing content to {FullStorageName}", RawContent);
       //RawContent = IJson<TMovieInfoContentMeta>. Content
-      using (CancellationTokenSource cts = new CancellationTokenSource(TIMEOUT_IN_MS)) {
-        await File.WriteAllTextAsync(FullStorageName, RawContent, cts.Token);
-      }
+      await File.WriteAllTextAsync(FullStorageName, RawContent, token);
       return true;
     } catch (Exception ex) {
       LogErrorBox("Unable to write MediaFile", ex);
@@ -55,12 +51,10 @@ public class TMovieInfoFileMeta : ALoggable, IMediaInfoFile {
     }
   }
 
-  public async Task<bool> Export(string newFilename) {
+  public async ValueTask<bool> ExportAsync(string newFilename, CancellationToken token) {
     try {
       Logger.IfDebugMessageEx($"Writing content to {newFilename}", RawContent);
-      using (CancellationTokenSource cts = new CancellationTokenSource(TIMEOUT_IN_MS)) {
-        await File.WriteAllTextAsync(newFilename, RawContent, cts.Token);
-      }
+      await File.WriteAllTextAsync(newFilename, RawContent, token);
       return true;
     } catch (Exception ex) {
       LogErrorBox("Unable to export MediaFile", ex);
@@ -79,4 +73,33 @@ public class TMovieInfoFileMeta : ALoggable, IMediaInfoFile {
   }
 
   IMediaInfoContent? IMediaInfoFile.Content { get; set; }
+
+  public bool Exists() {
+    return File.Exists(FullStorageName);
+  }
+
+  public bool Read() {
+    try {
+      RawContent = File.ReadAllText(FullStorageName);
+      Content = IJson<TMovieInfoContentMeta>.FromJson(RawContent);
+      Logger.IfDebugMessageEx($"Read content of {FullStorageName}", RawContent);
+      return true;
+    } catch (Exception ex) {
+      Logger.LogErrorBox("Unable to read MediaFile", ex);
+      return false;
+    }
+  }
+
+  public bool Write() {
+    try {
+      Logger.IfDebugMessageEx($"Writing content to {FullStorageName}", RawContent);
+      //RawContent = IJson<TMovieInfoContentMeta>. Content
+      File.WriteAllText(FullStorageName, RawContent);
+      return true;
+    } catch (Exception ex) {
+      LogErrorBox("Unable to write MediaFile", ex);
+      return false;
+    }
+  }
+
 }

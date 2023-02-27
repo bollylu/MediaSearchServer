@@ -25,7 +25,7 @@ public partial class TStorageMemoryMovies : AStorageMemory, IStorageMovie {
     }
   }
 
-  public Task<IMovie?> GetMovieAsync(IIdString movieId) {
+  public Task<IMovie?> GetMovieAsync(IRecord movieId) {
     try {
       _lock.EnterReadLock();
       return Task.FromResult(Medias.OfType<IMovie>().FirstOrDefault(x => x.Id == movieId.Id));
@@ -101,10 +101,6 @@ public partial class TStorageMemoryMovies : AStorageMemory, IStorageMovie {
     }
   }
 
-  public async ValueTask<bool> RemoveMovieAsync(IMovie movie) {
-    return await RemoveMovieAsync(movie.Id);
-  }
-
   public ValueTask<bool> UpdateMovieAsync(IMovie movie) {
     try {
       _lock.EnterWriteLock();
@@ -121,7 +117,7 @@ public partial class TStorageMemoryMovies : AStorageMemory, IStorageMovie {
   }
 
 
-  public ValueTask<bool> RemoveMovieAsync(IIdString movieId) {
+  public ValueTask<bool> RemoveMovieAsync(IRecord movieId) {
     try {
       _lock.EnterWriteLock();
       int Index = Medias.FindIndex(x => x.Id == movieId.Id);
@@ -137,6 +133,13 @@ public partial class TStorageMemoryMovies : AStorageMemory, IStorageMovie {
   }
 
   public ValueTask<bool> RemoveAllMoviesAsync() {
+    throw new NotImplementedException();
+  }
+
+  public Task<IGroup?> GetGroupsAsync(IRecord id) {
+    throw new NotImplementedException();
+  }
+  public IAsyncEnumerable<IGroup> GetGroupsListAsync(IRecord id) {
     throw new NotImplementedException();
   }
 }

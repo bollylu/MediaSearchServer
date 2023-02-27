@@ -30,7 +30,7 @@ public interface IMovieService {
   /// <summary>
   /// Clear the cache content. Next call to initialize will read data.
   /// </summary>
-  void Reset();
+  Task Reset();
 
   /// <summary>
   /// Clear the cache content and call initialize will read data.
@@ -85,7 +85,7 @@ public interface IMovieService {
   /// </summary>
   /// <param name="id">The Id in memory for the requeted movie</param>
   /// <returns>An movie or null is not found</returns>
-  Task<IMovie?> GetMovie(string id);
+  Task<IMovie?> GetMovie(IRecord id);
   #endregion --- Movies --------------------------------------------
 
   IAsyncEnumerable<string> GetGroups();

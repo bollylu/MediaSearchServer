@@ -52,11 +52,11 @@ class Program {
 
     try {
       Message("Check for storage, if exists, remove it");
-      if (Storage.Exists()) {
-        Storage.Remove();
+      if (await Storage.Exists()) {
+        await Storage.Remove();
       }
       Message("Create storage");
-      Storage.Create();
+      await Storage.Create();
     } catch (Exception ex) {
       Usage($"Problem accessing storage : {ex.Message}");
     }

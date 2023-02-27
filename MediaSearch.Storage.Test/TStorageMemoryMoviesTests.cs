@@ -16,7 +16,7 @@ public class TStorageMemoryMoviesTests {
       Assert.IsNotNull(Target);
       Dump(Target);
       Message("Storage exists");
-      Assert.IsTrue(Target.Exists());
+      Assert.IsTrue(await Target.Exists());
       Message("Storage is empty");
       Assert.AreEqual(0, await Target.MoviesCount(TFilter.Empty));
       Ok();
@@ -233,7 +233,7 @@ public class TStorageMemoryMoviesTests {
       Assert.IsFalse(await Storage.AddMoviePictureAsync(Movie1, FOLDER_JPG, OtherJpg));
 
       Message("Add picture folder.jpg to unknown movie : refused");
-      Assert.IsFalse(await Storage.AddMoviePictureAsync("missing", FOLDER_JPG, FolderJpg));
+      Assert.IsFalse(await Storage.AddMoviePictureAsync(new TMovie() { Name = "missing" }, FOLDER_JPG, FolderJpg));
 
       Message("Storage contains 1 movie");
       Dump(Storage);

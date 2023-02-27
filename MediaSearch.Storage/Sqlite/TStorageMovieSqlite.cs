@@ -15,13 +15,16 @@ public class TStorageMovieSqlite : AStorage, IStorageMovie {
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-
+  #region --- Converters -------------------------------------------------------------------------------------
   public override string ToString() {
     StringBuilder RetVal = new StringBuilder();
     RetVal.AppendLine($"{nameof(DbFullName)} = {DbFullName.WithQuotes()}");
     return RetVal.ToString();
   }
 
+  #endregion --- Converters -------------------------------------------------------------------------------------
+
+  #region --- AStorage --------------------------------------------
   public override ValueTask<bool> Exists() {
     using (TMovieContext Context = new TMovieContext(DbFullName)) {
       return ValueTask.FromResult(Context.Database.CanConnect());
@@ -45,7 +48,20 @@ public class TStorageMovieSqlite : AStorage, IStorageMovie {
       }
     }
   }
+  public override ValueTask<bool> Any() {
+    throw new NotImplementedException();
+  }
 
+  public override async ValueTask<bool> IsEmpty() {
+    return !await Any();
+  }
+
+  public override Task Clear() {
+    throw new NotImplementedException();
+  }
+  #endregion --- AStorage --------------------------------------------
+
+  #region --- Movies --------------------------------------------
   public async Task<IMovie?> GetMovieAsync(string movieId) {
     using (TMovieContext Context = new TMovieContext(DbFullName)) {
       return await Context.Movies.FirstAsync(x => x.Id == movieId, CancellationToken.None).ConfigureAwait(false);
@@ -97,31 +113,7 @@ public class TStorageMovieSqlite : AStorage, IStorageMovie {
 
   }
 
-  public ValueTask<bool> RemoveMovieAsync(IMovie movie) {
-    throw new NotImplementedException();
-  }
-
-  public ValueTask<bool> AddMovieAsync(IMovie movie) {
-    throw new NotImplementedException();
-  }
-
-  public ValueTask<bool> UpdateMovieAsync(IMovie movie) {
-    throw new NotImplementedException();
-  }
-
-  public ValueTask<bool> AddMoviePictureAsync(IMovie movie, string pictureName, byte[] picture) {
-    throw new NotImplementedException();
-  }
-
-  public ValueTask<bool> RemovePictureAsync(string movieId, string pictureName) {
-    throw new NotImplementedException();
-  }
-
-  public ValueTask<bool> RemovePictureAsync(IMovie movie, string pictureName) {
-    throw new NotImplementedException();
-  }
-
-  public ValueTask<bool> RemoveMovieAsync(string id) {
+  public ValueTask<bool> RemoveMovieAsync(IRecord movie) {
     throw new NotImplementedException();
   }
 
@@ -129,35 +121,48 @@ public class TStorageMovieSqlite : AStorage, IStorageMovie {
     throw new NotImplementedException();
   }
 
-  public Task<byte[]?> GetMoviePictureAsync(IMovie movie, string pictureName, int width, int height) {
+  public ValueTask<bool> AddMovieAsync(IMovie movie) {
     throw new NotImplementedException();
   }
 
-  public ValueTask<bool> AddMoviePictureAsync(string movieId, string pictureName, byte[] picture) {
+  public ValueTask<bool> UpdateMovieAsync(IRecord movie) {
+    throw new NotImplementedException();
+  }
+  public Task<IMovie?> GetMovieAsync(IRecord movieId) {
+    throw new NotImplementedException();
+  }
+  #endregion --- Movies --------------------------------------------
+
+  public ValueTask<bool> AddMoviePictureAsync(IRecord movie, string pictureName, byte[] picture) {
     throw new NotImplementedException();
   }
 
-  public Task<IDictionary<string, byte[]>> GetMoviePicturesAsync(string movieId) {
+  public ValueTask<bool> RemovePictureAsync(IRecord movie, string pictureName) {
     throw new NotImplementedException();
   }
 
-  public Task<IDictionary<string, byte[]>> GetMoviePicturesAsync(IMovie movie) {
+
+
+  public Task<byte[]?> GetMoviePictureAsync(IRecord movie, string pictureName, int width, int height) {
     throw new NotImplementedException();
   }
 
-  public ValueTask<int> GetMoviePictureCountAsync(string movieId) {
+  public Task<IDictionary<string, byte[]>> GetMoviePicturesAsync(IRecord movie) {
     throw new NotImplementedException();
   }
 
-  public ValueTask<int> GetMoviePictureCountAsync(IMovie movie) {
+  public ValueTask<int> GetMoviePictureCountAsync(IRecord movie) {
     throw new NotImplementedException();
   }
 
-  public override ValueTask<bool> Any() {
+
+  #region --- Groups --------------------------------------------
+  public Task<IGroup?> GetGroupsAsync(IRecord id) {
     throw new NotImplementedException();
   }
 
-  public override async ValueTask<bool> IsEmpty() {
-    return !await Any();
+  public IAsyncEnumerable<IGroup> GetGroupsListAsync(IRecord id) {
+    throw new NotImplementedException();
   }
+  #endregion --- Groups --------------------------------------------
 }

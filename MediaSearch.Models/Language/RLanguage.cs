@@ -1,5 +1,5 @@
-﻿namespace MediaSearch.Models.Language;
-public record RLanguage  {
+﻿namespace MediaSearch.Models;
+public record RLanguage {
 
   public ELanguage Language { get; init; } = ELanguage.Unknown;
   public string LanguageCode { get; init; } = "";
@@ -11,5 +11,5 @@ public record RLanguage  {
     LanguageCode = languageCode;
     LanguageText = languageText;
   }
-  
+
 }

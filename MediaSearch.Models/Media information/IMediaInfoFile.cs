@@ -6,10 +6,15 @@ public interface IMediaInfoFile {
 
   string Name { get; }
 
-  Task<bool> Exists();
-  Task<bool> Read();
-  Task<bool> Write();
-  Task<bool> Export(string newFilename);
+  bool Exists();
+  bool Read();
+  bool Write();
+
+
+  ValueTask<bool> ExistsAsync(CancellationToken token);
+  ValueTask<bool> ReadAsync(CancellationToken token);
+  ValueTask<bool> WriteAsync(CancellationToken token);
+  ValueTask<bool> ExportAsync(string newFilename, CancellationToken token);
 
   IMediaInfoContent? Content { get; set; }
   ILanguageDictionary<string> GetTitles();

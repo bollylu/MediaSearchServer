@@ -8,7 +8,7 @@ public partial interface IStorageMovie : IStorage {
   /// </summary>
   /// <param name="movieId">The id of the requested movie</param>
   /// <returns>The requested movie or (null) if not available</returns>
-  Task<IMovie?> GetMovieAsync(IIdString movieId);
+  Task<IMovie?> GetMovieAsync(IRecord movieId);
 
   /// <summary>
   /// Get all the movies from storage
@@ -57,19 +57,19 @@ public partial interface IStorageMovie : IStorage {
   /// <returns><see langword="true"/> if successful, <see langword="false"/> otherwise</returns>
   ValueTask<bool> AddMovieAsync(IMovie movie);
 
-  /// <summary>
-  /// Remove one movie from storage
-  /// </summary>
-  /// <param name="movie">The movie to remove (selection will be based on Id)</param>
-  /// <returns><see langword="true"/> if successful, <see langword="false"/> otherwise</returns>
-  ValueTask<bool> RemoveMovieAsync(IMovie movie);
+  ///// <summary>
+  ///// Remove one movie from storage
+  ///// </summary>
+  ///// <param name="movie">The movie to remove (selection will be based on Id)</param>
+  ///// <returns><see langword="true"/> if successful, <see langword="false"/> otherwise</returns>
+  //ValueTask<bool> RemoveMovieAsync(IMovie movie);
 
   /// <summary>
   /// Remove one movie and associated records from storage
   /// </summary>
   /// <param name="id">The Id of the movie to remove</param>
   /// <returns><see langword="true"/> if successful, <see langword="false"/> otherwise</returns>
-  ValueTask<bool> RemoveMovieAsync(IIdString id);
+  ValueTask<bool> RemoveMovieAsync(IRecord id);
 
   /// <summary>
   /// Removes all movies and associated records from storage
@@ -79,7 +79,7 @@ public partial interface IStorageMovie : IStorage {
   #endregion --- Movies --------------------------------------------
 
   #region --- Groups --------------------------------------------
-  Task<IGroup> GetGroupsAsync(IIdString id);
-  IAsyncEnumerable<IGroup> GetGroupsListAsync(IIdString id);
+  Task<IGroup?> GetGroupsAsync(IRecord id);
+  IAsyncEnumerable<IGroup> GetGroupsListAsync(IRecord id);
   #endregion --- Groups --------------------------------------------
 }

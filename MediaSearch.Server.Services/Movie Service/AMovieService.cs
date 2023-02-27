@@ -32,7 +32,7 @@ public abstract class AMovieService : ALoggable, IMovieService, IName {
 
   public abstract IAsyncEnumerable<IMovie> GetAllMovies();
   public abstract IAsyncEnumerable<string> GetGroups();
-  public abstract Task<IMovie?> GetMovie(string id);
+  public abstract Task<IMovie?> GetMovie(IRecord id);
   public abstract Task<IMoviesPage?> GetMoviesLastPage(IFilter filter);
   public abstract Task<IMoviesPage?> GetMoviesPage(IFilter filter);
   public abstract Task<byte[]> GetPicture(string id, string pictureName, int width, int height);

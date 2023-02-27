@@ -1,4 +1,4 @@
-﻿namespace MediaSearch.Models.Language;
+﻿namespace MediaSearch.Models;
 public static class Languages {
 
   private static readonly List<RLanguage> _Items = new();
@@ -30,7 +30,7 @@ public static class Languages {
   }
 
   public static string GetLanguageCode(ELanguage language) {
-    return _Items.FirstOrDefault(x => x.Language == language)?.LanguageCode ?? "??" ;
+    return _Items.FirstOrDefault(x => x.Language == language)?.LanguageCode ?? "??";
   }
 
   public static IEnumerable<RLanguage> GetAll() {

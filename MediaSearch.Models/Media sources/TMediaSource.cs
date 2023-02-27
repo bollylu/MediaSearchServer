@@ -1,7 +1,7 @@
 ﻿namespace MediaSearch.Models;
 
 
-public static class TMediaSource {
+public class TMediaSource {
   public static IMediaSource? Create(string rootStorage, Type mediaType) {
     return mediaType.Name switch {
       nameof(IMovie) => new TMediaSourceMovie(rootStorage),
@@ -16,10 +16,3 @@ public static class TMediaSource {
   }
 }
 
-public class TMediaSourceMovie : AMediaSource<IMovie> {
-  #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMediaSourceMovie() : base() { }
-
-  public TMediaSourceMovie(string rootStorage) : base(rootStorage) { }
-  #endregion --- Constructor(s) ------------------------------------------------------------------------------
-}

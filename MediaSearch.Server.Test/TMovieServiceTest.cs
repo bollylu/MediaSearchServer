@@ -1,4 +1,6 @@
-﻿namespace MediaSearch.Server.Services.Test;
+﻿using MediaSearch.Storage;
+
+namespace MediaSearch.Server.Services.Test;
 
 [TestClass]
 public class TMovieServiceTest {
@@ -7,7 +9,7 @@ public class TMovieServiceTest {
   [ClassInitialize]
   public static async Task MovieCacheInit(TestContext testContext) {
     //await MediaSearch.Models.GlobalSettings.Initialize().ConfigureAwait(false);
-    Global.MovieService = new TMovieService(new XMovieCache() { DataSource = @"data\movies.json" });
+    Global.MovieService = new TMovieService(new TStorageMemoryMovies(), new TMediaSourceMovie(@"data\movies.json"));
     await Global.MovieService.Initialize().ConfigureAwait(false);
   }
   #endregion --- Initialize --------------------------------------------

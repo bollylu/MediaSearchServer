@@ -1,4 +1,4 @@
-﻿namespace MediaSearch.Models.Language;
+﻿namespace MediaSearch.Models;
 
 public enum ELanguage {
   Unknown,

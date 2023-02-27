@@ -12,24 +12,24 @@ public class TStorageSqLiteTests {
   }
 
   [TestMethod]
-  public void TStorageMovieSqlite_CreateDb() {
+  public async Task TStorageMovieSqlite_CreateDb() {
 
     IStorage Storage = new TStorageMovieSqlite(Path.GetTempPath(), Random.Shared.Next().ToString());
     Dump(Storage);
 
     Message("Db is not yet present");
-    Assert.IsFalse(Storage.Exists());
+    Assert.IsFalse(await Storage.Exists());
 
     Message("Creating db");
-    Assert.IsTrue(Storage.Create());
+    Assert.IsTrue(await Storage.Create());
     Dump(Storage);
 
     Message("Db is present");
-    Assert.IsTrue(Storage.Exists());
+    Assert.IsTrue(await Storage.Exists());
 
     Message("Cleanup");
-    Assert.IsTrue(Storage.Remove());
-    Assert.IsFalse(Storage.Exists());
+    Assert.IsTrue(await Storage.Remove());
+    Assert.IsFalse(await Storage.Exists());
 
     Ok();
   }

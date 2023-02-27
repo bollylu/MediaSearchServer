@@ -34,8 +34,8 @@ public class TSystemController : ControllerBase, ILoggable {
   /// </summary>
   /// <returns>The number of procesed records or -1 if completed</returns>
   [HttpGet("getRefreshStatus")]
-  public ActionResult<int> GetRefreshStatus() {
-    int RetVal = _MovieService.GetRefreshStatus();
+  public async Task<ActionResult<int>> GetRefreshStatus() {
+    int RetVal = await _MovieService.GetRefreshStatus();
     return new ActionResult<int>(RetVal);
   }
 

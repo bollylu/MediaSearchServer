@@ -114,9 +114,9 @@ public abstract class AMovieCache : IMovieCache, ILoggable {
     RetVal.Size = item.Length;
 
     IMediaInfoFile DataFile = new TMovieInfoFileMeta(Path.Join(RetVal.StorageRoot, RetVal.StoragePath));
-    if (await DataFile.Exists()) {
+    if (await DataFile.ExistsAsync(CancellationToken.None)) {
       Logger.LogDebugExBox("Found datafile", DataFile);
-      await DataFile.Read();
+      await DataFile.ReadAsync(CancellationToken.None);
       //RetVal.MovieInfoContentMeta.Duplicate(DataFile.Content);
     }
 
