@@ -104,13 +104,13 @@ public class XMovieService : AMovieService {
       yield return GroupItem;
     }
   }
-  public override async IAsyncEnumerable<string> GetSubGroups(string group) {
-    await Task.Yield();
+  //public override async IAsyncEnumerable<string> GetSubGroups(string group) {
+  //  await Task.Yield();
 
-    foreach (string GroupItem in _MoviesCache.GetSubGroups(group)) {
-      yield return GroupItem;
-    }
-  }
+  //  foreach (string GroupItem in _MoviesCache.GetSubGroups(group)) {
+  //    yield return GroupItem;
+  //  }
+  //}
 
 
   public override Task<byte[]> GetPicture(string id,

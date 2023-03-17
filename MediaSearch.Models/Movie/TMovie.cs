@@ -5,15 +5,6 @@ namespace MediaSearch.Models;
 public class TMovie : AMedia, IMovie, IJson<TMovie> {
 
   #region --- Public properties ------------------------------------------------------------------------------
-  public EMovieExtension Extension =>
-    FileExtension.ToLowerInvariant() switch {
-      "avi" => EMovieExtension.AVI,
-      "mkv" => EMovieExtension.MKV,
-      "mp4" => EMovieExtension.MP4,
-      "iso" => EMovieExtension.ISO,
-      _ => EMovieExtension.Unknown,
-    };
-
   public string SubGroup { get; set; } = "";
 
   public int OutputYear { get; set; }
@@ -33,12 +24,19 @@ public class TMovie : AMedia, IMovie, IJson<TMovie> {
   #endregion --- Picture --------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMovie() : base() { }
+  public TMovie() : base() {
+  }
+
+  public TMovie(TMediaSourceMovie mediaSource) {
+    MediaSources.Add(mediaSource);
+  }
 
   public TMovie(IMovie movie) : base(movie) {
-    Size = movie.Size;
     OutputYear = movie.OutputYear;
     Group = movie.Group;
+    foreach (TMediaSourceMovie movieSourceItem in movie.MediaSources) {
+      MediaSources.Add(movieSourceItem);
+    }
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
@@ -47,15 +45,16 @@ public class TMovie : AMedia, IMovie, IJson<TMovie> {
   }
 
   #region --- Converters -------------------------------------------------------------------------------------
-  public override string ToString() {
-    StringBuilder RetVal = new StringBuilder(base.ToString());
-    RetVal.AppendLine($"{nameof(Extension)} = {Extension}");
+  public override string ToString(int indent) {
+    StringBuilder RetVal = new StringBuilder(base.ToString(indent));
     if (IsGroupMember) {
       RetVal.AppendLine($"{nameof(Group)} = {Group}");
       RetVal.AppendLine($", {nameof(SubGroup)} = {SubGroup}");
     }
-    RetVal.AppendLine($"{nameof(Size)} = {Size}");
     RetVal.AppendLine($"{nameof(OutputYear)} = {OutputYear}");
+    foreach (TMediaSourceMovie MovieItem in MediaSources) {
+      RetVal.AppendIndent(MovieItem, indent + 2);
+    }
 
     return RetVal.ToString();
   }
@@ -73,14 +72,14 @@ public class TMovie : AMedia, IMovie, IJson<TMovie> {
     string ProcessedFileItem = fileInfo.FullName.NormalizePath();
 
     TMovie RetVal = new TMovie() { Name = ProcessedFileItem.AfterLast(FOLDER_SEPARATOR).BeforeLast(" (") };
+    TMediaSourceMovie Source = new TMediaSourceMovie(rootStoragePath.NormalizePath());
 
-    RetVal.StorageRoot = rootStoragePath.NormalizePath();
-    RetVal.StoragePath = ProcessedFileItem.BeforeLast(FOLDER_SEPARATOR).After(RetVal.StorageRoot, System.StringComparison.InvariantCultureIgnoreCase);
+    Source.StoragePath = ProcessedFileItem.BeforeLast(FOLDER_SEPARATOR).After(Source.StorageRoot, System.StringComparison.InvariantCultureIgnoreCase);
 
-    RetVal.FileName = fileInfo.Name;
-    RetVal.FileExtension = RetVal.FileName.AfterLast('.').ToLowerInvariant();
+    Source.FileName = fileInfo.Name;
+    Source.FileExtension = Source.FileName.AfterLast('.').ToLowerInvariant();
 
-    string[] Tags = RetVal.StoragePath.BeforeLast(FOLDER_SEPARATOR).Split(FOLDER_SEPARATOR, StringSplitOptions.RemoveEmptyEntries);
+    string[] Tags = Source.StoragePath.BeforeLast(FOLDER_SEPARATOR).Split(FOLDER_SEPARATOR, StringSplitOptions.RemoveEmptyEntries);
     string[] GroupTags = Tags.Where(t => t.EndsWith(" #")).ToArray();
     switch (GroupTags.Length) {
       case 0:
@@ -107,15 +106,16 @@ public class TMovie : AMedia, IMovie, IJson<TMovie> {
     }
 
     try {
-      RetVal.OutputYear = int.Parse(RetVal.FileName.AfterLast('(').BeforeLast(')'));
+      RetVal.OutputYear = int.Parse(Source.FileName.AfterLast('(').BeforeLast(')'));
     } catch (FormatException ex) {
       logger.LogErrorBox("Unable to find output year for {item.FullName}", ex);
       RetVal.OutputYear = 0;
     }
 
-    RetVal.Size = fileInfo.Length;
+    Source.Size = fileInfo.Length;
+    RetVal.MediaSources.Add(Source);
 
-    IMediaInfoFile DataFile = new TMovieInfoFileMeta(Path.Join(RetVal.StorageRoot, RetVal.StoragePath));
+    IMediaInfoFile DataFile = new TMovieInfoFileMeta(Path.Join(Source.StorageRoot, Source.StoragePath));
     if (await DataFile.ExistsAsync(CancellationToken.None)) {
       logger.LogDebugExBox("Found datafile", DataFile);
       if (!await DataFile.ReadAsync(CancellationToken.None)) {
@@ -123,7 +123,7 @@ public class TMovie : AMedia, IMovie, IJson<TMovie> {
       }
     }
 
-    string CoverName = Path.Join(RetVal.StorageRoot, RetVal.StoragePath);
+    string CoverName = Path.Join(Source.StorageRoot, Source.StoragePath);
 
     return RetVal;
 

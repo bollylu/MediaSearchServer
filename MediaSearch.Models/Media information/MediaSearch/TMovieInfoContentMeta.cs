@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public class TMovieInfoContentMeta : ALoggable, IMovieInfoContent, IMediaInfoContentTitles, IJson<TMovieInfoContentMeta> {
+public class TMovieInfoContentMeta : ALoggable, IMovieInfoContent, IMediaInfoTitles, IJson<TMovieInfoContentMeta> {
 
   public ILanguageDictionary<string> Titles { get; } = new TLanguageDictionary<string>();
   public ILanguageDictionary<string> Descriptions { get; } = new TLanguageDictionary<string>();

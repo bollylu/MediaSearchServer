@@ -46,6 +46,10 @@ class Program {
 
     #endregion --- Parameters --------------------------------------------
 
+    TMovie TestMovie = new TMovie();
+
+
+
     #region --- Initialize storage --------------------------------------------
     Message("Instanciate storage");
     IStorageMovie Storage = new TStorageMemoryMovies() { PhysicalDataPath = ParamDataSource };
@@ -71,7 +75,7 @@ class Program {
       AvailableMovies.AsParallel().ForAll(async f => {
         IMovie? NewMovie = await TMovie.Parse(f, Storage.PhysicalDataPath, Logger).ConfigureAwait(false);
         if (NewMovie is not null) {
-          await NewMovie.LoadPicture().ConfigureAwait(false);
+          await NewMovie.LoadPicture(NewMovie.MediaSources.First()).ConfigureAwait(false);
           await Storage.AddMovieAsync(NewMovie).ConfigureAwait(false);
         }
         Counter.Increment();

@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnablePreviewFeatures>true</EnablePreviewFeatures>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Pictures\missing.jpg" />
+    <None Remove="_Global_\changelog.md" />
+    <None Remove="_Global_\version.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Pictures\missing.jpg" />
+    <EmbeddedResource Include="_Global_\changelog.md" />
+    <EmbeddedResource Include="_Global_\version.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BLTools" Version="6.1.0-beta8e" />
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
+    <PackageReference Include="SkiaSharp" Version="2.88.3" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="7.0.0" />
+  </ItemGroup>
+
+</Project>

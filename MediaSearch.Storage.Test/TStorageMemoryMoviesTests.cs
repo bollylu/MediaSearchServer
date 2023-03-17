@@ -34,13 +34,14 @@ public class TStorageMemoryMoviesTests {
       Dump(Target);
 
       Message("Adding a movie to the empty storage");
-      IMovie Movie = new TMovie() {
+      IMovie Movie = new TMovie(new TMediaSourceMovie() {
         FileName = "Le film",
         StoragePath = @"Comédie\\Le film",
         StorageRoot = @"\\andromeda.sharenet.priv\films",
         Size = 123456,
-        OutputYear = 2022,
         FileExtension = "mkv"
+      }) {
+        OutputYear = 2022,
       };
       Dump(Movie);
       Assert.IsTrue(await Target.AddMovieAsync(Movie));
@@ -64,22 +65,24 @@ public class TStorageMemoryMoviesTests {
       Dump(Target);
 
       Message("Adding movies to the empty storage");
-      IMovie Movie1 = new TMovie() {
+      IMovie Movie1 = new TMovie(new TMediaSourceMovie() {
         FileName = "Le film",
         StoragePath = @"Comédie\\Le film",
         StorageRoot = @"\\andromeda.sharenet.priv\films",
         Size = 123456,
-        OutputYear = 2022,
         FileExtension = "mkv"
+      }) {
+        OutputYear = 2022,
       };
 
-      IMovie Movie2 = new TMovie() {
+      IMovie Movie2 = new TMovie(new TMediaSourceMovie() {
         FileName = "Le film - La suite",
-        StoragePath = @"Comédie\\Le film - La suite",
+        StoragePath = @"Comédie\\Le film - Lz duite",
         StorageRoot = @"\\andromeda.sharenet.priv\films",
         Size = 234567,
-        OutputYear = 2023,
         FileExtension = "mkv"
+      }) {
+        OutputYear = 2023,
       };
 
       Dump(Movie1);
@@ -106,22 +109,24 @@ public class TStorageMemoryMoviesTests {
       Dump(Target);
 
       Message("Adding movies to the empty storage");
-      IMovie Movie1 = new TMovie() {
+      IMovie Movie1 = new TMovie(new TMediaSourceMovie() {
         FileName = "Le film",
         StoragePath = @"Comédie\\Le film",
         StorageRoot = @"\\andromeda.sharenet.priv\films",
         Size = 123456,
-        OutputYear = 2022,
         FileExtension = "mkv"
+      }) {
+        OutputYear = 2022,
       };
 
-      IMovie Movie2 = new TMovie() {
+      IMovie Movie2 = new TMovie(new TMediaSourceMovie() {
         FileName = "Le film - La suite",
-        StoragePath = @"Comédie\\Le film - La suite",
+        StoragePath = @"Comédie\\Le film - Lz duite",
         StorageRoot = @"\\andromeda.sharenet.priv\films",
         Size = 234567,
-        OutputYear = 2023,
         FileExtension = "mkv"
+      }) {
+        OutputYear = 2023,
       };
 
       Dump(Movie1);
@@ -155,22 +160,24 @@ public class TStorageMemoryMoviesTests {
       Dump(Target);
 
       Message("Adding movies to the empty storage");
-      IMovie Movie1 = new TMovie() {
+      IMovie Movie1 = new TMovie(new TMediaSourceMovie() {
         FileName = "Le film",
         StoragePath = @"Comédie\\Le film",
         StorageRoot = @"\\andromeda.sharenet.priv\films",
         Size = 123456,
-        OutputYear = 2022,
         FileExtension = "mkv"
+      }) {
+        OutputYear = 2022,
       };
 
-      IMovie Movie2 = new TMovie() {
+      IMovie Movie2 = new TMovie(new TMediaSourceMovie() {
         FileName = "Le film - La suite",
-        StoragePath = @"Comédie\\Le film - La suite",
+        StoragePath = @"Comédie\\Le film - Lz duite",
         StorageRoot = @"\\andromeda.sharenet.priv\films",
         Size = 234567,
-        OutputYear = 2023,
         FileExtension = "mkv"
+      }) {
+        OutputYear = 2023,
       };
 
       Dump(Movie1);
@@ -210,13 +217,14 @@ public class TStorageMemoryMoviesTests {
       Message("No movies, no pictures");
 
       Message("Add one movie");
-      IMovie Movie1 = new TMovie() {
+      IMovie Movie1 = new TMovie(new TMediaSourceMovie() {
         FileName = "Le film",
         StoragePath = @"Comédie\\Le film",
         StorageRoot = @"\\andromeda.sharenet.priv\films",
         Size = 123456,
-        OutputYear = 2022,
         FileExtension = "mkv"
+      }) {
+        OutputYear = 2022,
       };
 
       Dump(Movie1);
@@ -269,13 +277,14 @@ public class TStorageMemoryMoviesTests {
       Message("No movies, no pictures");
 
       Message("Add one movie");
-      IMovie Movie1 = new TMovie() {
+      IMovie Movie1 = new TMovie(new TMediaSourceMovie() {
         FileName = "Le film",
         StoragePath = @"Comédie\\Le film",
         StorageRoot = @"\\andromeda.sharenet.priv\films",
         Size = 123456,
-        OutputYear = 2022,
         FileExtension = "mkv"
+      }) {
+        OutputYear = 2022,
       };
 
       Dump(Movie1);

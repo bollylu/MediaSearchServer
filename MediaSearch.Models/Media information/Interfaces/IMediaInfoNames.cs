@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public interface IMultiNames {
+public interface IMediaInfoNames {
 
   /// <summary>
   /// A list of alternate KeyValuePairs (language & name) (0 <= count <= n)

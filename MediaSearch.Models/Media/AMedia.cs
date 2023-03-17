@@ -5,11 +5,11 @@ using SkiaSharp;
 
 namespace MediaSearch.Models;
 
-public abstract class AMedia : ALoggable, IMedia {
+public abstract class AMedia : ARecord, IMedia {
 
   public static ELanguage DEFAULT_LANGUAGE = ELanguage.French;
 
-  public string Id {
+  public override string Id {
     get {
       return _Id ??= _BuildId();
     }
@@ -17,13 +17,16 @@ public abstract class AMedia : ALoggable, IMedia {
       _Id = value;
     }
   }
-  private string? _Id;
+  protected string? _Id;
 
   protected virtual string _BuildId() {
     return Name.HashToBase64();
   }
 
   public EMediaType MediaType { get; set; }
+
+  public virtual List<IMediaSource> MediaSources { get; } = new List<IMediaSource>();
+  public virtual TMediaInfos MediaInfos { get; } = new();
 
   #region --- IName --------------------------------------------
   public string Name {
@@ -56,11 +59,6 @@ public abstract class AMedia : ALoggable, IMedia {
   public List<string> Tags { get; } = new();
   #endregion --- ITags --------------------------------------------
 
-  public string StorageRoot { get; set; } = "";
-  public string StoragePath { get; set; } = "";
-  public string FileName { get; set; } = "";
-  public string FileExtension { get; set; } = "";
-
   [JsonConverter(typeof(TDateOnlyJsonConverter))]
   public DateOnly DateAdded { get; set; } = DateOnly.FromDateTime(DateTime.Today);
 
@@ -70,8 +68,6 @@ public abstract class AMedia : ALoggable, IMedia {
       return CreationDate.Year;
     }
   }
-
-  public long Size { get; set; }
 
   public string Group { get; set; } = "";
   public bool IsGroupMember => !string.IsNullOrWhiteSpace(Group);
@@ -84,13 +80,7 @@ public abstract class AMedia : ALoggable, IMedia {
   protected AMedia(IMedia media) : this() {
     MediaType = media.MediaType;
     Id = media.Id;
-    //StorageRoot = media.StorageRoot;
-    //StoragePath = media.StoragePath;
-    //FileName = media.FileName;
-    //FileExtension = media.FileExtension;
     CreationDate = media.CreationDate;
-    //Size = media.Size;
-    //DateAdded = media.DateAdded;
     Group = media.Group;
 
     foreach (ILanguageTextInfo TitleItem in media.Titles.GetAll()) {
@@ -122,33 +112,22 @@ public abstract class AMedia : ALoggable, IMedia {
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   #region --- Converters -------------------------------------------------------------------------------------
-  public virtual string ToString(int indent) {
+  public override string ToString(int indent) {
     StringBuilder RetVal = new();
 
     RetVal.AppendIndent($"- {nameof(MediaType)} = {MediaType}", indent)
           .AppendIndent($"- {nameof(Id)} = {Id.WithQuotes()}", indent)
-          .AppendIndent($"- {nameof(Name)} = {Name.WithQuotes()}", indent)
-          .AppendIndent($"- {nameof(StorageRoot)} = {StorageRoot.WithQuotes()}", indent)
-          .AppendIndent($"- {nameof(StoragePath)} = {StoragePath.WithQuotes()}", indent)
-          .AppendIndent($"- {nameof(FileName)} = {FileName.WithQuotes()}", indent)
-          .AppendIndent($"- {nameof(FileExtension)} = {FileExtension.WithQuotes()}", indent);
+          .AppendIndent($"- {nameof(Name)} = {Name.WithQuotes()}", indent);
 
-    if (Titles.Any()) {
-      RetVal.AppendIndent($"- {nameof(Titles)}", indent);
-      foreach (var TitleItem in Titles.GetAll()) {
-        RetVal.AppendIndent($"- {TitleItem}", indent + 2);
+    if (MediaInfos.Any()) {
+      RetVal.AppendIndent($"- {nameof(MediaInfos)}", indent);
+      foreach (var MediaInfoItem in MediaInfos) {
+        RetVal.AppendIndent($"- {MediaInfoItem.Value}", indent + 2);
       }
     } else {
-      RetVal.AppendIndent($"- {nameof(Titles)} is empty", indent);
+      RetVal.AppendIndent($"- {nameof(MediaInfos)} is empty", indent);
     }
-    if (Descriptions.Any()) {
-      RetVal.AppendIndent($"- {nameof(Descriptions)}", indent);
-      foreach (var DescriptionItem in Descriptions.GetAll()) {
-        RetVal.AppendIndent($"- {DescriptionItem}", indent + 2);
-      }
-    } else {
-      RetVal.AppendIndent($"- {nameof(Descriptions)} is empty", indent);
-    }
+
 
     if (Tags.Any()) {
       RetVal.AppendIndent($"- {nameof(Tags)}", indent);
@@ -164,8 +143,7 @@ public abstract class AMedia : ALoggable, IMedia {
     } else {
       RetVal.AppendIndent($"- No group membership", indent);
     }
-    RetVal.AppendIndent($"- {nameof(Size)} = {Size} bytes", indent)
-          .AppendIndent($"- {nameof(CreationYear)} = {CreationYear}", indent);
+
     return RetVal.ToString();
   }
 
@@ -259,18 +237,18 @@ public abstract class AMedia : ALoggable, IMedia {
     return DeletePicture(picture.Name);
   }
 
-  public async Task<bool> LoadPicture() {
-    return await LoadPicture(DEFAULT_PICTURE_NAME, EPictureType.Front, MIN_PICTURE_WIDTH, MIN_PICTURE_HEIGHT).ConfigureAwait(false);
+  public async Task<bool> LoadPicture(IMediaSource mediaSource) {
+    return await LoadPicture(mediaSource, DEFAULT_PICTURE_NAME, EPictureType.Front, MIN_PICTURE_WIDTH, MIN_PICTURE_HEIGHT).ConfigureAwait(false);
   }
 
-  public async Task<bool> LoadPicture(string pictureName, EPictureType pictureType = EPictureType.Front, int width = MIN_PICTURE_WIDTH, int height = MIN_PICTURE_HEIGHT) {
+  public async Task<bool> LoadPicture(IMediaSource mediaSource, string pictureName, EPictureType pictureType = EPictureType.Front, int width = MIN_PICTURE_WIDTH, int height = MIN_PICTURE_HEIGHT) {
     #region === Validate parameters ===
     string ParamPictureName = pictureName ?? DEFAULT_PICTURE_NAME;
     int ParamWidth = width.WithinLimits(MIN_PICTURE_WIDTH, MAX_PICTURE_WIDTH);
     int ParamHeight = height.WithinLimits(MIN_PICTURE_HEIGHT, MAX_PICTURE_HEIGHT);
     #endregion === Validate parameters ===
 
-    string FullPicturePath = Path.Join(StorageRoot, StoragePath, ParamPictureName).NormalizePath();
+    string FullPicturePath = Path.Join(mediaSource.StorageRoot, mediaSource.StoragePath, ParamPictureName).NormalizePath();
 
     LogDebug($"LoadPicture {FullPicturePath} : size({ParamWidth}, {ParamHeight})");
     if (!File.Exists(FullPicturePath)) {
@@ -299,16 +277,6 @@ public abstract class AMedia : ALoggable, IMedia {
   }
   #endregion --- IPictureContainer --------------------------------------------
 
-  #region --- IDirty --------------------------------------------
-  public bool IsDirty { get; protected set; } = false;
 
-  public virtual void SetDirty() {
-    IsDirty = true;
-  }
-
-  public virtual void ClearDirty() {
-    IsDirty = false;
-  }
-  #endregion --- IDirty --------------------------------------------
 
 }

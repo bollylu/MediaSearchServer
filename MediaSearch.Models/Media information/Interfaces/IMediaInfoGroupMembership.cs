@@ -1,5 +1,5 @@
 ﻿namespace MediaSearch.Models;
-public interface IGroupMembership {
+public interface IMediaInfoGroupMembership {
 
   /// <summary>
   /// The group where the item belongs

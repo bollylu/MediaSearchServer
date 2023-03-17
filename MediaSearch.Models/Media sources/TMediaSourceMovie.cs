@@ -1,9 +1,7 @@
 ﻿namespace MediaSearch.Models;
 
-public class TMediaSourceMovie : ALoggable, IMediaSource, IJson<TMediaSourceMovie> {
+public class TMediaSourceMovie : AMediaSource, IJson<TMediaSourceMovie> {
 
-  public EMediaType MediaSourceType { get; } = EMediaType.Movie;
-  //public IStorage? Storage { get; set; }
   public string Name {
     get {
       return _Name ??= $"{MediaSourceType}";
@@ -13,32 +11,33 @@ public class TMediaSourceMovie : ALoggable, IMediaSource, IJson<TMediaSourceMovi
     }
   }
   private string? _Name;
-  public string Description { get; set; } = "";
 
-  public string RootStorage { get; set; } = "";
+  public EMovieExtension Extension =>
+    FileExtension.ToLowerInvariant() switch {
+      "avi" => EMovieExtension.AVI,
+      "mkv" => EMovieExtension.MKV,
+      "mp4" => EMovieExtension.MP4,
+      "iso" => EMovieExtension.ISO,
+      _ => EMovieExtension.Unknown,
+    };
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMediaSourceMovie() {
+  public TMediaSourceMovie() : base() {
+    MediaSourceType = EMediaType.Movie;
     Logger = GlobalSettings.LoggerPool.GetLogger<TMediaSourceMovie>();
   }
   public TMediaSourceMovie(string rootStorage) : this() {
-    RootStorage = rootStorage;
+    StorageRoot = rootStorage;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  public override string ToString() {
-    StringBuilder RetVal = new StringBuilder();
-    RetVal.AppendLine($"{nameof(TMediaSourceMovie)} = {Name.WithQuotes()}");
+  public override string ToString(int indent) {
+    StringBuilder RetVal = new StringBuilder(base.ToString(indent));
+    RetVal.AppendLine($"{nameof(Name)} = {Name.WithQuotes()}");
     if (!string.IsNullOrWhiteSpace(Description)) {
       RetVal.AppendLine($"  {nameof(Description)} : {Description.WithQuotes()}");
     }
-    //RetVal.AppendLine(Database?.ToString(2));
     return RetVal.ToString();
   }
 
-  public string ToString(int indent) {
-    throw new NotImplementedException();
-  }
-
-  public Type? MediaType { get; }
 }

@@ -64,5 +64,5 @@ public interface IMovieCache : IName {
   #endregion --- Movies access --------------------------------------------
 
   IAsyncEnumerable<string> GetGroups();
-  IEnumerable<string> GetSubGroups(string group);
+  //IEnumerable<string> GetSubGroups(string group);
 }

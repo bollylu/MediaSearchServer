@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public interface IDescriptions {
+public interface IMediaInfoDescriptions {
 
   /// <summary>
   /// A list of unique descriptions with ELanguage

@@ -1,4 +1,4 @@
 ﻿namespace MediaSearch.Models;
-public interface IMediaInfoContentTitles {
+public interface IMediaInfoTitles {
   ILanguageDictionary<string> Titles { get; }
 }

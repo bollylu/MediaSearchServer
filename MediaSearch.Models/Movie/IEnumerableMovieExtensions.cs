@@ -12,7 +12,7 @@ public static class IEnumerableMovieExtensions {
                                          .FilterByTags(filter)
                                          .FilterByGroupsOnly(filter)
                                          .FilterByGroup(filter)
-                                         .FilterBySubGroup(filter);
+                                         /*.FilterBySubGroup(filter)*/;
 
     return Filtered;
   }
@@ -26,7 +26,7 @@ public static class IEnumerableMovieExtensions {
       case EFilterSortOrder.OutputYear:
         return movies.OrderBy(m => m.OutputYear).ThenBy(m => m.Name);
       case EFilterSortOrder.Group:
-        return movies.OrderBy(m => m.Group).ThenBy(m => m.SubGroup).ThenBy(m => m.OutputYear).ThenBy(m => m.Name);
+        return movies.OrderBy(m => m.Group)./*ThenBy(m => m.SubGroup).*/ThenBy(m => m.OutputYear).ThenBy(m => m.Name);
     }
   }
 
@@ -114,13 +114,13 @@ public static class IEnumerableMovieExtensions {
     return movies.Where(m => m.Group.Equals(filter.Group, StringComparison.CurrentCultureIgnoreCase));
   }
 
-  public static IEnumerable<IMovie> FilterBySubGroup(this IEnumerable<IMovie> movies, IFilterGroup filter) {
-    if (filter is null || string.IsNullOrWhiteSpace(filter.SubGroup)) {
-      return movies;
-    }
+  //public static IEnumerable<IMovie> FilterBySubGroup(this IEnumerable<IMovie> movies, IFilterGroup filter) {
+  //  if (filter is null || string.IsNullOrWhiteSpace(filter.SubGroup)) {
+  //    return movies;
+  //  }
 
-    return movies.Where(m => m.SubGroup.Equals(filter.SubGroup, StringComparison.CurrentCultureIgnoreCase));
-  }
+  //  return movies.Where(m => m.SubGroup.Equals(filter.SubGroup, StringComparison.CurrentCultureIgnoreCase));
+  //}
 
   public static IAsyncEnumerable<string> GetGroups(this IEnumerable<IMovie> movies) {
     return movies.Where(m => m.IsGroupMember)
@@ -130,12 +130,12 @@ public static class IEnumerableMovieExtensions {
                  .ToAsyncEnumerable();
   }
 
-  public static IEnumerable<string> GetSubGroups(this IEnumerable<IMovie> movies, string group) {
-    return movies.Where(m => m.IsGroupMember)
-                 .Where(m => m.Group.Equals(group, StringComparison.CurrentCultureIgnoreCase))
-                 .Where(m => !string.IsNullOrWhiteSpace(m.SubGroup))
-                 .Select(m => m.SubGroup)
-                 .Distinct()
-                 .OrderBy(x => x);
-  }
+  //public static IEnumerable<string> GetSubGroups(this IEnumerable<IMovie> movies, string group) {
+  //  return movies.Where(m => m.IsGroupMember)
+  //               .Where(m => m.Group.Equals(group, StringComparison.CurrentCultureIgnoreCase))
+  //               .Where(m => !string.IsNullOrWhiteSpace(m.SubGroup))
+  //               .Select(m => m.SubGroup)
+  //               .Distinct()
+  //               .OrderBy(x => x);
+  //}
 }

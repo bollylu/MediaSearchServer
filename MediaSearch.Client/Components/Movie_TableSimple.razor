@@ -18,7 +18,7 @@
               <div class="@RowClass">
                 <div class="row mt-1 mb-1 " >
                   <div class="col col-1 d-flex align-self-center justify-content-center">
-                    <span class="badge rounded bg-dark text-light text-center" style="width:50px; justify-content:center;">@MovieItem.Extension.ToString().ToLowerInvariant()</span>
+                    <span class="badge rounded bg-dark text-light text-center" style="width:50px; justify-content:center;">@MovieItem.MediaSources.First().FileExtension</span>
                     &nbsp;
                     <span class="badge rounded bg-danger text-light text-center" style="width:50px; justify-content:center;">@MovieItem.OutputYear</span>
                   </div>
@@ -28,7 +28,7 @@
                   </div>
 
                   <div class="col col-1 text-end">
-                    @DisplayConverters.DisplaySizeInUnit(MovieItem.Size)
+                    @DisplayConverters.DisplaySizeInUnit(MovieItem.MediaSources.First().Size)
                   </div>
 
                   <div class="col col-4">

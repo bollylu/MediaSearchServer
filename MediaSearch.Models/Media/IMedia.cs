@@ -1,43 +1,28 @@
 ﻿namespace MediaSearch.Models;
 
 public interface IMedia : IRecord,
-                          ITags,
-                          ITitles,
-                          IDescriptions,
-                          IGroupMembership,
-                          IDirty,
-                          ICreation,
+                          IMediaInfoGroupMembership,
+                          IMediaInfoCreation,
                           IDisposable,
                           IAsyncDisposable,
-                          IPictureContainer,
-                          IMultiNames {
+                          IPictureContainer {
 
-  public string Name { get; }
+  string Name { get; }
 
-  public EMediaType MediaType { get; set; }
-
-  ///// <summary>
-  ///// The filename used to store the media
-  ///// </summary>
-  //string FileName { get; set; }
-
-  ///// <summary>
-  ///// The extension of the filename (e.g.: mkv, pdf, ...)
-  ///// </summary>
-  //string FileExtension { get; set; }
-
-  ///// <summary>
-  ///// The root of the path URI
-  ///// </summary>
-  //string StorageRoot { get; set; }
-
-  ///// <summary>
-  ///// The path of the movie in the storage
-  ///// </summary>
-  //string StoragePath { get; set; }
+  EMediaType MediaType { get; set; }
 
   /// <summary>
-  /// The date that the movie was added to the library
+  /// Physical location(s) where the media can be found (should be >= 1, but 0 is allowed)
+  /// </summary>
+  List<IMediaSource> MediaSources { get; }
+
+  /// <summary>
+  /// The info about the media in various languages
+  /// </summary>
+  List<TMediaInfo> MediaInfos { get; }
+
+  /// <summary>
+  /// The date when the media was added to the library
   /// </summary>
   DateOnly DateAdded { get; set; }
 

@@ -71,14 +71,15 @@ public abstract class AMovieCache : IMovieCache, ILoggable {
     string ProcessedFileItem = item.FullName.NormalizePath();
 
     TMovie RetVal = new TMovie() { Name = ProcessedFileItem.AfterLast(FOLDER_SEPARATOR).BeforeLast(" (") };
+    TMediaSourceMovie Source = new TMediaSourceMovie();
 
-    RetVal.StorageRoot = RootStoragePath.NormalizePath();
-    RetVal.StoragePath = ProcessedFileItem.BeforeLast(FOLDER_SEPARATOR).After(RetVal.StorageRoot, System.StringComparison.InvariantCultureIgnoreCase);
+    Source.StorageRoot = RootStoragePath.NormalizePath();
+    Source.StoragePath = ProcessedFileItem.BeforeLast(FOLDER_SEPARATOR).After(Source.StorageRoot, System.StringComparison.InvariantCultureIgnoreCase);
 
-    RetVal.FileName = item.Name;
-    RetVal.FileExtension = RetVal.FileName.AfterLast('.').ToLowerInvariant();
+    Source.FileName = item.Name;
+    Source.FileExtension = Source.FileName.AfterLast('.').ToLowerInvariant();
 
-    string[] Tags = RetVal.StoragePath.BeforeLast(FOLDER_SEPARATOR).Split(FOLDER_SEPARATOR, StringSplitOptions.RemoveEmptyEntries);
+    string[] Tags = Source.StoragePath.BeforeLast(FOLDER_SEPARATOR).Split(FOLDER_SEPARATOR, StringSplitOptions.RemoveEmptyEntries);
     IList<string> GroupTags = Tags.Where(t => t.EndsWith(" #")).ToList();
     switch (GroupTags.Count) {
       case 0:
@@ -105,15 +106,15 @@ public abstract class AMovieCache : IMovieCache, ILoggable {
     }
 
     try {
-      RetVal.OutputYear = int.Parse(RetVal.FileName.AfterLast('(').BeforeLast(')'));
+      RetVal.OutputYear = int.Parse(Source.FileName.AfterLast('(').BeforeLast(')'));
     } catch (FormatException ex) {
       Logger.LogWarning($"Unable to find output year : {ex.Message} : {item.FullName}");
       RetVal.OutputYear = 0;
     }
 
-    RetVal.Size = item.Length;
+    Source.Size = item.Length;
 
-    IMediaInfoFile DataFile = new TMovieInfoFileMeta(Path.Join(RetVal.StorageRoot, RetVal.StoragePath));
+    IMediaInfoFile DataFile = new TMovieInfoFileMeta(Path.Join(Source.StorageRoot, Source.StoragePath));
     if (await DataFile.ExistsAsync(CancellationToken.None)) {
       Logger.LogDebugExBox("Found datafile", DataFile);
       await DataFile.ReadAsync(CancellationToken.None);
@@ -228,16 +229,16 @@ public abstract class AMovieCache : IMovieCache, ILoggable {
     }
   }
 
-  public IEnumerable<string> GetSubGroups(string group) {
-    try {
-      //LogDebugEx($"==> GetSubGroups() from cache");
-      _LockCache.EnterReadLock();
-      return _Items.GetSubGroups(group);
-    } finally {
-      //LogDebugEx($"<== GetSubGroups() from cache");
-      _LockCache.ExitReadLock();
-    }
-  }
+  //public IEnumerable<string> GetSubGroups(string group) {
+  //  try {
+  //    //LogDebugEx($"==> GetSubGroups() from cache");
+  //    _LockCache.EnterReadLock();
+  //    return _Items.GetSubGroups(group);
+  //  } finally {
+  //    //LogDebugEx($"<== GetSubGroups() from cache");
+  //    _LockCache.ExitReadLock();
+  //  }
+  //}
   #endregion --- Groups --------------------------------------------
 }
 

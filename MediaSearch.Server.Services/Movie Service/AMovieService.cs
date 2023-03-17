@@ -37,7 +37,7 @@ public abstract class AMovieService : ALoggable, IMovieService, IName {
   public abstract Task<IMoviesPage?> GetMoviesPage(IFilter filter);
   public abstract Task<byte[]> GetPicture(string id, string pictureName, int width, int height);
   public abstract ValueTask<int> GetRefreshStatus();
-  public abstract IAsyncEnumerable<string> GetSubGroups(string group);
+  //public abstract IAsyncEnumerable<string> GetSubGroups(string group);
   public abstract Task Initialize();
   public abstract ValueTask<int> MoviesCount(IFilter filter);
   public abstract ValueTask<int> PagesCount(IFilter filter);

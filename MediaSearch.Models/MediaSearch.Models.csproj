@@ -10,12 +10,15 @@
 
   <ItemGroup>
     <Compile Remove="Converters\**" />
+    <Compile Remove="Extensions\**" />
     <Compile Remove="Logging\**" />
     <Compile Remove="Output formatters\**" />
     <EmbeddedResource Remove="Converters\**" />
+    <EmbeddedResource Remove="Extensions\**" />
     <EmbeddedResource Remove="Logging\**" />
     <EmbeddedResource Remove="Output formatters\**" />
     <None Remove="Converters\**" />
+    <None Remove="Extensions\**" />
     <None Remove="Logging\**" />
     <None Remove="Output formatters\**" />
   </ItemGroup>

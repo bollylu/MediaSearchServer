@@ -63,18 +63,18 @@ public class TMovieController : ControllerBase, ILoggable {
     return new ActionResult<IList<string>>(RetVal);
   }
 
-  /// <summary>
-  /// Obtain a page of movies with the possibility of filtering
-  /// </summary>
-  /// <param name="filter">A possible filter for the movie names</param>
-  /// <returns>A list of groups</returns>
-  [HttpGet("getSubGroups")]
-  public async Task<ActionResult<IList<string>>> GetSubGroups(string group) {
-    Logger.LogDebug(HttpContext.Request.ListHeaders());
-    IList<string> RetVal = await _MovieService.GetSubGroups(group ?? "").ToListAsync().ConfigureAwait(false);
+  ///// <summary>
+  ///// Obtain a page of movies with the possibility of filtering
+  ///// </summary>
+  ///// <param name="filter">A possible filter for the movie names</param>
+  ///// <returns>A list of groups</returns>
+  //[HttpGet("getSubGroups")]
+  //public async Task<ActionResult<IList<string>>> GetSubGroups(string group) {
+  //  Logger.LogDebug(HttpContext.Request.ListHeaders());
+  //  IList<string> RetVal = await _MovieService.GetSubGroups(group ?? "").ToListAsync().ConfigureAwait(false);
 
-    return new ActionResult<IList<string>>(RetVal);
-  }
+  //  return new ActionResult<IList<string>>(RetVal);
+  //}
 
   /// <summary>
   /// Obtain a page of movies filtered by added in the last n days

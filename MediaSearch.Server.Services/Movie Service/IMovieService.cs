@@ -89,7 +89,7 @@ public interface IMovieService {
   #endregion --- Movies --------------------------------------------
 
   IAsyncEnumerable<string> GetGroups();
-  IAsyncEnumerable<string> GetSubGroups(string group);
+  //IAsyncEnumerable<string> GetSubGroups(string group);
 
   Task<byte[]> GetPicture(string id,
                           string pictureName,

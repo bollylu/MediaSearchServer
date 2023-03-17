@@ -45,9 +45,9 @@ public class TMovieJsonConverter : JsonConverter<TMovie>, ILoggable {
               RetVal.Group = reader.GetString() ?? "";
               break;
 
-            case nameof(IMovie.SubGroup):
-              RetVal.SubGroup = reader.GetString() ?? "";
-              break;
+            //case nameof(IMovie.SubGroup):
+            //  RetVal.SubGroup = reader.GetString() ?? "";
+            //  break;
 
             //case nameof(IMovie.StoragePath):
             //  RetVal.StoragePath = reader.GetString() ?? "";
@@ -61,9 +61,9 @@ public class TMovieJsonConverter : JsonConverter<TMovie>, ILoggable {
             //  RetVal.FileExtension = reader.GetString() ?? "";
             //  break;
 
-            case nameof(IMovie.Size):
-              RetVal.Size = reader.GetInt64();
-              break;
+            //case nameof(IMovie.Size):
+            //  RetVal.Size = reader.GetInt64();
+            //  break;
 
             case nameof(IMovie.OutputYear):
               RetVal.OutputYear = reader.GetInt32();
@@ -113,11 +113,11 @@ public class TMovieJsonConverter : JsonConverter<TMovie>, ILoggable {
     writer.WriteString(nameof(IMovie.Id), value.Id);
     writer.WriteString(nameof(IMovie.Name), value.Name);
     writer.WriteString(nameof(IMovie.Group), value.Group);
-    writer.WriteString(nameof(IMovie.SubGroup), value.SubGroup);
+    //writer.WriteString(nameof(IMovie.SubGroup), value.SubGroup);
     //writer.WriteString(nameof(IMovie.StoragePath), value.StoragePath);
     //writer.WriteString(nameof(IMovie.FileName), value.FileName);
     //writer.WriteString(nameof(IMovie.FileExtension), value.FileExtension);
-    writer.WriteNumber(nameof(IMovie.Size), value.Size);
+    //writer.WriteNumber(nameof(IMovie.Size), value.Size);
     writer.WriteNumber(nameof(IMovie.OutputYear), value.OutputYear);
     writer.WritePropertyName(nameof(IMovie.DateAdded));
     JsonSerializer.Serialize(writer, value.DateAdded, options);

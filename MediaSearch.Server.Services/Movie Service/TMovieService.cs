@@ -124,14 +124,14 @@ public class TMovieService : AMovieService {
     yield break;
     throw new NotImplementedException();
   }
-  public override async IAsyncEnumerable<string> GetSubGroups(string group) {
-    await Initialize().ConfigureAwait(false);
-    yield break;
-    throw new NotImplementedException();
-    //foreach (string GroupItem in _MoviesCache.GetSubGroups(group)) {
-    //  yield return GroupItem;
-    //}
-  }
+  //public override async IAsyncEnumerable<string> GetSubGroups(string group) {
+  //  await Initialize().ConfigureAwait(false);
+  //  yield break;
+  //  throw new NotImplementedException();
+  //  //foreach (string GroupItem in _MoviesCache.GetSubGroups(group)) {
+  //  //  yield return GroupItem;
+  //  //}
+  //}
 
 
   public override async Task<byte[]> GetPicture(string movieId,

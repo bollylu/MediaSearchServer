@@ -11,8 +11,4 @@
     <PackageReference Include="BLTools" Version="6.1.0-beta8e" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\MediaSearch.Models\MediaSearch.Models.csproj" />
-  </ItemGroup>
-
 </Project>

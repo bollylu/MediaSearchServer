@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public interface ITags {
+public interface IMediaInfoTags {
 
   /// <summary>
   /// A list of tags (0 <= count <= n)
