@@ -24,10 +24,9 @@ public abstract class AMedia : ARecord, IMedia {
 
   public EMediaType MediaType { get; set; }
 
-  public virtual TMediaSources MediaSources { get; } = new();
-  public virtual TMediaInfos MediaInfos { get; } = new();
+  public virtual IMediaSources MediaSources { get; init; } = new TMediaSources();
+  public virtual IMediaInfos MediaInfos { get; init; } = new TMediaInfos();
 
-  #region --- IName --------------------------------------------
   public string Name {
     get {
       if (Titles.Any()) {
@@ -46,17 +45,6 @@ public abstract class AMedia : ARecord, IMedia {
   public ILanguageTextInfos Titles { get; } = new TLanguageTextInfos();
 
   public ILanguageTextInfos Descriptions { get; } = new TLanguageTextInfos();
-
-
-  #endregion --- IName --------------------------------------------
-
-  #region --- IMultiNames --------------------------------------------
-  public Dictionary<string, string> AltNames { get; } = new();
-  #endregion --- IMultiNames --------------------------------------------
-
-  #region --- ITags --------------------------------------------
-  public List<string> Tags { get; } = new();
-  #endregion --- ITags --------------------------------------------
 
   [JsonConverter(typeof(TDateOnlyJsonConverter))]
   public DateOnly DateAdded { get; set; } = DateOnly.FromDateTime(DateTime.Today);

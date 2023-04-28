@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "MediaSearch.Models.Test": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:8408;http://localhost:8409"
+    }
+  }
+}

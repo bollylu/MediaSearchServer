@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Json serialization\IJson.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Pictures\missing.jpg" />
     <None Remove="_Global_\changelog.md" />
     <None Remove="_Global_\version.txt" />
@@ -20,10 +24,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BLTools" Version="6.1.0-beta8e" />
+    <PackageReference Include="BLTools" Version="6.1.0-beta8f" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
     <PackageReference Include="SkiaSharp" Version="2.88.3" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3" />
+    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     <PackageReference Include="System.Text.Encodings.Web" Version="7.0.0" />
   </ItemGroup>
 

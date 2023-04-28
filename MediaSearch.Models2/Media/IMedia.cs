@@ -14,12 +14,12 @@ public interface IMedia : IRecord,
   /// <summary>
   /// Physical location(s) where the media can be found (should be >= 1, but 0 is allowed)
   /// </summary>
-  TMediaSources MediaSources { get; }
+  IMediaSources MediaSources { get; }
 
   /// <summary>
   /// The info about the media in various languages
   /// </summary>
-  TMediaInfos MediaInfos { get; }
+  IMediaInfos MediaInfos { get; }
 
   /// <summary>
   /// The date when the media was added to the library

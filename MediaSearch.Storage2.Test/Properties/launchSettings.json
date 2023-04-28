@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "MediaSearch.Storage2.Test": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:8406;http://localhost:8407"
+    }
+  }
+}
