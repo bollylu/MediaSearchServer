@@ -1,5 +1,5 @@
 ﻿namespace MediaSearch.Models;
-public interface IMediaInfo {
+public interface IMediaInfo : IMediaInfoGroupMembership, IMediaInfoCreation {
 
   ELanguage Language { get; }
   string Title { get; set; }

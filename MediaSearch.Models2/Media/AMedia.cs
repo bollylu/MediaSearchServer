@@ -8,6 +8,7 @@ public abstract class AMedia : ARecord, IMedia {
 
   public static ELanguage DEFAULT_LANGUAGE = ELanguage.French;
 
+  #region --- IRecord --------------------------------------------
   public override string Id {
     get {
       return _Id ??= _BuildId();
@@ -21,11 +22,13 @@ public abstract class AMedia : ARecord, IMedia {
   protected virtual string _BuildId() {
     return Name.HashToBase64();
   }
+  #endregion --- IRecord --------------------------------------------
 
-  public EMediaType MediaType { get; set; }
+  public EMediaType MediaType { get; init; }
 
   public virtual IMediaSources MediaSources { get; init; } = new TMediaSources();
   public virtual IMediaInfos MediaInfos { get; init; } = new TMediaInfos();
+  public virtual IMediaPictures MediaPictures { get; init; } = new TMediaPictures();
 
   public string Name {
     get {

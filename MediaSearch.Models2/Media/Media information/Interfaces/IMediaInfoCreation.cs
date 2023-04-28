@@ -7,8 +7,8 @@ public interface IMediaInfoCreation {
   DateOnly CreationDate { get; set; }
 
   /// <summary>
-  /// The year when the media was created
+  /// The year when the media was created (basically extracted from CreationDate, but might be different at init if ???)
   /// </summary>
-  int CreationYear { get; }
+  int CreationYear { get; init; }
 
 }

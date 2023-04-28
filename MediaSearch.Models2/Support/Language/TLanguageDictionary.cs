@@ -26,10 +26,13 @@ public class TLanguageDictionary<T> : Dictionary<ELanguage, T>, ILanguageDiction
     return Keys.IsEmpty();
   }
 
+  #region --- Static instance --------------------------------------------
   public static TLanguageDictionary<T> Empty {
     get {
       return _Empty ??= new TLanguageDictionary<T>();
     }
   }
   private static TLanguageDictionary<T>? _Empty;
+  #endregion --- Static instance --------------------------------------------
+
 }
