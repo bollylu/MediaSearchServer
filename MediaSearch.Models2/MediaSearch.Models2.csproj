@@ -8,17 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Json serialization\IJson.cs" />
+    <Compile Remove="Support\Json serialization\IJson.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Pictures\missing.jpg" />
+    <None Remove="Media\Media pictures\Pictures\missing.jpg" />
     <None Remove="_Global_\changelog.md" />
     <None Remove="_Global_\version.txt" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Pictures\missing.jpg" />
+    <EmbeddedResource Include="Media\Media pictures\Pictures\missing.jpg" />
     <EmbeddedResource Include="_Global_\changelog.md" />
     <EmbeddedResource Include="_Global_\version.txt" />
   </ItemGroup>

@@ -4,6 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MediaSearch.Models2.Media.Media_pictures;
+namespace MediaSearch.Models;
 internal interface IMediaPicture {
 }

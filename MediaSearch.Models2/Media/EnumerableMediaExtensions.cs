@@ -1,7 +1,4 @@
-﻿using System.Globalization;
-using MediaSearch.Models2.Support.Filter;
-
-namespace MediaSearch.Models;
+﻿namespace MediaSearch.Models;
 
 public static class EnumerableMediaExtensions {
 
@@ -24,17 +21,17 @@ public static class EnumerableMediaExtensions {
       case EFilterSortOrder.Name:
         return medias
           .OrderBy(m => m.Name)
-          .ThenBy(m => m.CreationYear);
+          .ThenBy(m => m.MediaInfos.Default?.CreationYear ?? 0);
 
       case EFilterSortOrder.OutputYear:
         return medias
-          .OrderBy(m => m.CreationYear)
+          .OrderBy(m => m.MediaInfos.Default?.CreationYear ?? 0)
           .ThenBy(m => m.Name);
 
       case EFilterSortOrder.Group:
         return medias
-          .OrderBy(m => m.Group)
-          .ThenBy(m => m.CreationYear)
+          .OrderBy(m => m.MediaInfos.Default?.Group)
+          .ThenBy(m => m.MediaInfos.Default?.CreationYear ?? 0)
           .ThenBy(m => m.Name);
     }
   }

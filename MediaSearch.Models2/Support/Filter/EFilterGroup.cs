@@ -1,4 +1,4 @@
-﻿namespace MediaSearch.Models2;
+﻿namespace MediaSearch.Models;
 
 /// <summary>
 /// What to get from back end

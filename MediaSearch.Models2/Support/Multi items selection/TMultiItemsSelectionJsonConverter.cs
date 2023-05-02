@@ -1,5 +1,4 @@
-﻿using MediaSearch.Models2.Support.Filter;
-using static MediaSearch.Models.JsonConverterResources;
+﻿using static MediaSearch.Models.JsonConverterResources;
 
 namespace MediaSearch.Models;
 

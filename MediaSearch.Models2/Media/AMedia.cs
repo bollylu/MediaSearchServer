@@ -26,8 +26,37 @@ public abstract class AMedia : ARecord, IMedia {
 
   public EMediaType MediaType { get; init; }
 
+  public ELanguage DefaultLanguage { get; init; } = DEFAULT_LANGUAGE;
+
   public virtual IMediaSources MediaSources { get; init; } = new TMediaSources();
-  public virtual IMediaInfos MediaInfos { get; init; } = new TMediaInfos();
+
+  #region --- IMediaInfos --------------------------------------------
+  public IMediaInfos MediaInfos { get; init; } = new TMediaInfos();
+
+  public IMediaInfo GetInfos() {
+    if (MediaInfos.IsEmpty()) {
+      throw new ApplicationException("Invalid media : MediaInfos cannot be empty");
+    }
+
+    if (MediaInfos.ContainsKey(DefaultLanguage)) {
+      return MediaInfos[DefaultLanguage];
+    }
+
+    return MediaInfos.First().Value;
+  }
+  public IMediaInfo GetInfos(ELanguage language) {
+    if (MediaInfos.IsEmpty()) {
+      throw new ApplicationException("Invalid media : MediaInfos cannot be empty");
+    }
+
+    if (MediaInfos.ContainsKey(language)) {
+      return MediaInfos[language];
+    }
+
+    return GetInfos();
+  }
+  #endregion --- IMediaInfos --------------------------------------------
+
   public virtual IMediaPictures MediaPictures { get; init; } = new TMediaPictures();
 
   public string Name {

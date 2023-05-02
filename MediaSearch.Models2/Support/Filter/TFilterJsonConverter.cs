@@ -1,8 +1,6 @@
-﻿using MediaSearch.Models;
+﻿using static MediaSearch.Models.JsonConverterResources;
 
-using static MediaSearch.Models.JsonConverterResources;
-
-namespace MediaSearch.Models2;
+namespace MediaSearch.Models;
 
 public class TFilterJsonConverter : JsonConverter<TFilter>, ILoggable {
   public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TFilterJsonConverter>();

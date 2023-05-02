@@ -1,4 +1,4 @@
-﻿namespace MediaSearch.Models2;
+﻿namespace MediaSearch.Models;
 
 /// <summary>
 /// Mockup class for FileInfo, without real disk access

@@ -6,6 +6,10 @@ public abstract class AMediaInfo : IMediaInfo {
   public string Description { get; set; } = string.Empty;
   public List<string> Tags { get; init; } = new();
 
+  public string Group { get; set; } = string.Empty;
+  public bool IsGroupMember => Group != string.Empty;
+  public DateOnly CreationDate { get; set; } = DateOnly.MinValue;
+  public int CreationYear => CreationDate == DateOnly.MinValue ? 0 : CreationDate.Year;
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   protected AMediaInfo() { }
@@ -14,6 +18,8 @@ public abstract class AMediaInfo : IMediaInfo {
     Title = mediaInfo.Title;
     Description = mediaInfo.Description;
     Tags.AddRange(mediaInfo.Tags);
+    Group = mediaInfo.Group;
+    CreationDate = mediaInfo.CreationDate;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
@@ -23,6 +29,15 @@ public abstract class AMediaInfo : IMediaInfo {
     RetVal.AppendIndent($"{nameof(Language)} = {Language}", indent);
     RetVal.AppendIndent($"- {nameof(Title)} = {Title.WithQuotes()}", indent + 2);
     RetVal.AppendIndent($"- {nameof(Description)} = {Description.WithQuotes()}", indent + 2);
+    RetVal.AppendIndent($"- {nameof(CreationDate)} = {CreationDate}", indent + 2);
+    RetVal.AppendIndent($"- {nameof(CreationYear)} = {CreationYear}", indent + 2);
+
+    if (IsGroupMember) {
+      RetVal.AppendIndent($"- {nameof(Group)} = {Group.WithQuotes()}", indent + 2);
+    } else {
+      RetVal.AppendIndent("- No group membership");
+    }
+
     if (Tags.Any()) {
       RetVal.AppendIndent($"- {nameof(Tags)} = {string.Join(" ", Tags.Select(t => $"[{t}]"))}", indent + 2);
     } else {

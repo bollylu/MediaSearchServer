@@ -1,9 +1,9 @@
 ﻿using MediaSearch.Models;
 
-namespace MediaSearch.Models2;
+namespace MediaSearch.Models;
 
-public interface IMediaPictures : ILanguageDictionary<IMediaPicture> {
+public interface IMediaPictures : ILanguageDictionary<IPicture> {
 
-  IMediaPicture? Default { get; set; }
+  IPicture? Default { get; set; }
 
 }

@@ -1,6 +1,4 @@
-﻿using MediaSearch.Models;
-
-namespace MediaSearch.Models2;
+﻿namespace MediaSearch.Models;
 
 public interface IFilterTags {
 
