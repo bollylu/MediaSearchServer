@@ -1,6 +1,4 @@
-﻿using MediaSearch.Models2.Support.Filter;
-
-namespace MediaSearch.Models2.Test;
+﻿namespace MediaSearch.Models2.Test;
 [TestClass]
 public class MultiItemsSelectionTest {
   [TestMethod]

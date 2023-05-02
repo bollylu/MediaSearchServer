@@ -84,6 +84,18 @@ public class TFilterJsonConverter : JsonConverter<TFilter>, ILoggable {
               Logger.LogDebugExBox($"Found {nameof(RetVal.GroupFilter)}", RetVal.GroupFilter);
               break;
 
+            case nameof(TFilter.Keywords):
+              RetVal.Keywords = JsonSerializer.Deserialize<TMultiItemsSelection>(ref reader, options) ?? new TMultiItemsSelection();
+              break;
+
+            case nameof(TFilter.Tags):
+              RetVal.Tags = JsonSerializer.Deserialize<TMultiItemsSelection>(ref reader, options) ?? new TMultiItemsSelection();
+              break;
+
+            case nameof(TFilter.Language):
+              RetVal.Language = JsonSerializer.Deserialize<ELanguage>(ref reader, options);
+              break;
+
             default:
               Logger.LogWarningBox(ERROR_INVALID_PROPERTY, Property);
               break;
@@ -113,6 +125,7 @@ public class TFilterJsonConverter : JsonConverter<TFilter>, ILoggable {
 
     writer.WritePropertyName(nameof(TFilter.Keywords));
     JsonSerializer.Serialize(writer, value.Keywords, options);
+
     writer.WritePropertyName(nameof(TFilter.Tags));
     JsonSerializer.Serialize(writer, value.Tags, options);
 
@@ -133,6 +146,9 @@ public class TFilterJsonConverter : JsonConverter<TFilter>, ILoggable {
 
     writer.WritePropertyName(nameof(TFilter.SortOrder));
     JsonSerializer.Serialize(writer, value.SortOrder, options);
+
+    writer.WritePropertyName(nameof(TFilter.Language));
+    JsonSerializer.Serialize(writer, value.Language, options);
 
     writer.WriteEndObject();
   }

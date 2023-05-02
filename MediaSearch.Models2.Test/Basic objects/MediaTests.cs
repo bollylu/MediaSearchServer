@@ -9,11 +9,16 @@ public class MediaTests {
     IMedia Target = new TMedia();
     Assert.IsNotNull(Target);
 
-    Message("Sources is empty");
+    Message("Sources are empty");
     Assert.IsTrue(Target.MediaSources.IsEmpty());
 
-    Message("MediaInfos is empty");
+    Message("Pictures are empty");
+    Assert.IsTrue(Target.MediaPictures.IsEmpty());
+
+    Message("Infos are empty - Media is invalid");
+    Assert.IsTrue(Target.IsInvalid);
     Assert.IsTrue(Target.MediaInfos.IsEmpty());
+
 
     Dump(Target);
 
@@ -22,8 +27,9 @@ public class MediaTests {
 
   [TestMethod]
   public void Instanciate_Media() {
-    Message("Creation of an empty media");
-    IMedia Target = new TMedia();
+    Message("Creation of an empty media, type movie");
+    IMedia Target = new TMedia() { MediaType = EMediaType.Movie };
+    Assert.AreEqual(EMediaType.Movie, Target.MediaType);
 
     Message("Creation of a MediaInfo US");
     IMediaInfo TargetInfoUS = new TMediaInfo() {

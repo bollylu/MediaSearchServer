@@ -1,6 +1,4 @@
-﻿using MediaSearch.Models2.Support.Filter;
-
-namespace MediaSearch.Storage.Test;
+﻿namespace MediaSearch.Storage.Test;
 
 [TestClass]
 public class TStorageMemoryMoviesTests {

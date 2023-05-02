@@ -52,7 +52,10 @@ public interface IMedia : IRecord, IDisposable, IAsyncDisposable {
   /// </summary>
   IMediaPictures MediaPictures { get; init; }
 
-
+  /// <summary>
+  /// Indicate tha the object is invalid, i.e. contains invalid entry(ies) and/or has missing value(s)
+  /// </summary>
+  bool IsInvalid { get; }
 
 }
 

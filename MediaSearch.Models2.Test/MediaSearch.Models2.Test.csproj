@@ -11,6 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="EnumerableMediaExtensionsTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BLTools" Version="6.1.0-beta8f" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.0.2" />

@@ -1,6 +1,4 @@
-﻿using MediaSearch.Models2.Support.Filter;
-
-namespace MediaSearch.Models2.Serialization.Test;
+﻿namespace MediaSearch.Models2.Serialization.Test;
 
 [TestClass]
 public class TFilterSerializationTest {
@@ -20,14 +18,16 @@ public class TFilterSerializationTest {
     Dump(Source, "Source");
 
     Message("Serialize to Json");
-    string Target = IJson.ToJson(Source);
+    JsonSerializerOptions Options = new JsonSerializerOptions(IJson.DefaultJsonSerializerOptions);
+    Options.Converters.Add(new TFilterJsonConverter());
+    Options.Converters.Add(new TMultiItemsSelectionJsonConverter());
+    //Options.WriteIndented = true;
+    string Target = IJson.ToJson(Source, Options);
     Assert.IsNotNull(Target);
     Dump(Target, "Target");
 
-    Assert.IsTrue(Target.Contains("\"Keywords\":\"maman tous\""));
-    Assert.IsTrue(Target.Contains("\"KeywordsSelection\":\"All\""));
-    Assert.IsTrue(Target.Contains("\"Tags\":\"Comédie Famille\""));
-    Assert.IsTrue(Target.Contains("\"TagSelection\":\"Any\""));
+    Assert.IsTrue(Target.Contains("\"Keywords\":{\"Selection\":\"All\",\"Items\":[\"tous\",\"maman\"]}"));
+    Assert.IsTrue(Target.Contains("\"Tags\":{\"Selection\":\"Any\",\"Items\":[\"Famille\",\"Comédie\"]}"));
 
     Ok();
   }
@@ -47,7 +47,11 @@ public class TFilterSerializationTest {
     Dump(JsonSource, "Source");
 
     Message("Deserialize Json into a TFilter object");
-    IFilter? Target = IJson.FromJson<TFilter>(JsonSource);
+    JsonSerializerOptions Options = new JsonSerializerOptions(IJson.DefaultJsonSerializerOptions);
+    Options.Converters.Add(new TFilterJsonConverter());
+    Options.Converters.Add(new TMultiItemsSelectionJsonConverter());
+    Options.WriteIndented = true;
+    IFilter? Target = IJson.FromJson<TFilter>(JsonSource, Options);
     Assert.IsNotNull(Target);
 
     Dump(Target, "Target");

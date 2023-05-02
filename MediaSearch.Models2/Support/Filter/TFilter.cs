@@ -9,7 +9,8 @@ public class TFilter : IFilter, IJson, IEquatable<TFilter> {
   /// <summary>
   /// The language used in this filter
   /// </summary>
-  public ELanguage Language { get; init; }
+  [JsonConverter(typeof(JsonStringEnumConverter))]
+  public ELanguage Language { get; set; }
 
   #region --- Pagination --------------------------------------------
   /// <summary>
@@ -46,17 +47,18 @@ public class TFilter : IFilter, IJson, IEquatable<TFilter> {
   #endregion --- Pagination --------------------------------------------
 
   #region --- Keywords in movie name --------------------------------------------
-  public IMultiItemsSelection Keywords { get; init; } = new TMultiItemsSelection();
+  [JsonConverter(typeof(IMultiItemsSelection))]
+  public IMultiItemsSelection Keywords { get; set; } = new TMultiItemsSelection();
   #endregion --- Keywords in movie name --------------------------------------------
 
   #region --- Tags --------------------------------------------
-  public IMultiItemsSelection Tags { get; init; } = new TMultiItemsSelection();
+  [JsonConverter(typeof(IMultiItemsSelection))]
+  public IMultiItemsSelection Tags { get; set; } = new TMultiItemsSelection();
   #endregion --- Tags --------------------------------------------
 
   /// <summary>
   /// When selecting a movie, how many days in the past of it addition to the library should we look
   /// </summary>
-  [JsonPropertyName(nameof(DaysBack))]
   public int DaysBack {
     get {
       return _DaysBack;
@@ -71,7 +73,6 @@ public class TFilter : IFilter, IJson, IEquatable<TFilter> {
   /// <summary>
   /// When selecting a movie, the minimum (included) of the range for the output date
   /// </summary>
-  [JsonPropertyName(nameof(OutputDateMin))]
   public int OutputDateMin {
     get {
       return _OutputDateMin;
@@ -88,7 +89,6 @@ public class TFilter : IFilter, IJson, IEquatable<TFilter> {
   /// <summary>
   /// When selecting a movie, the maximum (included) of the range for the output date
   /// </summary>
-  [JsonPropertyName(nameof(OutputDateMax))]
   public int OutputDateMax {
     get {
       return _OutputDateMax;
@@ -107,18 +107,14 @@ public class TFilter : IFilter, IJson, IEquatable<TFilter> {
   #endregion --- Output date --------------------------------------------
 
   [JsonConverter(typeof(JsonStringEnumConverter))]
-  [JsonPropertyName(nameof(SortOrder))]
   public EFilterSortOrder SortOrder { get; set; } = EFilterSortOrder.Name;
 
   #region --- Groups --------------------------------------------
-  [JsonPropertyName(nameof(GroupOnly))]
   public bool GroupOnly { get; set; } = false;
 
-  [JsonPropertyName(nameof(GroupMemberships))]
   public List<string> GroupMemberships { get; set; } = new();
 
   [JsonConverter(typeof(JsonStringEnumConverter))]
-  [JsonPropertyName(nameof(GroupFilter))]
   public EFilterGroup GroupFilter { get; set; } = EFilterGroup.All;
   #endregion --- Groups --------------------------------------------
 

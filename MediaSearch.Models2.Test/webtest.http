@@ -1,1 +1,7 @@
-GET https://mediasearchapi.sharenet.be/api/GetMovies
+POST https://mediasearchapi.sharenet.be/api/movie
+Content-Type: application/json
+
+###
+
+GET https://mediasearchapi.sharenet.be/api/movie/getGroups
+Content-Type: application/json

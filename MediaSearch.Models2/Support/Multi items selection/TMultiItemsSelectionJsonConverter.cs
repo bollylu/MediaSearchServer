@@ -6,7 +6,7 @@ public class TMultiItemsSelectionJsonConverter : JsonConverter<TMultiItemsSelect
   public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMultiItemsSelection>();
 
   public override bool CanConvert(Type typeToConvert) {
-    return typeToConvert == typeof(TMultiItemsSelection) || typeToConvert.GetInterfaces().Any(x => x == typeof(IMultiItemsSelection));
+    return typeToConvert == typeof(TMultiItemsSelection) || typeToConvert == typeof(IMultiItemsSelection);
   }
 
   public override TMultiItemsSelection Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {

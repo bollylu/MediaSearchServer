@@ -1,5 +1,4 @@
 using BLTools.Text;
-using MediaSearch.Models2.Support.Filter;
 
 namespace MediaSearch.Models.Test;
 
@@ -14,8 +13,8 @@ public class IEnumerableMovieExtensionsTests {
   /// <summary>
   /// Internal source of data
   /// </summary>
-  internal static IMovieCache MediaSource => _MediaSource ??= XMovieCache.Instance(@"data\movies.json");
-  private static IMovieCache? _MediaSource;
+  internal static List<IMedia> MediaSource => _MediaSource ??= XMovieCache.Instance(@"data\movies.json");
+  private static List<IMedia>? _MediaSource;
 
   #region --- Any tag --------------------------------------------
   [TestMethod]

@@ -1,6 +1,4 @@
-﻿using MediaSearch.Models2.Support.About;
-
-namespace MediaSearch.Storage;
+﻿namespace MediaSearch.Storage;
 
 public static class GlobalSettings {
   public const int DEBUG_BOX_WIDTH = 110;

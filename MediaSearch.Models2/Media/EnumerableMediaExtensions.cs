@@ -89,7 +89,7 @@ public static class EnumerableMediaExtensions {
       return medias;
     }
     if (filter.GroupOnly) {
-      return medias.Where(m => m.IsGroupMember);
+      return medias.Where(m => m.MediaInfos.Default?.IsGroupMember ?? false);
     } else {
       return medias;
     }
@@ -103,8 +103,8 @@ public static class EnumerableMediaExtensions {
   //}
 
   public static IAsyncEnumerable<string> GetGroups(this IEnumerable<IMedia> movies) {
-    return movies.Where(m => m.IsGroupMember)
-                 .Select(m => m.Group)
+    return movies.Where(m => m.MediaInfos.Default?.IsGroupMember ?? false)
+                 .Select(m => m.MediaInfos.Default?.Group ?? "")
                  .Distinct()
                  .OrderBy(x => x)
                  .ToAsyncEnumerable();

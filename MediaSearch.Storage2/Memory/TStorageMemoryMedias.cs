@@ -1,6 +1,4 @@
-﻿using MediaSearch.Models2.Support.Filter;
-
-namespace MediaSearch.Storage;
+﻿namespace MediaSearch.Storage;
 public partial class TStorageMemoryMedias : AStorageMemory, IStorageMedia {
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------

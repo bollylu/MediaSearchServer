@@ -17,12 +17,14 @@ public class MediaInfoTests {
   public void Instanciate_MediaInfo() {
     Message("Creation of a MediaInfo");
     IMediaInfo Target = new TMediaInfo() {
-      Language = ELanguage.English,
+      Language = ELanguage.French,
       Title = "Star wars - Episode 1",
-      Description = "The first episode"
+      Description = "Le premier épisode",
+      CreationDate = DateOnly.FromDateTime(DateTime.Now),
+      Group = "Star wars",
+      Tags = new List<string> { "Science-fiction", "Guerre", "Espace" }
     };
     Assert.IsNotNull(Target);
-    Target.Tags.AddRange(new string[] { "Science-fiction", "War", "Space" });
 
     Dump(Target);
 

@@ -1,6 +1,5 @@
-﻿using MediaSearch.Models2.Support.Filter;
+﻿namespace MediaSearch.Models2.Serialization.Test;
 
-namespace MediaSearch.Models2.Test.Serialization;
 [TestClass]
 public class MultiItemsSelectionSerializationTest {
   [ClassInitialize]
