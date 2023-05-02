@@ -74,9 +74,9 @@ public abstract class AMedia : ARecord, IMedia {
       Titles.Add(value);
     }
   }
-  public ILanguageTextInfos Titles { get; } = new TLanguageTextInfos();
+  //public ILanguageTextInfos Titles { get; } = new TLanguageTextInfos();
 
-  public ILanguageTextInfos Descriptions { get; } = new TLanguageTextInfos();
+  //public ILanguageTextInfos Descriptions { get; } = new TLanguageTextInfos();
 
   [JsonConverter(typeof(TDateOnlyJsonConverter))]
   public DateOnly DateAdded { get; set; } = DateOnly.FromDateTime(DateTime.Today);
@@ -99,27 +99,25 @@ public abstract class AMedia : ARecord, IMedia {
   protected AMedia(IMedia media) : this() {
     MediaType = media.MediaType;
     Id = media.Id;
-    CreationDate = media.CreationDate;
-    Group = media.Group;
+
     foreach (var MediaInfoItem in media.MediaInfos) {
       MediaInfos.Add(MediaInfoItem.Key, new TMediaInfo(MediaInfoItem.Value));
     }
+
     foreach (var MediaSourceItem in media.MediaSources) {
       MediaSources.Add(MediaSourceItem.Key, new TMediaSource(MediaSourceItem.Value));
+    }
+
+    foreach (var MediaPictureItem in media.MediaPictures) {
+      MediaPictures.Add(MediaPictureItem.Key, new TPicture(MediaPictureItem.Value));
     }
   }
 
 
   public virtual void Dispose() {
-    Titles?.Clear();
-    Descriptions?.Clear();
-    Tags?.Clear();
   }
 
   public virtual ValueTask DisposeAsync() {
-    Titles?.Clear();
-    Descriptions?.Clear();
-    Tags?.Clear();
     return ValueTask.CompletedTask;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -148,16 +146,6 @@ public abstract class AMedia : ARecord, IMedia {
       }
     } else {
       RetVal.AppendIndent($"- {nameof(MediaSources)} is empty", indent);
-    }
-
-
-    if (Tags.Any()) {
-      RetVal.AppendIndent($"- {nameof(Tags)}", indent);
-      foreach (string TagItem in Tags) {
-        RetVal.AppendIndent($"- {TagItem.WithQuotes()}", indent + 2);
-      }
-    } else {
-      RetVal.AppendIndent($"- {nameof(Tags)} is empty", indent);
     }
 
     if (IsGroupMember) {
