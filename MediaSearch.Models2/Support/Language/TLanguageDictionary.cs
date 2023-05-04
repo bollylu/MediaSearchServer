@@ -2,10 +2,6 @@
 
 public class TLanguageDictionary<T> : Dictionary<ELanguage, T>, ILanguageDictionary<T> {
 
-  public bool Exists(ELanguage language) {
-    return Keys.Contains(language);
-  }
-
   public string ToString(int indent) {
     StringBuilder RetVal = new StringBuilder();
     string IndentSpace = new string(' ', indent);

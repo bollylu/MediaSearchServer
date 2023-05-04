@@ -45,7 +45,7 @@ public interface IMedia : IRecord, IDisposable, IAsyncDisposable {
   /// <summary>
   /// Physical location(s) where the media can be found (must be >= 0, should be >= 1)
   /// </summary>
-  IMediaSources MediaSources { get; init; }
+  List<IMediaSource> MediaSources { get; init; }
 
   /// <summary>
   /// The pictures associated with the media, in various languages (must be >= 0; should be >= 1)

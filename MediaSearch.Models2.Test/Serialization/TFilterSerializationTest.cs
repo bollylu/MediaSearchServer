@@ -1,4 +1,4 @@
-﻿namespace MediaSearch.Models2.Serialization.Test;
+﻿namespace MediaSearch.Models2.Test.Serialization;
 
 [TestClass]
 public class TFilterSerializationTest {
@@ -18,11 +18,7 @@ public class TFilterSerializationTest {
     Dump(Source, "Source");
 
     Message("Serialize to Json");
-    JsonSerializerOptions Options = new JsonSerializerOptions(IJson.DefaultJsonSerializerOptions);
-    Options.Converters.Add(new TFilterJsonConverter());
-    Options.Converters.Add(new TMultiItemsSelectionJsonConverter());
-    //Options.WriteIndented = true;
-    string Target = IJson.ToJson(Source, Options);
+    string Target = IJson.ToJson(Source);
     Assert.IsNotNull(Target);
     Dump(Target, "Target");
 
@@ -47,11 +43,7 @@ public class TFilterSerializationTest {
     Dump(JsonSource, "Source");
 
     Message("Deserialize Json into a TFilter object");
-    JsonSerializerOptions Options = new JsonSerializerOptions(IJson.DefaultJsonSerializerOptions);
-    Options.Converters.Add(new TFilterJsonConverter());
-    Options.Converters.Add(new TMultiItemsSelectionJsonConverter());
-    Options.WriteIndented = true;
-    IFilter? Target = IJson.FromJson<TFilter>(JsonSource, Options);
+    IFilter? Target = IJson.FromJson<TFilter>(JsonSource);
     Assert.IsNotNull(Target);
 
     Dump(Target, "Target");

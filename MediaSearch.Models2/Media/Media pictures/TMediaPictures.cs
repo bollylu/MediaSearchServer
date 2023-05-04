@@ -111,11 +111,11 @@ public class TMediaPictures : TLanguageDictionary<IPicture>, IMediaPictures, ILo
     return DeletePicture(picture.Name);
   }
 
-  public async Task<bool> LoadPicture(IMediaSource mediaSource) {
+  public async Task<bool> LoadPicture(IMediaSourceVirtual mediaSource) {
     return await LoadPicture(mediaSource, DEFAULT_PICTURE_NAME, EPictureType.Front, MIN_PICTURE_WIDTH, MIN_PICTURE_HEIGHT).ConfigureAwait(false);
   }
 
-  public async Task<bool> LoadPicture(IMediaSource mediaSource, string pictureName, EPictureType pictureType = EPictureType.Front, int width = MIN_PICTURE_WIDTH, int height = MIN_PICTURE_HEIGHT) {
+  public async Task<bool> LoadPicture(IMediaSourceVirtual mediaSource, string pictureName, EPictureType pictureType = EPictureType.Front, int width = MIN_PICTURE_WIDTH, int height = MIN_PICTURE_HEIGHT) {
     #region === Validate parameters ===
     string ParamPictureName = pictureName ?? DEFAULT_PICTURE_NAME;
     int ParamWidth = width.WithinLimits(MIN_PICTURE_WIDTH, MAX_PICTURE_WIDTH);

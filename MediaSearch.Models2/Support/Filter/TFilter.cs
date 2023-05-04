@@ -47,12 +47,12 @@ public class TFilter : IFilter, IJson, IEquatable<TFilter> {
   #endregion --- Pagination --------------------------------------------
 
   #region --- Keywords in movie name --------------------------------------------
-  [JsonConverter(typeof(IMultiItemsSelection))]
+  [JsonConverter(typeof(TMultiItemsSelectionJsonConverter))]
   public IMultiItemsSelection Keywords { get; set; } = new TMultiItemsSelection();
   #endregion --- Keywords in movie name --------------------------------------------
 
   #region --- Tags --------------------------------------------
-  [JsonConverter(typeof(IMultiItemsSelection))]
+  [JsonConverter(typeof(TMultiItemsSelectionJsonConverter))]
   public IMultiItemsSelection Tags { get; set; } = new TMultiItemsSelection();
   #endregion --- Tags --------------------------------------------
 

@@ -10,9 +10,9 @@ public class TMedia : AMedia {
     Name = name;
   }
 
-  public TMedia(string name, IMediaInfos mediaInfos, IMediaSources mediaSources) {
+  public TMedia(string name, IMediaInfos mediaInfos, IEnumerable<IMediaSource> mediaSources) {
     Name = name;
     MediaInfos = new TMediaInfos(mediaInfos);
-    MediaSources = new TMediaSources(mediaSources);
+    MediaSources = new List<IMediaSource>(mediaSources);
   }
 }

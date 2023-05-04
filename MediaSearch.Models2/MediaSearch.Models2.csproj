@@ -5,6 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <EnablePreviewFeatures>true</EnablePreviewFeatures>
+    <Authors>Luc Bolly</Authors>
+    <RootNamespace>MediaSearch.Models</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

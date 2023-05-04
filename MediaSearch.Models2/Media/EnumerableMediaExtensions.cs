@@ -43,7 +43,7 @@ public static class EnumerableMediaExtensions {
     }
 
     return medias
-      .Where(m => m.MediaInfos.Exists(filter.Language))
+      .Where(m => m.MediaInfos.ContainsKey(filter.Language))
       .Where(m => filter.Keywords.IsMatch(m.MediaInfos[filter.Language].Title));
   }
   #endregion --- Keywords --------------------------------------------
@@ -55,7 +55,7 @@ public static class EnumerableMediaExtensions {
     }
 
     return medias
-      .Where(m => m.MediaInfos.Exists(filter.Language))
+      .Where(m => m.MediaInfos.ContainsKey(filter.Language))
       .Where(m => filter.Tags.IsMatch(m.MediaInfos[filter.Language].Tags));
   }
   #endregion --- Tags --------------------------------------------
@@ -77,10 +77,9 @@ public static class EnumerableMediaExtensions {
       return medias;
     }
     return medias
-      .Where(m => m.MediaSources.Exists(filter.Language))
-      .Where(m => m.MediaSources[filter.Language]
-                         .CreationYear
-                         .IsInRange(filter.OutputDateMin, filter.OutputDateMax));
+      .Where(m => m.MediaSources.Any(x => x.Languages.Contains(filter.Language)))
+      .Where(m => m.MediaSources.Any(x => x.CreationYear
+                                                            .IsInRange(filter.OutputDateMin, filter.OutputDateMax)));
   }
   #endregion --- Output year --------------------------------------------
 

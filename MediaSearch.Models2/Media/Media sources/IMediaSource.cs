@@ -3,32 +3,7 @@
 public interface IMediaSource : IToStringIndent {
 
   /// <summary>
-  /// The common part of the storage path
-  /// </summary>
-  public string StorageRoot { get; set; }
-
-  /// <summary>
-  /// The path of the movie in the storage
-  /// </summary>
-  string StoragePath { get; set; }
-
-  /// <summary>
-  /// The filename used to store the media
-  /// </summary>
-  string FileName { get; set; }
-
-  /// <summary>
-  /// The extension of the filename (e.g.: mkv, pdf, ...)
-  /// </summary>
-  string FileExtension { get; set; }
-
-  /// <summary>
-  /// The size of the file containing the data
-  /// </summary>
-  long Size { get; set; }
-
-  /// <summary>
-  /// The date the data was acquired
+  /// The date the media source was acquired
   /// </summary>
   DateOnly DateAdded { get; set; }
 
@@ -39,13 +14,10 @@ public interface IMediaSource : IToStringIndent {
 
   /// <summary>
   /// The year the data was created
+  /// r/o, extracted from CreationDate
+  /// if CreationDate is invalid, then 0
   /// </summary>
   int CreationYear { get; }
-
-  /// <summary>
-  /// The type of media source
-  /// </summary>
-  EMediaType MediaSourceType { get; init; }
 
   /// <summary>
   /// A description of the source
@@ -53,9 +25,11 @@ public interface IMediaSource : IToStringIndent {
   string Description { get; set; }
 
   /// <summary>
-  /// The language of the source
+  /// The language(s) associated with the source
+  /// If more than one, one principal must be designated
   /// </summary>
-  ELanguage Language { get; set; }
+  IListWithPrincipal<ELanguage> Languages { get; set; }
+
 }
 
 
