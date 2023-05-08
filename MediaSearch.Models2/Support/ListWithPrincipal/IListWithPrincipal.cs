@@ -1,7 +1,7 @@
 ﻿using System.Dynamic;
 
 namespace MediaSearch.Models;
-public interface IListWithPrincipal<T> : IList<T> {
+public interface IListWithPrincipal<T> : IList<T>, IEnumerable<T>, IToStringIndent {
 
   /// <summary>
   /// Set the principal value (must exist)

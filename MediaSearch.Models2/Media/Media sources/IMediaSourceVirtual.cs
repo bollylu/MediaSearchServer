@@ -30,6 +30,11 @@ public interface IMediaSourceVirtual : IMediaSource {
   string FileExtension { get; set; }
 
   /// <summary>
+  /// The complete full file name, including path and extension
+  /// </summary>
+  string FullFileName { get; }
+
+  /// <summary>
   /// The size of the file containing the data (in bytes)
   /// </summary>
   long Size { get; set; }

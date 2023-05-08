@@ -11,11 +11,8 @@ public abstract class AMediaSource : ALoggable, IMediaSource {
   public IListWithPrincipal<ELanguage> Languages { get; set; } = new TListWithPrincipal<ELanguage>() { ELanguage.Unknown };
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  protected AMediaSource() {
-    Logger = GlobalSettings.LoggerPool.GetLogger<AMediaSource>();
-  }
-
-  protected AMediaSource(IMediaSource mediaSource) : this() {
+  protected AMediaSource() { }
+  protected AMediaSource(IMediaSource mediaSource) {
     Languages = new TListWithPrincipal<ELanguage>(mediaSource.Languages);
     DateAdded = mediaSource.DateAdded;
     CreationDate = mediaSource.CreationDate;
@@ -29,7 +26,15 @@ public abstract class AMediaSource : ALoggable, IMediaSource {
     RetVal.AppendIndent($"- {nameof(DateAdded)} : {DateAdded}", indent);
     RetVal.AppendIndent($"- {nameof(CreationDate)} : {CreationDate}", indent);
     RetVal.AppendIndent($"- {nameof(CreationYear)} : {CreationYear}", indent);
+    RetVal.AppendIndent($"- {nameof(Description)} : {Description.WithQuotes()}", indent);
+    RetVal.AppendIndent($"- {nameof(Languages)}");
+    RetVal.AppendIndent(Languages.ToString(indent), indent);
     return RetVal.ToString();
+  }
+
+
+  public override string ToString() {
+    return ToString(0);
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
 }

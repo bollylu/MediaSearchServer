@@ -15,15 +15,17 @@ public class TMediaInfos : TLanguageDictionary<IMediaInfo>, IMediaInfos {
     }
   }
 
+  #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMediaInfos() { }
   public TMediaInfos(params IMediaInfo[] mediaInfos) {
     foreach (IMediaInfo Item in mediaInfos) {
       Add(Item.Language, Item);
     }
   }
-  public TMediaInfos(IMediaInfos mediaInfos) {
+  public TMediaInfos(TMediaInfos mediaInfos) {
     foreach (KeyValuePair<ELanguage, IMediaInfo> Item in mediaInfos) {
       Add(Item.Key, Item.Value);
     }
   }
+  #endregion --- Constructor(s) ------------------------------------------------------------------------------
 }

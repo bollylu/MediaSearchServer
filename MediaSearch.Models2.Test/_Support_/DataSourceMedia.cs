@@ -21,6 +21,22 @@ internal static class DataSourceMedia {
           Title = "The longuest day"
         }
       ),
+      MediaSources = new TMediaSources(
+        new TMediaSourceVirtual() {
+          Languages = new TListWithPrincipal<ELanguage>() { ELanguage.French },
+          Description = "Version VFF",
+          FileName = "Le jour le plus long (1966)",
+          FileExtension = "mkv",
+          StorageRoot = @"\\Andromeda\Films",
+          StoragePath = @"Guerre\WW2"
+        },
+        new TMediaSourcePhysical() {
+          Languages = new TListWithPrincipal<ELanguage>() { ELanguage.French, ELanguage.English },
+          StorageType = EStorageType.DVD,
+          StoragePlace = "Room 3, war movies",
+          Description = "CD zone 2, VFF + US"
+        }
+      ),
       CreationDate = new DateOnly(1966, 11, 25)
     });
 

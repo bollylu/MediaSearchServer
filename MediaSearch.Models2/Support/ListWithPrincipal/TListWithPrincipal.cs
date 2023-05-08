@@ -18,6 +18,13 @@ public class TListWithPrincipal<T> : List<T>, IListWithPrincipal<T> {
     SetPrincipal(source.GetPrincipal());
   }
 
+  public new void Add(T item) {
+    if (this.IsEmpty()) {
+      _PrincipalIndex = 0;
+    }
+    base.Add(item);
+  }
+
   public int SetPrincipal(T principal) {
     int Index = this.FindIndex(x => x?.Equals(principal) ?? false);
     if (Index < 0) {
@@ -46,12 +53,16 @@ public class TListWithPrincipal<T> : List<T>, IListWithPrincipal<T> {
 
 
   public override string ToString() {
+    return ToString(0);
+  }
+
+  public string ToString(int indent) {
     StringBuilder RetVal = new StringBuilder();
     for (int i = 0; i < this.Count; i++) {
       if (i == _PrincipalIndex) {
-        RetVal.AppendLine($"[X] {this[i]}");
+        RetVal.AppendIndent($"[X] {this[i]}", indent + 2);
       } else {
-        RetVal.AppendLine($"[ ] {this[i]}");
+        RetVal.AppendIndent($"[ ] {this[i]}", indent + 2);
       }
     }
     return RetVal.ToString();

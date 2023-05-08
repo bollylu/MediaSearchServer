@@ -28,7 +28,7 @@ public abstract class AMedia : ARecord, IMedia {
 
   public ELanguage DefaultLanguage { get; init; } = DEFAULT_LANGUAGE;
 
-  public virtual List<IMediaSource> MediaSources { get; init; } = new();
+  public virtual IMediaSources MediaSources { get; init; } = new TMediaSources();
 
   #region --- IMediaInfos --------------------------------------------
   public IMediaInfos MediaInfos { get; init; } = new TMediaInfos();
@@ -104,8 +104,7 @@ public abstract class AMedia : ARecord, IMedia {
       MediaInfos.Add(MediaInfoItem.Key, new TMediaInfo(MediaInfoItem.Value));
     }
 
-    MediaSources.Clear();
-    MediaSources.AddRange(media.MediaSources);
+    MediaSources = new TMediaSources(media.MediaSources);
 
     foreach (var MediaPictureItem in media.MediaPictures) {
       MediaPictures.Add(MediaPictureItem.Key, new TPicture(MediaPictureItem.Value));
@@ -145,7 +144,8 @@ public abstract class AMedia : ARecord, IMedia {
     if (MediaSources.Any()) {
       RetVal.AppendIndent($"- {nameof(MediaSources)}", indent);
       foreach (var MediaSourceItem in MediaSources) {
-        RetVal.AppendIndent($"- {MediaSourceItem}", indent + 2);
+        RetVal.AppendIndent($"- {MediaSourceItem.GetType().Name}", indent + 2);
+        RetVal.AppendIndent($"{MediaSourceItem.ToString(indent + 2)}", indent + 2);
       }
     } else {
       RetVal.AppendIndent($"- {nameof(MediaSources)} is empty", indent);
