@@ -10,6 +10,7 @@ public class TListWithPrincipal<T> : List<T>, IListWithPrincipal<T> {
 
   private int _PrincipalIndex = TListWithPrincipal.NO_PRINCIPAL;
 
+  #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TListWithPrincipal() { }
   public TListWithPrincipal(IListWithPrincipal<T> source) {
     foreach (T ItemItem in source) {
@@ -17,6 +18,12 @@ public class TListWithPrincipal<T> : List<T>, IListWithPrincipal<T> {
     }
     SetPrincipal(source.GetPrincipal());
   }
+  public TListWithPrincipal(IEnumerable<T> source) {
+    foreach (T ItemItem in source) {
+      Add(ItemItem);
+    }
+  }
+  #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public new void Add(T item) {
     if (this.IsEmpty()) {
