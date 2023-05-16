@@ -144,9 +144,9 @@ public class TFilter : IFilter, IJson, IEquatable<TFilter> {
   public string ToString(int indent = 2) {
     StringBuilder RetVal = new StringBuilder();
     RetVal.AppendIndent($"- {nameof(Keywords)}", indent);
-    RetVal.AppendIndent($"  {Keywords}", indent + 2);
+    RetVal.AppendIndent($"  {Keywords}", indent);
     RetVal.AppendIndent($"- {nameof(Tags)}", indent);
-    RetVal.AppendIndent($"  {Tags}", indent + 2);
+    RetVal.AppendIndent($"  {Tags}", indent);
     RetVal.AppendIndent($"- {nameof(DaysBack)}={DaysBack}", indent);
     RetVal.AppendIndent($"- OutputDateRange={OutputDateMin}..{OutputDateMax}", indent);
     RetVal.AppendIndent($"- {nameof(Page)}={Page}", indent);

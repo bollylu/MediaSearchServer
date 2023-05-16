@@ -1,14 +1,14 @@
-﻿using static MediaSearch.Models.JsonConverterResources;
+﻿using System.Collections;
+
+using static MediaSearch.Models.JsonConverterResources;
 
 namespace MediaSearch.Models;
 
 public class TListWithPrincipalJsonConverter<T> : JsonConverter<TListWithPrincipal<T>>, ILoggable {
 
-  private const string PROPERTY_TYPE = "Type";
-  private const string PROPERTY_PRINCIPAL = "Principal";
-  private const string PROPERTY_VALUE = "Value";
-  private const string PROPERTY_VALUES = "Values";
-  private const string PROPERTY_ITEM = "Item";
+  private const string JSON_PROPERTY_TYPE = "Type";
+  private const string JSON_PROPERTY_PRINCIPAL = "Principal";
+  private const string JSON_PROPERTY_VALUES = "Values";
 
   public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TListWithPrincipalJsonConverter<T>>();
 
@@ -49,38 +49,17 @@ public class TListWithPrincipalJsonConverter<T> : JsonConverter<TListWithPrincip
 
           switch (Property) {
 
-            case PROPERTY_TYPE:
+            case JSON_PROPERTY_TYPE:
               ListType = Type.GetType($"System.{reader.GetString() ?? ""}", false, true);
               break;
 
-            case PROPERTY_PRINCIPAL:
-              if (typeof(T).Name.Equals(typeof(string).Name, StringComparison.InvariantCultureIgnoreCase)) {
-                Principal = (T)Convert.ChangeType(reader.GetString() ?? "", typeof(string));
-              } else if (typeof(T).Name.Equals(typeof(int).Name, StringComparison.InvariantCultureIgnoreCase)) {
-                Principal = (T)Convert.ChangeType(reader.GetInt32(), typeof(int));
-              } else if (typeof(T).Name.Equals(typeof(long).Name, StringComparison.InvariantCultureIgnoreCase)) {
-                Principal = (T)Convert.ChangeType(reader.GetInt64(), typeof(long));
-              } else if (typeof(T).Name.Equals(typeof(float).Name, StringComparison.InvariantCultureIgnoreCase)) {
-                Principal = (T)Convert.ChangeType(reader.GetSingle(), typeof(float));
-              } else if (typeof(T).Name.Equals(typeof(double).Name, StringComparison.InvariantCultureIgnoreCase)) {
-                Principal = (T)Convert.ChangeType(reader.GetDouble(), typeof(double));
-              }
+            case JSON_PROPERTY_PRINCIPAL:
+              Principal = ReadValue(reader);
               break;
 
-            case PROPERTY_VALUES:
+            case JSON_PROPERTY_VALUES:
               while (reader.Read() && reader.TokenType != JsonTokenType.EndArray) {
-                T? Item = default;
-                if (typeof(T).Name.Equals(typeof(string).Name, StringComparison.InvariantCultureIgnoreCase)) {
-                  Item = (T)Convert.ChangeType(reader.GetString() ?? "", typeof(string));
-                } else if (typeof(T).Name.Equals(typeof(int).Name, StringComparison.InvariantCultureIgnoreCase)) {
-                  Item = (T)Convert.ChangeType(reader.GetInt32(), typeof(int));
-                } else if (typeof(T).Name.Equals(typeof(long).Name, StringComparison.InvariantCultureIgnoreCase)) {
-                  Item = (T)Convert.ChangeType(reader.GetInt64(), typeof(long));
-                } else if (typeof(T).Name.Equals(typeof(float).Name, StringComparison.InvariantCultureIgnoreCase)) {
-                  Item = (T)Convert.ChangeType(reader.GetSingle(), typeof(float));
-                } else if (typeof(T).Name.Equals(typeof(double).Name, StringComparison.InvariantCultureIgnoreCase)) {
-                  Item = (T)Convert.ChangeType(reader.GetDouble(), typeof(double));
-                }
+                T? Item = ReadValue(reader);
                 if (Item is not null) {
                   Values.Add(Item);
                 }
@@ -105,12 +84,12 @@ public class TListWithPrincipalJsonConverter<T> : JsonConverter<TListWithPrincip
   public override void Write(Utf8JsonWriter writer, TListWithPrincipal<T> value, JsonSerializerOptions options) {
     writer.WriteStartObject();
 
-    writer.WriteString(PROPERTY_TYPE, typeof(T).Name);
+    writer.WriteString(JSON_PROPERTY_TYPE, typeof(T).Name);
 
     T Principal = value.GetPrincipal();
-    WriteValue(writer, PROPERTY_PRINCIPAL, Principal);
+    WriteValue(writer, JSON_PROPERTY_PRINCIPAL, Principal);
 
-    writer.WritePropertyName(PROPERTY_VALUES);
+    writer.WritePropertyName(JSON_PROPERTY_VALUES);
     writer.WriteStartArray();
     foreach (T ItemItem in value) {
       if (ItemItem is null) {
@@ -124,7 +103,7 @@ public class TListWithPrincipalJsonConverter<T> : JsonConverter<TListWithPrincip
     writer.WriteEndObject();
   }
 
-  private void WriteValue(Utf8JsonWriter writer, T value) {
+  private static void WriteValue(Utf8JsonWriter writer, T value) {
     if (value is string StringItem) {
       writer.WriteStringValue(StringItem ?? "".WithQuotes());
     } else if (value is int IntItem) {
@@ -135,9 +114,13 @@ public class TListWithPrincipalJsonConverter<T> : JsonConverter<TListWithPrincip
       writer.WriteNumberValue(FloatItem);
     } else if (value is double DoubleItem) {
       writer.WriteNumberValue(DoubleItem);
+    } else if (value is bool BoolItem) {
+      writer.WriteBooleanValue(BoolItem);
+    } else if (value is byte[] BytesItem) {
+      writer.WriteBase64StringValue(BytesItem);
     }
   }
-  private void WriteValue(Utf8JsonWriter writer, ReadOnlySpan<char> propertyName, T value) {
+  private static void WriteValue(Utf8JsonWriter writer, ReadOnlySpan<char> propertyName, T value) {
     if (value is string StringItem) {
       writer.WriteString(propertyName, StringItem ?? "".WithQuotes());
     } else if (value is int IntItem) {
@@ -148,6 +131,44 @@ public class TListWithPrincipalJsonConverter<T> : JsonConverter<TListWithPrincip
       writer.WriteNumber(propertyName, FloatItem);
     } else if (value is double DoubleItem) {
       writer.WriteNumber(propertyName, DoubleItem);
+    } else if (value is bool BoolItem) {
+      writer.WriteBoolean(propertyName, BoolItem);
+    } else if (value is byte[] BytesItem) {
+      writer.WriteBase64String(propertyName, BytesItem);
     }
+  }
+
+  private static T? ReadValue(Utf8JsonReader reader) {
+    if (typeof(T).Name.Equals(typeof(string).Name, StringComparison.InvariantCultureIgnoreCase)) {
+      return (T)Convert.ChangeType(reader.GetString() ?? "", typeof(string));
+    }
+
+    if (typeof(T).Name.Equals(typeof(int).Name, StringComparison.InvariantCultureIgnoreCase)) {
+      return (T)Convert.ChangeType(reader.GetInt32(), typeof(int));
+    }
+
+    if (typeof(T).Name.Equals(typeof(long).Name, StringComparison.InvariantCultureIgnoreCase)) {
+      return (T)Convert.ChangeType(reader.GetInt64(), typeof(long));
+    }
+
+    if (typeof(T).Name.Equals(typeof(float).Name, StringComparison.InvariantCultureIgnoreCase)) {
+      return (T)Convert.ChangeType(reader.GetSingle(), typeof(float));
+    }
+
+    if (typeof(T).Name.Equals(typeof(double).Name, StringComparison.InvariantCultureIgnoreCase)) {
+      return (T)Convert.ChangeType(reader.GetDouble(), typeof(double));
+    }
+
+    if (typeof(T).Name.Equals(typeof(bool).Name, StringComparison.InvariantCultureIgnoreCase)) {
+      return (T)Convert.ChangeType(reader.GetBoolean(), typeof(bool));
+    }
+
+    if (typeof(T).Name.Equals(typeof(byte[]).Name, StringComparison.InvariantCultureIgnoreCase)) {
+      return (T)Convert.ChangeType(reader.GetBytesFromBase64(), typeof(byte[]));
+    }
+
+
+
+    return default(T);
   }
 }

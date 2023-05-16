@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.Design.Serialization;
+﻿using System.Linq;
 
 namespace MediaSearch.Models;
 
@@ -26,14 +26,25 @@ public class TListWithPrincipal<T> : List<T>, IListWithPrincipal<T> {
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   public new void Add(T item) {
+    if (this.Contains(item)) {
+      throw new InvalidOperationException($"Item [{item}] already exist in the list");
+    }
+
     if (this.IsEmpty()) {
       _PrincipalIndex = 0;
     }
+
     base.Add(item);
   }
 
   public int SetPrincipal(T principal) {
-    int Index = this.FindIndex(x => x?.Equals(principal) ?? false);
+    int Index = -1;
+    if (typeof(T).Name == typeof(byte[]).Name) {
+      byte[]? BytesPrincipal = principal as byte[] ?? throw new ApplicationException("???");
+      Index = this.Cast<byte[]>().ToList().FindIndex(x => x?.SequenceEqual(BytesPrincipal) ?? false);
+    } else {
+      Index = this.FindIndex(x => x?.Equals(principal) ?? false);
+    }
     if (Index < 0) {
       _PrincipalIndex = TListWithPrincipal.NO_PRINCIPAL;
       return TListWithPrincipal.NO_PRINCIPAL;
@@ -65,13 +76,25 @@ public class TListWithPrincipal<T> : List<T>, IListWithPrincipal<T> {
 
   public string ToString(int indent) {
     StringBuilder RetVal = new StringBuilder();
-    for (int i = 0; i < this.Count; i++) {
-      if (i == _PrincipalIndex) {
-        RetVal.AppendIndent($"[X] {this[i]}", indent + 2);
-      } else {
-        RetVal.AppendIndent($"[ ] {this[i]}", indent + 2);
+    if (typeof(T).Name == typeof(byte[]).Name) {
+      for (int i = 0; i < this.Count; i++) {
+        byte[]? BytesItem = this[i] as byte[] ?? throw new ApplicationException("???");
+        if (i == _PrincipalIndex) {
+          RetVal.AppendIndent($"[X] {BytesItem.ToHexString()}", indent + 2);
+        } else {
+          RetVal.AppendIndent($"[ ] {BytesItem.ToHexString()}", indent + 2);
+        }
+      }
+    } else {
+      for (int i = 0; i < this.Count; i++) {
+        if (i == _PrincipalIndex) {
+          RetVal.AppendIndent($"[X] {this[i]}", indent + 2);
+        } else {
+          RetVal.AppendIndent($"[ ] {this[i]}", indent + 2);
+        }
       }
     }
+
     return RetVal.ToString();
   }
 }

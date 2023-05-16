@@ -1,7 +1,18 @@
-﻿namespace MediaSearch.Models2.Test.Serialization;
+﻿using System.Text.RegularExpressions;
+
+namespace MediaSearch.Models2.Test.Serialization;
 
 [TestClass]
 public class TFilterSerializationTest {
+
+  private const string KEYWORD_ALL_FIRST = "maman";
+  private const string KEYWORD_ALL_SECOND = "tous";
+
+  private const string TAG_ANY_FIRST = "Comédie";
+  private const string TAG_ANY_SECOND = "Famille";
+
+  private const string GROUP_FIRST = "Group 1";
+  private const string GROUP_SECOND = "Group 2";
 
   [TestMethod]
   public void Serialize() {
@@ -9,11 +20,11 @@ public class TFilterSerializationTest {
     TFilter Source = new TFilter() {
       DaysBack = 7,
       GroupOnly = false,
-      Keywords = new TMultiItemsSelection(EFilterType.All, "maman", "tous"),
-      Tags = new TMultiItemsSelection(EFilterType.Any, "Comédie", "Famille")
+      Keywords = new TMultiItemsSelection(EFilterType.All, KEYWORD_ALL_FIRST, KEYWORD_ALL_SECOND),
+      Tags = new TMultiItemsSelection(EFilterType.Any, TAG_ANY_FIRST, TAG_ANY_SECOND)
     };
-    Source.GroupMemberships.Add("Group 1");
-    Source.GroupMemberships.Add("Group 2");
+    Source.GroupMemberships.Add(GROUP_FIRST);
+    Source.GroupMemberships.Add(GROUP_SECOND);
 
     Dump(Source, "Source");
 
@@ -22,8 +33,16 @@ public class TFilterSerializationTest {
     Assert.IsNotNull(Target);
     Dump(Target, "Target");
 
-    Assert.IsTrue(Target.Contains("\"Keywords\":{\"Selection\":\"All\",\"Items\":[\"tous\",\"maman\"]}"));
-    Assert.IsTrue(Target.Contains("\"Tags\":{\"Selection\":\"Any\",\"Items\":[\"Famille\",\"Comédie\"]}"));
+    JsonDocument JsonTarget = JsonDocument.Parse(Target);
+    IEnumerable<string> TestTarget = JsonTarget.GetJsonProperties();
+
+    Assert.IsTrue(TestTarget.Skip(3).Take(4).Contains("Selection : All"));
+    Assert.IsTrue(TestTarget.Skip(3).Take(4).Contains(KEYWORD_ALL_FIRST.WithQuotes()));
+    Assert.IsTrue(TestTarget.Skip(3).Take(4).Contains(KEYWORD_ALL_SECOND.WithQuotes()));
+
+    Assert.IsTrue(TestTarget.Skip(7).Take(4).Contains("Selection : Any"));
+    Assert.IsTrue(TestTarget.Skip(7).Take(4).Contains(TAG_ANY_FIRST.WithQuotes()));
+    Assert.IsTrue(TestTarget.Skip(7).Take(4).Contains(TAG_ANY_SECOND.WithQuotes()));
 
     Ok();
   }
@@ -34,11 +53,11 @@ public class TFilterSerializationTest {
     TFilter Source = new TFilter() {
       DaysBack = 7,
       GroupOnly = false,
-      Keywords = new TMultiItemsSelection(EFilterType.All, "maman", "tous"),
-      Tags = new TMultiItemsSelection(EFilterType.Any, "Comédie", "Famille")
+      Keywords = new TMultiItemsSelection(EFilterType.All, KEYWORD_ALL_FIRST, KEYWORD_ALL_SECOND),
+      Tags = new TMultiItemsSelection(EFilterType.Any, TAG_ANY_FIRST, TAG_ANY_SECOND)
     };
-    Source.GroupMemberships.Add("Group 1");
-    Source.GroupMemberships.Add("Group 2");
+    Source.GroupMemberships.Add(GROUP_FIRST);
+    Source.GroupMemberships.Add(GROUP_SECOND);
     string JsonSource = IJson.ToJson(Source);
     Dump(JsonSource, "Source");
 
