@@ -74,13 +74,11 @@ public abstract class AMedia : ARecord, IMedia {
     set {
     }
   }
-  //public ILanguageTextInfos Titles { get; } = new TLanguageTextInfos();
-
-  //public ILanguageTextInfos Descriptions { get; } = new TLanguageTextInfos();
 
   [JsonConverter(typeof(TDateOnlyJsonConverter))]
   public DateOnly DateAdded { get; set; } = DateOnly.FromDateTime(DateTime.Today);
 
+  [JsonConverter(typeof(TDateOnlyJsonConverter))]
   public DateOnly CreationDate { get; set; } = new DateOnly();
   public int CreationYear {
     get {
@@ -94,6 +92,10 @@ public abstract class AMedia : ARecord, IMedia {
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   protected AMedia() {
     Logger = GlobalSettings.GlobalLogger;
+  }
+
+  protected AMedia(ILogger logger) {
+    Logger = logger;
   }
 
   protected AMedia(IMedia media) : this() {

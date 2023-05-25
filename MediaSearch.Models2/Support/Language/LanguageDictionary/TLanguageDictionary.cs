@@ -6,10 +6,7 @@ public class TLanguageDictionary<T> : Dictionary<ELanguage, T>, ILanguageDiction
     StringBuilder RetVal = new StringBuilder();
     string IndentSpace = new string(' ', indent);
     foreach (KeyValuePair<ELanguage, T> kvp in this) {
-      RetVal.Append(IndentSpace);
-      RetVal.Append(kvp.Key.ToString());
-      RetVal.Append(" : ");
-      RetVal.AppendLine((kvp.Value?.ToString() ?? "(null)").WithQuotes());
+      RetVal.AppendIndent($"{kvp.Key} : {(kvp.Value?.ToString() ?? "(null)").WithQuotes()}", indent);
     }
     return RetVal.ToString();
   }

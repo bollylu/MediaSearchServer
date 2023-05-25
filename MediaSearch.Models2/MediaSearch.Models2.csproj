@@ -35,6 +35,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Media_Show\" />
+    <Folder Include="Media_Book\" />
+    <Folder Include="Media_Music\" />
     <Folder Include="Support\Json serialization\Converters\" />
   </ItemGroup>
 
