@@ -15,12 +15,16 @@ public interface IMediaSerieSeason : IToStringIndent {
   /// </summary>
   public int Number { get; set; }
 
-  /// <summary>
-  /// List of the episodes for this season
-  /// </summary>
-  List<TMediaSerieEpisode> Episodes { get; set; }
+  ///// <summary>
+  ///// List of the episodes for this season
+  ///// </summary>
+  //List<TMediaSerieEpisode> Episodes { get; set; }
 
   TMediaInfos Infos { get; set; }
 
+  bool AddEpisode(TMediaSerieEpisode episode);
+  bool RemoveEpisode(TMediaSerieEpisode episode);
+  IEnumerable<TMediaSerieEpisode> GetEpisodes();
 
+  void Clear();
 }

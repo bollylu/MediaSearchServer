@@ -52,8 +52,8 @@ public class MediaSerieSeasonTests {
     Assert.IsNotNull(Target);
 
     Message("Adding episodes");
-    Target.Episodes.Add(Ep1);
-    Target.Episodes.Add(Ep2);
+    Assert.IsTrue(Target.AddEpisode(Ep1));
+    Assert.IsTrue(Target.AddEpisode(Ep2));
 
     Dump(Target);
     Ok();
