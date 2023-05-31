@@ -45,7 +45,7 @@ public class MediaSerieTests {
     TMediaSerieSeason Season1 = new TMediaSerieSeason() {
       SerieType = ESerieType.Anime,
       Number = 1,
-      Infos = new TMediaInfos(
+      MediaInfos = new TMediaInfos(
           new TMediaInfo() {
             Language = ELanguage.French,
             Title = "La première saison",
@@ -119,7 +119,7 @@ public class MediaSerieTests {
     TMediaSerieSeason Season1 = new TMediaSerieSeason() {
       SerieType = ESerieType.Anime,
       Number = 1,
-      Infos = new TMediaInfos(
+      MediaInfos = new TMediaInfos(
           new TMediaInfo() {
             Language = ELanguage.French,
             Title = "La première saison",
@@ -186,7 +186,7 @@ public class MediaSerieTests {
     TMediaSerieSeason Season1 = new TMediaSerieSeason() {
       SerieType = ESerieType.Anime,
       Number = -1,
-      Infos = new TMediaInfos(
+      MediaInfos = new TMediaInfos(
           new TMediaInfo() {
             Language = ELanguage.French,
             Title = "La première saison",
@@ -249,7 +249,7 @@ public class MediaSerieTests {
     TMediaSerieSeason Season1 = new TMediaSerieSeason() {
       SerieType = ESerieType.Anime,
       Number = 1,
-      Infos = new TMediaInfos(
+      MediaInfos = new TMediaInfos(
           new TMediaInfo() {
             Language = ELanguage.French,
             Title = "La première saison",
@@ -312,7 +312,7 @@ public class MediaSerieTests {
     TMediaSerieSeason Season1 = new TMediaSerieSeason() {
       SerieType = ESerieType.Anime,
       Number = 1,
-      Infos = new TMediaInfos(
+      MediaInfos = new TMediaInfos(
           new TMediaInfo() {
             Language = ELanguage.French,
             Title = "La première saison",

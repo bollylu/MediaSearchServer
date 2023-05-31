@@ -8,7 +8,7 @@ public class ListWithPrincipalTests {
     IListWithPrincipal<int> Target = new TListWithPrincipal<int>();
     Assert.IsNotNull(Target);
 
-    Dump(Target);
+    MessageBox("No principal set, default to first value", Target.ToString() ?? "");
 
     Ok();
   }
@@ -25,9 +25,7 @@ public class ListWithPrincipalTests {
     Target.Add(0);
     Target.Add(150);
 
-    Dump(Target);
-
-    MessageBox("No principal set", Target.ToString() ?? "");
+    MessageBox("No principal set, default to first value", Target.ToString() ?? "");
 
     Ok();
   }
@@ -42,10 +40,9 @@ public class ListWithPrincipalTests {
     Target.Add(30);
     Target.Add(0);
     Target.Add(150);
-    Dump(Target);
+    MessageBox("No principal set, default to first value", Target.ToString() ?? "");
 
-    Assert.AreNotEqual(TListWithPrincipal.NO_PRINCIPAL, Target.SetPrincipal(30));
-    MessageBox("Principal is 30", Target.ToString() ?? "");
+    MessageBox("Setting principal to 30", Target.SetPrincipal(30).ToString() ?? "");
 
     Assert.AreEqual(30, Target.GetPrincipal());
     Message($"GetPrincipal() returns 30 : {Target.GetPrincipal()}");
@@ -63,10 +60,11 @@ public class ListWithPrincipalTests {
     Target.Add(30);
     Target.Add(0);
     Target.Add(150);
-    Dump(Target);
+    MessageBox("No principal set, default to first value", Target.ToString() ?? "");
 
-    Assert.AreEqual(TListWithPrincipal.NO_PRINCIPAL, Target.SetPrincipal(35));
-    MessageBox("Principal not set", Target.ToString() ?? "");
+    Message("Setting the principal to a wrong value : 35");
+    Assert.ThrowsException<ArgumentOutOfRangeException>(() => Target.SetPrincipal(35));
+    MessageBox("No principal set, default to first value", Target.ToString() ?? "");
 
     Message($"GetPrincipal() returns first value : {Target.GetPrincipal()}");
     Assert.AreEqual(10, Target.GetPrincipal());

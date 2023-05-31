@@ -28,7 +28,7 @@ public abstract class AMediaSource : ALoggable, IMediaSource {
     RetVal.AppendIndent($"- {nameof(CreationYear)} : {CreationYear}", indent);
     RetVal.AppendIndent($"- {nameof(Description)} : {Description.WithQuotes()}", indent);
     RetVal.AppendIndent($"- {nameof(Languages)}");
-    RetVal.AppendIndent(Languages.ToString(indent), indent);
+    RetVal.AppendIndent(Languages.ToString(indent), indent + 2);
     return RetVal.ToString();
   }
 

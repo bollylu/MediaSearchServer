@@ -8,7 +8,7 @@ public interface IListWithPrincipal<T> : IList<T>, IEnumerable<T>, IToStringInde
   /// </summary>
   /// <param name="principal">The principal</param>
   /// <returns>The index of the principal value or -1 if no found</returns>
-  int SetPrincipal(T principal);
+  IListWithPrincipal<T> SetPrincipal(T principal);
 
   /// <summary>
   /// Get the principal value

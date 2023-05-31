@@ -33,7 +33,7 @@ public class MediaSourceTests {
   public void MediaSourceVirtual_WithData() {
     Message("Creation of a MediaSource virtual");
     IMediaSource Target = new TMediaSourceVirtual() {
-      Languages = new TListWithPrincipal<ELanguage>() { ELanguage.French },
+      Languages = (new TListWithPrincipal<ELanguage>(ELanguage.French, ELanguage.English)).SetPrincipal(ELanguage.English),
       Description = "Version VFF",
       FileName = "Le jour le plus long (1966)",
       FileExtension = "mkv",

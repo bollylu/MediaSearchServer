@@ -2,6 +2,9 @@
 
 namespace MediaSearch.Models;
 
+/// <summary>
+/// A media used to store a serie (TV show, anime, ...)
+/// </summary>
 public class TMediaSerie : AMedia {
 
   /// <summary>
@@ -42,6 +45,11 @@ public class TMediaSerie : AMedia {
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
+  /// <summary>
+  /// Add a non-existing season to the serie
+  /// </summary>
+  /// <param name="season">The season to add</param>
+  /// <returns><see langword="true"/> if successful, <see langword="false"/> otherwise</returns>
   public bool AddSeason(IMediaSerieSeason season) {
     if (season.Number < 0) {
       LogError($"Unable to add season #{season.Number} : Season number {season.Number} is invalid");
@@ -75,6 +83,11 @@ public class TMediaSerie : AMedia {
     }
   }
 
+  /// <summary>
+  /// Remove a season from the serie
+  /// </summary>
+  /// <param name="season">The season to remove</param>
+  /// <returns><see langword="true"/> if successful, <see langword="false"/> otherwise</returns>
   public bool RemoveSeason(IMediaSerieSeason season) {
     if (season.Number < 0) {
       LogError($"Unable to remove season #{season.Number} : Season number {season.Number} is invalid");
@@ -98,9 +111,14 @@ public class TMediaSerie : AMedia {
     }
   }
 
+  /// <summary>
+  /// Remove a season from the serie
+  /// </summary>
+  /// <param name="seasonNumber">The number of the season to remove</param>
+  /// <returns><see langword="true"/> if successful, <see langword="false"/> otherwise</returns>
   public bool RemoveSeason(int seasonNumber) {
     if (seasonNumber < 0) {
-      LogError($"Unable to add season #{seasonNumber} : Season number {seasonNumber} is invalid");
+      LogError($"Unable to remove season #{seasonNumber} : Season number {seasonNumber} is invalid");
       return false;
     }
 
@@ -111,16 +129,20 @@ public class TMediaSerie : AMedia {
         Seasons.RemoveAt(Index);
         return true;
       }
-      Logger.LogError($"Unable to remove season @{seasonNumber} : Season is missing");
+      Logger.LogError($"Unable to remove season #{seasonNumber} : Season is missing");
       return false;
     } catch (Exception ex) {
-      Logger.LogErrorBox($"Unable to remove season @{seasonNumber}", ex);
+      Logger.LogErrorBox($"Unable to remove season #{seasonNumber}", ex);
       return false;
     } finally {
       _Lock.ExitWriteLock();
     }
   }
 
+  /// <summary>
+  /// Get all the seasons from the serie
+  /// </summary>
+  /// <returns>An enumeration of the seasons</returns>
   public IEnumerable<IMediaSerieSeason> GetSeasons() {
     try {
       _Lock.EnterReadLock();
@@ -132,6 +154,11 @@ public class TMediaSerie : AMedia {
     }
   }
 
+  /// <summary>
+  /// Get on season from the serie
+  /// </summary>
+  /// <param name="index">The number of the season to retrieve</param>
+  /// <returns>The season requested or <see langword="null"/> if any error</returns>
   public IMediaSerieSeason? GetSeason(int index) {
     if (index < 0) {
       LogError($"Unable to retrieve season #{index} : Season number {index} is invalid");
@@ -155,9 +182,13 @@ public class TMediaSerie : AMedia {
 
   }
 
+  /// <summary>
+  /// Clear all the seasons from the serie (and the episodes from each seasons)
+  /// </summary>
   public void Clear() {
     try {
       _Lock.EnterWriteLock();
+      Seasons.ForEach(s => s.Clear());
       Seasons.Clear();
     } finally {
       _Lock.ExitWriteLock();

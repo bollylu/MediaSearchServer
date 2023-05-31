@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public class TMediaSerieEpisode : AMedia {
+public class TMediaSerieEpisode : AMedia, IMediaSerieEpisode {
 
   /// <summary>
   /// The numer of the episode, counting from first episode
@@ -32,17 +32,18 @@ public class TMediaSerieEpisode : AMedia {
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
+  #region --- Converters -------------------------------------------------------------------------------------
   public override string ToString() {
     return ToString(0);
   }
 
   public override string ToString(int indent) {
     StringBuilder RetVal = new(base.ToString(indent));
-    //RetVal.AppendLine();
     RetVal.AppendIndent($"- {nameof(SerieType)} = {SerieType}", indent);
     RetVal.AppendIndent($"- {nameof(AbsoluteNumber)} = {AbsoluteNumber}", indent);
     RetVal.AppendIndent($"- {nameof(Season)} = {Season}", indent);
     RetVal.AppendIndent($"- {nameof(Number)} = {Number}", indent);
     return RetVal.ToString();
   }
+  #endregion --- Converters -------------------------------------------------------------------------------------
 }

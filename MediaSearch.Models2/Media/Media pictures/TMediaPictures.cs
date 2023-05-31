@@ -18,6 +18,7 @@ public class TMediaPictures : TLanguageDictionary<IPicture>, IMediaPictures, ILo
     }
   }
 
+  #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMediaPictures() { }
   public TMediaPictures(IPicture picture) {
     Add(picture.Language, picture);
@@ -27,6 +28,7 @@ public class TMediaPictures : TLanguageDictionary<IPicture>, IMediaPictures, ILo
       Add(Item.Key, Item.Value);
     }
   }
+  #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   #region --- IPictureContainer --------------------------------------------
   public const int MIN_PICTURE_WIDTH = 128;

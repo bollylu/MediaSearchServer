@@ -18,7 +18,14 @@ public class TListWithPrincipal<T> : List<T>, IListWithPrincipal<T> {
     }
     SetPrincipal(source.GetPrincipal());
   }
+
   public TListWithPrincipal(IEnumerable<T> source) {
+    foreach (T ItemItem in source) {
+      Add(ItemItem);
+    }
+  }
+
+  public TListWithPrincipal(params T[] source) {
     foreach (T ItemItem in source) {
       Add(ItemItem);
     }
@@ -37,7 +44,7 @@ public class TListWithPrincipal<T> : List<T>, IListWithPrincipal<T> {
     base.Add(item);
   }
 
-  public int SetPrincipal(T principal) {
+  public IListWithPrincipal<T> SetPrincipal(T principal) {
     int Index = -1;
     if (typeof(T).Name == typeof(byte[]).Name) {
       byte[]? BytesPrincipal = principal as byte[] ?? throw new ApplicationException("???");
@@ -47,10 +54,10 @@ public class TListWithPrincipal<T> : List<T>, IListWithPrincipal<T> {
     }
     if (Index < 0) {
       _PrincipalIndex = TListWithPrincipal.NO_PRINCIPAL;
-      return TListWithPrincipal.NO_PRINCIPAL;
+      throw new ArgumentOutOfRangeException(nameof(principal));
     }
     _PrincipalIndex = Index;
-    return Index;
+    return this;
   }
 
   public T GetPrincipal() {
@@ -70,6 +77,7 @@ public class TListWithPrincipal<T> : List<T>, IListWithPrincipal<T> {
   }
 
 
+  #region --- Converters -------------------------------------------------------------------------------------
   public override string ToString() {
     return ToString(0);
   }
@@ -86,8 +94,9 @@ public class TListWithPrincipal<T> : List<T>, IListWithPrincipal<T> {
         }
       }
     } else {
+      int Index = _PrincipalIndex == TListWithPrincipal.NO_PRINCIPAL ? 0 : _PrincipalIndex;
       for (int i = 0; i < this.Count; i++) {
-        if (i == _PrincipalIndex) {
+        if (i == Index) {
           RetVal.AppendIndent($"[X] {this[i]}", indent + 2);
         } else {
           RetVal.AppendIndent($"[ ] {this[i]}", indent + 2);
@@ -97,4 +106,5 @@ public class TListWithPrincipal<T> : List<T>, IListWithPrincipal<T> {
 
     return RetVal.ToString();
   }
+  #endregion --- Converters -------------------------------------------------------------------------------------
 }

@@ -22,10 +22,24 @@ public class TMediaInfos : TLanguageDictionary<IMediaInfo>, IMediaInfos {
       Add(Item.Language, Item);
     }
   }
-  public TMediaInfos(TMediaInfos mediaInfos) {
+  public TMediaInfos(IMediaInfos mediaInfos) {
     foreach (KeyValuePair<ELanguage, IMediaInfo> Item in mediaInfos) {
       Add(Item.Key, Item.Value);
     }
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
+
+  public IMediaInfo? Get(ELanguage language) {
+    if (this.ContainsKey(language)) {
+      return this[language];
+    }
+
+    return null;
+  }
+
+  public IEnumerable<IMediaInfo> GetAll() {
+    foreach (KeyValuePair<ELanguage, IMediaInfo> MediaInfoItem in this) {
+      yield return MediaInfoItem.Value;
+    }
+  }
 }
