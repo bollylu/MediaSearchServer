@@ -3,6 +3,11 @@ public enum EMediaType {
   Unknown,
   Movie,
   Serie,
+  SerieSeason,
+  SerieEpisode,
   Music,
-  Video
+  Video,
+  Theatre,
+  Spectacle,
+  Concert
 }

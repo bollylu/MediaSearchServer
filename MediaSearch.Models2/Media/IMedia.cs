@@ -2,7 +2,7 @@
 
 namespace MediaSearch.Models;
 
-public interface IMedia : IRecord, IDisposable, IAsyncDisposable {
+public interface IMedia : IRecord, IDisposable, IAsyncDisposable, IToStringIndent {
 
   /// <summary>
   /// A shortcut taken from MediaInfos title
@@ -28,19 +28,6 @@ public interface IMedia : IRecord, IDisposable, IAsyncDisposable {
   /// The info(s) about the media in various languages (must be >= 1)
   /// </summary>
   IMediaInfos MediaInfos { get; set; }
-
-  ///// <summary>
-  ///// Obtain the infos about the medias based on the default language
-  ///// </summary>
-  ///// <returns>An IMediaInfo item based on the default language</returns>
-  //IMediaInfo GetInfos();
-
-  ///// <summary>
-  ///// Obtain the infos about the medias in the language specified
-  ///// </summary>
-  ///// <param name="language">The language to match the info</param>
-  ///// <returns>An IMediaInfo item based on the language</returns>
-  //IMediaInfo GetInfos(ELanguage language);
 
   /// <summary>
   /// Physical location(s) where the media can be found (must be >= 0, should be >= 1)

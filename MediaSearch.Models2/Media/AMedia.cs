@@ -1,7 +1,5 @@
 ﻿using BLTools.Encryption;
 
-using SkiaSharp;
-
 namespace MediaSearch.Models;
 
 public abstract class AMedia : ARecord, IMedia {
@@ -24,18 +22,21 @@ public abstract class AMedia : ARecord, IMedia {
   }
   #endregion --- IRecord --------------------------------------------
 
-  public EMediaType MediaType { get; set; }
+  public EMediaType MediaType { get; set; } = EMediaType.Unknown;
 
   public ELanguage DefaultLanguage { get; set; } = DEFAULT_LANGUAGE;
 
-  public virtual IMediaSources MediaSources { get; set; } = new TMediaSources();
+  public IMediaSources MediaSources { get; set; } = new TMediaSources();
 
-  public virtual IMediaInfos MediaInfos { get; set; } = new TMediaInfos();
+  public IMediaInfos MediaInfos { get; set; } = new TMediaInfos();
 
-  public virtual IMediaPictures MediaPictures { get; set; } = new TMediaPictures();
+  public IMediaPictures MediaPictures { get; set; } = new TMediaPictures();
 
   public bool IsInvalid {
     get {
+      if (MediaType == EMediaType.Unknown) {
+        return true;
+      }
       if (MediaInfos.IsEmpty()) {
         return true;
       }
@@ -73,6 +74,10 @@ public abstract class AMedia : ARecord, IMedia {
     Logger = logger;
   }
 
+  protected AMedia(string name) {
+    Name = name;
+  }
+
   protected AMedia(IMedia media) : this() {
     MediaType = media.MediaType;
     Id = media.Id;
@@ -101,13 +106,13 @@ public abstract class AMedia : ARecord, IMedia {
   public override string ToString(int indent) {
     StringBuilder RetVal = new();
 
+    if (IsInvalid) {
+      RetVal.AppendIndent("- Warning : ### Media is invalid ###", indent);
+    }
+
     RetVal.AppendIndent($"- {nameof(MediaType)} = {MediaType}", indent)
           .AppendIndent($"- {nameof(Id)} = {Id.WithQuotes()}", indent)
           .AppendIndent($"- {nameof(Name)} = {Name.WithQuotes()}", indent);
-
-    if (IsInvalid) {
-      RetVal.AppendIndent("- ### Media is invalid ###", indent);
-    }
 
     if (MediaInfos.Any()) {
       RetVal.AppendIndent($"- {nameof(MediaInfos)}", indent);

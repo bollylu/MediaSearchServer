@@ -25,10 +25,17 @@ public class TMediaSerieEpisode : AMedia, IMediaSerieEpisode {
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMediaSerieEpisode() : base() {
     Logger = GlobalSettings.LoggerPool.GetLogger<TMediaSerieEpisode>();
+    MediaType = EMediaType.SerieEpisode;
   }
-  public TMediaSerieEpisode(ILogger logger) : base(logger) { }
-  public TMediaSerieEpisode(TMediaSerie movie) : base(movie) {
+  public TMediaSerieEpisode(ILogger logger) : base(logger) {
+    MediaType = EMediaType.SerieEpisode;
+  }
+  public TMediaSerieEpisode(TMediaSerieEpisode episode) : base(episode) {
     Logger = GlobalSettings.LoggerPool.GetLogger<TMediaSerieEpisode>();
+    AbsoluteNumber = episode.AbsoluteNumber;
+    Season = episode.Season;
+    Number = episode.Number;
+    SerieType = episode.SerieType;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 

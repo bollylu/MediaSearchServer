@@ -8,7 +8,7 @@ public class ListWithPrincipalTests {
     IListWithPrincipal<int> Target = new TListWithPrincipal<int>();
     Assert.IsNotNull(Target);
 
-    MessageBox("No principal set, default to first value", Target.ToString() ?? "");
+    Dump(Target);
 
     Ok();
   }

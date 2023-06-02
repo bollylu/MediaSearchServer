@@ -5,8 +5,7 @@ internal static class DataSourceMedia {
   static internal List<IMedia> Medias { get; } = new List<IMedia>();
 
   static DataSourceMedia() {
-    Medias.Add(new TMedia("Le jour le plus long") {
-      MediaType = EMediaType.Movie,
+    Medias.Add(new TMediaMovie("Le jour le plus long") {
       MediaInfos = new TMediaInfos(
         new TMediaInfo() {
           Language = ELanguage.French,
@@ -40,8 +39,7 @@ internal static class DataSourceMedia {
       CreationDate = new DateOnly(1966, 11, 25)
     });
 
-    Medias.Add(new TMedia("Star wars 1") {
-      MediaType = EMediaType.Movie,
+    Medias.Add(new TMediaMovie("Star wars 1") {
       MediaInfos = new TMediaInfos(
         new TMediaInfo() {
           Language = ELanguage.French,
@@ -68,8 +66,7 @@ internal static class DataSourceMedia {
       )
     });
 
-    Medias.Add(new TMedia("Star wars 3") {
-      MediaType = EMediaType.Movie,
+    Medias.Add(new TMediaMovie("Star wars 3") {
       MediaInfos = new TMediaInfos(
        new TMediaInfo() {
          Language = ELanguage.French,
@@ -82,9 +79,7 @@ internal static class DataSourceMedia {
      )
     });
 
-    Medias.Add(new TMedia("Star wars 4 - Invalid entry") {
-      MediaType = EMediaType.Unknown
-    });
+    Medias.Add(new TMediaMovie("Star wars 4 - Invalid entry"));
   }
 
 }

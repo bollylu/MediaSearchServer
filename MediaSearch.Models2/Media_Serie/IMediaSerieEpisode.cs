@@ -1,5 +1,5 @@
 ﻿namespace MediaSearch.Models;
-public interface IMediaSerieEpisode {
+public interface IMediaSerieEpisode : IMedia {
 
   /// <summary>
   /// The numer of the episode, counting from first episode
@@ -21,7 +21,4 @@ public interface IMediaSerieEpisode {
   /// </summary>
   public ESerieType SerieType { get; set; }
 
-  IMediaInfos MediaInfos { get; set; }
-  IMediaSources MediaSources { get; set; }
-  IMediaPictures MediaPictures { get; set; }
 }

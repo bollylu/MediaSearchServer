@@ -3,7 +3,7 @@
 /// <summary>
 /// Whatever makes a grouping in season
 /// </summary>
-public interface IMediaSerieSeason : IToStringIndent {
+public interface IMediaSerieSeason : IMedia {
 
   /// <summary>
   /// The type of serie
@@ -14,9 +14,6 @@ public interface IMediaSerieSeason : IToStringIndent {
   /// The number of the season
   /// </summary>
   int Number { get; set; }
-
-  IMediaInfos MediaInfos { get; set; }
-  IMediaPictures MediaPictures { get; set; }
 
   /// <summary>
   /// Add a non-existing episode to the season
