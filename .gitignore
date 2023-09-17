@@ -365,3 +365,4 @@ FodyWeavers.xsd
 /MediaSearch.Server.Test/Data/movies
 
 *.avi
+/MediaSearch.Models2.Test/Data
