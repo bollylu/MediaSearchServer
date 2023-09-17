@@ -67,12 +67,12 @@ public class TMediaSerieSeason : AMedia, IMediaSerieSeason {
 
   public bool AddEpisode(TMediaSerieEpisode episode) {
     if (episode.Number < 0) {
-      LogError($"Unable to add episode #{episode.Number} : Episode number {episode.Number} is invalid");
+      Logger.LogError($"Unable to add episode #{episode.Number} : Episode number {episode.Number} is invalid");
       return false;
     }
 
     if (episode.SerieType != SerieType) {
-      LogError($"Unable to add season #{episode.Number} : SerieType does not match");
+      Logger.LogError($"Unable to add season #{episode.Number} : SerieType does not match");
       return false;
     }
 
@@ -100,7 +100,7 @@ public class TMediaSerieSeason : AMedia, IMediaSerieSeason {
 
   public bool RemoveEpisode(TMediaSerieEpisode episode) {
     if (episode.Number < 0) {
-      LogError($"Unable to remove episode #{episode.Number} : Episode number {episode.Number} is invalid");
+      Logger.LogError($"Unable to remove episode #{episode.Number} : Episode number {episode.Number} is invalid");
       return false;
     }
 
@@ -123,7 +123,7 @@ public class TMediaSerieSeason : AMedia, IMediaSerieSeason {
 
   public bool RemoveEpisode(int episodeNumber) {
     if (episodeNumber < 0) {
-      LogError($"Unable to remove episode #{episodeNumber} : Episode number {episodeNumber} is invalid");
+      Logger.LogError($"Unable to remove episode #{episodeNumber} : Episode number {episodeNumber} is invalid");
       return false;
     }
 
@@ -157,7 +157,7 @@ public class TMediaSerieSeason : AMedia, IMediaSerieSeason {
 
   public IMediaSerieEpisode? GetEpisode(int index) {
     if (index < 0) {
-      LogError($"Unable to retrieve episode #{index} : Episode number {index} is invalid");
+      Logger.LogError($"Unable to retrieve episode #{index} : Episode number {index} is invalid");
       return null;
     }
 
@@ -165,7 +165,7 @@ public class TMediaSerieSeason : AMedia, IMediaSerieSeason {
       _Lock.EnterReadLock();
       IMediaSerieEpisode? RetVal = Episodes.FirstOrDefault(s => s.Number == index);
       if (RetVal is null) {
-        LogError($"Unable to retrieve episode #{index} : Episode is missing");
+        Logger.LogError($"Unable to retrieve episode #{index} : Episode is missing");
         return null;
       }
       return RetVal;

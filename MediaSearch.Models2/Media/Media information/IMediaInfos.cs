@@ -19,4 +19,11 @@ public interface IMediaInfos : ILanguageDictionary<IMediaInfo> {
   /// <returns></returns>
   IEnumerable<IMediaInfo> GetAll();
 
+  /// <summary>
+  /// Change the title
+  /// </summary>
+  /// <param name="language"></param>
+  /// <param name="title"></param>
+  void SetTitle(ELanguage language, string title);
+
 }

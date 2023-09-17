@@ -42,4 +42,10 @@ public class TMediaInfos : TLanguageDictionary<IMediaInfo>, IMediaInfos {
       yield return MediaInfoItem.Value;
     }
   }
+
+  public void SetTitle(ELanguage language, string title) {
+    if (this.ContainsKey(language)) {
+      this[language].Title = title;
+    }
+  }
 }

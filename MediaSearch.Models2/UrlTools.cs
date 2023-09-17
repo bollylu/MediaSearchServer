@@ -18,8 +18,12 @@ public static class UrlTools {
     return Encoding.UTF8.GetString(Microsoft.AspNetCore.WebUtilities.WebEncoders.Base64UrlDecode(source));
   }
 
-  public static string NormalizePath(this string path) {
-    return path.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
+  public static string NormalizePath(this string path, bool forWindows = true) {
+    if (forWindows) {
+      return path.Replace('/', '\\');
+    } else {
+      return path.Replace('\\', '/');
+    }
   }
 }
 

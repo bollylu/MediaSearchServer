@@ -6,12 +6,7 @@ public class TMedia : AMedia {
 
   public TMedia() { }
 
-  public TMedia(string name) {
-    Name = name;
-  }
-
-  public TMedia(string name, TMediaInfos mediaInfos, IEnumerable<IMediaSource> mediaSources) {
-    Name = name;
+  public TMedia(TMediaInfos mediaInfos, IEnumerable<IMediaSource> mediaSources) {
     MediaInfos = new TMediaInfos(mediaInfos);
     MediaSources = new TMediaSources(mediaSources);
   }

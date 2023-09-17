@@ -1,25 +1,41 @@
 ﻿namespace MediaSearch.Models;
-public class TMediaMovieParser : ALoggable {
+public class TMediaMovieParser : ILoggable {
   private readonly string _RootPath = "";
+  private readonly bool ForWindows = true;
+  private readonly bool ForLinux = false;
 
-  public TMediaMovieParser(string rootPath) {
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMediaMovieParser>();
+
+  #region --- Constructor(s) ---------------------------------------------------------------------------------
+  public TMediaMovieParser(string rootPath, bool forWindows = true) {
     Logger = GlobalSettings.LoggerPool.GetLogger<TMediaMovieParser>();
-    _RootPath = rootPath;
+    ForWindows = forWindows;
+    ForLinux = !ForWindows;
+    _RootPath = rootPath.NormalizePath(ForWindows).TrimStart('.');
   }
+  #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
+  #region --- Converters -------------------------------------------------------------------------------------
   public override string ToString() {
     StringBuilder RetVal = new StringBuilder();
     RetVal.AppendLine($"{nameof(_RootPath)} = {_RootPath.WithQuotes()}");
     return RetVal.ToString();
   }
+  #endregion --- Converters -------------------------------------------------------------------------------------
 
   public IMediaMovie? Parse(IFileInfo source) {
     if (source is null) {
-      LogError("Unable to parse : source is null");
+      Logger.LogError("Unable to parse : source is null");
       return null;
     }
 
+    BLTools.Diagnostic.TraceInfo.Dump(source);
+    Logger.Log($"{nameof(_RootPath)} = {_RootPath.WithQuotes()}");
+    Logger.Log($"{nameof(source.FullName)} = {source.FullName.WithQuotes()}");
+
     string ParseSource = source.FullName.After(_RootPath);
+    Logger.Log($"{nameof(ParseSource)} = {ParseSource.WithQuotes()}");
+
     string Year = ParseSource.AfterLast('(').Before(')');
     _ = int.TryParse(Year, out int ConvertedYear);
 

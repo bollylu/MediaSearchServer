@@ -6,8 +6,8 @@ public class TFileInfo : IFileInfo {
 
   public string Name => _Data.Name;
   public string FullName => _Data.FullName;
-  public DirectoryInfo? Directory => _Data.Directory;
-  public string? DirectoryName => _Data.DirectoryName;
+  public DirectoryInfo? Directory => _Data.Directory ?? new DirectoryInfo(DirectoryName);
+  public string DirectoryName => _Data.DirectoryName ?? "";
   public bool Exists => _Data.Exists;
   public bool IsReadOnly => _Data.IsReadOnly;
   public long Length => _Data.Length;

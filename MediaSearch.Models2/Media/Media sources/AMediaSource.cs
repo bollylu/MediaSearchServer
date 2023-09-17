@@ -1,6 +1,8 @@
 ﻿namespace MediaSearch.Models;
 
-public abstract class AMediaSource : ALoggable, IMediaSource {
+public abstract class AMediaSource : ILoggable, IMediaSource {
+
+  public ILogger Logger { get; init; } = GlobalSettings.LoggerPool.GetLogger<AMediaSource>();
 
   public DateOnly DateAdded { get; set; } = DateOnly.FromDateTime(DateTime.Today);
 

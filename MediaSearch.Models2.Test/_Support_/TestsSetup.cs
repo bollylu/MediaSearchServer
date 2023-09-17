@@ -3,7 +3,7 @@
 [TestClass]
 public static class TestsSetup {
   [AssemblyInitialize]
-  public static void ClassInitialize(TestContext context) {
+  public static async Task ClassInitialize(TestContext context) {
     IJson.AddJsonConverter(new TListWithPrincipalJsonConverter<string>());
     IJson.AddJsonConverter(new TListWithPrincipalJsonConverter<int>());
     IJson.AddJsonConverter(new TListWithPrincipalJsonConverter<long>());
@@ -15,6 +15,8 @@ public static class TestsSetup {
     IJson.AddJsonConverter(new TMultiItemsSelectionJsonConverter());
 
     IJson.DefaultJsonSerializerOptions.WriteIndented = true;
+
+    await GlobalSettings.Initialize();
   }
 
 }

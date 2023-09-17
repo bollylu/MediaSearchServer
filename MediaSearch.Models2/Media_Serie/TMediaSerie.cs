@@ -44,12 +44,12 @@ public class TMediaSerie : AMedia, IMediaSerie {
 
   public bool AddSeason(IMediaSerieSeason season) {
     if (season.Number < 0) {
-      LogError($"Unable to add season #{season.Number} : Season number {season.Number} is invalid");
+      Logger.LogError($"Unable to add season #{season.Number} : Season number {season.Number} is invalid");
       return false;
     }
 
     if (season.SerieType != SerieType) {
-      LogError($"Unable to add season #{season.Number} : SerieType does not match");
+      Logger.LogError($"Unable to add season #{season.Number} : SerieType does not match");
       return false;
     }
 
@@ -77,7 +77,7 @@ public class TMediaSerie : AMedia, IMediaSerie {
 
   public bool RemoveSeason(IMediaSerieSeason season) {
     if (season.Number < 0) {
-      LogError($"Unable to remove season #{season.Number} : Season number {season.Number} is invalid");
+      Logger.LogError($"Unable to remove season #{season.Number} : Season number {season.Number} is invalid");
       return false;
     }
 
@@ -100,7 +100,7 @@ public class TMediaSerie : AMedia, IMediaSerie {
 
   public bool RemoveSeason(int seasonNumber) {
     if (seasonNumber < 0) {
-      LogError($"Unable to remove season #{seasonNumber} : Season number {seasonNumber} is invalid");
+      Logger.LogError($"Unable to remove season #{seasonNumber} : Season number {seasonNumber} is invalid");
       return false;
     }
 
@@ -134,7 +134,7 @@ public class TMediaSerie : AMedia, IMediaSerie {
 
   public IMediaSerieSeason? GetSeason(int index) {
     if (index < 0) {
-      LogError($"Unable to retrieve season #{index} : Season number {index} is invalid");
+      Logger.LogError($"Unable to retrieve season #{index} : Season number {index} is invalid");
       return null;
     }
 
@@ -142,7 +142,7 @@ public class TMediaSerie : AMedia, IMediaSerie {
       _Lock.EnterReadLock();
       IMediaSerieSeason? RetVal = Seasons.FirstOrDefault(s => s.Number == index);
       if (RetVal is null) {
-        LogError($"Unable to retrieve season #{index} : Season is missing");
+        Logger.LogError($"Unable to retrieve season #{index} : Season is missing");
         return null;
       }
       return RetVal;

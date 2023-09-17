@@ -3,7 +3,9 @@
 using SkiaSharp;
 
 namespace MediaSearch.Models;
-public class TPicture : ALoggable, IPicture {
+public class TPicture : ILoggable, IPicture {
+
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TPicture>();
 
   public const int MIN_PICTURE_WIDTH = 128;
   public const int MAX_PICTURE_WIDTH = 1024;
@@ -59,7 +61,7 @@ public class TPicture : ALoggable, IPicture {
       }
       return true;
     } catch (Exception ex) {
-      LogErrorBox($"Unable to load picture from {location.WithQuotes()}", ex);
+      Logger.LogErrorBox($"Unable to load picture from {location.WithQuotes()}", ex);
       return false;
     }
   }
@@ -83,7 +85,7 @@ public class TPicture : ALoggable, IPicture {
         }
       }
     } catch (Exception ex) {
-      LogErrorBox($"Unable to resize picture {Name.WithQuotes()} to {width}x{height}", ex);
+      Logger.LogErrorBox($"Unable to resize picture {Name.WithQuotes()} to {width}x{height}", ex);
       return null;
     }
   }
@@ -95,12 +97,13 @@ public class TPicture : ALoggable, IPicture {
   }
 
   public static IPicture? GetPictureFromAssembly(string pictureName, string pictureExtension = ".png") {
+    ILogger Logger = GlobalSettings.LoggerPool.GetLogger<TPicture>();
     try {
       Assembly Asm = Assembly.GetExecutingAssembly();
       string CompleteName = $"MediaSearch.Models.Pictures.{pictureName}{pictureExtension}";
       string[] Resources = Asm.GetManifestResourceNames();
       foreach (string ResourceItem in Resources) {
-        Console.WriteLine(ResourceItem);
+        Logger.LogDebugEx(ResourceItem);
       }
       using (Stream? ResourceStream = Asm.GetManifestResourceStream(CompleteName)) {
         if (ResourceStream is null) {
@@ -111,7 +114,7 @@ public class TPicture : ALoggable, IPicture {
         }
       }
     } catch (Exception ex) {
-      Trace.WriteLine($"Unable to get picture {pictureName}{pictureExtension} : {ex.Message}");
+      Logger.LogErrorBox("Unable to get picture {pictureName}{pictureExtension}", ex);
       return null;
     }
   }

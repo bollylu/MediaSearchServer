@@ -2,7 +2,7 @@
 
 public abstract class AMediaInfo : IMediaInfo {
   public ELanguage Language { get; init; }
-  public string Title { get; init; } = string.Empty;
+  public string Title { get; set; } = string.Empty;
   public string Description { get; set; } = string.Empty;
   public List<string> Tags { get; init; } = new();
 
@@ -12,7 +12,9 @@ public abstract class AMediaInfo : IMediaInfo {
   public int CreationYear => CreationDate == DateOnly.MinValue ? 0 : CreationDate.Year;
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  protected AMediaInfo() { }
+  protected AMediaInfo() {
+    Language = AMedia.DEFAULT_LANGUAGE;
+  }
   protected AMediaInfo(IMediaInfo mediaInfo) {
     Language = mediaInfo.Language;
     Title = mediaInfo.Title;

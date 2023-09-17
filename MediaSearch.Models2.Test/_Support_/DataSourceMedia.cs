@@ -52,7 +52,7 @@ internal static class DataSourceMedia {
       )
     });
 
-    Medias.Add(new TMedia("Star wars 2") {
+    Medias.Add(new TMediaMovie("Star wars 2") {
       MediaType = EMediaType.Movie,
       MediaInfos = new TMediaInfos(
         new TMediaInfo() {

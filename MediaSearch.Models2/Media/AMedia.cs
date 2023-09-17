@@ -6,6 +6,8 @@ public abstract class AMedia : ARecord, IMedia {
 
   public static ELanguage DEFAULT_LANGUAGE = ELanguage.French;
 
+  public const string MISSING_NAME = "(no name)";
+
   #region --- IRecord --------------------------------------------
   public override string Id {
     get {
@@ -45,9 +47,10 @@ public abstract class AMedia : ARecord, IMedia {
   }
   public string Name {
     get {
-      return MediaInfos.Get(DefaultLanguage)?.Title ?? "(no name)";
+      return MediaInfos.Get(DefaultLanguage)?.Title ?? MISSING_NAME;
     }
     set {
+      MediaInfos.SetTitle(DefaultLanguage, value ?? MISSING_NAME);
     }
   }
 

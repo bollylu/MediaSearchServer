@@ -26,12 +26,12 @@ public class TFilterSerializationTest {
     Source.GroupMemberships.Add(GROUP_FIRST);
     Source.GroupMemberships.Add(GROUP_SECOND);
 
-    Dump(Source, "Source");
+    Dump(Source);
 
     Message("Serialize to Json");
     string Target = IJson.ToJson(Source);
     Assert.IsNotNull(Target);
-    Dump(Target, "Target");
+    Dump(Target);
 
     JsonDocument JsonTarget = JsonDocument.Parse(Target);
     IEnumerable<string> TestTarget = JsonTarget.GetJsonProperties();
@@ -59,13 +59,13 @@ public class TFilterSerializationTest {
     Source.GroupMemberships.Add(GROUP_FIRST);
     Source.GroupMemberships.Add(GROUP_SECOND);
     string JsonSource = IJson.ToJson(Source);
-    Dump(JsonSource, "Source");
+    Dump(JsonSource);
 
     Message("Deserialize Json into a TFilter object");
     IFilter? Target = IJson.FromJson<TFilter>(JsonSource);
     Assert.IsNotNull(Target);
 
-    Dump(Target, "Target");
+    Dump(Target);
     Assert.AreEqual(2, Target.GroupMemberships.Count);
 
     Ok();

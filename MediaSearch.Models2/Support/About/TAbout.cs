@@ -1,8 +1,8 @@
 ﻿namespace MediaSearch.Models;
 
-public class TAbout : ALoggable<TAbout>, IAbout {
+public class TAbout : ILoggable, IAbout {
 
-
+  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TAbout>();
 
   private readonly Assembly? _Assembly;
 
@@ -179,7 +179,7 @@ public class TAbout : ALoggable<TAbout>, IAbout {
         CurrentVersion = Version.Parse(await Reader.ReadToEndAsync());
       }
     } catch (Exception ex) {
-      Logger?.LogError($"Unable to read version : {ex.Message}");
+      Logger.LogErrorBox("Unable to read version", ex);
       CurrentVersion = new Version(0, 0, 0);
     }
 
@@ -211,7 +211,7 @@ public class TAbout : ALoggable<TAbout>, IAbout {
         }
       }
     } catch (Exception ex) {
-      Logger?.LogError($"Unable to read version : {ex.Message}");
+      Logger.LogErrorBox("Unable to read version", ex);
       CurrentVersion = new Version(0, 0);
     }
 
@@ -220,7 +220,7 @@ public class TAbout : ALoggable<TAbout>, IAbout {
   public async Task ReadChangeLog(Stream source) {
     #region === Validate parameters ===
     if (source is null) {
-      Logger?.LogError("Unable to read change log : source is null");
+      Logger.LogError("Unable to read change log : source is null");
       return;
     }
     #endregion === Validate parameters ===
@@ -256,7 +256,7 @@ public class TAbout : ALoggable<TAbout>, IAbout {
         }
       }
     } catch (Exception ex) {
-      Logger?.LogError($"Unable to read changelog : {ex.Message}");
+      Logger.LogErrorBox("Unable to read changelog", ex);
       CurrentVersion = new Version(0, 0);
     }
   }
