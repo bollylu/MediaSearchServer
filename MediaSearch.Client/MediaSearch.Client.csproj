@@ -42,7 +42,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MediaSearch.Client.Services\MediaSearch.Client.Services.csproj" />
-    <ProjectReference Include="..\MediaSearch.Models\MediaSearch.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -21,11 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MediaSearch.Models\MediaSearch.Models.csproj" />
-    <ProjectReference Include="..\MediaSearch.Storage\MediaSearch.Storage.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="data\folder.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

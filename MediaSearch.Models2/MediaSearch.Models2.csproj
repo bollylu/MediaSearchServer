@@ -41,4 +41,13 @@
     <Folder Include="Support\Json serialization\Converters\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="ExternalResources\Linux\ffprobe\ffprobe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="ExternalResources\Windows\ffprobe\ffprobe.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
