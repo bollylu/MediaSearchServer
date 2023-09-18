@@ -366,3 +366,5 @@ FodyWeavers.xsd
 
 *.avi
 /MediaSearch.Models2.Test/Data
+/MediaSearch.Models2/ExternalResources/Linux/ffprobe/ffprobe
+/MediaSearch.Models2/ExternalResources/Windows/ffprobe/ffprobe.exe
