@@ -1,8 +1,11 @@
 ﻿using MediaSearch.Models.Support;
+using MediaSearch.Models.Support.ffprobe;
 
 namespace MediaSearch.Models2.Test.ffprobe;
 [TestClass]
 public class ffprobeTest {
+
+  private const string DATA_SOURCE_FOLDER = @"\\andromeda.sharenet.priv\Films\Comédie";
 
   [TestMethod]
   public async Task GetFFPROBE_Version() {
@@ -22,28 +25,26 @@ public class ffprobeTest {
 
   [TestMethod]
   public async Task GetFFPROBE_Streams() {
-    Message("Reading streams");
-    IPropertiesFinder FFProbe = new TFFProbe(@".\Data\films\La bamba (1987)\La bamba (1987).mkv");
-    Assert.IsNotNull(FFProbe);
-    Dump(FFProbe);
-    await FFProbe.Init();
+    Message($"Reading streams in {DATA_SOURCE_FOLDER.WithQuotes()}");
 
-    Message("--- Audio");
-    foreach (var kvp in FFProbe.GetAudioStreams()) {
-      Dump(kvp.Key);
-      Dump(kvp.Value);
+    List<IPropertiesFinder> Probes = new();
+    foreach (string MovieItem in Directory.EnumerateDirectories(DATA_SOURCE_FOLDER)) {
+      string? MovieFile = Directory.EnumerateFiles(MovieItem).FirstOrDefault(m => !m.EndsWith(".jpg"));
+      if (MovieFile is null) {
+        continue;
+      }
+      Probes.Add(new TFFProbe(MovieFile));
     }
 
-    Message("--- Video");
-    foreach (var kvp in FFProbe.GetVideoStreams()) {
-      Dump(kvp.Key);
-      Dump(kvp.Value);
+    Message("Processing files...");
+    foreach (IPropertiesFinder FinderItem in Probes.AsParallel()) {
+      Message($"Init {FinderItem.Filename.WithQuotes()}");
+      await FinderItem.Init();
     }
+    Message("Data is gathered.");
 
-    Message("--- SubTitles");
-    foreach (var kvp in FFProbe.GetSubTitleStreams()) {
-      Dump(kvp.Key);
-      Dump(kvp.Value);
+    foreach (IPropertiesFinder FinderItem in Probes) {
+      Dump(FinderItem, 2);
     }
 
     Ok();
