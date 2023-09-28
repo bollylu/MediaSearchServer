@@ -46,7 +46,7 @@ public partial class TFFProbe : ALoggable, IPropertiesFinder {
   private const string PROPERTY_CHANNELS = "channels";
   private const string PROPERTY_CHANNEL_LAYOUT = "channel_layout";
   private const string PROPERTY_SAMPLE_RATE = "sample_rate";
-  private const string PROPERTY_BITRATE = "bitrate";
+  private const string PROPERTY_BITRATE = "bit_rate";
   private const string PROPERTY_TITLE = "title";
   private const string PROPERTY_DEFAULT = "default";
   private const string PROPERTY_FORCED = "force";
@@ -65,6 +65,7 @@ public partial class TFFProbe : ALoggable, IPropertiesFinder {
     string Data = await ProcessHelper.ExecuteProcessAsync(FFPROBE, $"-v panic -print_format json -show_streams -hide_banner {Filename.WithQuotes()}");
     JsonDocument JsonData = await JsonDocument.ParseAsync(Data.ToStream());
     JsonElement JsonStreams = JsonData.RootElement.GetProperty(PROPERTY_STREAMS);
+
     foreach (JsonElement StreamItem in JsonStreams.EnumerateArray()) {
 
       try {
@@ -95,7 +96,7 @@ public partial class TFFProbe : ALoggable, IPropertiesFinder {
               Properties.Default = DispositionComponents.SafeGetValue(PROPERTY_DEFAULT, false);
               Properties.Forced = DispositionComponents.SafeGetValue(PROPERTY_FORCED, false);
               MediaProperties.StreamProperties.Add(Properties);
-              LogDebug($"Found audio stream #{Properties.Index} : {Properties.CodecName} : {Properties.Language}, {Properties.Channels} channels, {Properties.ChannelsLayout}, {Properties.SampleRate} Hz{(Properties.Default ? " [Default]" : "")}{(Properties.Forced ? " [forced]" : "")}");
+              LogDebug($"{Path.GetFileName(Filename)} => Found audio stream #{Properties.Index} : {Properties.CodecName} : {Properties.Language}, {Properties.Channels} channels, {Properties.ChannelsLayout}, {Properties.SampleRate} Hz, {Properties.BitRate} bps{(Properties.Default ? " [Default]" : "")}{(Properties.Forced ? " [forced]" : "")}");
               break;
             }
 
@@ -110,7 +111,7 @@ public partial class TFFProbe : ALoggable, IPropertiesFinder {
               Properties.Width = StreamComponents.SafeGetValue(PROPERTY_WIDTH, 0);
               Properties.Height = StreamComponents.SafeGetValue(PROPERTY_HEIGHT, 0);
               MediaProperties.StreamProperties.Add(Properties);
-              LogDebug($"Found video stream #{Properties.Index} : {Properties.CodecName} ({Properties.Width}x{Properties.Height})");
+              LogDebug($"{Path.GetFileName(Filename)} => Found video stream #{Properties.Index} : {Properties.CodecName} ({Properties.Width}x{Properties.Height})");
               break;
             }
 
@@ -123,7 +124,7 @@ public partial class TFFProbe : ALoggable, IPropertiesFinder {
               Properties.Default = DispositionComponents.SafeGetValue(PROPERTY_DEFAULT, false);
               Properties.Forced = DispositionComponents.SafeGetValue(PROPERTY_FORCED, false);
               MediaProperties.StreamProperties.Add(Properties);
-              LogDebug($"Found subtitle stream #{Properties.Index} : {Properties.CodecName} : {Properties.Language}{(Properties.Default ? " [Default]" : "")}{(Properties.Forced ? " [forced]" : "")}");
+              LogDebug($"{Path.GetFileName(Filename)} => Found subtitle stream #{Properties.Index} : {Properties.CodecName} : {Properties.Language}{(Properties.Default ? " [Default]" : "")}{(Properties.Forced ? " [forced]" : "")}");
               break;
             }
 
@@ -134,7 +135,7 @@ public partial class TFFProbe : ALoggable, IPropertiesFinder {
               Properties.Default = DispositionComponents.SafeGetValue(PROPERTY_DEFAULT, false);
               Properties.Forced = DispositionComponents.SafeGetValue(PROPERTY_FORCED, false);
               MediaProperties.StreamProperties.Add(Properties);
-              LogDebug($"Found data stream #{Properties.Index} : {Properties.CodecName}, {Properties.CodecLongName.WithQuotes()}{(Properties.Default ? " [Default]" : "")}{(Properties.Forced ? " [forced]" : "")}");
+              LogDebug($"{Path.GetFileName(Filename)} => Found data stream #{Properties.Index} : {Properties.CodecName}, {Properties.CodecLongName.WithQuotes()}{(Properties.Default ? " [Default]" : "")}{(Properties.Forced ? " [forced]" : "")}");
               break;
             }
 
@@ -148,7 +149,7 @@ public partial class TFFProbe : ALoggable, IPropertiesFinder {
               Properties.Default = DispositionComponents.SafeGetValue(PROPERTY_DEFAULT, false);
               Properties.Forced = DispositionComponents.SafeGetValue(PROPERTY_FORCED, false);
               MediaProperties.StreamProperties.Add(Properties);
-              LogDebug($"Found unknown stream #{Properties.Index} : {Properties.CodecTypeUnknown} : {Properties.CodecName.WithQuotes()}, {Properties.CodecLongName.WithQuotes()}");
+              LogDebug($"{Path.GetFileName(Filename)} => Found unknown stream #{Properties.Index} : {Properties.CodecTypeUnknown} : {Properties.CodecName.WithQuotes()}, {Properties.CodecLongName.WithQuotes()}");
               break;
             }
         }

@@ -37,10 +37,12 @@ public class ffprobeTest {
     }
 
     Message("Processing files...");
-    foreach (IPropertiesFinder FinderItem in Probes.AsParallel()) {
-      Message($"Init {FinderItem.Filename.WithQuotes()}");
-      await FinderItem.Init();
-    }
+
+    await Parallel.ForEachAsync(Probes, new ParallelOptions { MaxDegreeOfParallelism = 15 }, async (finder, token) => {
+      Message($"Init {finder.Filename.WithQuotes()}");
+      await finder.Init();
+    });
+
     Message("Data is gathered.");
 
     foreach (IPropertiesFinder FinderItem in Probes) {
