@@ -9,7 +9,7 @@ public interface IMediaSourceVirtual : IMediaSource {
   /// The common part of the storage path
   /// e.g. "\\server\share"
   /// </summary>
-  public string StorageRoot { get; set; }
+  string StorageRoot { get; set; }
 
   /// <summary>
   /// The path of the movie in the storage
@@ -38,5 +38,9 @@ public interface IMediaSourceVirtual : IMediaSource {
   /// The size of the file containing the data (in bytes)
   /// </summary>
   long Size { get; set; }
+
+  IEnumerable<TStreamVideoProperties> GetVideoStreams();
+  IEnumerable<TStreamAudioProperties> GetAudioStreams();
+  IEnumerable<TStreamSubTitleProperties> GetSubTitleStreams();
 
 }

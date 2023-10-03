@@ -1,34 +1,35 @@
 ﻿namespace MediaSearch.Models;
-public class TMediaSerieSeason : AMedia, IMediaSerieSeason {
+public class TMediaSerieSeason :
+  AMedia,
+  IMediaSerieSeason {
 
   internal const int INVALID_NUMBER = -1;
 
   public ESerieType SerieType { get; set; } = ESerieType.Unknown;
   public int Number { get; set; } = INVALID_NUMBER;
 
-  private readonly List<TMediaSerieEpisode> Episodes = new();
+  private readonly List<IMediaSerieEpisode> Episodes = new();
   private readonly ReaderWriterLockSlim _Lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMediaSerieSeason() {
+  public TMediaSerieSeason() : base() {
     Logger = GlobalSettings.LoggerPool.GetLogger<TMediaSerieSeason>();
   }
 
-  public TMediaSerieSeason(ILogger logger) {
+  public TMediaSerieSeason(ILogger logger) : base() {
     Logger = logger;
   }
 
-  public TMediaSerieSeason(ESerieType type) {
-    Logger = GlobalSettings.LoggerPool.GetLogger<TMediaSerieSeason>();
+  public TMediaSerieSeason(ESerieType type) : this() {
     SerieType = type;
   }
-  public TMediaSerieSeason(IMediaSerieSeason season) {
-    Logger = GlobalSettings.LoggerPool.GetLogger<TMediaSerieSeason>();
+  public TMediaSerieSeason(IMediaSerieSeason season) : this() {
     SerieType = season.SerieType;
     Number = season.Number;
     Episodes.AddRange(season.GetEpisodes());
-    MediaInfos = new TMediaInfos(season.MediaInfos);
-    MediaPictures = new TMediaPictures(season.MediaPictures);
+    MediaInfos.AddRange(season.MediaInfos.GetAll());
+    MediaPictures.AddRange(season.MediaPictures.GetAll());
+    MediaSources.AddRange(season.MediaSources.GetAll());
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
@@ -65,7 +66,7 @@ public class TMediaSerieSeason : AMedia, IMediaSerieSeason {
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
-  public bool AddEpisode(TMediaSerieEpisode episode) {
+  public bool AddEpisode(IMediaSerieEpisode episode) {
     if (episode.Number < 0) {
       Logger.LogError($"Unable to add episode #{episode.Number} : Episode number {episode.Number} is invalid");
       return false;
@@ -98,7 +99,7 @@ public class TMediaSerieSeason : AMedia, IMediaSerieSeason {
     }
   }
 
-  public bool RemoveEpisode(TMediaSerieEpisode episode) {
+  public bool RemoveEpisode(IMediaSerieEpisode episode) {
     if (episode.Number < 0) {
       Logger.LogError($"Unable to remove episode #{episode.Number} : Episode number {episode.Number} is invalid");
       return false;
@@ -144,10 +145,10 @@ public class TMediaSerieSeason : AMedia, IMediaSerieSeason {
     }
   }
 
-  public IEnumerable<TMediaSerieEpisode> GetEpisodes() {
+  public IEnumerable<IMediaSerieEpisode> GetEpisodes() {
     try {
       _Lock.EnterReadLock();
-      foreach (TMediaSerieEpisode EpisodeItem in Episodes) {
+      foreach (IMediaSerieEpisode EpisodeItem in Episodes) {
         yield return EpisodeItem;
       }
     } finally {

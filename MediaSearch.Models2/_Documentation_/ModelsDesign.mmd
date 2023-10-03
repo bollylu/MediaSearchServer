@@ -1,0 +1,152 @@
+﻿---
+title "Models2 classes"
+---
+classDiagram
+
+  class AMedia {
+    <<abstract>>
+    + ELanguage : DEFAULT_LANGUAGE$
+    + string : Id
+    + EMediaType : MediaType
+    + ELanguage : DefaultLanguage
+    + DateOnly : DateAdded
+    + DateOnly : CreationDate
+    + int : CreationYear
+    + string : Group
+    + bool : IsGroupMember
+    # MediaInfos : TMediaInfos
+    # MediaSources : TMediaSources
+    # MediaPictures : TMediaPictures
+  }
+
+  class IMediaInfosContainer {
+    <<interface>>
+  }
+  class IMediaSourcesContainer {
+    <<interface>>
+  }
+  class IMediaPicturesContainer {
+    <<interface>>
+  }
+  
+  class IMediaSources {
+    <<interface>>
+    + GetDefaultMediaSource() : IMediaSource?
+    + GetMediaSource(ELanguage) : IMediasource?
+    + GetMediaSources() : IEnumerable~IMediaSource~
+    + AddMediaSource(IMediaSource) : bool
+    + RemoveMediaSource(IMediaSource) : bool
+    + ClearMediasSources()
+    + SetDefaultMediaSource(IMediaSource)
+  }
+
+  class IMediaSource {
+    <<interface>>
+    + DateOnly : DateAdded
+    + DateOnly : CreationDate
+    + int : CreationYear
+    + string : Description
+    + IListWithPrincipal~ELanguage~ : Languages
+    + IMediaSourceProperties : Properties
+  }
+
+  class IMediaInfos {
+      <<interface>>
+    + GetDefaultMediaInfo() : IMediaInfo?
+    + GetMediaInfo(ELanguage) : IMediaInfo?
+    + GetMediaInfos() : IEnumerable~IMediaInfo~
+    + AddMediaInfo(IMediaInfo)
+    + RemoveMediaInfo(IMediaInfo)
+    + ClearMediasInfos()
+    + SetDefaultMediaInfo(IMediaInfo)
+    + SetTitle(ELanguage, string)
+  }
+  class IMediaInfo {
+    <<interface>>
+    + DateOnly : DateAdded
+    + DateOnly : CreationDate
+    + int : CreationYear
+    + string : Description
+    + IListWithPrincipal~ELanguage~ : Languages
+    + List~string~ : Tags
+  }
+
+  class IMediaPictures {
+    <<interface>>
+    + GetDefaultMediaPicture() : IMediaPicture?
+    + GetMediaPicture(ELanguage) : IMediaPicture?
+    + GetMediaPictures() : IEnumerable~IMediaPicture~
+    + AddMediaPicture(IMediaPicture) : bool
+    + RemoveMediaPicture(IMediaPicture) : bool
+    + ClearMediasPictures()
+    + SetDefaultMediaPicture(IMediaPïcture)
+  }
+
+  class IMediaPicture {
+    <<interface>>
+  }
+
+  class EMediaType {
+    <<enum>>
+    Unknown
+    Movie
+    Serie
+    SerieSeason
+    SerieEpisode
+    Music
+    Video
+    Theatre
+    Spectacle
+    Concert
+  }
+
+  class ELanguage {
+    Unknown
+    French
+    FrenchFrance
+    FrenchQuebec
+    FrenchBelgium
+    English
+    EnglishUs
+    EnglishUk
+    Chinese
+    ChineseCantonese
+    ChineseMandarin
+    Japanese
+    Korean
+    German
+    Dutch
+  }
+
+  class TMediaMovie {
+  }
+
+  class IMediaSourceProperties {
+    <<interface>>
+  }
+
+  class TMediaInfos {
+    + Get(ELanguage) IMediaInfo?
+  }
+
+  class IMediaInfosContainer {
+    MediaInfos : IMediaInfos
+  }
+
+AMedia "1" --> "0..n" IMediaSourcesContainer
+AMedia "1" --> "1..n" IMediaInfosContainer
+AMedia "1" --> "0..n" IMediaPicturesContainer
+IMediaInfosContainer ..> IMediaInfos
+IMediaSourcesContainer ..> IMediaSources
+IMediaPicturesContainer ..> IMediaPictures
+AMedia ..> EMediaType
+TMediaMovie <|-- AMedia
+IMediaSources ..> IMediaSource
+IMediaSources ..> ELanguage
+IMediaInfos ..> IMediaInfo
+IMediaInfos ..> ELanguage
+IMediaPictures ..> IMediaPicture
+IMediaPictures ..> ELanguage
+IMediaSource ..> IMediaSourceProperties
+AMedia ..> TMediaInfos
+ 

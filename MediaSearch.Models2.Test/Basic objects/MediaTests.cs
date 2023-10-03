@@ -34,8 +34,6 @@ public class MediaTests {
 
     Dump(Target);
 
-    Assert.AreEqual(2, Target.MediaInfos.Count);
-
     Ok();
   }
 }

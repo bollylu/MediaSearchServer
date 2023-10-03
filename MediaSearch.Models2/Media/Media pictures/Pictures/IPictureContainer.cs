@@ -4,16 +4,16 @@
 /// </summary>
 public interface IPictureContainer {
 
-  IPicture? GetPicture(string pictureName);
+  IMediaPicture? GetPicture(string pictureName);
 
-  IEnumerable<IPicture> GetPictures();
-  IEnumerable<IPicture> GetPictures(EPictureType pictureType);
+  IEnumerable<IMediaPicture> GetPictures();
+  IEnumerable<IMediaPicture> GetPictures(EPictureType pictureType);
 
-  bool AddPicture(IPicture picture);
+  bool AddPicture(IMediaPicture picture);
   bool AddPicture(string pictureName, byte[] pictureContent, EPictureType pictureType = EPictureType.Unknown);
 
   bool DeletePicture(string pictureName);
-  bool DeletePicture(IPicture picture);
+  bool DeletePicture(IMediaPicture picture);
 
   Task<bool> LoadPicture(IMediaSource mediaSource);
   Task<bool> LoadPicture(IMediaSource mediaSource, string pictureName, EPictureType pictureType, int width, int height);

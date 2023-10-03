@@ -14,46 +14,22 @@ public class MediaSerieSeasonTests {
   public void Instanciate_Season_WithValues() {
     Message("Instanciate season");
 
-    TMediaSerieEpisode Ep1 = new TMediaSerieEpisode() {
-      AbsoluteNumber = 1,
-      Number = 1,
-      Season = 1,
-      SerieType = ESerieType.Anime,
-      MediaInfos = new TMediaInfos(
-        new TMediaInfo() {
-          Title = "La rencontre",
-          Language = ELanguage.French,
-          Description = "Le premier épisode de Dragon Ball"
-        })
-    };
-    TMediaSerieEpisode Ep2 = new TMediaSerieEpisode() {
-      AbsoluteNumber = 2,
-      Number = 2,
-      Season = 1,
-      SerieType = ESerieType.Anime,
-      MediaInfos = new TMediaInfos(
-        new TMediaInfo() {
-          Title = "Le combat",
-          Language = ELanguage.French,
-          Description = "Le second épisode de Dragon Ball"
-        })
-    };
-
     TMediaSerieSeason Target = new TMediaSerieSeason() {
       SerieType = ESerieType.Anime,
-      Number = 1,
-      MediaInfos = new TMediaInfos(
-          new TMediaInfo() {
-            Language = ELanguage.French,
-            Title = "La première saison",
-            Description = "Ici tout commence"
-          })
+      Number = 1
     };
     Assert.IsNotNull(Target);
+    Target.MediaInfos.Add(
+      new TMediaInfo() {
+        Language = ELanguage.French,
+        Title = "La première saison",
+        Description = "Ici tout commence"
+      }
+    );
 
     Message("Adding episodes");
-    Assert.IsTrue(Target.AddEpisode(Ep1));
-    Assert.IsTrue(Target.AddEpisode(Ep2));
+    Assert.IsTrue(Target.AddEpisode(DataSourceMedia.MediaSerieEpisode_DragonBall1));
+    Assert.IsTrue(Target.AddEpisode(DataSourceMedia.MediaSerieEpisode_DragonBall2));
 
     Dump(Target);
     Ok();

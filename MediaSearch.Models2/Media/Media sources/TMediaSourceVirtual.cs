@@ -51,5 +51,16 @@ public class TMediaSourceVirtual : AMediaSource, IMediaSourceVirtual {
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
+  public IEnumerable<TStreamVideoProperties> GetVideoStreams() {
+    return Properties.GetProperties().Select(p => p.Value).OfType<TStreamVideoProperties>();
+  }
+
+  public IEnumerable<TStreamAudioProperties> GetAudioStreams() {
+    return Properties.GetProperties().Select(p => p.Value).OfType<TStreamAudioProperties>();
+  }
+  public IEnumerable<TStreamSubTitleProperties> GetSubTitleStreams() {
+    return Properties.GetProperties().Select(p => p.Value).OfType<TStreamSubTitleProperties>();
+  }
+
 }
 

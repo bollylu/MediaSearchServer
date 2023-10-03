@@ -21,17 +21,17 @@ public static class EnumerableMediaExtensions {
       case EFilterSortOrder.Name:
         return medias
           .OrderBy(m => m.Name)
-          .ThenBy(m => m.MediaInfos.Default?.CreationYear ?? 0);
+          .ThenBy(m => m.MediaInfos.GetDefault()?.CreationYear ?? 0);
 
       case EFilterSortOrder.OutputYear:
         return medias
-          .OrderBy(m => m.MediaInfos.Default?.CreationYear ?? 0)
+          .OrderBy(m => m.MediaInfos.GetDefault()?.CreationYear ?? 0)
           .ThenBy(m => m.Name);
 
       case EFilterSortOrder.Group:
         return medias
-          .OrderBy(m => m.MediaInfos.Default?.Group)
-          .ThenBy(m => m.MediaInfos.Default?.CreationYear ?? 0)
+          .OrderBy(m => m.MediaInfos.GetDefault()?.Group)
+          .ThenBy(m => m.MediaInfos.GetDefault()?.CreationYear ?? 0)
           .ThenBy(m => m.Name);
     }
   }
@@ -43,8 +43,8 @@ public static class EnumerableMediaExtensions {
     }
 
     return medias
-      .Where(m => m.MediaInfos.ContainsKey(filter.Language))
-      .Where(m => filter.Keywords.IsMatch(m.MediaInfos[filter.Language].Title));
+      .Where(m => m.MediaInfos.Any(i => i.Language == filter.Language))
+      .Where(m => filter.Keywords.IsMatch(m.MediaInfos.Get(filter.Language)?.Title ?? ""));
   }
   #endregion --- Keywords --------------------------------------------
 
@@ -55,8 +55,8 @@ public static class EnumerableMediaExtensions {
     }
 
     return medias
-      .Where(m => m.MediaInfos.ContainsKey(filter.Language))
-      .Where(m => filter.Tags.IsMatch(m.MediaInfos[filter.Language].Tags));
+      .Where(m => m.MediaInfos.GetAll().Any(x => x.Language == filter.Language))
+      .Where(m => filter.Keywords.IsMatch(m.MediaInfos.Get(filter.Language)?.Title ?? ""));
   }
   #endregion --- Tags --------------------------------------------
 
@@ -88,7 +88,7 @@ public static class EnumerableMediaExtensions {
       return medias;
     }
     if (filter.GroupOnly) {
-      return medias.Where(m => m.MediaInfos.Default?.IsGroupMember ?? false);
+      return medias.Where(m => m.MediaInfos.GetDefault()?.IsGroupMember ?? false);
     } else {
       return medias;
     }
@@ -102,8 +102,8 @@ public static class EnumerableMediaExtensions {
   //}
 
   public static IAsyncEnumerable<string> GetGroups(this IEnumerable<IMedia> movies) {
-    return movies.Where(m => m.MediaInfos.Default?.IsGroupMember ?? false)
-                 .Select(m => m.MediaInfos.Default?.Group ?? "")
+    return movies.Where(m => m.MediaInfos.GetDefault()?.IsGroupMember ?? false)
+                 .Select(m => m.MediaInfos.GetDefault()?.Group ?? "")
                  .Distinct()
                  .OrderBy(x => x)
                  .ToAsyncEnumerable();

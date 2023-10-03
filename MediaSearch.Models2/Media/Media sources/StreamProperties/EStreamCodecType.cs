@@ -1,4 +1,4 @@
-﻿namespace MediaSearch.Models.Support.ffprobe;
+﻿namespace MediaSearch.Models;
 public enum EStreamCodecType : ushort {
   Unknown = 0,
   audio = 1,

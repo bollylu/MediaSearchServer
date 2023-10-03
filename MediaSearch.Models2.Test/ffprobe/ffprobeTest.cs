@@ -1,5 +1,4 @@
 ﻿using MediaSearch.Models.Support;
-using MediaSearch.Models.Support.ffprobe;
 
 namespace MediaSearch.Models2.Test.ffprobe;
 [TestClass]

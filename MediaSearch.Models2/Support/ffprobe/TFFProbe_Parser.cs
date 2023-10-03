@@ -1,7 +1,7 @@
 ﻿namespace MediaSearch.Models.Support;
 public partial class TFFProbe {
 
-  internal Dictionary<string, string> ParseStream(JsonElement jsonSource) {
+  internal static Dictionary<string, string> ParseStream(JsonElement jsonSource) {
     Dictionary<string, string> RetVal = new();
     foreach (JsonProperty JsonItem in jsonSource.EnumerateObject()) {
       if (JsonItem.Value.ValueKind == JsonValueKind.Object) {
@@ -15,7 +15,8 @@ public partial class TFFProbe {
     }
     return RetVal;
   }
-  internal Dictionary<string, string> ParseTags(JsonElement jsonSource) {
+
+  internal static Dictionary<string, string> ParseTags(JsonElement jsonSource) {
     Dictionary<string, string> RetVal = new();
     foreach (JsonProperty JsonItem in jsonSource.EnumerateObject()) {
       RetVal.Add(JsonItem.Name, JsonItem.Value.ValueKind switch {
@@ -26,7 +27,7 @@ public partial class TFFProbe {
     }
     return RetVal;
   }
-  internal Dictionary<string, string> ParseDisposition(JsonElement jsonSource) {
+  internal static Dictionary<string, string> ParseDisposition(JsonElement jsonSource) {
     Dictionary<string, string> RetVal = new();
     foreach (JsonProperty JsonItem in jsonSource.EnumerateObject()) {
       RetVal.Add(JsonItem.Name, JsonItem.Value.ValueKind switch {

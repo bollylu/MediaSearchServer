@@ -3,8 +3,6 @@ using System.Text.RegularExpressions;
 
 using BLTools.Processes;
 
-using MediaSearch.Models.Support.ffprobe;
-
 namespace MediaSearch.Models.Support;
 public partial class TFFProbe : ALoggable, IPropertiesFinder {
 
@@ -12,7 +10,7 @@ public partial class TFFProbe : ALoggable, IPropertiesFinder {
 
   public string Filename { get; private set; } = string.Empty;
 
-  public TMediaProperties MediaProperties { get; } = new();
+  public TMediaSourceStreamProperties MediaProperties { get; } = new TMediaSourceStreamProperties();
 
   public TFFProbe(string filename) : base() {
 
@@ -116,7 +114,7 @@ public partial class TFFProbe : ALoggable, IPropertiesFinder {
             }
 
           case CODEC_TYPE_SUBTITLE: {
-              TStreamSubripProperties Properties = new TStreamSubripProperties(StreamComponents.SafeGetValue(PROPERTY_INDEX, 0));
+              TStreamSubTitleProperties Properties = new TStreamSubTitleProperties(StreamComponents.SafeGetValue(PROPERTY_INDEX, 0));
               Properties.CodecName = StreamComponents.SafeGetValue(PROPERTY_CODEC_NAME, string.Empty) ?? string.Empty;
               Properties.CodecLongName = StreamComponents.SafeGetValue(PROPERTY_CODEC_LONG_NAME, string.Empty) ?? string.Empty;
               Properties.Language = TagsComponents.SafeGetValue(PROPERTY_LANGUAGE, MISSING_LANGUAGE) ?? MISSING_LANGUAGE;

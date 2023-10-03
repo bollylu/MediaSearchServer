@@ -2,8 +2,14 @@
 
 namespace MediaSearch.Models;
 
-public abstract class AMedia : ARecord, IMedia {
+public abstract class AMedia :
+  ARecord,
+  IMedia,
+  IMediaInfosContainer,
+  IMediaSourcesContainer,
+  IMediaPicturesContainer {
 
+  #region --- Public properties ------------------------------------------------------------------------------
   public static ELanguage DEFAULT_LANGUAGE = ELanguage.French;
 
   public const string MISSING_NAME = "(no name)";
@@ -27,12 +33,6 @@ public abstract class AMedia : ARecord, IMedia {
   public EMediaType MediaType { get; set; } = EMediaType.Unknown;
 
   public ELanguage DefaultLanguage { get; set; } = DEFAULT_LANGUAGE;
-
-  public IMediaSources MediaSources { get; set; } = new TMediaSources();
-
-  public IMediaInfos MediaInfos { get; set; } = new TMediaInfos();
-
-  public IMediaPictures MediaPictures { get; set; } = new TMediaPictures();
 
   public bool IsInvalid {
     get {
@@ -68,6 +68,12 @@ public abstract class AMedia : ARecord, IMedia {
   public string Group { get; set; } = "";
   public bool IsGroupMember => !string.IsNullOrWhiteSpace(Group);
 
+  public IMediaInfos MediaInfos { get; } = new TMediaInfos();
+  public IMediaSources MediaSources { get; } = new TMediaSources();
+  public IMediaPictures MediaPictures { get; } = new TMediaPictures();
+
+  #endregion --- Public properties ---------------------------------------------------------------------------
+
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   protected AMedia() {
     Logger = GlobalSettings.GlobalLogger;
@@ -77,7 +83,7 @@ public abstract class AMedia : ARecord, IMedia {
     Logger = logger;
   }
 
-  protected AMedia(string name) {
+  protected AMedia(string name) : this() {
     Name = name;
   }
 
@@ -85,22 +91,22 @@ public abstract class AMedia : ARecord, IMedia {
     MediaType = media.MediaType;
     Id = media.Id;
 
-    foreach (var MediaInfoItem in media.MediaInfos) {
-      MediaInfos.Add(MediaInfoItem.Key, new TMediaInfo(MediaInfoItem.Value));
-    }
-
-    MediaSources = new TMediaSources(media.MediaSources);
-
-    foreach (var MediaPictureItem in media.MediaPictures) {
-      MediaPictures.Add(MediaPictureItem.Key, new TPicture(MediaPictureItem.Value));
-    }
+    MediaInfos.AddRange(media.MediaInfos.GetAll());
+    MediaSources.AddRange(media.MediaSources.GetAll());
+    MediaPictures.AddRange(media.MediaPictures.GetAll());
   }
 
 
   public virtual void Dispose() {
+    MediaInfos.Clear();
+    MediaSources.Clear();
+    MediaPictures.Clear();
   }
 
   public virtual ValueTask DisposeAsync() {
+    MediaInfos.Clear();
+    MediaSources.Clear();
+    MediaPictures.Clear();
     return ValueTask.CompletedTask;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -119,8 +125,8 @@ public abstract class AMedia : ARecord, IMedia {
 
     if (MediaInfos.Any()) {
       RetVal.AppendIndent($"- {nameof(MediaInfos)}", indent);
-      foreach (var MediaInfoItem in MediaInfos) {
-        RetVal.AppendIndent($"- {MediaInfoItem.Value}", indent + 2);
+      foreach (var MediaInfoItem in MediaInfos.GetAll()) {
+        RetVal.AppendIndent($"- {MediaInfoItem}", indent + 2);
       }
     } else {
       RetVal.AppendIndent($"- {nameof(MediaInfos)} is empty", indent);
@@ -128,7 +134,7 @@ public abstract class AMedia : ARecord, IMedia {
 
     if (MediaSources.Any()) {
       RetVal.AppendIndent($"- {nameof(MediaSources)}", indent);
-      foreach (var MediaSourceItem in MediaSources) {
+      foreach (var MediaSourceItem in MediaSources.GetAll()) {
         RetVal.AppendIndent($"- {MediaSourceItem.GetType().Name}", indent + 2);
         RetVal.AppendIndent($"{MediaSourceItem.ToString(indent + 2)}", indent + 2);
       }
@@ -149,8 +155,19 @@ public abstract class AMedia : ARecord, IMedia {
   public override string ToString() {
     return ToString(0);
   }
-
   #endregion --- Converters -------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

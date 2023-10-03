@@ -3,7 +3,11 @@
 /// <summary>
 /// Whatever makes a grouping in season
 /// </summary>
-public interface IMediaSerieSeason : IMedia {
+public interface IMediaSerieSeason :
+  IMedia,
+  IMediaInfosContainer,
+  IMediaSourcesContainer,
+  IMediaPicturesContainer {
 
   /// <summary>
   /// The type of serie
@@ -20,14 +24,14 @@ public interface IMediaSerieSeason : IMedia {
   /// </summary>
   /// <param name="episode">The episode to add, with valid and unique number</param>
   /// <returns><see langword="true"/> if successful, <see langword="false"/> otherwise</returns>
-  bool AddEpisode(TMediaSerieEpisode episode);
+  bool AddEpisode(IMediaSerieEpisode episode);
 
   /// <summary>
   /// Remove an episode from the season
   /// </summary>
   /// <param name="episode">The episode to remove</param>
   /// <returns><see langword="true"/> if successful, <see langword="false"/> otherwise</returns>
-  bool RemoveEpisode(TMediaSerieEpisode episode);
+  bool RemoveEpisode(IMediaSerieEpisode episode);
 
   /// <summary>
   /// Remove an episode from the season
@@ -40,7 +44,7 @@ public interface IMediaSerieSeason : IMedia {
   /// Get all the episodes from the season
   /// </summary>
   /// <returns>An enumeration of the episodes</returns>
-  IEnumerable<TMediaSerieEpisode> GetEpisodes();
+  IEnumerable<IMediaSerieEpisode> GetEpisodes();
 
   /// <summary>
   /// Get one episode from the season

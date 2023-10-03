@@ -1,4 +1,4 @@
-﻿namespace MediaSearch.Models.Support.ffprobe;
+﻿namespace MediaSearch.Models;
 public class TStreamGenericProperties : AStreamProperties {
 
   public string CodecTypeUnknown { get; set; } = string.Empty;

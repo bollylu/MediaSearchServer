@@ -2,30 +2,21 @@
 
 namespace MediaSearch.Models;
 
-public class TMediaPictures : TLanguageDictionary<IPicture>, IMediaPictures, ILoggable {
+public class TMediaPictures : ALoggable, IMediaPictures {
 
-  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMediaPictures>();
-
-  public IPicture? Default {
-    get {
-      if (IsEmpty()) {
-        return null;
-      }
-      return this.First().Value;
-    }
-    set {
-      this.Add(value?.Language ?? ELanguage.Unknown, value ?? TPicture.Default);
-    }
-  }
+  protected List<IMediaPicture> MediaPictures = new List<IMediaPicture>();
+  private readonly ReaderWriterLockSlim _Lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMediaPictures() { }
-  public TMediaPictures(IPicture picture) {
-    Add(picture.Language, picture);
+  public TMediaPictures() : base() {
+    Logger = GlobalSettings.LoggerPool.GetLogger<TMediaPictures>();
   }
-  public TMediaPictures(IMediaPictures mediaPictures) {
-    foreach (KeyValuePair<ELanguage, IPicture> Item in mediaPictures) {
-      Add(Item.Key, Item.Value);
+  public TMediaPictures(IMediaPicture picture) : this() {
+    MediaPictures.Add(picture);
+  }
+  public TMediaPictures(IMediaPictures mediaPictures) : this() {
+    foreach (IMediaPicture Item in mediaPictures.GetAll()) {
+      MediaPictures.Add(Item);
     }
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -40,10 +31,10 @@ public class TMediaPictures : TLanguageDictionary<IPicture>, IMediaPictures, ILo
 
   public static int TIMEOUT_TO_CONVERT_IN_MS = 5000;
 
-  protected readonly Dictionary<string, IPicture> Pictures = new Dictionary<string, IPicture>();
+  protected readonly Dictionary<string, IMediaPicture> Pictures = new Dictionary<string, IMediaPicture>();
   protected readonly ReaderWriterLockSlim _LockPictures = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
-  public IPicture? GetPicture(string pictureName) {
+  public IMediaPicture? GetPicture(string pictureName) {
     try {
       _LockPictures.EnterReadLock();
       return Pictures[pictureName];
@@ -55,31 +46,31 @@ public class TMediaPictures : TLanguageDictionary<IPicture>, IMediaPictures, ILo
     }
   }
 
-  public IEnumerable<IPicture> GetPictures() {
+  public IEnumerable<IMediaPicture> GetMediaPictures() {
     try {
       _LockPictures.EnterReadLock();
       return Pictures.Values;
     } catch (Exception ex) {
       Logger.LogErrorBox("Unable to get pictures", ex);
-      return Array.Empty<IPicture>();
+      return Array.Empty<IMediaPicture>();
     } finally {
       _LockPictures.ExitReadLock();
     }
   }
 
-  public IEnumerable<IPicture> GetPictures(EPictureType pictureType) {
+  public IEnumerable<IMediaPicture> GetPictures(EPictureType pictureType) {
     try {
       _LockPictures.EnterReadLock();
       return Pictures.Values.Where(x => x.PictureType == pictureType);
     } catch (Exception ex) {
       Logger.LogErrorBox("Unable to get pictures", ex);
-      return Array.Empty<IPicture>();
+      return Array.Empty<IMediaPicture>();
     } finally {
       _LockPictures.ExitReadLock();
     }
   }
 
-  public bool AddPicture(IPicture picture) {
+  public bool AddMediaPicture(IMediaPicture picture) {
     try {
       _LockPictures.EnterWriteLock();
       Pictures.Add(picture.Name, picture);
@@ -92,11 +83,11 @@ public class TMediaPictures : TLanguageDictionary<IPicture>, IMediaPictures, ILo
     }
   }
 
-  public bool AddPicture(string pictureName, byte[] pictureContent, EPictureType pictureType = EPictureType.Unknown) {
-    return AddPicture(new TPicture(pictureName, pictureContent, pictureType));
+  public bool AddMediaPicture(string pictureName, byte[] pictureContent, EPictureType pictureType = EPictureType.Unknown) {
+    return AddMediaPicture(new TPicture(pictureName, pictureContent, pictureType));
   }
 
-  public bool DeletePicture(string pictureName) {
+  public bool RemoveMediaPicture(string pictureName) {
     try {
       _LockPictures.EnterWriteLock();
       Pictures.Remove(pictureName);
@@ -109,8 +100,8 @@ public class TMediaPictures : TLanguageDictionary<IPicture>, IMediaPictures, ILo
     }
   }
 
-  public bool DeletePicture(IPicture picture) {
-    return DeletePicture(picture.Name);
+  public bool RemoveMediaPicture(IMediaPicture picture) {
+    return RemoveMediaPicture(picture.Name);
   }
 
   public async Task<bool> LoadPicture(IMediaSourceVirtual mediaSource) {
@@ -144,7 +135,7 @@ public class TMediaPictures : TLanguageDictionary<IPicture>, IMediaPictures, ILo
       SKData Result = ResizedPicture.Encode(SKEncodedImageFormat.Jpeg, 100);
       using (MemoryStream OutputStream = new()) {
         Result.SaveTo(OutputStream);
-        return AddPicture(ParamPictureName, OutputStream.ToArray(), pictureType);
+        return AddMediaPicture(ParamPictureName, OutputStream.ToArray(), pictureType);
       }
     } catch (Exception ex) {
       Logger.LogErrorBox($"Unable to fetch picture {FullPicturePath.WithQuotes()}", ex);
@@ -154,4 +145,88 @@ public class TMediaPictures : TLanguageDictionary<IPicture>, IMediaPictures, ILo
 
 
   #endregion --- IPictureContainer --------------------------------------------
+
+  #region --- IMediaPictures --------------------------------------------
+  public IMediaPicture? GetDefault() {
+    throw new NotImplementedException();
+  }
+
+  public IMediaPicture? Get(ELanguage language) {
+    throw new NotImplementedException();
+  }
+
+  public IEnumerable<IMediaPicture> GetAll() {
+    try {
+      _Lock.EnterReadLock();
+      return MediaPictures.AsEnumerable();
+    } finally {
+      _Lock.ExitReadLock();
+    }
+  }
+
+  public bool Add(IMediaPicture mediaPicture) {
+    try {
+      _Lock.EnterWriteLock();
+      MediaPictures.Add(mediaPicture);
+      return true;
+    } catch (Exception ex) {
+      LogErrorBox("Unable to add MediaPicture", ex);
+      return false;
+    } finally {
+      _Lock.ExitWriteLock();
+    }
+  }
+
+  public bool AddRange(IEnumerable<IMediaPicture> mediaPictures) {
+    try {
+      _Lock.EnterWriteLock();
+      MediaPictures.AddRange(mediaPictures);
+      return true;
+    } catch (Exception ex) {
+      LogErrorBox("Unable to add MediaPictures", ex);
+      return false;
+    } finally {
+      _Lock.ExitWriteLock();
+    }
+  }
+
+  public bool Remove(IMediaPicture mediaPicture) {
+    throw new NotImplementedException();
+  }
+
+  public void Clear() {
+    try {
+      _Lock.EnterWriteLock();
+      MediaPictures.Clear();
+    } finally {
+      _Lock.ExitWriteLock();
+    }
+  }
+
+  public void SetDefault(IMediaPicture mediaPicture) {
+    throw new NotImplementedException();
+  }
+
+  public bool Any() {
+    try {
+      _Lock.EnterReadLock();
+      return MediaPictures.Any();
+    } finally {
+      _Lock.ExitReadLock();
+    }
+  }
+
+  public bool Any(Func<IMediaPicture, bool> predicate) {
+    try {
+      _Lock.EnterReadLock();
+      return MediaPictures.Any(predicate);
+    } finally {
+      _Lock.ExitReadLock();
+    }
+  }
+
+  public bool IsEmpty() => !Any();
+  #endregion --- IMediaPictures --------------------------------------------
+
+
 }

@@ -1,5 +1,9 @@
-﻿namespace MediaSearch.Models.Support.ffprobe;
+﻿namespace MediaSearch.Models;
 public abstract class AStreamProperties : IStreamProperties {
+
+  public const string PROPERTY_INDEX = nameof(Index);
+  public const string PROPERTY_CODEC_TYPE = nameof(CodecType);
+
   public string Name => $"{CodecType}#{Index}";
   public int Index { get; init; } = 0;
   public EStreamCodecType CodecType { get; init; } = EStreamCodecType.Unknown;

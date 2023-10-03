@@ -18,14 +18,15 @@ public class MediaSerieEpisodeTests {
       Number = 1,
       Season = 1,
       SerieType = ESerieType.Anime,
-      MediaInfos = new TMediaInfos(
-        new TMediaInfo() {
-          Title = "La rencontre",
-          Language = ELanguage.French,
-          Description = "Le premier épisode de Dragon Ball"
-        })
     };
     Assert.IsNotNull(Target);
+    Target.MediaInfos.Add(
+      new TMediaInfo() {
+        Title = "La rencontre",
+        Language = ELanguage.French,
+        Description = "Le premier épisode de Dragon Ball"
+      }
+    );
     Dump(Target);
     Ok();
   }

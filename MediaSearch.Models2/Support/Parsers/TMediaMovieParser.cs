@@ -1,10 +1,10 @@
-﻿namespace MediaSearch.Models;
-public class TMediaMovieParser : ILoggable {
+﻿using MediaSearch.Models.Support;
+
+namespace MediaSearch.Models;
+public class TMediaMovieParser : ALoggable, IMediaMovieParser {
   private readonly string _RootPath = "";
   private readonly bool ForWindows = true;
   private readonly bool ForLinux = false;
-
-  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMediaMovieParser>();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMediaMovieParser(string rootPath, bool forWindows = true) {
@@ -23,41 +23,65 @@ public class TMediaMovieParser : ILoggable {
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
-  public IMediaMovie? Parse(IFileInfo source) {
-    if (source is null) {
-      Logger.LogError("Unable to parse : source is null");
+  public async Task<IMediaMovie?> ParseFile(string source) {
+    if (source.IsEmpty()) {
+      Logger.LogError("Unable to parse : source is missing");
       return null;
     }
 
-    BLTools.Diagnostic.TraceInfo.Dump(source);
-    Logger.Log($"{nameof(_RootPath)} = {_RootPath.WithQuotes()}");
-    Logger.Log($"{nameof(source.FullName)} = {source.FullName.WithQuotes()}");
+    LogBox(nameof(source), source.ToString());
 
-    string ParseSource = source.FullName.After(_RootPath);
-    Logger.Log($"{nameof(ParseSource)} = {ParseSource.WithQuotes()}");
+    if (!File.Exists(source)) {
+      LogError($"Unable to parse : {source.WithQuotes()} is missing or access is denied");
+      return null;
+    }
 
-    string Year = ParseSource.AfterLast('(').Before(')');
+    LogDebug($"{nameof(_RootPath)} = {_RootPath.WithQuotes()}");
+    string FullName = Path.GetFullPath(source);
+    LogDebug($"{nameof(FullName)} = {FullName.WithQuotes()}");
+
+    string FullnameAfterRootPath = FullName.After(_RootPath);
+    LogDebug($"{nameof(FullnameAfterRootPath)} = {FullnameAfterRootPath.WithQuotes()}");
+
+    string Year = FullnameAfterRootPath.AfterLast('(').Before(')');
     _ = int.TryParse(Year, out int ConvertedYear);
 
-    TMediaMovie RetVal = new TMediaMovie() {
-      MediaInfos = new TMediaInfos(
-        new TMediaInfo() {
-          Title = ParseSource.AfterLast(Path.DirectorySeparatorChar).BeforeLast(" ("),
-          CreationDate = new DateOnly(ConvertedYear, 1, 1)
-        }
-      ),
-      MediaSources = new TMediaSources(
-        new TMediaSourceVirtual() {
-          FileName = ParseSource.AfterLast(Path.DirectorySeparatorChar).BeforeLast('.'),
-          FileExtension = ParseSource.AfterLast("."),
-          StoragePath = ParseSource.BeforeLast(Path.DirectorySeparatorChar),
-          StorageRoot = _RootPath,
-          CreationDate = new DateOnly(ConvertedYear, 1, 1),
-          Size = source.Length,
-          DateAdded = DateOnly.FromDateTime(DateTime.Today)
-        }
-      )
+    IPropertiesFinder Finder = new TFFProbe(FullName);
+    await Finder.Init();
+
+    TMediaInfo MediaInfo = new TMediaInfo() {
+      Title = FullnameAfterRootPath.AfterLast(Path.DirectorySeparatorChar).BeforeLast(" ("),
+      CreationDate = new DateOnly(ConvertedYear, 1, 1)
     };
+
+    TMediaSourceVirtual MediaSource = new TMediaSourceVirtual() {
+      FileName = FullnameAfterRootPath.AfterLast(Path.DirectorySeparatorChar).BeforeLast('.'),
+      FileExtension = FullnameAfterRootPath.AfterLast("."),
+      StoragePath = FullnameAfterRootPath.BeforeLast(Path.DirectorySeparatorChar),
+      StorageRoot = _RootPath,
+      CreationDate = new DateOnly(ConvertedYear, 1, 1),
+      Size = (new FileInfo(FullName)).Length,
+      DateAdded = DateOnly.FromDateTime(DateTime.Today)
+    };
+    MediaSource.Languages.Clear();
+    foreach (TStreamAudioProperties StreamPropertyItem in Finder.MediaProperties.AudioProperties) {
+      MediaSource.Languages.Add(ELanguageConverter.FromAudioStreamValue(StreamPropertyItem.Language));
+    }
+
+    if (MediaSource.Languages.Count > 1) {
+      MediaSource.Languages.SetPrincipal(ELanguage.French);
+    }
+
+    foreach (var StreamPropertyItem in Finder.MediaProperties.StreamProperties) {
+      MediaSource.Properties.AddProperty(
+        new TMediaSourceProperty() {
+          Name = StreamPropertyItem.Name,
+          Value = StreamPropertyItem
+        });
+    }
+
+    TMediaMovie RetVal = new TMediaMovie();
+    RetVal.MediaSources.Add(MediaSource);
 
     return RetVal;
   }

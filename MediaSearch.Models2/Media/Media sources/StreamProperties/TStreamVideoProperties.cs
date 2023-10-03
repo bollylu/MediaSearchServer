@@ -1,4 +1,4 @@
-﻿namespace MediaSearch.Models.Support.ffprobe;
+﻿namespace MediaSearch.Models;
 public class TStreamVideoProperties : AStreamProperties {
 
   public int Width { get; set; } = 0;

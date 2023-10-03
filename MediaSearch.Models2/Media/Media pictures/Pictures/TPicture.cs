@@ -3,7 +3,7 @@
 using SkiaSharp;
 
 namespace MediaSearch.Models;
-public class TPicture : ILoggable, IPicture {
+public class TPicture : ILoggable, IMediaPicture {
 
   public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TPicture>();
 
@@ -34,7 +34,7 @@ public class TPicture : ILoggable, IPicture {
     Language = language;
   }
 
-  public TPicture(IPicture picture) {
+  public TPicture(IMediaPicture picture) {
     Name = picture.Name;
     Data = picture.Data;
     PictureType = picture.PictureType;
@@ -54,7 +54,7 @@ public class TPicture : ILoggable, IPicture {
     try {
       Data = await File.ReadAllBytesAsync(location);
       if (withResize) {
-        IPicture? Resized = Resize(DEFAULT_PICTURE_WIDTH, DEFAULT_PICTURE_HEIGHT);
+        IMediaPicture? Resized = Resize(DEFAULT_PICTURE_WIDTH, DEFAULT_PICTURE_HEIGHT);
         if (Resized is not null) {
           Data = Resized.Data;
         }
@@ -66,7 +66,7 @@ public class TPicture : ILoggable, IPicture {
     }
   }
 
-  public IPicture? Resize(int width, int height) {
+  public IMediaPicture? Resize(int width, int height) {
     int ParamWidth = width.WithinLimits(MIN_PICTURE_WIDTH, MAX_PICTURE_WIDTH);
     int ParamHeight = height.WithinLimits(MIN_PICTURE_HEIGHT, MAX_PICTURE_HEIGHT);
 
@@ -90,13 +90,13 @@ public class TPicture : ILoggable, IPicture {
     }
   }
 
-  public static IPicture Default {
+  public static IMediaPicture Default {
     get {
       return new TPicture();
     }
   }
 
-  public static IPicture? GetPictureFromAssembly(string pictureName, string pictureExtension = ".png") {
+  public static IMediaPicture? GetPictureFromAssembly(string pictureName, string pictureExtension = ".png") {
     ILogger Logger = GlobalSettings.LoggerPool.GetLogger<TPicture>();
     try {
       Assembly Asm = Assembly.GetExecutingAssembly();
@@ -119,11 +119,11 @@ public class TPicture : ILoggable, IPicture {
     }
   }
 
-  public static IPicture PictureMissing {
+  public static IMediaPicture PictureMissing {
     get {
       return _PictureMissing ??= GetPictureFromAssembly("missing", ".jpg") ?? new TPicture("Picture not found (missing.jpg)", Array.Empty<byte>());
     }
   }
 
-  private static IPicture? _PictureMissing;
+  private static IMediaPicture? _PictureMissing;
 }

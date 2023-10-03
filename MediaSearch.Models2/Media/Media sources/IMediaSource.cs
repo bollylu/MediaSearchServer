@@ -30,6 +30,7 @@ public interface IMediaSource : IToStringIndent {
   /// </summary>
   IListWithPrincipal<ELanguage> Languages { get; set; }
 
+  IMediaSourceProperties Properties { get; }
 }
 
 

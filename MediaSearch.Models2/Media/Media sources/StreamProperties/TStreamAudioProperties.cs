@@ -1,4 +1,4 @@
-﻿namespace MediaSearch.Models.Support.ffprobe;
+﻿namespace MediaSearch.Models;
 public class TStreamAudioProperties : AStreamProperties {
 
   public int Channels { get; set; } = 0;

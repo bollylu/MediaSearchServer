@@ -1,13 +1,9 @@
 ﻿using MediaSearch.Models;
 
-namespace MediaSearch.Models2;
+namespace MediaSearch.Models;
 
 public class TMedia : AMedia {
 
   public TMedia() { }
 
-  public TMedia(TMediaInfos mediaInfos, IEnumerable<IMediaSource> mediaSources) {
-    MediaInfos = new TMediaInfos(mediaInfos);
-    MediaSources = new TMediaSources(mediaSources);
-  }
 }

@@ -1,5 +1,5 @@
 ﻿namespace MediaSearch.Models;
-public interface IPicture {
+public interface IMediaPicture {
 
   /// <summary>
   /// The name of the picture
@@ -35,5 +35,5 @@ public interface IPicture {
   /// <param name="width">The width</param>
   /// <param name="height">The height</param>
   /// <returns>The bytes of the new picture, resized</returns>
-  IPicture? Resize(int width, int height);
+  IMediaPicture? Resize(int width, int height);
 }

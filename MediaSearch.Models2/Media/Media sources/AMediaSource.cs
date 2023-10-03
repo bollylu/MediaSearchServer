@@ -1,20 +1,25 @@
 ﻿namespace MediaSearch.Models;
 
-public abstract class AMediaSource : ILoggable, IMediaSource {
+public abstract class AMediaSource : ALoggable, IMediaSource {
 
-  public ILogger Logger { get; init; } = GlobalSettings.LoggerPool.GetLogger<AMediaSource>();
-
+  #region --- Public properties ------------------------------------------------------------------------------
   public DateOnly DateAdded { get; set; } = DateOnly.FromDateTime(DateTime.Today);
 
   public DateOnly CreationDate { get; set; } = new DateOnly();
   public int CreationYear => CreationDate.Year;
 
   public string Description { get; set; } = string.Empty;
+
   public IListWithPrincipal<ELanguage> Languages { get; set; } = new TListWithPrincipal<ELanguage>() { ELanguage.Unknown };
 
+  public IMediaSourceProperties Properties { get; } = new TMediaSourceProperties();
+  #endregion --- Public properties ---------------------------------------------------------------------------
+
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  protected AMediaSource() { }
-  protected AMediaSource(IMediaSource mediaSource) {
+  protected AMediaSource() {
+    Logger = GlobalSettings.LoggerPool.GetLogger<AMediaSource>();
+  }
+  protected AMediaSource(IMediaSource mediaSource) : this() {
     Languages = new TListWithPrincipal<ELanguage>(mediaSource.Languages);
     DateAdded = mediaSource.DateAdded;
     CreationDate = mediaSource.CreationDate;
@@ -33,7 +38,6 @@ public abstract class AMediaSource : ILoggable, IMediaSource {
     RetVal.AppendIndent(Languages.ToString(indent), indent + 2);
     return RetVal.ToString();
   }
-
 
   public override string ToString() {
     return ToString(0);

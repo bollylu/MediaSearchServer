@@ -13,67 +13,16 @@ public class MediaSerieTests {
 
   [TestMethod]
   public void Instanciate_Serie_WithValues() {
-    Message("Instanciate episodes");
-    TMediaSerieEpisode Ep1 = new TMediaSerieEpisode() {
-      AbsoluteNumber = 1,
-      Number = 1,
-      Season = 1,
-      SerieType = ESerieType.Anime,
-      MediaInfos = new TMediaInfos(
-        new TMediaInfo() {
-          Title = "La rencontre",
-          Language = ELanguage.French,
-          Description = "Le premier épisode de Dragon Ball"
-        })
-    };
-    Dump(Ep1);
-    TMediaSerieEpisode Ep2 = new TMediaSerieEpisode() {
-      AbsoluteNumber = 2,
-      Number = 2,
-      Season = 1,
-      SerieType = ESerieType.Anime,
-      MediaInfos = new TMediaInfos(
-        new TMediaInfo() {
-          Title = "Le combat",
-          Language = ELanguage.French,
-          Description = "Le second épisode de Dragon Ball"
-        })
-    };
-    Dump(Ep2);
-
-    Message("Adding episodes to season");
-    TMediaSerieSeason Season1 = new TMediaSerieSeason() {
-      SerieType = ESerieType.Anime,
-      Number = 1,
-      MediaInfos = new TMediaInfos(
-          new TMediaInfo() {
-            Language = ELanguage.French,
-            Title = "La première saison",
-            Description = "Ici tout commence"
-          })
-    };
-    Assert.IsTrue(Season1.AddEpisode(Ep1));
-    Assert.IsTrue(Season1.AddEpisode(Ep2));
-    Dump(Season1);
-
-    Message("Instanciate MediaInfo");
-    TMediaInfo InfoFR = new TMediaInfo() {
-      Language = ELanguage.French,
-      Title = "Dragon Ball",
-      Description = "Les aventures de SanGoKu et cie"
-    };
-    Dump(InfoFR);
 
     Message("Instanciate serie");
     TMediaSerie Target = new TMediaSerie() {
       SerieType = ESerieType.Anime,
-      MediaInfos = new TMediaInfos(InfoFR)
     };
-
+    Target.MediaInfos.AddRange(DataSourceMedia.MediaInfos_DragonBall.GetAll());
     Dump(Target);
 
-    Message($"Adding {nameof(Season1)}");
-    Assert.IsTrue(Target.AddSeason(Season1));
+    Message($"Adding {nameof(DataSourceMedia.MediaSerieSeason_DragonBall1)}");
+    Assert.IsTrue(Target.AddSeason(DataSourceMedia.MediaSerieSeason_DragonBall1));
     Dump(Target);
 
     Assert.AreEqual(1, Target.GetSeasons().Count());
@@ -89,262 +38,63 @@ public class MediaSerieTests {
 
   [TestMethod]
   public void Instanciate_Serie_DuplicateSeason_Error() {
-    Message("Instanciate episodes");
-    TMediaSerieEpisode Ep1 = new TMediaSerieEpisode() {
-      AbsoluteNumber = 1,
-      Number = 1,
-      Season = 1,
-      SerieType = ESerieType.Anime,
-      MediaInfos = new TMediaInfos(
-        new TMediaInfo() {
-          Title = "La rencontre",
-          Language = ELanguage.French,
-          Description = "Le premier épisode de Dragon Ball"
-        })
-    };
-    TMediaSerieEpisode Ep2 = new TMediaSerieEpisode() {
-      AbsoluteNumber = 2,
-      Number = 2,
-      Season = 1,
-      SerieType = ESerieType.Anime,
-      MediaInfos = new TMediaInfos(
-        new TMediaInfo() {
-          Title = "Le combat",
-          Language = ELanguage.French,
-          Description = "Le second épisode de Dragon Ball"
-        })
-    };
-
-    Message("Adding episodes to season");
-    TMediaSerieSeason Season1 = new TMediaSerieSeason() {
-      SerieType = ESerieType.Anime,
-      Number = 1,
-      MediaInfos = new TMediaInfos(
-          new TMediaInfo() {
-            Language = ELanguage.French,
-            Title = "La première saison",
-            Description = "Ici tout commence"
-          })
-    };
-    Assert.IsTrue(Season1.AddEpisode(Ep1));
-    Assert.IsTrue(Season1.AddEpisode(Ep2));
-
-    Message("Instanciate MediaInfo");
-    TMediaInfo InfoFR = new TMediaInfo() {
-      Language = ELanguage.French,
-      Title = "Dragon Ball",
-      Description = "Les aventures de SanGoKu et cie"
-    };
-
     Message("Instanciate serie");
     TMediaSerie Target = new TMediaSerie() {
-      SerieType = ESerieType.Anime,
-      MediaInfos = new TMediaInfos(InfoFR)
+      SerieType = ESerieType.Anime
     };
-
+    Assert.IsNotNull(Target);
     Dump(Target);
 
-    Message($"Adding {nameof(Season1)}");
-    Assert.IsTrue(Target.AddSeason(Season1));
+    Message($"Adding {nameof(DataSourceMedia.MediaSerieSeason_DragonBall1)}");
+    Assert.IsTrue(Target.AddSeason(DataSourceMedia.MediaSerieSeason_DragonBall1));
     Dump(Target);
 
-    Message($"Second attempt to add {nameof(Season1)}, will fail");
-    Assert.IsFalse(Target.AddSeason(Season1));
+    Message($"Second attempt to add {nameof(DataSourceMedia.MediaSerieSeason_DragonBall1)}, will fail");
+    Assert.IsFalse(Target.AddSeason(DataSourceMedia.MediaSerieSeason_DragonBall1));
 
     Ok();
   }
 
   [TestMethod]
   public void Instanciate_Serie_InvalidSeasonNumber_Error() {
-    Message("Instanciate episodes");
-    TMediaSerieEpisode Ep1 = new TMediaSerieEpisode() {
-      AbsoluteNumber = 1,
-      Number = 1,
-      Season = 1,
-      SerieType = ESerieType.Anime,
-      MediaInfos = new TMediaInfos(
-        new TMediaInfo() {
-          Title = "La rencontre",
-          Language = ELanguage.French,
-          Description = "Le premier épisode de Dragon Ball"
-        })
-    };
-    TMediaSerieEpisode Ep2 = new TMediaSerieEpisode() {
-      AbsoluteNumber = 2,
-      Number = 2,
-      Season = 1,
-      SerieType = ESerieType.Anime,
-      MediaInfos = new TMediaInfos(
-        new TMediaInfo() {
-          Title = "Le combat",
-          Language = ELanguage.French,
-          Description = "Le second épisode de Dragon Ball"
-        })
-    };
-
-    Message("Adding episodes to season");
-    TMediaSerieSeason Season1 = new TMediaSerieSeason() {
-      SerieType = ESerieType.Anime,
-      Number = -1,
-      MediaInfos = new TMediaInfos(
-          new TMediaInfo() {
-            Language = ELanguage.French,
-            Title = "La première saison",
-            Description = "Ici tout commence"
-          })
-    };
-    Assert.IsTrue(Season1.AddEpisode(Ep1));
-    Assert.IsTrue(Season1.AddEpisode(Ep2));
-
-    Message("Instanciate MediaInfo");
-    TMediaInfo InfoFR = new TMediaInfo() {
-      Language = ELanguage.French,
-      Title = "Dragon Ball",
-      Description = "Les aventures de SanGoKu et cie"
-    };
-
     Message("Instanciate serie");
     TMediaSerie Target = new TMediaSerie() {
-      SerieType = ESerieType.Anime,
-      MediaInfos = new TMediaInfos(InfoFR)
+      SerieType = ESerieType.Anime
     };
 
     Dump(Target);
 
-    Message($"Attempt to add {nameof(Season1)}, will fail");
-    Assert.IsFalse(Target.AddSeason(Season1));
+    TMediaSerieSeason InvalidSeason = new TMediaSerieSeason(DataSourceMedia.MediaSerieSeason_DragonBall1);
+    InvalidSeason.Number = -1;
+    Message($"Attempt to add {nameof(InvalidSeason)}, will fail");
+    Assert.IsFalse(Target.AddSeason(InvalidSeason));
 
     Ok();
   }
 
   [TestMethod]
   public void Instanciate_Serie_InvalidSeasonType_Error() {
-    Message("Instanciate episodes");
-    TMediaSerieEpisode Ep1 = new TMediaSerieEpisode() {
-      AbsoluteNumber = 1,
-      Number = 1,
-      Season = 1,
-      SerieType = ESerieType.Anime,
-      MediaInfos = new TMediaInfos(
-        new TMediaInfo() {
-          Title = "La rencontre",
-          Language = ELanguage.French,
-          Description = "Le premier épisode de Dragon Ball"
-        })
-    };
-    TMediaSerieEpisode Ep2 = new TMediaSerieEpisode() {
-      AbsoluteNumber = 2,
-      Number = 2,
-      Season = 1,
-      SerieType = ESerieType.Anime,
-      MediaInfos = new TMediaInfos(
-        new TMediaInfo() {
-          Title = "Le combat",
-          Language = ELanguage.French,
-          Description = "Le second épisode de Dragon Ball"
-        })
-    };
-
-    Message("Adding episodes to season");
-    TMediaSerieSeason Season1 = new TMediaSerieSeason() {
-      SerieType = ESerieType.Anime,
-      Number = 1,
-      MediaInfos = new TMediaInfos(
-          new TMediaInfo() {
-            Language = ELanguage.French,
-            Title = "La première saison",
-            Description = "Ici tout commence"
-          })
-    };
-    Assert.IsTrue(Season1.AddEpisode(Ep1));
-    Assert.IsTrue(Season1.AddEpisode(Ep2));
-
-    Message("Instanciate MediaInfo");
-    TMediaInfo InfoFR = new TMediaInfo() {
-      Language = ELanguage.French,
-      Title = "Dragon Ball",
-      Description = "Les aventures de SanGoKu et cie"
-    };
-
     Message("Instanciate serie");
     TMediaSerie Target = new TMediaSerie() {
-      SerieType = ESerieType.TvShow,
-      MediaInfos = new TMediaInfos(InfoFR)
+      SerieType = ESerieType.TvShow
     };
 
     Dump(Target);
 
-    Message($"Attempt to add {nameof(Season1)}, will fail because of unmatching serie type");
-    Assert.IsFalse(Target.AddSeason(Season1));
+    Message($"Attempt to add {nameof(DataSourceMedia.MediaSerieSeason_DragonBall1)}, will fail because of unmatching serie type");
+    Assert.IsFalse(Target.AddSeason(DataSourceMedia.MediaSerieSeason_DragonBall1));
 
     Ok();
   }
 
   [TestMethod]
   public void RetrieveSeasonFromSerie_InvalidNumber_Error() {
-    Message("Instanciate episodes");
-    TMediaSerieEpisode Ep1 = new TMediaSerieEpisode() {
-      AbsoluteNumber = 1,
-      Number = 1,
-      Season = 1,
-      SerieType = ESerieType.Anime,
-      MediaInfos = new TMediaInfos(
-        new TMediaInfo() {
-          Title = "La rencontre",
-          Language = ELanguage.French,
-          Description = "Le premier épisode de Dragon Ball"
-        })
-    };
-    TMediaSerieEpisode Ep2 = new TMediaSerieEpisode() {
-      AbsoluteNumber = 2,
-      Number = 2,
-      Season = 1,
-      SerieType = ESerieType.Anime,
-      MediaInfos = new TMediaInfos(
-        new TMediaInfo() {
-          Title = "Le combat",
-          Language = ELanguage.French,
-          Description = "Le second épisode de Dragon Ball"
-        })
-    };
-
-    Message("Adding episodes to season");
-    TMediaSerieSeason Season1 = new TMediaSerieSeason() {
-      SerieType = ESerieType.Anime,
-      Number = 1,
-      MediaInfos = new TMediaInfos(
-          new TMediaInfo() {
-            Language = ELanguage.French,
-            Title = "La première saison",
-            Description = "Ici tout commence"
-          })
-    };
-    Assert.IsTrue(Season1.AddEpisode(Ep1));
-    Assert.IsTrue(Season1.AddEpisode(Ep2));
-
-    Message("Instanciate MediaInfo");
-    TMediaInfo InfoFR = new TMediaInfo() {
-      Language = ELanguage.French,
-      Title = "Dragon Ball",
-      Description = "Les aventures de SanGoKu et cie"
-    };
-
-    Message("Instanciate serie");
-    TMediaSerie Target = new TMediaSerie() {
-      SerieType = ESerieType.Anime,
-      MediaInfos = new TMediaInfos(InfoFR)
-    };
-
-    Message($"Adding {nameof(Season1)}");
-    Assert.IsTrue(Target.AddSeason(Season1));
-
-    Dump(Target);
 
     Message($"Attempt to retrieve season with invalid number, will fail");
-    Assert.IsNull(Target.GetSeason(-3));
+    Assert.IsNull(DataSourceMedia.MediaSerie_DragonBall.GetSeason(-3));
 
     Message($"Attempt to retrieve season with non-existent number, will fail");
-    Assert.IsNull(Target.GetSeason(7));
+    Assert.IsNull(DataSourceMedia.MediaSerie_DragonBall.GetSeason(7));
 
     Ok();
   }
