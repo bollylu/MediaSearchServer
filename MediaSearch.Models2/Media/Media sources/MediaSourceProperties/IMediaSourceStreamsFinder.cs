@@ -1,11 +1,11 @@
 ﻿namespace MediaSearch.Models.Support;
-public interface IPropertiesFinder {
+public interface IMediaSourceStreamsFinder {
 
   string Filename { get; }
 
   Task Init();
   Task<string> GetVersion();
 
-  TMediaSourceStreamProperties MediaProperties { get; }
+  TMediaStreams MediaSourceStreams { get; }
 
 }

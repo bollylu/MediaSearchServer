@@ -21,12 +21,15 @@ classDiagram
 
   class IMediaInfosContainer {
     <<interface>>
+    + MediaInfos : IMediaInfos
   }
   class IMediaSourcesContainer {
     <<interface>>
+    + MediaSources : IMediaSources
   }
   class IMediaPicturesContainer {
     <<interface>>
+    + MediaPictures : IMediaPictures
   }
   
   class IMediaSources {
@@ -47,7 +50,21 @@ classDiagram
     + int : CreationYear
     + string : Description
     + IListWithPrincipal~ELanguage~ : Languages
-    + IMediaSourceProperties : Properties
+  }
+
+  class IMediaSourcePhysical {
+    <<interface>>
+  }
+
+  class IMediaSourceVirtual {
+    <<interface>>
+    + StorageRoot : string
+    + StoragePath : string
+    + FileName : string
+    + FileExtension : string
+    + FullFileName : string
+    + Size : long
+    + MediaStreams : IMediaStreams
   }
 
   class IMediaInfos {
@@ -59,7 +76,6 @@ classDiagram
     + RemoveMediaInfo(IMediaInfo)
     + ClearMediasInfos()
     + SetDefaultMediaInfo(IMediaInfo)
-    + SetTitle(ELanguage, string)
   }
   class IMediaInfo {
     <<interface>>
@@ -125,12 +141,53 @@ classDiagram
     <<interface>>
   }
 
-  class TMediaInfos {
-    + Get(ELanguage) IMediaInfo?
-  }
-
   class IMediaInfosContainer {
     MediaInfos : IMediaInfos
+  }
+
+  class IMediaStream {
+    <<interface>>
+  }
+
+  class AMediaStream {
+    <<abstract>>
+  }
+
+  class TMediaStreamAudio {
+
+  }
+  class TMediaStreamVideo {
+
+  }
+  class TMediaStreamData {
+
+  }
+  class TMediaStreamSubTitle {
+
+  }
+  class TMediaStreamGeneric {
+
+  }
+
+  class IMediaStreams {
+    <<interface>>
+    + Add(params IMediaStreams[]) : bool
+    + AddRange(IEnumerable~IMediaStream~) : bool
+    + Get(int) : IMediaStream?
+    + GetAll() : IEnumerable~IMediaStream~
+    + Remove(IMediaStream) : bool
+    + Clear()
+    + Any() : bool
+    + Any(Predicate~IMediaStream~) : bool
+    + IsEmpty()
+  }
+
+  class TMediaStreams {
+    + MediaStreamsVideo : IEnumerable~TMediaStreamVideo~
+    + MediaStreamsAudio : IEnumerable~TMediaStreamAudio~
+    + MediaStreamsSubTitle : IEnumerable~TMediaStreamSubTitle~
+    + MediaStreamsData : IEnumerable~TMediaStreamData~
+    + MediaStreamsGeneric : IEnumerable~TMediaStreamGeneric~
   }
 
 AMedia "1" --> "0..n" IMediaSourcesContainer
@@ -148,5 +205,16 @@ IMediaInfos ..> ELanguage
 IMediaPictures ..> IMediaPicture
 IMediaPictures ..> ELanguage
 IMediaSource ..> IMediaSourceProperties
-AMedia ..> TMediaInfos
- 
+IMediaStreams ..> "0..n" IMediaStream
+TMediaStreams <|-- IMediaStreams
+TMediaStreams ..> "0..n" IMediaStream
+AMediaStream <|-- IMediaStream
+TMediaStreamAudio <|-- AMediaStream
+TMediaStreamVideo <|-- AMediaStream
+TMediaStreamSubTitle <|-- AMediaStream
+TMediaStreamData <|-- AMediaStream
+TMediaStreamGeneric <|-- AMediaStream
+
+ IMediaSourceVirtual <|-- IMediaSource
+ IMediaSourceVirtual "1" --> "1" IMediaStreams
+ IMediaSourcePhysical <|-- IMediaSource

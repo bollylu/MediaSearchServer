@@ -30,7 +30,7 @@ public static class EnumerableMediaExtensions {
 
       case EFilterSortOrder.Group:
         return medias
-          .OrderBy(m => m.MediaInfos.GetDefault()?.Group)
+          .OrderBy(m => m.MediaInfos.GetDefault()?.Groups.CombineToString())
           .ThenBy(m => m.MediaInfos.GetDefault()?.CreationYear ?? 0)
           .ThenBy(m => m.Name);
     }
@@ -103,7 +103,7 @@ public static class EnumerableMediaExtensions {
 
   public static IAsyncEnumerable<string> GetGroups(this IEnumerable<IMedia> movies) {
     return movies.Where(m => m.MediaInfos.GetDefault()?.IsGroupMember ?? false)
-                 .Select(m => m.MediaInfos.GetDefault()?.Group ?? "")
+                 .SelectMany(m => m.MediaInfos.GetDefault()?.Groups ?? new List<string>())
                  .Distinct()
                  .OrderBy(x => x)
                  .ToAsyncEnumerable();

@@ -7,11 +7,11 @@ public class TMediaMovieParser : ALoggable, IMediaMovieParser {
   private readonly bool ForLinux = false;
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMediaMovieParser(string rootPath, bool forWindows = true) {
+  public TMediaMovieParser(string rootPath = ".", bool forWindows = true) {
     Logger = GlobalSettings.LoggerPool.GetLogger<TMediaMovieParser>();
     ForWindows = forWindows;
     ForLinux = !ForWindows;
-    _RootPath = rootPath.NormalizePath(ForWindows).TrimStart('.');
+    _RootPath = Path.GetFullPath(rootPath.NormalizePath(ForWindows));
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
@@ -24,6 +24,7 @@ public class TMediaMovieParser : ALoggable, IMediaMovieParser {
   #endregion --- Converters -------------------------------------------------------------------------------------
 
   public async Task<IMediaMovie?> ParseFile(string source) {
+    #region === Validate parameters ===
     if (source.IsEmpty()) {
       Logger.LogError("Unable to parse : source is missing");
       return null;
@@ -35,25 +36,23 @@ public class TMediaMovieParser : ALoggable, IMediaMovieParser {
       LogError($"Unable to parse : {source.WithQuotes()} is missing or access is denied");
       return null;
     }
+    #endregion === Validate parameters ===
 
     LogDebug($"{nameof(_RootPath)} = {_RootPath.WithQuotes()}");
     string FullName = Path.GetFullPath(source);
     LogDebug($"{nameof(FullName)} = {FullName.WithQuotes()}");
 
-    string FullnameAfterRootPath = FullName.After(_RootPath);
+    string FullnameAfterRootPath = FullName.After(_RootPath).After(Path.DirectorySeparatorChar);
     LogDebug($"{nameof(FullnameAfterRootPath)} = {FullnameAfterRootPath.WithQuotes()}");
 
     string Year = FullnameAfterRootPath.AfterLast('(').Before(')');
     _ = int.TryParse(Year, out int ConvertedYear);
+    LogDebug($"Year = {ConvertedYear}");
 
-    IPropertiesFinder Finder = new TFFProbe(FullName);
+    IMediaSourceStreamsFinder Finder = new TFFProbe(FullName);
     await Finder.Init();
 
-    TMediaInfo MediaInfo = new TMediaInfo() {
-      Title = FullnameAfterRootPath.AfterLast(Path.DirectorySeparatorChar).BeforeLast(" ("),
-      CreationDate = new DateOnly(ConvertedYear, 1, 1)
-    };
-
+    #region --- MediaSource --------------------------------------------
     TMediaSourceVirtual MediaSource = new TMediaSourceVirtual() {
       FileName = FullnameAfterRootPath.AfterLast(Path.DirectorySeparatorChar).BeforeLast('.'),
       FileExtension = FullnameAfterRootPath.AfterLast("."),
@@ -63,25 +62,37 @@ public class TMediaMovieParser : ALoggable, IMediaMovieParser {
       Size = (new FileInfo(FullName)).Length,
       DateAdded = DateOnly.FromDateTime(DateTime.Today)
     };
+
     MediaSource.Languages.Clear();
-    foreach (TStreamAudioProperties StreamPropertyItem in Finder.MediaProperties.AudioProperties) {
-      MediaSource.Languages.Add(ELanguageConverter.FromAudioStreamValue(StreamPropertyItem.Language));
+
+    foreach (var MediaStreamItem in Finder.MediaSourceStreams.GetAll()) {
+      MediaSource.MediaStreams.Add(MediaStreamItem);
+      if (MediaStreamItem is TMediaStreamAudio MediaStreamAudio) {
+        MediaSource.Languages.Add(ELanguageConverter.FromAudioStreamValue(MediaStreamAudio.Language));
+      }
     }
 
     if (MediaSource.Languages.Count > 1) {
       MediaSource.Languages.SetPrincipal(ELanguage.French);
     }
+    #endregion --- MediaSource -----------------------------------------
 
-    foreach (var StreamPropertyItem in Finder.MediaProperties.StreamProperties) {
-      MediaSource.Properties.AddProperty(
-        new TMediaSourceProperty() {
-          Name = StreamPropertyItem.Name,
-          Value = StreamPropertyItem
-        });
+    #region --- MediaInfos --------------------------------------------
+    IMediaInfo MediaInfo = new TMediaInfo() {
+      CreationDate = new DateOnly(ConvertedYear, 1, 1)
+    };
+
+    MediaInfo.Title = FullnameAfterRootPath.BeforeLast(" (");
+    foreach (string GroupItem in MediaSource.StoragePath.Split(Path.DirectorySeparatorChar)) {
+      MediaInfo.Groups.Add(GroupItem);
     }
+    #endregion --- MediaInfos -----------------------------------------
 
+    #region --- MediaMovie --------------------------------------------
     TMediaMovie RetVal = new TMediaMovie();
+    RetVal.MediaInfos.Add(MediaInfo);
     RetVal.MediaSources.Add(MediaSource);
+    #endregion --- MediaMovie -----------------------------------------
 
     return RetVal;
   }

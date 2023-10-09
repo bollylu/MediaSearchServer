@@ -9,7 +9,7 @@ public class ffprobeTest {
   [TestMethod]
   public async Task GetFFPROBE_Version() {
     Message("Reading version of ffprobe");
-    IPropertiesFinder FFProbe = new TFFProbe("");
+    IMediaSourceStreamsFinder FFProbe = new TFFProbe("");
     Assert.IsNotNull(FFProbe);
     Dump(FFProbe);
 
@@ -26,7 +26,7 @@ public class ffprobeTest {
   public async Task GetFFPROBE_Streams() {
     Message($"Reading streams in {DATA_SOURCE_FOLDER.WithQuotes()}");
 
-    List<IPropertiesFinder> Probes = new();
+    List<IMediaSourceStreamsFinder> Probes = new();
     foreach (string MovieItem in Directory.EnumerateDirectories(DATA_SOURCE_FOLDER)) {
       string? MovieFile = Directory.EnumerateFiles(MovieItem).FirstOrDefault(m => !m.EndsWith(".jpg"));
       if (MovieFile is null) {
@@ -44,7 +44,7 @@ public class ffprobeTest {
 
     Message("Data is gathered.");
 
-    foreach (IPropertiesFinder FinderItem in Probes) {
+    foreach (IMediaSourceStreamsFinder FinderItem in Probes) {
       Dump(FinderItem, 2);
     }
 

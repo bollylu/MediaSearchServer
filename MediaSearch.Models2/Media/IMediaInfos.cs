@@ -3,6 +3,7 @@ public interface IMediaInfos {
 
   IEnumerable<IMediaInfo> GetAll();
   IMediaInfo? GetDefault();
+  bool SetDefault(IMediaInfo mediaInfo);
   IMediaInfo? Get(ELanguage language);
   bool Add(params IMediaInfo[] mediaInfo);
   bool AddRange(IEnumerable<IMediaInfo> mediaInfo);
@@ -13,6 +14,6 @@ public interface IMediaInfos {
   bool Any(Func<IMediaInfo, bool> predicate);
   bool IsEmpty();
 
-  void SetTitle(ELanguage language, string title);
+
 
 }

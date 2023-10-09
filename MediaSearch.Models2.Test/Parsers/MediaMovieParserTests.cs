@@ -1,5 +1,8 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.IO;
+using System.Runtime.InteropServices;
 using System.Transactions;
+
+using MediaSearch.Models;
 
 using Microsoft.Extensions.Primitives;
 
@@ -10,7 +13,7 @@ public class MediaMovieParserTests {
   [TestMethod]
   public void Instanciate_MediaMovieParser() {
     Message("Instanciate media movie parser");
-    TMediaMovieParser Target = new TMediaMovieParser("");
+    TMediaMovieParser Target = new TMediaMovieParser();
     Assert.IsNotNull(Target);
     Dump(Target);
 
@@ -60,6 +63,7 @@ public class MediaMovieParserTests {
     Message("Instanciate media movie parser");
     IMediaMovieParser Parser = new TMediaMovieParser(@".\data\films\");
     Assert.IsNotNull(Parser);
+    Parser.Logger.SeverityLimit = ESeverity.Debug;
     Dump(Parser);
 
     const string SOURCE = @".\data\films\La bamba (1987)\La bamba (1987).mkv";
@@ -67,22 +71,28 @@ public class MediaMovieParserTests {
 
     IMediaMovie? Target = await Parser.ParseFile(SOURCE);
     Assert.IsNotNull(Target);
+    Dump(Target);
 
     Assert.AreEqual("La bamba", Target.Name);
     Assert.IsNotNull(Target.MediaInfos);
     Assert.AreEqual(1987, Target.MediaInfos.Get(ELanguage.French)?.CreationYear ?? 0);
 
-    Assert.AreEqual(1, Target.MediaSources.GetAll().OfType<TMediaSourceVirtual>().First().GetVideoStreams().Count());
+    TMediaStreams? MediaStreams = Target.MediaSources.GetAll().OfType<TMediaSourceVirtual>().First().MediaStreams as TMediaStreams;
+    Assert.IsNotNull(MediaStreams);
 
-    TMediaSourceVirtual? MediaSource = Target.MediaSources.GetDefault() as TMediaSourceVirtual;
-    Assert.IsNotNull(MediaSource);
+    IEnumerable<TMediaStreamVideo> VideoStreams = MediaStreams.GetAll().OfType<TMediaStreamVideo>();
+    IEnumerable<TMediaStreamAudio> AudioStreams = MediaStreams.GetAll().OfType<TMediaStreamAudio>();
+    IEnumerable<TMediaStreamSubTitle> SubTitleStreams = MediaStreams.GetAll().OfType<TMediaStreamSubTitle>();
 
-    TStreamVideoProperties VideoStream = MediaSource.GetVideoStreams().First();
+    Assert.AreEqual(1, VideoStreams.Count());
+    Assert.AreEqual(2, AudioStreams.Count());
+    Assert.AreEqual(3, SubTitleStreams.Count());
+
+    TMediaStreamVideo VideoStream = VideoStreams.First();
+
     MessageBox("Video stream", $"{VideoStream.CodecName} ({VideoStream.Width}x{VideoStream.Height})");
-
-    Assert.AreEqual(2, MediaSource.GetAudioStreams().Count());
-    Assert.AreEqual(3, MediaSource.GetSubTitleStreams().Count());
-
+    MessageBox("Audio streams", string.Join("\n", AudioStreams.Select(s => $"stream #{s.Index} ({s.CodecType}) : {s.CodecName} : {s.Language}, {s.Channels} channels, {s.ChannelsLayout}, {s.SampleRate} Hz, {s.BitRate} bps{(s.Default ? " [Default]" : "")}{(s.Forced ? " [forced]" : "")}")));
+    MessageBox("SubTitle streams", string.Join("\n", SubTitleStreams.Select(s => $"stream #{s.Index} ({s.CodecType}) : {s.CodecName} : {s.Language}{(s.Default ? " [Default]" : "")}{(s.Forced ? " [forced]" : "")}")));
     Ok();
   }
 }

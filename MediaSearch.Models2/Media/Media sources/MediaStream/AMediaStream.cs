@@ -1,5 +1,5 @@
 ﻿namespace MediaSearch.Models;
-public abstract class AStreamProperties : IStreamProperties {
+public abstract class AMediaStream : IMediaStream {
 
   public const string PROPERTY_INDEX = nameof(Index);
   public const string PROPERTY_CODEC_TYPE = nameof(CodecType);
@@ -17,12 +17,12 @@ public abstract class AStreamProperties : IStreamProperties {
   public bool Default { get; set; } = false;
   public bool Forced { get; set; } = false;
 
-  protected AStreamProperties(int index, string codecType) {
+  protected AMediaStream(int index, string codecType) {
     Index = index;
     CodecType = Enum.Parse<EStreamCodecType>(codecType);
   }
 
-  protected AStreamProperties(int index, EStreamCodecType codecType) {
+  protected AMediaStream(int index, EStreamCodecType codecType) {
     Index = index;
     CodecType = codecType;
   }

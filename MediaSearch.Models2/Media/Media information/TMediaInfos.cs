@@ -6,7 +6,7 @@ public class TMediaInfos : ALoggable, IMediaInfos {
   protected List<IMediaInfo> MediaInfos = new List<IMediaInfo>();
   private readonly ReaderWriterLockSlim _Lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
-  private readonly IMediaInfo? _Default;
+  private IMediaInfo? _Default;
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TMediaInfos() { }
@@ -86,10 +86,18 @@ public class TMediaInfos : ALoggable, IMediaInfos {
     return _Default;
   }
 
+  public bool SetDefault(IMediaInfo mediaInfo) {
+    _Default = mediaInfo;
+    return true;
+  }
+
   public bool Add(params IMediaInfo[] mediaInfo) {
     try {
       _Lock.EnterWriteLock();
       MediaInfos.AddRange(mediaInfo);
+      if (_Default is null) {
+        _Default = MediaInfos.FirstOrDefault();
+      }
       return true;
     } catch (Exception ex) {
       LogErrorBox("Unable to add MediaInfo", ex);
@@ -103,6 +111,9 @@ public class TMediaInfos : ALoggable, IMediaInfos {
     try {
       _Lock.EnterWriteLock();
       MediaInfos.AddRange(mediaInfos);
+      if (_Default is null) {
+        _Default = MediaInfos.FirstOrDefault();
+      }
       return true;
     } catch (Exception ex) {
       LogErrorBox("Unable to add MediaInfos", ex);

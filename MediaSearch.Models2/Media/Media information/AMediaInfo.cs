@@ -6,8 +6,8 @@ public abstract class AMediaInfo : IMediaInfo {
   public string Description { get; set; } = string.Empty;
   public List<string> Tags { get; init; } = new();
 
-  public string Group { get; set; } = string.Empty;
-  public bool IsGroupMember => Group != string.Empty;
+  public List<string> Groups { get; init; } = new();
+  public bool IsGroupMember => Groups.Any();
   public DateOnly CreationDate { get; set; } = DateOnly.MinValue;
   public int CreationYear => CreationDate == DateOnly.MinValue ? 0 : CreationDate.Year;
 
@@ -20,7 +20,7 @@ public abstract class AMediaInfo : IMediaInfo {
     Title = mediaInfo.Title;
     Description = mediaInfo.Description;
     Tags.AddRange(mediaInfo.Tags);
-    Group = mediaInfo.Group;
+    Groups.AddRange(mediaInfo.Groups);
     CreationDate = mediaInfo.CreationDate;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -35,7 +35,7 @@ public abstract class AMediaInfo : IMediaInfo {
     RetVal.AppendIndent($"- {nameof(CreationYear)} = {CreationYear}", indent + 2);
 
     if (IsGroupMember) {
-      RetVal.AppendIndent($"- {nameof(Group)} = {Group.WithQuotes()}", indent + 2);
+      RetVal.AppendIndent($"- {nameof(Groups)} = {Groups.Select(g => g.WithQuotes()).CombineToString()}", indent + 2);
     } else {
       RetVal.AppendIndent("- No group membership");
     }

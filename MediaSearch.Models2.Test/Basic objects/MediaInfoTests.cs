@@ -21,11 +21,10 @@ public class MediaInfoTests {
       Title = "Star wars - Episode 1",
       Description = "Le premier épisode",
       CreationDate = DateOnly.FromDateTime(DateTime.Now),
-      Group = "Star wars",
       Tags = new List<string> { "Science-fiction", "Guerre", "Espace" }
     };
     Assert.IsNotNull(Target);
-
+    Target.Groups.Add("Star wars");
     Dump(Target);
 
     Ok();

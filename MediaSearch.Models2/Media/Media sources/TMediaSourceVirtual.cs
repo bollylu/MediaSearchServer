@@ -9,10 +9,13 @@ public class TMediaSourceVirtual : AMediaSource, IMediaSourceVirtual {
 
   public string FullFileName => Path.Combine(StorageRoot, StoragePath, $"{FileName}.{FileExtension}");
   public long Size { get; set; } = 0;
+
+  public IMediaStreams MediaStreams { get; } = new TMediaStreams();
+
   #endregion --- Public properties ---------------------------------------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMediaSourceVirtual() {
+  public TMediaSourceVirtual() : base() {
     Logger = GlobalSettings.LoggerPool.GetLogger<TMediaSourceVirtual>();
   }
 
@@ -23,15 +26,15 @@ public class TMediaSourceVirtual : AMediaSource, IMediaSourceVirtual {
     FileName = mediaSource.FileName;
     FileExtension = mediaSource.FileExtension;
     Size = mediaSource.Size;
+    MediaStreams.AddRange(mediaSource.MediaStreams.GetAll());
   }
 
-  public TMediaSourceVirtual(string rootStorage) {
-    Logger = GlobalSettings.LoggerPool.GetLogger<TMediaSourceVirtual>();
+  public TMediaSourceVirtual(string rootStorage) : this() {
     StorageRoot = rootStorage;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  public static TMediaSourceVirtual Empty { get { return new TMediaSourceVirtual(); } }
+  public static TMediaSourceVirtual Empty => new TMediaSourceVirtual();
 
   #region --- Converters -------------------------------------------------------------------------------------
   public override string ToString(int indent) {
@@ -50,17 +53,6 @@ public class TMediaSourceVirtual : AMediaSource, IMediaSourceVirtual {
     return ToString(0);
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
-
-  public IEnumerable<TStreamVideoProperties> GetVideoStreams() {
-    return Properties.GetProperties().Select(p => p.Value).OfType<TStreamVideoProperties>();
-  }
-
-  public IEnumerable<TStreamAudioProperties> GetAudioStreams() {
-    return Properties.GetProperties().Select(p => p.Value).OfType<TStreamAudioProperties>();
-  }
-  public IEnumerable<TStreamSubTitleProperties> GetSubTitleStreams() {
-    return Properties.GetProperties().Select(p => p.Value).OfType<TStreamSubTitleProperties>();
-  }
 
 }
 

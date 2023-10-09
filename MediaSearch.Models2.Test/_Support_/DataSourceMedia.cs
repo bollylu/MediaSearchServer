@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace MediaSearch.Models2.Test;
 internal static class DataSourceMedia {
@@ -51,13 +52,15 @@ internal static class DataSourceMedia {
         Language = ELanguage.French,
         Description = "Le jour du débarquement",
         Tags = new List<string> { "Guerre" },
-        Title = "Le jour le plus long"
+        Title = "Le jour le plus long",
+        CreationDate = new DateOnly(1966, 11, 25)
       },
       new TMediaInfo() {
         Language = ELanguage.English,
         Description = "The longuest day",
         Tags = new List<string> { "War" },
-        Title = "The longuest day"
+        Title = "The longuest day",
+        CreationDate = new DateOnly(1966, 11, 25)
       }
 );
 
@@ -67,8 +70,8 @@ internal static class DataSourceMedia {
         Title = "Star wars - Episode 1",
         Description = "Le premier épisode",
         CreationDate = DateOnly.FromDateTime(DateTime.Now.AddYears(-6)),
-        Group = "Star wars",
-        Tags = new List<string> { "Science-fiction", "Guerre", "Espace" }
+        Tags = new List<string> { "Science-fiction", "Guerre", "Espace" },
+        Groups = new List<string>() { "Star wars" }
       }
     );
 
@@ -78,7 +81,7 @@ internal static class DataSourceMedia {
         Title = "Star wars - Episode 2",
         Description = "Le second épisode",
         CreationDate = DateOnly.FromDateTime(DateTime.Now.AddYears(-5)),
-        Group = "Star wars",
+        Groups = new List<string>() { "Star wars" },
         Tags = new List<string> { "Science-fiction", "Guerre", "Espace" }
       }
     );
@@ -89,7 +92,7 @@ internal static class DataSourceMedia {
         Title = "Star wars - Episode 3",
         Description = "Le troisième épisode",
         CreationDate = DateOnly.FromDateTime(DateTime.Now.AddYears(-4)),
-        Group = "Star wars",
+        Groups = new List<string>() { "Star wars" },
         Tags = new List<string> { "Science-fiction", "Guerre", "Espace" }
       }
     );
@@ -147,7 +150,7 @@ internal static class DataSourceMedia {
     #endregion --- MediaSources --------------------------------------------
 
     #region --- MediaMovies --------------------------------------------
-    MediaMovie_LeJourLePlusLong.CreationDate = new DateOnly(1966, 11, 25);
+
     MediaMovie_LeJourLePlusLong.MediaInfos.AddRange(MediaInfos_LeJourLePlusLong.GetAll());
     MediaMovie_LeJourLePlusLong.MediaSources.AddRange(MediaSources_LeJourLePlusLong.GetAll());
 

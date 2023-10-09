@@ -39,8 +39,6 @@ public interface IMediaSourceVirtual : IMediaSource {
   /// </summary>
   long Size { get; set; }
 
-  IEnumerable<TStreamVideoProperties> GetVideoStreams();
-  IEnumerable<TStreamAudioProperties> GetAudioStreams();
-  IEnumerable<TStreamSubTitleProperties> GetSubTitleStreams();
+  IMediaStreams MediaStreams { get; }
 
 }

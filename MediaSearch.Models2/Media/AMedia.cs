@@ -47,26 +47,34 @@ public abstract class AMedia :
   }
   public string Name {
     get {
-      return MediaInfos.Get(DefaultLanguage)?.Title ?? MISSING_NAME;
+      IMediaInfo? MediaInfo = MediaInfos.GetDefault();
+      if (MediaInfo is not null) {
+        return MediaInfo.Title;
+      } else {
+        return MISSING_NAME;
+      }
     }
     set {
-      MediaInfos.SetTitle(DefaultLanguage, value ?? MISSING_NAME);
+      IMediaInfo? MediaInfo = MediaInfos.GetDefault();
+      if (MediaInfo is not null) {
+        MediaInfo.Title = value ?? MISSING_NAME;
+      }
     }
   }
 
   [JsonConverter(typeof(TDateOnlyJsonConverter))]
   public DateOnly DateAdded { get; set; } = DateOnly.FromDateTime(DateTime.Today);
 
-  [JsonConverter(typeof(TDateOnlyJsonConverter))]
-  public DateOnly CreationDate { get; set; } = new DateOnly();
-  public int CreationYear {
-    get {
-      return CreationDate.Year;
-    }
-  }
+  //[JsonConverter(typeof(TDateOnlyJsonConverter))]
+  //public DateOnly CreationDate { get; set; } = new DateOnly();
+  //public int CreationYear {
+  //  get {
+  //    return CreationDate.Year;
+  //  }
+  //}
 
-  public string Group { get; set; } = "";
-  public bool IsGroupMember => !string.IsNullOrWhiteSpace(Group);
+  //public List<string> Groups { get; } = new();
+  //public bool IsGroupMember => Groups.Any();
 
   public IMediaInfos MediaInfos { get; } = new TMediaInfos();
   public IMediaSources MediaSources { get; } = new TMediaSources();
@@ -142,11 +150,11 @@ public abstract class AMedia :
       RetVal.AppendIndent($"- {nameof(MediaSources)} is empty", indent);
     }
 
-    if (IsGroupMember) {
-      RetVal.AppendIndent($"- {nameof(Group)} = {Group.WithQuotes()}", indent);
-    } else {
-      RetVal.AppendIndent($"- No group membership", indent);
-    }
+    //if (IsGroupMember) {
+    //  RetVal.AppendIndent($"- {nameof(Groups)} = {Groups.Select(g => g.WithQuotes()).CombineToString()}", indent + 2);
+    //} else {
+    //  RetVal.AppendIndent("- No group membership");
+    //}
 
     return RetVal.ToString();
   }

@@ -1,5 +1,5 @@
 ﻿namespace MediaSearch.Models;
-public class TStreamAudioProperties : AStreamProperties {
+public class TMediaStreamAudio : AMediaStream {
 
   public int Channels { get; set; } = 0;
   public int SampleRate { get; set; } = 0;
@@ -8,5 +8,5 @@ public class TStreamAudioProperties : AStreamProperties {
 
 
 
-  public TStreamAudioProperties(int index) : base(index, EStreamCodecType.audio) { }
+  public TMediaStreamAudio(int index) : base(index, EStreamCodecType.audio) { }
 }

@@ -20,7 +20,8 @@ public class MediaMovieTests {
         Language = ELanguage.English,
         Description = "The longuest day",
         Tags = new List<string> { "War" },
-        Title = "The longuest day"
+        Title = "The longuest day",
+        CreationDate = new DateOnly(1966, 11, 25)
       });
     TMediaSources MediaSources = new();
     MediaSources.Add(
@@ -41,9 +42,7 @@ public class MediaMovieTests {
         CreationDate = new DateOnly(1998, 7, 23)
       }
     );
-    IMediaMovie Target = new TMediaMovie("Le jour le plus long") {
-      CreationDate = new DateOnly(1966, 11, 25)
-    };
+    IMediaMovie Target = new TMediaMovie("Le jour le plus long");
     Target.MediaSources.AddRange(MediaSources.GetAll());
     Target.MediaInfos.AddRange(MediaInfos.GetAll());
 

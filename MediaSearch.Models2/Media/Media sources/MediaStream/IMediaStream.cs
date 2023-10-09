@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Models;
 
-public interface IStreamProperties {
+public interface IMediaStream {
   string Name { get; }
   int Index { get; }
   EStreamCodecType CodecType { get; }

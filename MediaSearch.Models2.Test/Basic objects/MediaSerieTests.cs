@@ -64,8 +64,9 @@ public class MediaSerieTests {
 
     Dump(Target);
 
-    TMediaSerieSeason InvalidSeason = new TMediaSerieSeason(DataSourceMedia.MediaSerieSeason_DragonBall1);
-    InvalidSeason.Number = -1;
+    TMediaSerieSeason InvalidSeason = new TMediaSerieSeason(DataSourceMedia.MediaSerieSeason_DragonBall1) {
+      Number = -1
+    };
     Message($"Attempt to add {nameof(InvalidSeason)}, will fail");
     Assert.IsFalse(Target.AddSeason(InvalidSeason));
 
