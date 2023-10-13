@@ -4,10 +4,7 @@
 /// Whatever makes a grouping in season
 /// </summary>
 public interface IMediaSerieSeason :
-  IMedia,
-  IMediaInfosContainer,
-  IMediaSourcesContainer,
-  IMediaPicturesContainer {
+  IMedia {
 
   /// <summary>
   /// The type of serie

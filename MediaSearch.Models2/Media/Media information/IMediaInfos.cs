@@ -11,7 +11,7 @@ public interface IMediaInfos {
   void Clear();
 
   bool Any();
-  bool Any(Func<IMediaInfo, bool> predicate);
+  bool Any(Predicate<IMediaInfo> predicate);
   bool IsEmpty();
 
 

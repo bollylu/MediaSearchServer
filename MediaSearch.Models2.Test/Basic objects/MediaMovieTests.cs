@@ -20,7 +20,7 @@ public class MediaMovieTests {
         Language = ELanguage.English,
         Description = "The longuest day",
         Tags = new List<string> { "War" },
-        Title = "The longuest day",
+        Name = "The longuest day",
         CreationDate = new DateOnly(1966, 11, 25)
       });
     TMediaSources MediaSources = new();

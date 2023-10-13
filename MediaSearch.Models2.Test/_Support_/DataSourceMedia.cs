@@ -52,14 +52,14 @@ internal static class DataSourceMedia {
         Language = ELanguage.French,
         Description = "Le jour du débarquement",
         Tags = new List<string> { "Guerre" },
-        Title = "Le jour le plus long",
+        Name = "Le jour le plus long",
         CreationDate = new DateOnly(1966, 11, 25)
       },
       new TMediaInfo() {
         Language = ELanguage.English,
         Description = "The longuest day",
         Tags = new List<string> { "War" },
-        Title = "The longuest day",
+        Name = "The longuest day",
         CreationDate = new DateOnly(1966, 11, 25)
       }
 );
@@ -67,7 +67,7 @@ internal static class DataSourceMedia {
     MediaInfos_StarWars1.Add(
       new TMediaInfo() {
         Language = ELanguage.French,
-        Title = "Star wars - Episode 1",
+        Name = "Star wars - Episode 1",
         Description = "Le premier épisode",
         CreationDate = DateOnly.FromDateTime(DateTime.Now.AddYears(-6)),
         Tags = new List<string> { "Science-fiction", "Guerre", "Espace" },
@@ -78,7 +78,7 @@ internal static class DataSourceMedia {
     MediaInfos_StarWars2.Add(
       new TMediaInfo() {
         Language = ELanguage.French,
-        Title = "Star wars - Episode 2",
+        Name = "Star wars - Episode 2",
         Description = "Le second épisode",
         CreationDate = DateOnly.FromDateTime(DateTime.Now.AddYears(-5)),
         Groups = new List<string>() { "Star wars" },
@@ -89,7 +89,7 @@ internal static class DataSourceMedia {
     MediaInfos_StarWars3.Add(
       new TMediaInfo() {
         Language = ELanguage.French,
-        Title = "Star wars - Episode 3",
+        Name = "Star wars - Episode 3",
         Description = "Le troisième épisode",
         CreationDate = DateOnly.FromDateTime(DateTime.Now.AddYears(-4)),
         Groups = new List<string>() { "Star wars" },
@@ -99,7 +99,7 @@ internal static class DataSourceMedia {
 
     MediaInfos_DragonBall_1x01.Add(
       new TMediaInfo() {
-        Title = "La rencontre",
+        Name = "La rencontre",
         Language = ELanguage.French,
         Description = "Le premier épisode de Dragon Ball"
       }
@@ -107,7 +107,7 @@ internal static class DataSourceMedia {
 
     MediaInfos_DragonBall_1x02.Add(
       new TMediaInfo() {
-        Title = "Le combat",
+        Name = "Le combat",
         Language = ELanguage.French,
         Description = "Le second épisode de Dragon Ball"
       }
@@ -116,7 +116,7 @@ internal static class DataSourceMedia {
     MediaInfos_DragonBall_Season1.Add(
      new TMediaInfo() {
        Language = ELanguage.French,
-       Title = "La première saison",
+       Name = "La première saison",
        Description = "Ici tout commence"
      }
    );
@@ -124,7 +124,7 @@ internal static class DataSourceMedia {
     MediaInfos_DragonBall.Add(
      new TMediaInfo() {
        Language = ELanguage.French,
-       Title = "Dragon Ball",
+       Name = "Dragon Ball",
        Description = "Les aventures de SanGoKu et cie"
      }
    );

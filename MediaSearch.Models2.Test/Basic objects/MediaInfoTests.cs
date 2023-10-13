@@ -18,7 +18,7 @@ public class MediaInfoTests {
     Message("Creation of a MediaInfo");
     IMediaInfo Target = new TMediaInfo() {
       Language = ELanguage.French,
-      Title = "Star wars - Episode 1",
+      Name = "Star wars - Episode 1",
       Description = "Le premier épisode",
       CreationDate = DateOnly.FromDateTime(DateTime.Now),
       Tags = new List<string> { "Science-fiction", "Guerre", "Espace" }

@@ -44,7 +44,7 @@ public static class EnumerableMediaExtensions {
 
     return medias
       .Where(m => m.MediaInfos.Any(i => i.Language == filter.Language))
-      .Where(m => filter.Keywords.IsMatch(m.MediaInfos.Get(filter.Language)?.Title ?? ""));
+      .Where(m => filter.Keywords.IsMatch(m.MediaInfos.Get(filter.Language)?.Name ?? ""));
   }
   #endregion --- Keywords --------------------------------------------
 
@@ -56,7 +56,7 @@ public static class EnumerableMediaExtensions {
 
     return medias
       .Where(m => m.MediaInfos.GetAll().Any(x => x.Language == filter.Language))
-      .Where(m => filter.Keywords.IsMatch(m.MediaInfos.Get(filter.Language)?.Title ?? ""));
+      .Where(m => filter.Keywords.IsMatch(m.MediaInfos.Get(filter.Language)?.Name ?? ""));
   }
   #endregion --- Tags --------------------------------------------
 

@@ -1,6 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿namespace MediaSearch.Models;
 
-namespace MediaSearch.Models;
 public class TMediaInfos : ALoggable, IMediaInfos {
 
   protected List<IMediaInfo> MediaInfos = new List<IMediaInfo>();
@@ -13,11 +12,6 @@ public class TMediaInfos : ALoggable, IMediaInfos {
 
   public TMediaInfos(params IMediaInfo[] mediaInfos) {
     foreach (IMediaInfo MediaInfoItem in mediaInfos) {
-      MediaInfos.Add(MediaInfoItem);
-    }
-  }
-  public TMediaInfos(IEnumerable<IMediaInfo> mediaInfos) {
-    foreach (var MediaInfoItem in mediaInfos) {
       MediaInfos.Add(MediaInfoItem);
     }
   }
@@ -53,25 +47,25 @@ public class TMediaInfos : ALoggable, IMediaInfos {
     }
   }
 
-  public void SetTitle(ELanguage language, string title) {
-    try {
-      _Lock.EnterUpgradeableReadLock();
-      int Index = MediaInfos.FindIndex(i => i.Language == language);
-      if (Index < 0) {
-        return;
-      }
-      try {
-        _Lock.EnterWriteLock();
-        MediaInfos[Index].Title = title;
-      } finally {
-        _Lock.ExitWriteLock();
-      }
-    } catch (Exception ex) {
-      LogErrorBox("Unable to set title", ex);
-    } finally {
-      _Lock.ExitUpgradeableReadLock();
-    }
-  }
+  //public void SetTitle(ELanguage language, string title) {
+  //  try {
+  //    _Lock.EnterUpgradeableReadLock();
+  //    int Index = MediaInfos.FindIndex(i => i.Language == language);
+  //    if (Index < 0) {
+  //      return;
+  //    }
+  //    try {
+  //      _Lock.EnterWriteLock();
+  //      MediaInfos[Index].Name = title;
+  //    } finally {
+  //      _Lock.ExitWriteLock();
+  //    }
+  //  } catch (Exception ex) {
+  //    LogErrorBox("Unable to set title", ex);
+  //  } finally {
+  //    _Lock.ExitUpgradeableReadLock();
+  //  }
+  //}
 
   public IEnumerable<IMediaInfo> GetAll() {
     try {
@@ -145,10 +139,10 @@ public class TMediaInfos : ALoggable, IMediaInfos {
     }
   }
 
-  public bool Any(Func<IMediaInfo, bool> predicate) {
+  public bool Any(Predicate<IMediaInfo> predicate) {
     try {
       _Lock.EnterReadLock();
-      return MediaInfos.Any(predicate);
+      return MediaInfos.Any(x => predicate(x));
     } finally {
       _Lock.ExitReadLock();
     }

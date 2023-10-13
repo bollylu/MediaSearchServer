@@ -1,5 +1,5 @@
 ﻿namespace MediaSearch.Models;
-public interface IMediaInfoCreation {
+public interface ICreation {
 
   /// <summary>
   /// The date when the media was created

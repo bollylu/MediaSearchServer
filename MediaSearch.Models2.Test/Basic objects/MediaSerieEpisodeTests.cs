@@ -22,7 +22,7 @@ public class MediaSerieEpisodeTests {
     Assert.IsNotNull(Target);
     Target.MediaInfos.Add(
       new TMediaInfo() {
-        Title = "La rencontre",
+        Name = "La rencontre",
         Language = ELanguage.French,
         Description = "Le premier épisode de Dragon Ball"
       }

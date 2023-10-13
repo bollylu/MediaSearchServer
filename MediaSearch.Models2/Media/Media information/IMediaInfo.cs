@@ -1,8 +1,8 @@
 ﻿namespace MediaSearch.Models;
-public interface IMediaInfo : IMediaInfoGroupMembership, IMediaInfoCreation {
+public interface IMediaInfo : IGroupMembership, ICreation {
 
   ELanguage Language { get; init; }
-  string Title { get; set; }
+  string Name { get; set; }
   string Description { get; set; }
   List<string> Tags { get; init; }
 

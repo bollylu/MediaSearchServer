@@ -22,7 +22,7 @@ public class MediaSerieSeasonTests {
     Target.MediaInfos.Add(
       new TMediaInfo() {
         Language = ELanguage.French,
-        Title = "La première saison",
+        Name = "La première saison",
         Description = "Ici tout commence"
       }
     );

@@ -2,14 +2,19 @@
 
 public abstract class AMediaInfo : IMediaInfo {
   public ELanguage Language { get; init; }
-  public string Title { get; set; } = string.Empty;
+  public string Name { get; set; } = string.Empty;
   public string Description { get; set; } = string.Empty;
   public List<string> Tags { get; init; } = new();
 
+  #region --- IGroupMembership --------------------------------------------
   public List<string> Groups { get; init; } = new();
   public bool IsGroupMember => Groups.Any();
+  #endregion --- IGroupMembership -----------------------------------------
+
+  #region --- ICreation --------------------------------------------
   public DateOnly CreationDate { get; set; } = DateOnly.MinValue;
   public int CreationYear => CreationDate == DateOnly.MinValue ? 0 : CreationDate.Year;
+  #endregion --- ICreation -----------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   protected AMediaInfo() {
@@ -17,7 +22,7 @@ public abstract class AMediaInfo : IMediaInfo {
   }
   protected AMediaInfo(IMediaInfo mediaInfo) {
     Language = mediaInfo.Language;
-    Title = mediaInfo.Title;
+    Name = mediaInfo.Name;
     Description = mediaInfo.Description;
     Tags.AddRange(mediaInfo.Tags);
     Groups.AddRange(mediaInfo.Groups);
@@ -29,7 +34,7 @@ public abstract class AMediaInfo : IMediaInfo {
   public virtual string ToString(int indent) {
     StringBuilder RetVal = new StringBuilder();
     RetVal.AppendIndent($"{nameof(Language)} = {Language}", indent);
-    RetVal.AppendIndent($"- {nameof(Title)} = {Title.WithQuotes()}", indent + 2);
+    RetVal.AppendIndent($"- {nameof(Name)} = {Name.WithQuotes()}", indent + 2);
     RetVal.AppendIndent($"- {nameof(Description)} = {Description.WithQuotes()}", indent + 2);
     RetVal.AppendIndent($"- {nameof(CreationDate)} = {CreationDate}", indent + 2);
     RetVal.AppendIndent($"- {nameof(CreationYear)} = {CreationYear}", indent + 2);

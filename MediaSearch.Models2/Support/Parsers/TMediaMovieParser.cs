@@ -82,7 +82,7 @@ public class TMediaMovieParser : ALoggable, IMediaMovieParser {
       CreationDate = new DateOnly(ConvertedYear, 1, 1)
     };
 
-    MediaInfo.Title = FullnameAfterRootPath.BeforeLast(" (");
+    MediaInfo.Name = FullnameAfterRootPath.BeforeLast(" (");
     foreach (string GroupItem in MediaSource.StoragePath.Split(Path.DirectorySeparatorChar)) {
       MediaInfo.Groups.Add(GroupItem);
     }

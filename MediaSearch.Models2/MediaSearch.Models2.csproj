@@ -10,18 +10,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Interfaces\IMediaInfoDescriptions.cs" />
+    <Compile Remove="Interfaces\IMediaInfoNames.cs" />
+    <Compile Remove="Interfaces\IMediaInfoTitles.cs" />
+    <Compile Remove="Interfaces\ITagsContainer.cs" />
     <Compile Remove="Support\Json serialization\IJson.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="Media\Media pictures\Pictures\missing.jpg" />
-    <None Remove="_Documentation_\MediaSources.mmd" />
     <None Remove="_Global_\changelog.md" />
     <None Remove="_Global_\version.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="_Documentation_\MediaSources.mmd" />
   </ItemGroup>
 
   <ItemGroup>

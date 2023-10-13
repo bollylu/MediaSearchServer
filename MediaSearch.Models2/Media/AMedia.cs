@@ -49,7 +49,7 @@ public abstract class AMedia :
     get {
       IMediaInfo? MediaInfo = MediaInfos.GetDefault();
       if (MediaInfo is not null) {
-        return MediaInfo.Title;
+        return MediaInfo.Name;
       } else {
         return MISSING_NAME;
       }
@@ -57,7 +57,7 @@ public abstract class AMedia :
     set {
       IMediaInfo? MediaInfo = MediaInfos.GetDefault();
       if (MediaInfo is not null) {
-        MediaInfo.Title = value ?? MISSING_NAME;
+        MediaInfo.Name = value ?? MISSING_NAME;
       }
     }
   }

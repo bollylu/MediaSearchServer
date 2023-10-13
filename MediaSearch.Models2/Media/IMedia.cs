@@ -31,5 +31,9 @@ public interface IMedia :
   /// </summary>
   bool IsInvalid { get; }
 
+  IMediaInfos MediaInfos { get; }
+  IMediaSources MediaSources { get; }
+  IMediaPictures MediaPictures { get; }
+
 }
 
