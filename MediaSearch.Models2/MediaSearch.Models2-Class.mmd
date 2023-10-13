@@ -1,0 +1,527 @@
+classDiagram 
+	
+	class IMediaInfos  {
+		<<interface>>
+		-GetAll() IEnumerable~IMediaInfo~
+		-GetDefault() IMediaInfo?
+		-SetDefault(IMediaInfo mediaInfo) bool
+		-Get(ELanguage language) IMediaInfo?
+		-Add(IMediaInfo[] mediaInfo) bool
+		-AddRange(IEnumerable~IMediaInfo~ mediaInfo) bool
+		-Remove(IMediaInfo mediaInfo) bool
+		-Clear() void
+		-Any() bool
+		-Any(Func~IMediaInfo&#44&#32bool~ predicate) bool
+		-IsEmpty() bool
+	}
+
+	class TMediaInfos  {
+		-List~IMediaInfo~ MediaInfos 
+		-ReaderWriterLockSlim _Lock 
+		-IMediaInfo? _Default 
+		+ToString(int indent) string
+		+ToString() string
+		+Get(ELanguage language) IMediaInfo?
+		+SetTitle(ELanguage language, string title) void
+		+GetAll() IEnumerable~IMediaInfo~
+		+GetDefault() IMediaInfo?
+		+SetDefault(IMediaInfo mediaInfo) bool
+		+Add(IMediaInfo[] mediaInfo) bool
+		+AddRange(IEnumerable~IMediaInfo~ mediaInfos) bool
+		+Remove(IMediaInfo mediaInfo) bool
+		+Clear() void
+		+Any() bool
+		+Any(Func~IMediaInfo&#44&#32bool~ predicate) bool
+		+IsEmpty() bool
+	}
+	
+	class TMediaSources  {
+		-List~IMediaSource~ MediaSources 
+		-ReaderWriterLockSlim _Lock 
+		+ToString(int indent) string
+		+ToString() string
+		+GetDefault() IMediaSource?
+		+Get(ELanguage language) IMediaSource?
+		+GetAll() IEnumerable~IMediaSource~
+		+Add(IMediaSource[] mediaSource) bool
+		+AddRange(IEnumerable~IMediaSource~ mediaSources) bool
+		+Remove(IMediaSource mediaSource) bool
+		+Clear() void
+		+SetDefault(IMediaSource mediaSource) void
+		+Any() bool
+		+Any(Func~IMediaSource&#44&#32bool~ predicate) bool
+		+IsEmpty() bool
+	}
+	
+	class TMediaSourceProperties  {
+		-List~TMediaSourceProperty~ _Properties 
+		+AddProperty(TMediaSourceProperty property) void
+		+AddProperties(IEnumerable~TMediaSourceProperty~ property) void
+		+GetProperties() IEnumerable~TMediaSourceProperty~
+	}
+	
+	class IMediaSource  {
+		<<interface>>
+		- DateAdded : DateOnly
+		- CreationDate : DateOnly
+		- CreationYear : int
+		- Description : string
+		- Languages : IListWithPrincipal~ELanguage~
+	}
+	class TMediaPictures  {
+		-List~IMediaPicture~ MediaPictures 
+		-ReaderWriterLockSlim _Lock 
+		+int MIN_PICTURE_WIDTH 
+		+int MAX_PICTURE_WIDTH 
+		+int MIN_PICTURE_HEIGHT 
+		+int MAX_PICTURE_HEIGHT 
+		+string DEFAULT_PICTURE_NAME 
+		+int TIMEOUT_TO_CONVERT_IN_MS 
+		-Dictionary~string&#44&#32IMediaPicture~ Pictures 
+		-ReaderWriterLockSlim _LockPictures 
+		+GetPicture(string pictureName) IMediaPicture?
+		+GetMediaPictures() IEnumerable~IMediaPicture~
+		+GetPictures(EPictureType pictureType) IEnumerable~IMediaPicture~
+		+AddMediaPicture(IMediaPicture picture) bool
+		+AddMediaPicture(string pictureName, byte[] pictureContent, EPictureType pictureType) bool
+		+RemoveMediaPicture(string pictureName) bool
+		+RemoveMediaPicture(IMediaPicture picture) bool
+		+LoadPicture(IMediaSourceVirtual mediaSource) Task~bool~
+		+LoadPicture(IMediaSourceVirtual mediaSource, string pictureName, EPictureType pictureType, int width, int height) Task~bool~
+		+GetDefault() IMediaPicture?
+		+Get(ELanguage language) IMediaPicture?
+		+GetAll() IEnumerable~IMediaPicture~
+		+Add(IMediaPicture mediaPicture) bool
+		+AddRange(IEnumerable~IMediaPicture~ mediaPictures) bool
+		+Remove(IMediaPicture mediaPicture) bool
+		+Clear() void
+		+SetDefault(IMediaPicture mediaPicture) void
+		+Any() bool
+		+Any(Func~IMediaPicture&#44&#32bool~ predicate) bool
+		+IsEmpty() bool
+	}
+	
+	class IMediaInfosContainer  {
+		<<interface>>
+		- MediaInfos : IMediaInfos
+	}
+
+	class IMediaSourcesContainer  {
+		<<interface>>
+		- MediaSources : IMediaSources
+	}
+	class IMediaStreams  {
+		<<interface>>
+		-Add(IMediaStream[] mediaStreams) bool
+		-AddRange(IEnumerable~IMediaStream~ mediaStreams) bool
+		-Get(int streamId) IMediaStream?
+		-GetAll() IEnumerable~IMediaStream~
+		-Remove(IMediaStream mediaStream) bool
+		-Clear() void
+		-IsEmpty() bool
+		-Any() bool
+		-Any(Predicate~IMediaStream~ predicate) bool
+	}
+	
+	class TMediaMovie  {
+	}
+	class TMediaStreamAudio  {
+		+ Channels : int
+		+ SampleRate : int
+		+ BitRate : int
+		+ ChannelsLayout : string
+	}
+	
+	class TMediaStreamSubTitle  {
+	}
+	
+	class IMediaSourceStreamsFinder  {
+		<<interface>>
+		- Filename : string
+		- MediaSourceStreams : TMediaStreams
+		-Init() Task
+		-GetVersion() Task~string~
+	}
+	
+	class IMediaPictures  {
+		<<interface>>
+		-GetDefault() IMediaPicture?
+		-Get(ELanguage language) IMediaPicture?
+		-GetAll() IEnumerable~IMediaPicture~
+		-Add(IMediaPicture mediaPicture) bool
+		-AddRange(IEnumerable~IMediaPicture~ mediaPicture) bool
+		-Remove(IMediaPicture mediaPicture) bool
+		-Clear() void
+		-SetDefault(IMediaPicture mediaPicture) void
+		-Any() bool
+		-Any(Func~IMediaPicture&#44&#32bool~ predicate) bool
+		-IsEmpty() bool
+	}
+	
+	class IMediaMovie  {
+	}
+	class IMediaSourcePhysical  {
+		<<interface>>
+		+ StoragePlace : string
+		+ StorageType : EStorageType
+	}
+	class IMediaStream  {
+		<<interface>>
+		- Name : string
+		- Index : int
+		- CodecType : EStreamCodecType
+		- CodecName : string
+		- CodecLongName : string
+	}
+	
+	class TMediaStreamData  {
+	}
+	
+	class IMediaSerieSeason  {
+		- SerieType : ESerieType
+		- Number : int
+		-AddEpisode(IMediaSerieEpisode episode) bool
+		-RemoveEpisode(IMediaSerieEpisode episode) bool
+		-RemoveEpisode(int episodeNumber) bool
+		-GetEpisodes() IEnumerable~IMediaSerieEpisode~
+		-GetEpisode(int episodeNumber) IMediaSerieEpisode?
+		-Clear() void
+	}
+	
+	class IMediaSourceProperties  {
+		-AddProperty(TMediaSourceProperty property) void
+		-AddProperties(IEnumerable~TMediaSourceProperty~ property) void
+		-GetProperties() IEnumerable~TMediaSourceProperty~
+	}
+	
+	class AMediaSource  {
+		+ DateAdded : DateOnly
+		+ CreationDate : DateOnly
+		+ CreationYear : int
+		+ Description : string
+		+ Languages : IListWithPrincipal~ELanguage~
+		+ Properties : IMediaSourceProperties
+		+ToString(int indent) string
+		+ToString() string
+	}
+	
+	class TMediaStreamUnknown  {
+		+ CodecTypeUnknown : string
+	}
+	class IMediaSourceVirtual  {
+		- StorageRoot : string
+		- StoragePath : string
+		- FileName : string
+		- FileExtension : string
+		- FullFileName : string
+		- Size : long
+		- MediaStreams : IMediaStreams
+	}
+	class TMediaSerie  {
+		-List~IMediaSerieSeason~ Seasons 
+		-ReaderWriterLockSlim _Lock 
+		+ SerieType : ESerieType
+		+ToString(int indent) string
+		+ToString() string
+		+AddSeason(IMediaSerieSeason season) bool
+		+RemoveSeason(IMediaSerieSeason season) bool
+		+RemoveSeason(int seasonNumber) bool
+		+GetSeasons() IEnumerable~IMediaSerieSeason~
+		+GetSeason(int index) IMediaSerieSeason?
+		+Clear() void
+	}
+	class TMediaInfo  {
+		+ Empty : TMediaInfo
+		+ToString(int indent) string
+		+ToString() string
+	}
+	
+	class TMediaSerieSeason  {
+		-int INVALID_NUMBER 
+		-List~IMediaSerieEpisode~ Episodes 
+		-ReaderWriterLockSlim _Lock 
+		+ SerieType : ESerieType
+		+ Number : int
+		+ToString(int indent) string
+		+ToString() string
+		+AddEpisode(IMediaSerieEpisode episode) bool
+		+RemoveEpisode(IMediaSerieEpisode episode) bool
+		+RemoveEpisode(int episodeNumber) bool
+		+GetEpisodes() IEnumerable~IMediaSerieEpisode~
+		+GetEpisode(int index) IMediaSerieEpisode?
+		+Clear() void
+	}
+	
+	class IMedia  {
+		- Name : string
+		- MediaType : EMediaType
+		- DateAdded : DateOnly
+		- DefaultLanguage : ELanguage
+		- IsInvalid : bool
+	}
+	class AMedia  {
+		+ELanguage DEFAULT_LANGUAGE 
+		+string MISSING_NAME 
+		-string? _Id 
+		+ Id : string
+		+ MediaType : EMediaType
+		+ DefaultLanguage : ELanguage
+		+ IsInvalid : bool
+		+ Name : string
+		+ DateAdded : DateOnly
+		+ MediaInfos : IMediaInfos
+		+ MediaSources : IMediaSources
+		+ MediaPictures : IMediaPictures
+		-_BuildId() string
+		+Dispose() void
+		+DisposeAsync() ValueTask
+		+ToString(int indent) string
+		+ToString() string
+	}
+
+	class TMediaStreams  {
+		-List~IMediaStream~ MediaStreamItems 
+		-ReaderWriterLockSlim _Lock 
+		+ MediaStreamsVideo : IEnumerable~TMediaStreamVideo~
+		+ MediaStreamsAudio : IEnumerable~TMediaStreamAudio~
+		+ MediaStreamsSubTitle : IEnumerable~TMediaStreamSubTitle~
+		+ MediaStreamsUnknown : IEnumerable~TMediaStreamUnknown~
+		+ MediaStreamsData : IEnumerable~TMediaStreamData~
+		+Add(IMediaStream[] mediaStreams) bool
+		+AddRange(IEnumerable~IMediaStream~ mediaStreams) bool
+		+Get(int streamId) IMediaStream?
+		+GetAll() IEnumerable~IMediaStream~
+		+Remove(IMediaStream mediaStream) bool
+		+Clear() void
+		+IsEmpty() bool
+		+Any() bool
+		+Any(Predicate~IMediaStream~ predicate) bool
+	}
+	class IMediaPicturesContainer  {
+		- MediaPictures : IMediaPictures
+		-GetPicture(string pictureName) IMediaPicture?
+		-GetPictures() IEnumerable~IMediaPicture~
+		-GetPictures(EPictureType pictureType) IEnumerable~IMediaPicture~
+		-AddPicture(IMediaPicture picture) bool
+		-AddPicture(string pictureName, byte[] pictureContent, EPictureType pictureType) bool
+		-DeletePicture(string pictureName) bool
+		-DeletePicture(IMediaPicture picture) bool
+		-LoadPicture(IMediaSource mediaSource) Task~bool~
+		-LoadPicture(IMediaSource mediaSource, string pictureName, EPictureType pictureType, int width, int height) Task~bool~
+	}
+	
+	class TMediaSourcePhysical  {
+		+ StoragePlace : string
+		+ StorageType : EStorageType
+		+ Empty : TMediaSourceVirtual
+		+ToString(int indent) string
+		+ToString() string
+	}
+	
+	
+	
+	class IMediaSerie  {
+		- SerieType : ESerieType
+		-AddSeason(IMediaSerieSeason season) bool
+		-RemoveSeason(IMediaSerieSeason season) bool
+		-RemoveSeason(int seasonNumber) bool
+		-GetSeasons() IEnumerable~IMediaSerieSeason~
+		-GetSeason(int index) IMediaSerieSeason?
+		-Clear() void
+	}
+	
+	class TPicture  {
+		+int MIN_PICTURE_WIDTH 
+		+int MAX_PICTURE_WIDTH 
+		+int MIN_PICTURE_HEIGHT 
+		+int MAX_PICTURE_HEIGHT 
+		+string DEFAULT_PICTURE_NAME 
+		+int DEFAULT_PICTURE_WIDTH 
+		+int DEFAULT_PICTURE_HEIGHT 
+		+int TIMEOUT_TO_CONVERT_IN_MS 
+		-IMediaPicture? _PictureMissing 
+		+ Logger : ILogger
+		+ Name : string
+		+ Data : byte[]
+		+ PictureType : EPictureType
+		+ Language : ELanguage
+		+ Default : IMediaPicture
+		+ PictureMissing : IMediaPicture
+		+ToString() string
+		+LoadAsync(string location, bool withResize) Task~bool~
+		+Resize(int width, int height) IMediaPicture?
+		+GetPictureFromAssembly(string pictureName, string pictureExtension) IMediaPicture?
+	}
+	
+	class AMediaInfo  {
+		+ Language : ELanguage
+		+ Title : string
+		+ Description : string
+		+ Tags : List~string~
+		+ Groups : List~string~
+		+ IsGroupMember : bool
+		+ CreationDate : DateOnly
+		+ CreationYear : int
+		+ToString(int indent) string
+		+ToString() string
+	}
+	class AMediaStream  {
+		+string PROPERTY_INDEX 
+		+string PROPERTY_CODEC_TYPE 
+		+ Name : string
+		+ Index : int
+		+ CodecType : EStreamCodecType
+		+ CodecName : string
+		+ CodecLongName : string
+		+ Language : string
+		+ Title : string
+		+ Default : bool
+		+ Forced : bool
+	}
+	
+	class TMediaSourceProperty  {
+		+ Name : string
+		+ Value : object?
+	}
+	
+	class IMediaPicture  {
+		- Name : string
+		- Data : byte[]
+		- PictureType : EPictureType
+		- Language : ELanguage
+		-LoadAsync(string location, bool withResize) Task~bool~
+		-Resize(int width, int height) IMediaPicture?
+	}
+	class TMediaStreamVideo  {
+		+ Width : int
+		+ Height : int
+		+ ColorSpace : string
+		+ PixelFormat : string
+	}
+	class IMediaInfoGroupMembership  {
+		- Groups : List~string~
+		- IsGroupMember : bool
+	}
+	
+	class TMediaSourceVirtual  {
+		+ StorageRoot : string
+		+ StoragePath : string
+		+ FileName : string
+		+ FileExtension : string
+		+ FullFileName : string
+		+ Size : long
+		+ MediaStreams : IMediaStreams
+		+ Empty : TMediaSourceVirtual
+		+ToString(int indent) string
+		+ToString() string
+	}
+	
+	class IMediaInfo  {
+		- Language : ELanguage
+		- Title : string
+		- Description : string
+		- Tags : List~string~
+	}
+	
+	class IMediaSources  {
+		-GetDefault() IMediaSource?
+		-SetDefault(IMediaSource mediaSource) void
+		-Get(ELanguage language) IMediaSource?
+		-GetAll() IEnumerable~IMediaSource~
+		-Add(IMediaSource[] mediaSource) bool
+		-AddRange(IEnumerable~IMediaSource~ mediaSources) bool
+		-Remove(IMediaSource mediaSource) bool
+		-Clear() void
+		-Any() bool
+		-Any(Func~IMediaSource&#44&#32bool~ predicate) bool
+		-IsEmpty() bool
+	}
+	class TMediaSerieEpisode  {
+		+ AbsoluteNumber : int
+		+ Season : int
+		+ Number : int
+		+ SerieType : ESerieType
+		+ToString() string
+		+ToString(int indent) string
+	}
+	class IMediaSerieEpisode  {
+		+ AbsoluteNumber : int
+		+ Season : int
+		+ Number : int
+		+ SerieType : ESerieType
+	}
+	
+	TFFProbe --|> IMediaSourceStreamsFinder : implementation
+
+	AMedia --|> IMedia : implementation
+	AMedia --|> IMediaInfosContainer : implementation
+	AMedia --|> IMediaSourcesContainer: implementation
+	AMedia --|> IMediaPicturesContainer: implementation
+
+	TMediaSources --|> IMediaSources : implementation
+	TMediaSourceProperties --|> IMediaSourceProperties
+	
+	TMediaPictures --|> IMediaPictures : implementation
+
+	IMediaInfoContent --|> IMediaInfoTitles
+	IMediaInfoContent --|> IMediaInfoContentDescriptions
+	
+	TMediaInfo --|> AMediaInfo : inheritance
+	TMediaMovie --|> AMedia : inheritance
+	TMediaMovie --|> IMediaMovie : implements
+	
+	TMediaStreams --|> IMediaStreams : implementation
+
+	TMediaStreamAudio --|> AMediaStream : inheritance
+	TMediaStreamSubTitle --|> AMediaStream : inheritance
+	TMediaStreamUnknown --|> AMediaStream : inheritance
+	TMediaStreamData --|> AMediaStream	: inheritance
+	TMediaStreamVideo --|> AMediaStream : inheritance
+
+	TMediaInfos --|> IMediaInfos : implementation
+	IMediaInfo --|> IMediaInfoGroupMembership : composition
+	IMediaInfo --|> IMediaInfoCreation : composition
+	
+	IMediaMovie --|> IMedia : composition
+	
+	IMediaSerie --|> IMedia
+
+	IMediaSerieSeason --|> IMedia	: composition
+	IMediaSerieSeason --|> IMediaInfosContainer : composition
+	IMediaSerieSeason --|> IMediaSourcesContainer : composition
+	IMediaSerieSeason --|> IMediaPicturesContainer : composition
+	TMediaSerieSeason --|> AMedia : inheritance
+	TMediaSerieSeason --|> IMediaSerieSeason : implementation
+	
+	IMediaSerieEpisode --|> IMedia : composition
+	TMediaSerieEpisode --|> AMedia
+	TMediaSerieEpisode --|> IMediaSerieEpisode
+	
+	AMediaSource --|> IMediaSource : implementation
+	
+	IMediaSourceVirtual --|> IMediaSource : composition
+	TMediaSourceVirtual --|> AMediaSource : inheritance
+	TMediaSourceVirtual --|> IMediaSourceVirtual : implementation
+	
+	IMediaSourcePhysical --|> IMediaSource : composition
+	TMediaSourcePhysical --|> AMediaSource : inheritance
+	TMediaSourcePhysical --|> IMediaSourcePhysical : implementation
+
+	TMediaSerie --|> AMedia : inheritance
+	TMediaSerie --|> IMediaSerie : implementation
+
+	
+	IMedia --|> IMediaInfosContainer : composition
+	IMedia --|> IMediaSourcesContainer : composition
+	IMedia --|> IMediaPicturesContainer : composition
+
+	
+	TPicture --|> IMediaPicture
+	AMediaInfo --|> IMediaInfo
+	AMediaStream --|> IMediaStream
+	
+	
+	
+	
+	TMedia --|> AMedia
+	

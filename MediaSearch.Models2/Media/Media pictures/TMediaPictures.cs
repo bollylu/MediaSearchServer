@@ -84,7 +84,7 @@ public class TMediaPictures : ALoggable, IMediaPictures {
   }
 
   public bool AddMediaPicture(string pictureName, byte[] pictureContent, EPictureType pictureType = EPictureType.Unknown) {
-    return AddMediaPicture(new TPicture(pictureName, pictureContent, pictureType));
+    return AddMediaPicture(new TMediaPicture(pictureName, pictureContent, pictureType));
   }
 
   public bool RemoveMediaPicture(string pictureName) {

@@ -20,8 +20,9 @@ public class TMediaSerieSeason :
     Logger = logger;
   }
 
-  public TMediaSerieSeason(ESerieType type) : this() {
+  public TMediaSerieSeason(ESerieType type, int seasonNumber) : this() {
     SerieType = type;
+    Number = seasonNumber;
   }
   public TMediaSerieSeason(IMediaSerieSeason season) : this() {
     SerieType = season.SerieType;

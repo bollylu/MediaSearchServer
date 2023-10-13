@@ -16,7 +16,7 @@ public class TMediaSerie : AMedia, IMediaSerie {
   public TMediaSerie(ILogger logger) : base(logger) {
     MediaType = EMediaType.Serie;
   }
-  public TMediaSerie(TMediaSerie movie) : base(movie) {
+  public TMediaSerie(IMediaSerie serie) : base(serie) {
     Logger = GlobalSettings.LoggerPool.GetLogger<TMediaSerie>();
     MediaType = EMediaType.Serie;
   }

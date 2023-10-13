@@ -11,8 +11,6 @@ public abstract class AMediaSource : ALoggable, IMediaSource {
   public string Description { get; set; } = string.Empty;
 
   public IListWithPrincipal<ELanguage> Languages { get; set; } = new TListWithPrincipal<ELanguage>() { ELanguage.Unknown };
-
-  public IMediaSourceProperties Properties { get; } = new TMediaSourceProperties();
   #endregion --- Public properties ---------------------------------------------------------------------------
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------

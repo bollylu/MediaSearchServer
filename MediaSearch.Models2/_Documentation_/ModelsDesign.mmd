@@ -1,82 +1,81 @@
 ﻿---
-title "Models2 classes"
+title: "Models2 classes"
 ---
 classDiagram
 
-  class AMedia {
-    <<abstract>>
-    + ELanguage : DEFAULT_LANGUAGE$
-    + string : Id
-    + EMediaType : MediaType
-    + ELanguage : DefaultLanguage
-    + DateOnly : DateAdded
-    + DateOnly : CreationDate
-    + int : CreationYear
-    + string : Group
-    + bool : IsGroupMember
-    # MediaInfos : TMediaInfos
-    # MediaSources : TMediaSources
-    # MediaPictures : TMediaPictures
-  }
+class IMedia {
+  <<interface>>
+  + Name : string
+  + MediaType : EMediaType
+  + DateAdded : DateOnly
+  + DefaultLanguage : ELanguage
+  + IsInvalid : bool
+}
 
-  class IMediaInfosContainer {
-    <<interface>>
-    + MediaInfos : IMediaInfos
-  }
-  class IMediaSourcesContainer {
-    <<interface>>
-    + MediaSources : IMediaSources
-  }
-  class IMediaPicturesContainer {
-    <<interface>>
-    + MediaPictures : IMediaPictures
-  }
-  
-  class IMediaSources {
-    <<interface>>
-    + GetDefaultMediaSource() : IMediaSource?
-    + GetMediaSource(ELanguage) : IMediasource?
-    + GetMediaSources() : IEnumerable~IMediaSource~
-    + AddMediaSource(IMediaSource) : bool
-    + RemoveMediaSource(IMediaSource) : bool
-    + ClearMediasSources()
-    + SetDefaultMediaSource(IMediaSource)
-  }
+class AMedia {
+  <<abstract>>
+  + Name : string
+  + DEFAULT_LANGUAGE$ : ELanguage
+  + Id : string
+  + MediaType : EMediaType
+  + DefaultLanguage : ELanguage
+  + DateAdded : DateOnly
+  + CreationDate : DateOnly
+  + CreationYear : int
+  + Groups : List~string~
+  + IsGroupMember : bool
+  + IsInvalid : bool
+  # MediaInfos : IMediaInfos
+  # MediaSources : IMediaSources
+  # MediaPictures : IMediaPictures
+}
 
+class IMediaSources {
+  <<interface>>
+  + GetDefaul() : IMediaSource?
+  + Get(ELanguage) : IMediasource?
+  + GetAll() : IEnumerable~IMediaSource~
+  + Add(params IMediaSource[]) : bool
+  + AddRange(IEnumerable~IMediaSource~) : bool
+  + Remove(IMediaSource) : bool
+  + Clear()
+  + SetDefault(IMediaSource)
+}
   class IMediaSource {
     <<interface>>
-    + DateOnly : DateAdded
-    + DateOnly : CreationDate
-    + int : CreationYear
-    + string : Description
-    + IListWithPrincipal~ELanguage~ : Languages
+    + DateAdded : DateOnly
+    + CreationDate : DateOnly
+    + CreationYear : int
+    + Description : string
+    + Languages : IListWithPrincipal~ELanguage~
   }
-
-  class IMediaSourcePhysical {
-    <<interface>>
-  }
-
-  class IMediaSourceVirtual {
-    <<interface>>
-    + StorageRoot : string
-    + StoragePath : string
-    + FileName : string
-    + FileExtension : string
-    + FullFileName : string
-    + Size : long
-    + MediaStreams : IMediaStreams
-  }
-
-  class IMediaInfos {
+    class IMediaSourcePhysical {
       <<interface>>
-    + GetDefaultMediaInfo() : IMediaInfo?
-    + GetMediaInfo(ELanguage) : IMediaInfo?
-    + GetMediaInfos() : IEnumerable~IMediaInfo~
-    + AddMediaInfo(IMediaInfo)
-    + RemoveMediaInfo(IMediaInfo)
-    + ClearMediasInfos()
-    + SetDefaultMediaInfo(IMediaInfo)
-  }
+      + StoragePlace : string
+      + StorageType : EStorageType
+    }
+    class IMediaSourceVirtual {
+      <<interface>>
+      + StorageRoot : string
+      + StoragePath : string
+      + FileName : string
+      + FileExtension : string
+      + FullFileName : string
+      + Size : long
+      + MediaStreams : IMediaStreams
+    }
+
+class IMediaInfos {
+  <<interface>>
+  + GetDefault() : IMediaInfo?
+  + Get(ELanguage) : IMediaInfo?
+  + GetAll() : IEnumerable~IMediaInfo~
+  + Add(params IMediaInfo[])
+  + AddRange(IEnumerable~IMediaInfo~)
+  + Remove(IMediaInfo)
+  + Clear()
+  + SetDefault(IMediaInfo)
+}
   class IMediaInfo {
     <<interface>>
     + DateOnly : DateAdded
@@ -87,17 +86,17 @@ classDiagram
     + List~string~ : Tags
   }
 
-  class IMediaPictures {
-    <<interface>>
-    + GetDefaultMediaPicture() : IMediaPicture?
-    + GetMediaPicture(ELanguage) : IMediaPicture?
-    + GetMediaPictures() : IEnumerable~IMediaPicture~
-    + AddMediaPicture(IMediaPicture) : bool
-    + RemoveMediaPicture(IMediaPicture) : bool
-    + ClearMediasPictures()
-    + SetDefaultMediaPicture(IMediaPïcture)
-  }
-
+class IMediaPictures {
+  <<interface>>
+  + GetDefault() : IMediaPicture?
+  + Get(ELanguage) : IMediaPicture?
+  + GetAll() : IEnumerable~IMediaPicture~
+  + Add(params IMediaPicture[]) : bool
+  + AddRange(IEnumerable~IMediaPicture~) : bool
+  + Remove(IMediaPicture) : bool
+  + Clear()
+  + SetDefault(IMediaPïcture)
+}
   class IMediaPicture {
     <<interface>>
   }
@@ -114,6 +113,9 @@ classDiagram
     Theatre
     Spectacle
     Concert
+    eBook
+    eBookAudio
+    Podcast
   }
 
   class ELanguage {
@@ -134,39 +136,19 @@ classDiagram
     Dutch
   }
 
+  class EStorageType {
+    <<enum>>
+    Unknown = 0,
+    Book = 1,
+    DVD = 2,
+    CD = 3,
+    BluRay = 4,
+    Magazine = 5,
+    Tape = 6,
+    Vinyl = 7
+  }
+
   class TMediaMovie {
-  }
-
-  class IMediaSourceProperties {
-    <<interface>>
-  }
-
-  class IMediaInfosContainer {
-    MediaInfos : IMediaInfos
-  }
-
-  class IMediaStream {
-    <<interface>>
-  }
-
-  class AMediaStream {
-    <<abstract>>
-  }
-
-  class TMediaStreamAudio {
-
-  }
-  class TMediaStreamVideo {
-
-  }
-  class TMediaStreamData {
-
-  }
-  class TMediaStreamSubTitle {
-
-  }
-  class TMediaStreamGeneric {
-
   }
 
   class IMediaStreams {
@@ -182,39 +164,28 @@ classDiagram
     + IsEmpty()
   }
 
-  class TMediaStreams {
-    + MediaStreamsVideo : IEnumerable~TMediaStreamVideo~
-    + MediaStreamsAudio : IEnumerable~TMediaStreamAudio~
-    + MediaStreamsSubTitle : IEnumerable~TMediaStreamSubTitle~
-    + MediaStreamsData : IEnumerable~TMediaStreamData~
-    + MediaStreamsGeneric : IEnumerable~TMediaStreamGeneric~
-  }
-
-AMedia "1" --> "0..n" IMediaSourcesContainer
-AMedia "1" --> "1..n" IMediaInfosContainer
-AMedia "1" --> "0..n" IMediaPicturesContainer
-IMediaInfosContainer ..> IMediaInfos
-IMediaSourcesContainer ..> IMediaSources
-IMediaPicturesContainer ..> IMediaPictures
+AMedia "1" --> "0..n" IMediaSources
+AMedia "1" --> "1..n" IMediaInfos
+AMedia "1" --> "0..n" IMediaPictures
 AMedia ..> EMediaType
-TMediaMovie <|-- AMedia
+AMedia ..|> IMedia
+
+TMediaMovie --|> AMedia : inheritance
+TMediaSerie --|> AMedia : inheritance
+TMediaSerieSeason --|> AMedia : inheritance
+TMediaSerieSeasonEpisode --|> AMedia : inheritance
+
 IMediaSources ..> IMediaSource
 IMediaSources ..> ELanguage
+
 IMediaInfos ..> IMediaInfo
 IMediaInfos ..> ELanguage
+
 IMediaPictures ..> IMediaPicture
 IMediaPictures ..> ELanguage
-IMediaSource ..> IMediaSourceProperties
-IMediaStreams ..> "0..n" IMediaStream
-TMediaStreams <|-- IMediaStreams
-TMediaStreams ..> "0..n" IMediaStream
-AMediaStream <|-- IMediaStream
-TMediaStreamAudio <|-- AMediaStream
-TMediaStreamVideo <|-- AMediaStream
-TMediaStreamSubTitle <|-- AMediaStream
-TMediaStreamData <|-- AMediaStream
-TMediaStreamGeneric <|-- AMediaStream
 
- IMediaSourceVirtual <|-- IMediaSource
- IMediaSourceVirtual "1" --> "1" IMediaStreams
- IMediaSourcePhysical <|-- IMediaSource
+ IMediaSourceVirtual --|> IMediaSource : composition
+ IMediaSourceVirtual "1" --> "1" IMediaStreams : contains
+ 
+ IMediaSourcePhysical --|> IMediaSource : composition
+ IMediaSourcePhysical <.. EStorageType

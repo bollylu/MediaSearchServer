@@ -12,7 +12,7 @@ public interface IMediaSources {
   void Clear();
 
   bool Any();
-  bool Any(Func<IMediaSource, bool> predicate);
+  bool Any(Predicate<IMediaSource> predicate);
   bool IsEmpty();
 
 }

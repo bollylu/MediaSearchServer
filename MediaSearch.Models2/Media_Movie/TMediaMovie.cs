@@ -10,7 +10,7 @@ public class TMediaMovie : AMedia, IMediaMovie {
   public TMediaMovie(ILogger logger) : base(logger) {
     MediaType = EMediaType.Movie;
   }
-  public TMediaMovie(TMediaMovie movie) : base(movie) {
+  public TMediaMovie(IMediaMovie movie) : base(movie) {
     Logger = GlobalSettings.LoggerPool.GetLogger<TMediaMovie>();
     MediaType = EMediaType.Movie;
   }

@@ -18,12 +18,6 @@ public class TMediaSources : ALoggable, IMediaSources {
       MediaSources.Add(MediaSourceItem);
     }
   }
-
-  public TMediaSources(IEnumerable<IMediaSource> mediaSources) : this() {
-    foreach (IMediaSource MediaSourceItem in mediaSources) {
-      MediaSources.Add(MediaSourceItem);
-    }
-  }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
   #region --- Converters -------------------------------------------------------------------------------------
@@ -121,10 +115,10 @@ public class TMediaSources : ALoggable, IMediaSources {
     }
   }
 
-  public bool Any(Func<IMediaSource, bool> predicate) {
+  public bool Any(Predicate<IMediaSource> predicate) {
     try {
       _Lock.EnterReadLock();
-      return MediaSources.Any(predicate);
+      return MediaSources.Any(x => predicate(x));
     } finally {
       _Lock.ExitReadLock();
     }

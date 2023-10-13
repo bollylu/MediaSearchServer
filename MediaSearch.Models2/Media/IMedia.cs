@@ -4,10 +4,7 @@ public interface IMedia :
   IRecord,
   IDisposable,
   IAsyncDisposable,
-  IToStringIndent,
-  IMediaInfosContainer,
-  IMediaSourcesContainer,
-  IMediaPicturesContainer {
+  IToStringIndent {
 
   /// <summary>
   /// A shortcut taken from MediaInfos title

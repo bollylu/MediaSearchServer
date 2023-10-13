@@ -30,7 +30,7 @@ public class TMediaSerieEpisode : AMedia, IMediaSerieEpisode {
   public TMediaSerieEpisode(ILogger logger) : base(logger) {
     MediaType = EMediaType.SerieEpisode;
   }
-  public TMediaSerieEpisode(TMediaSerieEpisode episode) : base(episode) {
+  public TMediaSerieEpisode(IMediaSerieEpisode episode) : base(episode) {
     Logger = GlobalSettings.LoggerPool.GetLogger<TMediaSerieEpisode>();
     AbsoluteNumber = episode.AbsoluteNumber;
     Season = episode.Season;

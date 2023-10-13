@@ -9,5 +9,8 @@ public enum EMediaType {
   Video,
   Theatre,
   Spectacle,
-  Concert
+  Concert,
+  eBook,
+  eBookAudio,
+  Podcast
 }

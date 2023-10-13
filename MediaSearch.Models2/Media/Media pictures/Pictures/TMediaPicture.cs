@@ -1,11 +1,7 @@
-﻿using System.Diagnostics;
-
-using SkiaSharp;
+﻿using SkiaSharp;
 
 namespace MediaSearch.Models;
-public class TPicture : ILoggable, IMediaPicture {
-
-  public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TPicture>();
+public class TMediaPicture : ALoggable, IMediaPicture {
 
   public const int MIN_PICTURE_WIDTH = 128;
   public const int MAX_PICTURE_WIDTH = 1024;
@@ -25,18 +21,22 @@ public class TPicture : ILoggable, IMediaPicture {
   public ELanguage Language { get; init; } = ELanguage.Unknown;
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TPicture() { }
+  public TMediaPicture() : base() {
+    Logger = GlobalSettings.LoggerPool.GetLogger<TMediaPicture>();
+  }
 
-  public TPicture(string name, byte[] data, EPictureType pictureType = EPictureType.Unknown, ELanguage language = ELanguage.Unknown) {
+  public TMediaPicture(string name, byte[] data, EPictureType pictureType = EPictureType.Unknown, ELanguage language = ELanguage.Unknown) : this() {
     Name = name;
-    Data = data;
+    Data = new byte[data.Length];
+    Array.Copy(data, Data, data.Length);
     PictureType = pictureType;
     Language = language;
   }
 
-  public TPicture(IMediaPicture picture) {
+  public TMediaPicture(IMediaPicture picture) : this() {
     Name = picture.Name;
-    Data = picture.Data;
+    Data = new byte[picture.Data.Length];
+    Array.Copy(picture.Data, Data, picture.Data.Length);
     PictureType = picture.PictureType;
     Language = picture.Language;
   }
@@ -80,7 +80,7 @@ public class TPicture : ILoggable, IMediaPicture {
           SKData Result = ResizedPicture.Encode(SKEncodedImageFormat.Jpeg, 100);
           using (MemoryStream OutputStream = new()) {
             Result.SaveTo(OutputStream);
-            return new TPicture(Name, OutputStream.ToArray(), PictureType, Language);
+            return new TMediaPicture(Name, OutputStream.ToArray(), PictureType, Language);
           }
         }
       }
@@ -92,12 +92,12 @@ public class TPicture : ILoggable, IMediaPicture {
 
   public static IMediaPicture Default {
     get {
-      return new TPicture();
+      return new TMediaPicture();
     }
   }
 
   public static IMediaPicture? GetPictureFromAssembly(string pictureName, string pictureExtension = ".png") {
-    ILogger Logger = GlobalSettings.LoggerPool.GetLogger<TPicture>();
+    ILogger Logger = GlobalSettings.LoggerPool.GetLogger<TMediaPicture>();
     try {
       Assembly Asm = Assembly.GetExecutingAssembly();
       string CompleteName = $"MediaSearch.Models.Pictures.{pictureName}{pictureExtension}";
@@ -110,7 +110,7 @@ public class TPicture : ILoggable, IMediaPicture {
           return null;
         }
         using (BinaryReader reader = new BinaryReader(ResourceStream)) {
-          return new TPicture(pictureName, reader.ReadBytes((int)reader.BaseStream.Length));
+          return new TMediaPicture(pictureName, reader.ReadBytes((int)reader.BaseStream.Length));
         }
       }
     } catch (Exception ex) {
@@ -121,7 +121,7 @@ public class TPicture : ILoggable, IMediaPicture {
 
   public static IMediaPicture PictureMissing {
     get {
-      return _PictureMissing ??= GetPictureFromAssembly("missing", ".jpg") ?? new TPicture("Picture not found (missing.jpg)", Array.Empty<byte>());
+      return _PictureMissing ??= GetPictureFromAssembly("missing", ".jpg") ?? new TMediaPicture("Picture not found (missing.jpg)", Array.Empty<byte>());
     }
   }
 
