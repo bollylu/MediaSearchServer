@@ -15,4 +15,5 @@ public interface IMediaSources {
   bool Any(Predicate<IMediaSource> predicate);
   bool IsEmpty();
 
+  string Dump();
 }

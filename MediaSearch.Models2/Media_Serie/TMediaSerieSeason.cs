@@ -1,4 +1,6 @@
-﻿namespace MediaSearch.Models;
+﻿using BLTools.Diagnostic;
+
+namespace MediaSearch.Models;
 public class TMediaSerieSeason :
   AMedia,
   IMediaSerieSeason {
@@ -8,7 +10,9 @@ public class TMediaSerieSeason :
   public ESerieType SerieType { get; set; } = ESerieType.Unknown;
   public int Number { get; set; } = INVALID_NUMBER;
 
+  [DoNotDump]
   private readonly List<IMediaSerieEpisode> Episodes = new();
+  [DoNotDump]
   private readonly ReaderWriterLockSlim _Lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------

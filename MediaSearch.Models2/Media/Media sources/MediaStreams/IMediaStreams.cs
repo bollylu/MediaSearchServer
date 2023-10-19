@@ -10,4 +10,10 @@ public interface IMediaStreams {
   bool IsEmpty();
   bool Any();
   bool Any(Predicate<IMediaStream> predicate);
+
+  IEnumerable<TMediaStreamVideo> MediaStreamsVideo { get; }
+  IEnumerable<TMediaStreamAudio> MediaStreamsAudio { get; }
+  IEnumerable<TMediaStreamSubTitle> MediaStreamsSubTitle { get; }
+  IEnumerable<TMediaStreamData> MediaStreamsData { get; }
+  IEnumerable<TMediaStreamUnknown> MediaStreamsUnknown { get; }
 }

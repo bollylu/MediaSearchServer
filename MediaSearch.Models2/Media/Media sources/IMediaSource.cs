@@ -29,6 +29,8 @@ public interface IMediaSource : IToStringIndent {
   /// If more than one, one principal must be designated
   /// </summary>
   IListWithPrincipal<ELanguage> Languages { get; set; }
+
+  string Dump();
 }
 
 

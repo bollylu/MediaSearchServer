@@ -1,11 +1,15 @@
-﻿namespace MediaSearch.Models;
+﻿using BLTools.Diagnostic;
+
+namespace MediaSearch.Models;
 
 
 public class TMediaSerie : AMedia, IMediaSerie {
 
   public ESerieType SerieType { get; set; }
 
+  [DoNotDump]
   private readonly List<IMediaSerieSeason> Seasons = new List<IMediaSerieSeason>();
+  [DoNotDump]
   private readonly ReaderWriterLockSlim _Lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------

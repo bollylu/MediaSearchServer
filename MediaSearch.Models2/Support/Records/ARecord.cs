@@ -1,9 +1,11 @@
-﻿using BLTools.Text;
+﻿using BLTools.Diagnostic;
+using BLTools.Text;
 
 namespace MediaSearch.Models;
 
 public abstract class ARecord : ILoggable, IRecord {
 
+  [DoNotDump]
   public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<ARecord>();
 
   public virtual string Id { get; protected set; } = string.Empty;

@@ -1,15 +1,24 @@
 ﻿using System.IO;
 
+using BLTools.Diagnostic;
+
 namespace MediaSearch.Models;
 public class TMediaStreams : ALoggable, IMediaStreams {
 
+  [DoNotDump]
   protected List<IMediaStream> MediaStreamItems = new();
+  [DoNotDump]
   private readonly ReaderWriterLockSlim _Lock = new ReaderWriterLockSlim();
 
+  [DoNotDump]
   public IEnumerable<TMediaStreamVideo> MediaStreamsVideo => MediaStreamItems.OfType<TMediaStreamVideo>();
+  [DoNotDump]
   public IEnumerable<TMediaStreamAudio> MediaStreamsAudio => MediaStreamItems.OfType<TMediaStreamAudio>();
+  [DoNotDump]
   public IEnumerable<TMediaStreamSubTitle> MediaStreamsSubTitle => MediaStreamItems.OfType<TMediaStreamSubTitle>();
+  [DoNotDump]
   public IEnumerable<TMediaStreamUnknown> MediaStreamsUnknown => MediaStreamItems.OfType<TMediaStreamUnknown>();
+  [DoNotDump]
   public IEnumerable<TMediaStreamData> MediaStreamsData => MediaStreamItems.OfType<TMediaStreamData>();
 
   public TMediaStreams() {

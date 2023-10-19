@@ -1,13 +1,11 @@
-﻿using BLTools.Encryption;
+﻿using BLTools.Diagnostic;
+using BLTools.Encryption;
 
 namespace MediaSearch.Models;
 
 public abstract class AMedia :
   ARecord,
-  IMedia,
-  IMediaInfosContainer,
-  IMediaSourcesContainer,
-  IMediaPicturesContainer {
+  IMedia {
 
   #region --- Public properties ------------------------------------------------------------------------------
   public static ELanguage DEFAULT_LANGUAGE = ELanguage.French;
@@ -65,19 +63,10 @@ public abstract class AMedia :
   [JsonConverter(typeof(TDateOnlyJsonConverter))]
   public DateOnly DateAdded { get; set; } = DateOnly.FromDateTime(DateTime.Today);
 
-  //[JsonConverter(typeof(TDateOnlyJsonConverter))]
-  //public DateOnly CreationDate { get; set; } = new DateOnly();
-  //public int CreationYear {
-  //  get {
-  //    return CreationDate.Year;
-  //  }
-  //}
-
-  //public List<string> Groups { get; } = new();
-  //public bool IsGroupMember => Groups.Any();
-
+  [DoNotDump]
   public IMediaInfos MediaInfos { get; } = new TMediaInfos();
   public IMediaSources MediaSources { get; } = new TMediaSources();
+  [DoNotDump]
   public IMediaPictures MediaPictures { get; } = new TMediaPictures();
 
   #endregion --- Public properties ---------------------------------------------------------------------------
@@ -162,6 +151,37 @@ public abstract class AMedia :
 
   public override string ToString() {
     return ToString(0);
+  }
+
+  public virtual string Dump() {
+    StringBuilder RetVal = new();
+    if (IsInvalid) {
+      RetVal.AppendLine("- Warning : ### Media is invalid ###");
+    }
+
+    RetVal.AppendLine($"- {nameof(MediaType)} = {MediaType}")
+          .AppendLine($"- {nameof(Id)} = {Id.WithQuotes()}")
+          .AppendLine($"- {nameof(Name)} = {Name.WithQuotes()}");
+
+    if (MediaInfos.Any()) {
+      RetVal.AppendLine($"- {nameof(MediaInfos)} [{MediaInfos.GetAll().Count()}]");
+      foreach (var MediaInfoItem in MediaInfos.GetAll()) {
+        RetVal.AppendLine($"  - {MediaInfoItem}");
+      }
+    } else {
+      RetVal.AppendLine($"- {nameof(MediaInfos)} is empty");
+    }
+
+    if (MediaSources.Any()) {
+      RetVal.AppendLine($"- {nameof(MediaSources)} [{MediaSources.GetAll().Count()}]");
+      foreach (var MediaSourceItem in MediaSources.GetAll()) {
+        RetVal.AppendIndent($"{MediaSourceItem.Dump()}", 2);
+        ;
+      }
+    } else {
+      RetVal.AppendLine($"- {nameof(MediaSources)} is empty");
+    }
+    return RetVal.ToString();
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
 

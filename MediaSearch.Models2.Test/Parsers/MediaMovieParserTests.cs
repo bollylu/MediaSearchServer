@@ -1,12 +1,4 @@
-﻿using System.IO;
-using System.Runtime.InteropServices;
-using System.Transactions;
-
-using MediaSearch.Models;
-
-using Microsoft.Extensions.Primitives;
-
-namespace MediaSearch.Models2.Test;
+﻿namespace MediaSearch.Models2.Test;
 
 [TestClass]
 public class MediaMovieParserTests {

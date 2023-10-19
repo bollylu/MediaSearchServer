@@ -1,8 +1,12 @@
-﻿namespace MediaSearch.Models;
+﻿using BLTools.Diagnostic;
+
+namespace MediaSearch.Models;
 
 public class TMediaInfos : ALoggable, IMediaInfos {
 
-  protected List<IMediaInfo> MediaInfos = new List<IMediaInfo>();
+  [DoNotDump]
+  protected readonly List<IMediaInfo> MediaInfos = new List<IMediaInfo>();
+  [DoNotDump]
   private readonly ReaderWriterLockSlim _Lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
   private IMediaInfo? _Default;

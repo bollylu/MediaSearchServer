@@ -1,4 +1,6 @@
-﻿namespace MediaSearch.Models;
+﻿using BLTools.Diagnostic;
+
+namespace MediaSearch.Models;
 public class TMediaSourceVirtual : AMediaSource, IMediaSourceVirtual {
 
   #region --- Public properties ------------------------------------------------------------------------------
@@ -51,6 +53,30 @@ public class TMediaSourceVirtual : AMediaSource, IMediaSourceVirtual {
 
   public override string ToString() {
     return ToString(0);
+  }
+
+  public override string Dump() {
+    StringBuilder RetVal = new StringBuilder(base.Dump());
+    RetVal.AppendLine($"- {nameof(StorageRoot)} : {StorageRoot.WithQuotes()}");
+    RetVal.AppendLine($"- {nameof(StoragePath)} : {StoragePath.WithQuotes()}");
+    RetVal.AppendLine($"- {nameof(FileName)} : {FileName.WithQuotes()}");
+    RetVal.AppendLine($"- {nameof(FileExtension)} : {FileExtension.WithQuotes()}");
+    RetVal.AppendLine($"- {nameof(FullFileName)} : {FullFileName.WithQuotes()}");
+    RetVal.AppendLine($"- {nameof(Size)} : {Size}");
+    RetVal.AppendLine($"- {nameof(MediaStreams)} : {MediaStreams.GetAll().Count()} stream(s)");
+    if (MediaStreams.Any()) {
+      RetVal.AppendLine($"  - Video : {MediaStreams.MediaStreamsVideo.Count()}");
+      RetVal.AppendLine($"  - Audio : {MediaStreams.MediaStreamsAudio.Count()} ({MediaStreams.MediaStreamsAudio.Select(s => s.Language).CombineToString()})");
+      RetVal.AppendLine($"  - SubTitle : {MediaStreams.MediaStreamsSubTitle.Count()} ({MediaStreams.MediaStreamsSubTitle.Select(s => s.Language).CombineToString()})");
+      RetVal.AppendLine($"  - Data : {MediaStreams.MediaStreamsData.Count()}");
+      RetVal.AppendLine($"  - Unknown : {MediaStreams.MediaStreamsUnknown.Count()}");
+    }
+    RetVal.AppendLine($"- {nameof(Languages)} : {Languages.Count()}");
+    if (Languages.Any()) {
+      RetVal.AppendLine($"  - Values : {Languages.Select(l => l.ToString()).CombineToString()}");
+      RetVal.AppendLine($"  - Principal : {Languages.GetPrincipal()}");
+    }
+    return RetVal.ToString();
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
 

@@ -1,7 +1,11 @@
-﻿namespace MediaSearch.Models;
+﻿using BLTools.Diagnostic;
+
+namespace MediaSearch.Models;
 public class TMediaSources : ALoggable, IMediaSources {
 
+  [DoNotDump]
   protected List<IMediaSource> MediaSources = new List<IMediaSource>();
+  [DoNotDump]
   private readonly ReaderWriterLockSlim _Lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
@@ -32,6 +36,14 @@ public class TMediaSources : ALoggable, IMediaSources {
 
   public override string ToString() {
     return ToString(0);
+  }
+
+  public string Dump() {
+    StringBuilder RetVal = new StringBuilder();
+    foreach (var Item in MediaSources) {
+      RetVal.AppendLine($"- {Item.Dump()}");
+    }
+    return RetVal.ToString();
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
