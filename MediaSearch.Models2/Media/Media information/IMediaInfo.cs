@@ -6,4 +6,5 @@ public interface IMediaInfo : IGroupMembership, ICreation {
   string Description { get; set; }
   List<string> Tags { get; init; }
 
+  string Dump();
 }

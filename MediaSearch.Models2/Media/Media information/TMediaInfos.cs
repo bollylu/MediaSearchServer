@@ -36,12 +36,20 @@ public class TMediaInfos : ALoggable, IMediaInfos {
     return RetVal.ToString();
   }
 
-
   public override string ToString() {
     return ToString(0);
   }
+
+  public string Dump() {
+    StringBuilder RetVal = new StringBuilder();
+    foreach (var Item in MediaInfos) {
+      RetVal.AppendLine(Item.Dump());
+    }
+    return RetVal.ToString();
+  }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
+  #region --- IMediaInfos --------------------------------------------
   public IMediaInfo? Get(ELanguage language) {
     try {
       _Lock.EnterReadLock();
@@ -50,26 +58,6 @@ public class TMediaInfos : ALoggable, IMediaInfos {
       _Lock.ExitReadLock();
     }
   }
-
-  //public void SetTitle(ELanguage language, string title) {
-  //  try {
-  //    _Lock.EnterUpgradeableReadLock();
-  //    int Index = MediaInfos.FindIndex(i => i.Language == language);
-  //    if (Index < 0) {
-  //      return;
-  //    }
-  //    try {
-  //      _Lock.EnterWriteLock();
-  //      MediaInfos[Index].Name = title;
-  //    } finally {
-  //      _Lock.ExitWriteLock();
-  //    }
-  //  } catch (Exception ex) {
-  //    LogErrorBox("Unable to set title", ex);
-  //  } finally {
-  //    _Lock.ExitUpgradeableReadLock();
-  //  }
-  //}
 
   public IEnumerable<IMediaInfo> GetAll() {
     try {
@@ -153,4 +141,5 @@ public class TMediaInfos : ALoggable, IMediaInfos {
   }
 
   public bool IsEmpty() => !Any();
+  #endregion --- IMediaInfos -----------------------------------------
 }

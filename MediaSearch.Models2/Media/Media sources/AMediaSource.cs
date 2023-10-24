@@ -43,10 +43,10 @@ public abstract class AMediaSource : ALoggable, IMediaSource {
 
   public virtual string Dump() {
     StringBuilder RetVal = new StringBuilder();
-    RetVal.AppendLine($"- {nameof(DateAdded)} : {DateAdded}");
-    RetVal.AppendLine($"- {nameof(CreationDate)} : {CreationDate}");
-    RetVal.AppendLine($"- {nameof(CreationYear)} : {CreationYear}");
-    RetVal.AppendLine($"- {nameof(Description)} : {Description.WithQuotes()}");
+    RetVal.AppendLine($"# {nameof(DateAdded)} : {DateAdded}");
+    RetVal.AppendLine($"  - {nameof(CreationDate)} : {CreationDate}");
+    RetVal.AppendLine($"  - {nameof(CreationYear)} : {CreationYear}");
+    RetVal.AppendLine($"  - {nameof(Description)} : {Description.WithQuotes()}");
     return RetVal.ToString();
   }
   #endregion --- Converters -------------------------------------------------------------------------------------

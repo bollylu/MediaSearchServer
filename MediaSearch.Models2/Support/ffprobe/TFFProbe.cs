@@ -6,7 +6,7 @@ using BLTools.Processes;
 namespace MediaSearch.Models.Support;
 public partial class TFFProbe : ALoggable, IMediaSourceStreamsFinder {
 
-  public string FFPROBE { get; private set; } = string.Empty;
+  public static string FFPROBE = string.Empty;
 
   public string Filename { get; private set; } = string.Empty;
 
@@ -19,12 +19,14 @@ public partial class TFFProbe : ALoggable, IMediaSourceStreamsFinder {
 
     Filename = filename;
 
-    if (OperatingSystem.IsWindows()) {
-      FFPROBE = @".\ExternalResources\Windows\ffprobe\ffprobe.exe";
-    } else if (OperatingSystem.IsLinux()) {
-      FFPROBE = @".\ExternalResources\Linux\ffprobe\ffprobe";
-    } else {
-      throw new ApplicationException("Unable to use FFPROBE : the process is missing");
+    if (FFPROBE.IsEmpty()) {
+      if (OperatingSystem.IsWindows()) {
+        FFPROBE = @".\ExternalResources\Windows\ffprobe\ffprobe.exe";
+      } else if (OperatingSystem.IsLinux()) {
+        FFPROBE = @".\ExternalResources\Linux\ffprobe\ffprobe";
+      } else {
+        throw new ApplicationException("Unable to use FFPROBE : the process is missing");
+      }
     }
 
     if (!File.Exists(FFPROBE)) {

@@ -28,6 +28,7 @@ public abstract class AMedia :
   }
   #endregion --- IRecord --------------------------------------------
 
+  #region --- IMedia --------------------------------------------
   public EMediaType MediaType { get; set; } = EMediaType.Unknown;
 
   public ELanguage DefaultLanguage { get; set; } = DEFAULT_LANGUAGE;
@@ -65,9 +66,11 @@ public abstract class AMedia :
 
   [DoNotDump]
   public IMediaInfos MediaInfos { get; } = new TMediaInfos();
+  [DoNotDump]
   public IMediaSources MediaSources { get; } = new TMediaSources();
   [DoNotDump]
   public IMediaPictures MediaPictures { get; } = new TMediaPictures();
+  #endregion --- IMedia -----------------------------------------
 
   #endregion --- Public properties ---------------------------------------------------------------------------
 
@@ -165,19 +168,14 @@ public abstract class AMedia :
 
     if (MediaInfos.Any()) {
       RetVal.AppendLine($"- {nameof(MediaInfos)} [{MediaInfos.GetAll().Count()}]");
-      foreach (var MediaInfoItem in MediaInfos.GetAll()) {
-        RetVal.AppendLine($"  - {MediaInfoItem}");
-      }
+      RetVal.AppendIndent(MediaInfos.Dump());
     } else {
       RetVal.AppendLine($"- {nameof(MediaInfos)} is empty");
     }
 
     if (MediaSources.Any()) {
       RetVal.AppendLine($"- {nameof(MediaSources)} [{MediaSources.GetAll().Count()}]");
-      foreach (var MediaSourceItem in MediaSources.GetAll()) {
-        RetVal.AppendIndent($"{MediaSourceItem.Dump()}", 2);
-        ;
-      }
+      RetVal.AppendIndent(MediaSources.Dump());
     } else {
       RetVal.AppendLine($"- {nameof(MediaSources)} is empty");
     }

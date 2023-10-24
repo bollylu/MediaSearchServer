@@ -53,7 +53,7 @@ public class MediaMovieParserTests {
   [TestMethod]
   public async Task Parse_Windows() {
     Message("Instanciate media movie parser");
-    IMediaMovieParser Parser = new TMediaMovieParser(@".\data\films\");
+    IMediaMovieParser Parser = new TMediaMovieParser(@".\data\films");
     Assert.IsNotNull(Parser);
     Parser.Logger.SeverityLimit = ESeverity.Debug;
     Dump(Parser);

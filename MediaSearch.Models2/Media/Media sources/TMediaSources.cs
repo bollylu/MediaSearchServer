@@ -41,7 +41,7 @@ public class TMediaSources : ALoggable, IMediaSources {
   public string Dump() {
     StringBuilder RetVal = new StringBuilder();
     foreach (var Item in MediaSources) {
-      RetVal.AppendLine($"- {Item.Dump()}");
+      RetVal.AppendLine(Item.Dump());
     }
     return RetVal.ToString();
   }

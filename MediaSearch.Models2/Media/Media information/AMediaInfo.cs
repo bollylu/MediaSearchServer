@@ -25,7 +25,9 @@ public abstract class AMediaInfo : IMediaInfo {
     Name = mediaInfo.Name;
     Description = mediaInfo.Description;
     Tags.AddRange(mediaInfo.Tags);
-    Groups.AddRange(mediaInfo.Groups);
+    if (mediaInfo.IsGroupMember) {
+      Groups.AddRange(mediaInfo.Groups);
+    }
     CreationDate = mediaInfo.CreationDate;
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
@@ -33,14 +35,14 @@ public abstract class AMediaInfo : IMediaInfo {
   #region --- Converters -------------------------------------------------------------------------------------
   public virtual string ToString(int indent) {
     StringBuilder RetVal = new StringBuilder();
-    RetVal.AppendIndent($"{nameof(Language)} = {Language}", indent);
+    RetVal.AppendIndent($"- {nameof(Language)} = {Language}", indent);
     RetVal.AppendIndent($"- {nameof(Name)} = {Name.WithQuotes()}", indent + 2);
     RetVal.AppendIndent($"- {nameof(Description)} = {Description.WithQuotes()}", indent + 2);
     RetVal.AppendIndent($"- {nameof(CreationDate)} = {CreationDate}", indent + 2);
     RetVal.AppendIndent($"- {nameof(CreationYear)} = {CreationYear}", indent + 2);
 
     if (IsGroupMember) {
-      RetVal.AppendIndent($"- {nameof(Groups)} = {Groups.Select(g => g.WithQuotes()).CombineToString()}", indent + 2);
+      RetVal.AppendIndent($"- {nameof(Groups)} = [{Groups.Count()}] {Groups.Select(g => g.WithQuotes()).CombineToString()}", indent + 2);
     } else {
       RetVal.AppendIndent("- No group membership");
     }
@@ -57,6 +59,28 @@ public abstract class AMediaInfo : IMediaInfo {
 
   public override string ToString() {
     return ToString(0);
+  }
+
+  public virtual string Dump() {
+    StringBuilder RetVal = new();
+    RetVal.AppendLine($"# {nameof(Language)} = {Language}");
+    RetVal.AppendLine($"  - {nameof(Name)} = {Name.WithQuotes()}");
+    RetVal.AppendLine($"  - {nameof(Description)} = {Description.WithQuotes()}");
+    RetVal.AppendLine($"  - {nameof(CreationDate)} = {CreationDate}");
+    RetVal.AppendLine($"  - {nameof(CreationYear)} = {CreationYear}");
+    if (IsGroupMember) {
+      RetVal.AppendLine($"  - {nameof(Groups)} = {Groups.Select(g => g.WithQuotes()).CombineToString()}");
+    } else {
+      RetVal.AppendLine("  - No group membership");
+    }
+
+    if (Tags.Any()) {
+      RetVal.AppendLine($"  - {nameof(Tags)} = {string.Join(" ", Tags.Select(t => $"[{t}]"))}");
+    } else {
+      RetVal.AppendLine("  - Tags is empty");
+    }
+
+    return RetVal.ToString();
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
 }

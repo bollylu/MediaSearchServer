@@ -57,24 +57,24 @@ public class TMediaSourceVirtual : AMediaSource, IMediaSourceVirtual {
 
   public override string Dump() {
     StringBuilder RetVal = new StringBuilder(base.Dump());
-    RetVal.AppendLine($"- {nameof(StorageRoot)} : {StorageRoot.WithQuotes()}");
-    RetVal.AppendLine($"- {nameof(StoragePath)} : {StoragePath.WithQuotes()}");
-    RetVal.AppendLine($"- {nameof(FileName)} : {FileName.WithQuotes()}");
-    RetVal.AppendLine($"- {nameof(FileExtension)} : {FileExtension.WithQuotes()}");
-    RetVal.AppendLine($"- {nameof(FullFileName)} : {FullFileName.WithQuotes()}");
-    RetVal.AppendLine($"- {nameof(Size)} : {Size}");
-    RetVal.AppendLine($"- {nameof(MediaStreams)} : {MediaStreams.GetAll().Count()} stream(s)");
+    RetVal.AppendIndent($"- {nameof(StorageRoot)} : {StorageRoot.WithQuotes()}", 2);
+    RetVal.AppendIndent($"- {nameof(StoragePath)} : {StoragePath.WithQuotes()}", 2);
+    RetVal.AppendIndent($"- {nameof(FileName)} : {FileName.WithQuotes()}", 2);
+    RetVal.AppendIndent($"- {nameof(FileExtension)} : {FileExtension.WithQuotes()}", 2);
+    RetVal.AppendIndent($"- {nameof(FullFileName)} : {FullFileName.WithQuotes()}", 2);
+    RetVal.AppendIndent($"- {nameof(Size)} : {Size}", 2);
+    RetVal.AppendIndent($"- {nameof(MediaStreams)} : {MediaStreams.GetAll().Count()} stream(s)", 2);
     if (MediaStreams.Any()) {
-      RetVal.AppendLine($"  - Video : {MediaStreams.MediaStreamsVideo.Count()}");
-      RetVal.AppendLine($"  - Audio : {MediaStreams.MediaStreamsAudio.Count()} ({MediaStreams.MediaStreamsAudio.Select(s => s.Language).CombineToString()})");
-      RetVal.AppendLine($"  - SubTitle : {MediaStreams.MediaStreamsSubTitle.Count()} ({MediaStreams.MediaStreamsSubTitle.Select(s => s.Language).CombineToString()})");
-      RetVal.AppendLine($"  - Data : {MediaStreams.MediaStreamsData.Count()}");
-      RetVal.AppendLine($"  - Unknown : {MediaStreams.MediaStreamsUnknown.Count()}");
+      RetVal.AppendIndent($"- Video : {MediaStreams.MediaStreamsVideo.Count()}", 4);
+      RetVal.AppendIndent($"- Audio : {MediaStreams.MediaStreamsAudio.Count()} ({MediaStreams.MediaStreamsAudio.Select(s => s.Language).CombineToString()})", 4);
+      RetVal.AppendIndent($"- SubTitle : {MediaStreams.MediaStreamsSubTitle.Count()} ({MediaStreams.MediaStreamsSubTitle.Select(s => s.Language).CombineToString()})", 4);
+      RetVal.AppendIndent($"- Data : {MediaStreams.MediaStreamsData.Count()}", 4);
+      RetVal.AppendIndent($"- Unknown : {MediaStreams.MediaStreamsUnknown.Count()}", 4);
     }
-    RetVal.AppendLine($"- {nameof(Languages)} : {Languages.Count()}");
+    RetVal.AppendIndent($"- {nameof(Languages)} : {Languages.Count}", 2);
     if (Languages.Any()) {
-      RetVal.AppendLine($"  - Values : {Languages.Select(l => l.ToString()).CombineToString()}");
-      RetVal.AppendLine($"  - Principal : {Languages.GetPrincipal()}");
+      RetVal.AppendIndent($"- Values : {Languages.Select(l => l.ToString()).CombineToString()}", 4);
+      RetVal.AppendIndent($"- Principal : {Languages.GetPrincipal()}", 4);
     }
     return RetVal.ToString();
   }
