@@ -1,10 +1,14 @@
-﻿using SkiaSharp;
+﻿using BLTools.Diagnostic;
+
+using SkiaSharp;
 
 namespace MediaSearch.Models;
 
 public class TMediaPictures : ALoggable, IMediaPictures {
 
+  [DoNotDump]
   protected List<IMediaPicture> MediaPictures = new List<IMediaPicture>();
+  [DoNotDump]
   private readonly ReaderWriterLockSlim _Lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
@@ -31,7 +35,9 @@ public class TMediaPictures : ALoggable, IMediaPictures {
 
   public static int TIMEOUT_TO_CONVERT_IN_MS = 5000;
 
+  [DoNotDump]
   protected readonly Dictionary<string, IMediaPicture> Pictures = new Dictionary<string, IMediaPicture>();
+  [DoNotDump]
   protected readonly ReaderWriterLockSlim _LockPictures = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
   public IMediaPicture? GetPicture(string pictureName) {

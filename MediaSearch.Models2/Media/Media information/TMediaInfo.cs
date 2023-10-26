@@ -2,9 +2,12 @@
 public class TMediaInfo : AMediaInfo {
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMediaInfo() : base() { }
+  public TMediaInfo() : base() {
+    Logger = GlobalSettings.LoggerPool.GetLogger<TMediaInfo>();
+  }
 
   public TMediaInfo(IMediaInfo mediaInfo) : base(mediaInfo) {
+    Logger = GlobalSettings.LoggerPool.GetLogger<TMediaInfo>();
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
@@ -19,5 +22,5 @@ public class TMediaInfo : AMediaInfo {
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
-  public static TMediaInfo Empty { get { return new TMediaInfo(); } }
+  public static TMediaInfo Empty { get { return new(); } }
 }

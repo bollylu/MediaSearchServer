@@ -18,7 +18,7 @@ public enum ELanguage {
   Dutch
 }
 
-public static class ELanguageConverter {
+public static class HLanguageConverter {
 
   private static readonly Dictionary<string, ELanguage> _MatchTableSL = new Dictionary<string, ELanguage>() {
     { "fre", ELanguage.French },

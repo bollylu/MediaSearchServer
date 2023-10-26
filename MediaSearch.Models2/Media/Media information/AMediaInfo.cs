@@ -1,10 +1,12 @@
 ﻿namespace MediaSearch.Models;
 
-public abstract class AMediaInfo : IMediaInfo {
-  public ELanguage Language { get; init; }
+public abstract class AMediaInfo : ALoggable, IMediaInfo {
+  public ELanguage Language { get; init; } = AMedia.DEFAULT_LANGUAGE;
   public string Name { get; set; } = string.Empty;
   public string Description { get; set; } = string.Empty;
   public List<string> Tags { get; init; } = new();
+
+  public int SortNumber { get; init; } = 1;
 
   #region --- IGroupMembership --------------------------------------------
   public List<string> Groups { get; init; } = new();
@@ -18,11 +20,12 @@ public abstract class AMediaInfo : IMediaInfo {
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   protected AMediaInfo() {
-    Language = AMedia.DEFAULT_LANGUAGE;
+    Logger = GlobalSettings.LoggerPool.GetLogger<AMediaInfo>();
   }
-  protected AMediaInfo(IMediaInfo mediaInfo) {
+  protected AMediaInfo(IMediaInfo mediaInfo) : this() {
     Language = mediaInfo.Language;
     Name = mediaInfo.Name;
+    SortNumber = mediaInfo.SortNumber;
     Description = mediaInfo.Description;
     Tags.AddRange(mediaInfo.Tags);
     if (mediaInfo.IsGroupMember) {

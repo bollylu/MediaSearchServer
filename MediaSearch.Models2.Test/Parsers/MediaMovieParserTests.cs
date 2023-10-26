@@ -4,20 +4,30 @@
 public class MediaMovieParserTests {
   [TestMethod]
   public void Instanciate_MediaMovieParser() {
-    Message("Instanciate media movie parser");
-    TMediaMovieParser Target = new TMediaMovieParser();
+    Message("Instanciate media movie parser Windows");
+    IMediaMovieParser Target = new TMediaMovieParserWindows();
     Assert.IsNotNull(Target);
     Dump(Target);
+
+    Message("Instanciate media movie parser Linux");
+    IMediaMovieParser Target2 = new TMediaMovieParserLinux();
+    Assert.IsNotNull(Target2);
+    Dump(Target2);
 
     Ok();
   }
 
   [TestMethod]
   public void Instanciate_MediaMovieParser_WithRootPath() {
-    Message("Instanciate media movie parser with root path");
-    TMediaMovieParser Target = new TMediaMovieParser(@"\\server\share\folder\");
-    Assert.IsNotNull(Target);
-    Dump(Target);
+    Message("Instanciate media movie parser Windows with root path");
+    IMediaMovieParser TargetWindows = new TMediaMovieParserWindows(@"\\server\share\folder\");
+    Assert.IsNotNull(TargetWindows);
+    Dump(TargetWindows);
+
+    Message("Instanciate media movie parser Linux with root path");
+    IMediaMovieParser TargetLinux = new TMediaMovieParserLinux("/mnt/serveur/share/folder");
+    Assert.IsNotNull(TargetLinux);
+    Dump(TargetLinux);
 
     Ok();
   }
@@ -28,7 +38,7 @@ public class MediaMovieParserTests {
       const string ROOT = "/mnt/films";
 
       Message("Instanciate media movie parser");
-      IMediaMovieParser Parser = new TMediaMovieParser(ROOT, false);
+      IMediaMovieParser Parser = new TMediaMovieParserLinux(ROOT);
       Assert.IsNotNull(Parser);
       Dump(Parser);
 
@@ -53,7 +63,7 @@ public class MediaMovieParserTests {
   [TestMethod]
   public async Task Parse_Windows() {
     Message("Instanciate media movie parser");
-    IMediaMovieParser Parser = new TMediaMovieParser(@".\data\films");
+    IMediaMovieParser Parser = new TMediaMovieParserWindows(@".\data\films\");
     Assert.IsNotNull(Parser);
     Parser.Logger.SeverityLimit = ESeverity.Debug;
     Dump(Parser);
@@ -63,7 +73,7 @@ public class MediaMovieParserTests {
 
     IMediaMovie? Target = await Parser.ParseFile(SOURCE);
     Assert.IsNotNull(Target);
-    Dump(Target);
+    Dump(Target, 2);
 
     Assert.AreEqual("La bamba", Target.Name);
     Assert.IsNotNull(Target.MediaInfos);

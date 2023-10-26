@@ -64,11 +64,11 @@ public abstract class AMedia :
   [JsonConverter(typeof(TDateOnlyJsonConverter))]
   public DateOnly DateAdded { get; set; } = DateOnly.FromDateTime(DateTime.Today);
 
-  [DoNotDump]
+  //[DoNotDump]
   public IMediaInfos MediaInfos { get; } = new TMediaInfos();
-  [DoNotDump]
+  //[DoNotDump]
   public IMediaSources MediaSources { get; } = new TMediaSources();
-  [DoNotDump]
+  //[DoNotDump]
   public IMediaPictures MediaPictures { get; } = new TMediaPictures();
   #endregion --- IMedia -----------------------------------------
 
@@ -156,31 +156,31 @@ public abstract class AMedia :
     return ToString(0);
   }
 
-  public virtual string Dump() {
-    StringBuilder RetVal = new();
-    if (IsInvalid) {
-      RetVal.AppendLine("- Warning : ### Media is invalid ###");
-    }
+  //public virtual string Dump() {
+  //  StringBuilder RetVal = new();
+  //  if (IsInvalid) {
+  //    RetVal.AppendLine("- Warning : ### Media is invalid ###");
+  //  }
 
-    RetVal.AppendLine($"- {nameof(MediaType)} = {MediaType}")
-          .AppendLine($"- {nameof(Id)} = {Id.WithQuotes()}")
-          .AppendLine($"- {nameof(Name)} = {Name.WithQuotes()}");
+  //  RetVal.AppendLine($"- {nameof(MediaType)} = {MediaType}")
+  //        .AppendLine($"- {nameof(Id)} = {Id.WithQuotes()}")
+  //        .AppendLine($"- {nameof(Name)} = {Name.WithQuotes()}");
 
-    if (MediaInfos.Any()) {
-      RetVal.AppendLine($"- {nameof(MediaInfos)} [{MediaInfos.GetAll().Count()}]");
-      RetVal.AppendIndent(MediaInfos.Dump());
-    } else {
-      RetVal.AppendLine($"- {nameof(MediaInfos)} is empty");
-    }
+  //  if (MediaInfos.Any()) {
+  //    RetVal.AppendLine($"- {nameof(MediaInfos)} [{MediaInfos.GetAll().Count()}]");
+  //    RetVal.AppendIndent(MediaInfos.Dump());
+  //  } else {
+  //    RetVal.AppendLine($"- {nameof(MediaInfos)} is empty");
+  //  }
 
-    if (MediaSources.Any()) {
-      RetVal.AppendLine($"- {nameof(MediaSources)} [{MediaSources.GetAll().Count()}]");
-      RetVal.AppendIndent(MediaSources.Dump());
-    } else {
-      RetVal.AppendLine($"- {nameof(MediaSources)} is empty");
-    }
-    return RetVal.ToString();
-  }
+  //  if (MediaSources.Any()) {
+  //    RetVal.AppendLine($"- {nameof(MediaSources)} [{MediaSources.GetAll().Count()}]");
+  //    RetVal.AppendIndent(MediaSources.Dump());
+  //  } else {
+  //    RetVal.AppendLine($"- {nameof(MediaSources)} is empty");
+  //  }
+  //  return RetVal.ToString();
+  //}
   #endregion --- Converters -------------------------------------------------------------------------------------
 
 
