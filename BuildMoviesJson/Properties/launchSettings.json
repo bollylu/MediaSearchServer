@@ -2,7 +2,7 @@
   "profiles": {
     "BuildMoviesJson": {
       "commandName": "Project",
-      "commandLineArgs": "datasource=\"\\\\multimedia.sharenet.priv\\multimedia\\films\" dbpath=\"i:\\json\" dbname=\"demo\" table=\"movies\""
+      "commandLineArgs": "datasource=\"\\\\multimedia.sharenet.priv\\films\""
     }
   }
 }

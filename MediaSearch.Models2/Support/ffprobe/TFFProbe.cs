@@ -15,7 +15,7 @@ public partial class TFFProbe : ALoggable, IMediaSourceStreamsFinder {
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TFFProbe(string filename) : base() {
 
-    Logger = new TConsoleLogger<TFFProbe>() { SeverityLimit = ESeverity.Debug };
+    Logger = new TConsoleLogger<TFFProbe>();
 
     Filename = filename;
 

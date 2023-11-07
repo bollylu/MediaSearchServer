@@ -32,10 +32,23 @@ public class TListWithPrincipal<T> : List<T>, IListWithPrincipal<T> {
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
-  public new void Add(T item) {
+  public bool TryAdd(T item) {
     if (this.Contains(item)) {
-      throw new InvalidOperationException($"Item [{item}] already exist in the list");
+      return false;
     }
+
+    if (this.IsEmpty()) {
+      _PrincipalIndex = 0;
+    }
+
+    base.Add(item);
+    return true;
+  }
+
+  public new void Add(T item) {
+    //if (this.Contains(item)) {
+    //  throw new InvalidOperationException($"Item [{item}] already exist in the list");
+    //}
 
     if (this.IsEmpty()) {
       _PrincipalIndex = 0;

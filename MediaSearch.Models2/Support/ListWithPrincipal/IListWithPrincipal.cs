@@ -22,4 +22,6 @@ public interface IListWithPrincipal<T> : IList<T>, IEnumerable<T>, IToStringInde
   /// Clear the principal
   /// </summary>
   void ClearPrincipal();
+
+  bool TryAdd(T item);
 }

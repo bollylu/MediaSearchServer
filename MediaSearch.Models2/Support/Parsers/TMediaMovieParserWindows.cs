@@ -1,13 +1,13 @@
-﻿using MediaSearch.Models.Support;
+﻿using System.Collections.Concurrent;
+
+using MediaSearch.Models.Support;
 
 namespace MediaSearch.Models;
-public class TMediaMovieParserWindows : ALoggable, IMediaMovieParser {
+public class TMediaMovieParserWindows : AMediaMovieParser {
   private const char DIRECTORY_SEPARATOR = '\\';
 
-  private readonly string _RootPath = "";
-
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMediaMovieParserWindows(string rootPath = ".") {
+  public TMediaMovieParserWindows(string rootPath = ".") : base() {
     Logger = GlobalSettings.LoggerPool.GetLogger<TMediaMovieParserWindows>();
     _RootPath = Path.GetFullPath(rootPath.NormalizePath(true)).TrimEnd(DIRECTORY_SEPARATOR);
   }
@@ -21,155 +21,130 @@ public class TMediaMovieParserWindows : ALoggable, IMediaMovieParser {
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
-  public async Task<IMediaMovie?> ParseFile(string source) {
+  public override async Task<IMediaMovie?> ParseFile(string source) {
+    LastParseCount++;
+
     #region === Validate parameters ===
     if (source.IsEmpty()) {
-      Logger.LogError("Unable to parse : source is missing");
+      LastErrorCount++;
+      LogError("Unable to parse : source is missing");
       return null;
     }
 
-    LogBox(nameof(source), source.ToString());
+    LogDebugBox(nameof(source), source.ToString());
 
     if (!File.Exists(source)) {
+      LastErrorCount++;
       LogError($"Unable to parse : {source.WithQuotes()} is missing or access is denied");
       return null;
     }
     #endregion === Validate parameters ===
 
-    LogDebug($"{nameof(_RootPath)} = {_RootPath.WithQuotes()}");
-    string FullName = Path.GetFullPath(source);
-    LogDebug($"{nameof(FullName)} = {FullName.WithQuotes()}");
+    NotifyParseFileStarting(source);
 
-    string FullnameAfterRootPath = FullName.After(_RootPath).After(DIRECTORY_SEPARATOR);
-    LogDebug($"{nameof(FullnameAfterRootPath)} = {FullnameAfterRootPath.WithQuotes()}");
+    try {
+      LogDebug($"{nameof(_RootPath)} = {_RootPath.WithQuotes()}");
+      string FullName = Path.GetFullPath(source);
+      LogDebug($"{nameof(FullName)} = {FullName.WithQuotes()}");
 
-    string Year = FullnameAfterRootPath.AfterLast('(').Before(')');
-    _ = int.TryParse(Year, out int ConvertedYear);
-    LogDebug($"Year = {ConvertedYear}");
+      string FullnameAfterRootPath = FullName.After(_RootPath).After(DIRECTORY_SEPARATOR);
+      LogDebug($"{nameof(FullnameAfterRootPath)} = {FullnameAfterRootPath.WithQuotes()}");
 
-    IMediaSourceStreamsFinder Finder = new TFFProbe(FullName);
-    await Finder.Init();
+      string Year = FullnameAfterRootPath.AfterLast('(').Before(')');
+      _ = int.TryParse(Year, out int ConvertedYear);
+      LogDebug($"Year = {ConvertedYear}");
 
-    #region --- MediaSource --------------------------------------------
-    IMediaSourceVirtual MediaSource = new TMediaSourceVirtual() {
-      FileName = FullnameAfterRootPath.AfterLast(DIRECTORY_SEPARATOR).BeforeLast('.'),
-      FileExtension = FullnameAfterRootPath.AfterLast("."),
-      StoragePath = FullnameAfterRootPath.BeforeLast(DIRECTORY_SEPARATOR),
-      StorageRoot = _RootPath,
-      CreationDate = new DateOnly(ConvertedYear, 1, 1),
-      Size = (new FileInfo(FullName)).Length,
-      DateAdded = DateOnly.FromDateTime(DateTime.Today)
-    };
+      IMediaSourceStreamsFinder Finder = new TFFProbe(FullName);
+      await Finder.Init();
 
-    MediaSource.Languages.Clear();
+      #region --- MediaSource --------------------------------------------
+      IMediaSourceVirtual MediaSource = new TMediaSourceVirtual() {
+        FileName = FullnameAfterRootPath.AfterLast(DIRECTORY_SEPARATOR).BeforeLast('.'),
+        FileExtension = FullnameAfterRootPath.AfterLast("."),
+        StoragePath = FullnameAfterRootPath.BeforeLast(DIRECTORY_SEPARATOR),
+        StorageRoot = _RootPath,
+        CreationDate = new DateOnly(ConvertedYear, 1, 1),
+        Size = (new FileInfo(FullName)).Length,
+        DateAdded = DateOnly.FromDateTime(DateTime.Today)
+      };
 
-    foreach (var MediaStreamItem in Finder.MediaSourceStreams.GetAll()) {
-      MediaSource.MediaStreams.Add(MediaStreamItem);
-      if (MediaStreamItem is TMediaStreamAudio MediaStreamAudio) {
-        MediaSource.Languages.Add(HLanguageConverter.FromAudioStreamValue(MediaStreamAudio.Language));
+      MediaSource.Languages.Clear();
+
+      foreach (var MediaStreamItem in Finder.MediaSourceStreams.GetAll()) {
+        MediaSource.MediaStreams.Add(MediaStreamItem);
+        if (MediaStreamItem is TMediaStreamAudio MediaStreamAudio) {
+          ELanguage NewLanguage = HLanguageConverter.FromAudioStreamValue(MediaStreamAudio.Language);
+          if (!MediaSource.Languages.TryAdd(NewLanguage)) {
+            LogDebug($"Duplicate language : {NewLanguage}");
+            MediaSource.Languages.Add(NewLanguage);
+          }
+        }
       }
-    }
 
-    if (MediaSource.Languages.Count > 1) {
-      MediaSource.Languages.SetPrincipal(MediaSource.Languages.First());
-    }
-    #endregion --- MediaSource -----------------------------------------
+      if (MediaSource.Languages.Count > 1) {
+        MediaSource.Languages.SetPrincipal(MediaSource.Languages.First());
+      }
+      #endregion --- MediaSource -----------------------------------------
 
-    #region --- MediaInfos --------------------------------------------
-    IMediaInfo MediaInfo = new TMediaInfo() {
-      CreationDate = new DateOnly(ConvertedYear, 1, 1)
-    };
+      #region --- MediaInfos --------------------------------------------
+      IMediaInfo MediaInfo = new TMediaInfo() {
+        CreationDate = new DateOnly(ConvertedYear, 1, 1)
+      };
 
-    MediaInfo.Name = FullnameAfterRootPath.BeforeLast(" (").AfterLast(DIRECTORY_SEPARATOR);
-    foreach (string GroupItem in MediaSource.StoragePath.Split(DIRECTORY_SEPARATOR)) {
-      MediaInfo.Groups.Add(GroupItem);
-    }
-    #endregion --- MediaInfos -----------------------------------------
+      MediaInfo.Name = FullnameAfterRootPath.BeforeLast(" (").AfterLast(DIRECTORY_SEPARATOR);
+      foreach (string GroupItem in MediaSource.StoragePath.Split(DIRECTORY_SEPARATOR)) {
+        MediaInfo.Groups.Add(GroupItem);
+      }
+      #endregion --- MediaInfos -----------------------------------------
 
-    #region --- MediaMovie --------------------------------------------
-    IMediaMovie RetVal = new TMediaMovie();
-    RetVal.MediaInfos.Add(MediaInfo);
-    RetVal.MediaSources.Add(MediaSource);
-    #endregion --- MediaMovie -----------------------------------------
+      #region --- MediaMovie --------------------------------------------
+      IMediaMovie RetVal = new TMediaMovie();
+      RetVal.MediaInfos.Add(MediaInfo);
+      RetVal.MediaSources.Add(MediaSource);
 
-    return RetVal;
-  }
-
-  public async Task<IMediaMovie?> ParseFolder(string source) {
-    #region === Validate parameters ===
-    if (source.IsEmpty()) {
-      Logger.LogError("Unable to parse : source is missing");
+      NotifyParseFileCompleted(source);
+      LastSuccessCount++;
+      return RetVal;
+      #endregion --- MediaMovie -----------------------------------------
+    } catch (Exception ex) {
+      LastErrorCount++;
+      NotifyParseFileCompleted($"Error parsing {source}");
+      LogErrorBox($"Error parsing {source}", ex);
       return null;
     }
 
-    LogBox(nameof(source), source.ToString());
+  }
+
+  public override async Task ParseFolderAsync(string source) {
+    #region === Validate parameters ===
+    if (source.IsEmpty()) {
+      LogError("Unable to parse : source is missing");
+      return;
+    }
+
+    LogDebugBox(nameof(source), source.ToString());
 
     if (!Directory.Exists(source)) {
       LogError($"Unable to parse : {source.WithQuotes()} is missing or access is denied");
-      return null;
+      return;
     }
     #endregion === Validate parameters ===
 
-    LogDebug($"{nameof(_RootPath)} = {_RootPath.WithQuotes()}");
+    NotifyParseFolderStarting(source);
 
-
-
-    string FullName = Path.GetFullPath(source);
-    LogDebug($"{nameof(FullName)} = {FullName.WithQuotes()}");
-
-    string FullnameAfterRootPath = FullName.After(_RootPath).After(DIRECTORY_SEPARATOR);
-    LogDebug($"{nameof(FullnameAfterRootPath)} = {FullnameAfterRootPath.WithQuotes()}");
-
-
-    string Year = FullnameAfterRootPath.AfterLast('(').Before(')');
-    _ = int.TryParse(Year, out int ConvertedYear);
-    LogDebug($"Year = {ConvertedYear}");
-
-    IMediaSourceStreamsFinder Finder = new TFFProbe(FullName);
-    await Finder.Init();
-
-    #region --- MediaSource --------------------------------------------
-    IMediaSourceVirtual MediaSource = new TMediaSourceVirtual() {
-      FileName = FullnameAfterRootPath.AfterLast(DIRECTORY_SEPARATOR).BeforeLast('.'),
-      FileExtension = FullnameAfterRootPath.AfterLast("."),
-      StoragePath = FullnameAfterRootPath.BeforeLast(DIRECTORY_SEPARATOR),
-      StorageRoot = _RootPath,
-      CreationDate = new DateOnly(ConvertedYear, 1, 1),
-      Size = (new FileInfo(FullName)).Length,
-      DateAdded = DateOnly.FromDateTime(DateTime.Today)
-    };
-
-    MediaSource.Languages.Clear();
-
-    foreach (var MediaStreamItem in Finder.MediaSourceStreams.GetAll()) {
-      MediaSource.MediaStreams.Add(MediaStreamItem);
-      if (MediaStreamItem is TMediaStreamAudio MediaStreamAudio) {
-        MediaSource.Languages.Add(HLanguageConverter.FromAudioStreamValue(MediaStreamAudio.Language));
+    IEnumerable<string> Filenames = Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories)
+                                             .Where(f => f.AfterLast('.').ToLowerInvariant().IsIn(AllowedExtensions));
+    int Counter = 0;
+    await Parallel.ForEachAsync(Filenames, async (f, s) => {
+      IMediaMovie? NewValue = await ParseFile(f);
+      NotifyParseFolderProgress(Counter++);
+      if (NewValue is not null) {
+        Results.Enqueue(NewValue);
       }
-    }
+    });
 
-    if (MediaSource.Languages.Count > 1) {
-      MediaSource.Languages.SetPrincipal(ELanguage.French);
-    }
-    #endregion --- MediaSource -----------------------------------------
-
-    #region --- MediaInfos --------------------------------------------
-    IMediaInfo MediaInfo = new TMediaInfo() {
-      CreationDate = new DateOnly(ConvertedYear, 1, 1)
-    };
-
-    MediaInfo.Name = FullnameAfterRootPath.BeforeLast(" (").AfterLast(DIRECTORY_SEPARATOR);
-    foreach (string GroupItem in MediaSource.StoragePath.Split(DIRECTORY_SEPARATOR)) {
-      MediaInfo.Groups.Add(GroupItem);
-    }
-    #endregion --- MediaInfos -----------------------------------------
-
-    #region --- MediaMovie --------------------------------------------
-    TMediaMovie RetVal = new TMediaMovie();
-    RetVal.MediaInfos.Add(MediaInfo);
-    RetVal.MediaSources.Add(MediaSource);
-    #endregion --- MediaMovie -----------------------------------------
-
-    return RetVal;
+    NotifyParseFolderCompleted(source);
+    ParsingComplete = true;
   }
+
 }
