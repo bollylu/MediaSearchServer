@@ -59,9 +59,9 @@ public class Startup {
       Logger.LogErrorBox("Unable to create data source", DataSource);
     }
 
-    IMovieService MovieService = new TMovieService(new TStorageMemoryMovies(), MediaSource);
+    IMediaService MovieService = new TMovieService(new TStorageMemoryMovies(), MediaSource);
     Task.Run(async () => await MovieService.Initialize());
-    services.AddSingleton<IMovieService>(MovieService);
+    services.AddSingleton<IMediaService>(MovieService);
 
     ILoginService LoginService = new TLoginService();
     services.AddSingleton(LoginService);

@@ -66,7 +66,7 @@ public class Program {
 
     MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddDefaultLogger(new TFileLogger(LogFile) { SeverityLimit = ESeverity.Debug });
     MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TFileLogger<TLoginService>(LogFile) { SeverityLimit = ESeverity.Debug });
-    MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TFileLogger<TMovieService>(LogFile) { SeverityLimit = ESeverity.Debug });
+    MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TFileLogger<TMediaService>(LogFile) { SeverityLimit = ESeverity.Debug });
     MediaSearch.Server.Services.GlobalSettings.LoggerPool.AddLogger(new TFileLogger<TMovieCache>(LogFile) { SeverityLimit = ESeverity.Debug });
     #endregion --- Log configuration --------------------------------------------
 

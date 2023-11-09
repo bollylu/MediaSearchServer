@@ -36,9 +36,45 @@ public abstract class AMediaMovieParser : ALoggable, IMediaMovieParser {
     Results.Clear();
   }
 
-  public abstract Task<IMediaMovie?> ParseFile(string source);
+  public async Task<IMediaMovie?> ParseFile(string source) {
+    return await ParseFile(source, CancellationToken.None);
+  }
+  public abstract Task<IMediaMovie?> ParseFile(string source, CancellationToken token);
 
-  public abstract Task ParseFolderAsync(string source);
+  public async Task ParseFolderAsync(string source) {
+    await ParseFolderAsync(source, CancellationToken.None);
+  }
+  public virtual async Task ParseFolderAsync(string source, CancellationToken token) {
+    #region === Validate parameters ===
+    if (source.IsEmpty()) {
+      LogError("Unable to parse : source is missing");
+      return;
+    }
+
+    LogDebugBox(nameof(source), source.ToString());
+
+    if (!Directory.Exists(source)) {
+      LogError($"Unable to parse : {source.WithQuotes()} is missing or access is denied");
+      return;
+    }
+    #endregion === Validate parameters ===
+
+    NotifyParseFolderStarting(source);
+
+    IEnumerable<string> Filenames = Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories)
+                                             .Where(f => f.AfterLast('.').ToLowerInvariant().IsIn(AllowedExtensions));
+    int Counter = 0;
+    await Parallel.ForEachAsync(Filenames, token, async (f, s) => {
+      IMediaMovie? NewValue = await ParseFile(f, s);
+      NotifyParseFolderProgress(Counter++);
+      if (NewValue is not null) {
+        Results.Enqueue(NewValue);
+      }
+    });
+
+    NotifyParseFolderCompleted(source);
+    ParsingComplete = true;
+  }
 
   #region --- Events --------------------------------------------
   public event EventHandler<string>? OnParseFileStarting;

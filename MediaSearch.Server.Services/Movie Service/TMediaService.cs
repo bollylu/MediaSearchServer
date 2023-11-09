@@ -3,7 +3,7 @@
 // <summary>
 /// Server Movie service. Provides access to groups, movies and pictures from NAS
 /// </summary>
-public class TMovieService : AMovieService {
+public class TMediaService : AMediaService {
 
   #region --- Constants --------------------------------------------
   public static int TIMEOUT_TO_SCAN_FILES_IN_MS = (int)TimeSpan.FromMinutes(5).TotalMilliseconds;
@@ -12,11 +12,11 @@ public class TMovieService : AMovieService {
 
   //private readonly IMovieCache _MoviesCache = new TMovieCache();
 
-  private readonly IStorageMovie _Storage;
+  private readonly IStorageMedia _Storage;
   private readonly IMediaSource _MediaSource;
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMovieService(IStorageMovie storage, IMediaSource mediaSource) : base() {
+  public TMediaService(IStorageMedia storage, IMediaSource mediaSource) : base() {
     _Storage = storage;
     _MediaSource = mediaSource;
   }
@@ -76,7 +76,7 @@ public class TMovieService : AMovieService {
   }
 
   #region --- Movies --------------------------------------------
-  public override async ValueTask<int> MoviesCount(IFilter filter) {
+  public override async ValueTask<int> MediasCount(IFilter filter) {
     await Initialize().ConfigureAwait(false);
     return await _Storage.MoviesCount(filter).ConfigureAwait(false);
   }
@@ -85,27 +85,27 @@ public class TMovieService : AMovieService {
     return await _Storage.PagesCount(filter).ConfigureAwait(false);
   }
 
-  public override async IAsyncEnumerable<IMovie> GetAllMovies() {
+  public override async IAsyncEnumerable<IMedia> GetAll() {
     await Initialize().ConfigureAwait(false);
 
-    await foreach (IMovie MovieItem in _Storage.GetAllMoviesAsync().ConfigureAwait(false)) {
+    await foreach (IMediaMovie MovieItem in _Storage.GetAllMoviesAsync().ConfigureAwait(false)) {
       yield return MovieItem;
     }
   }
 
-  public override async Task<IMoviesPage?> GetMoviesPage(IFilter filter) {
+  public override async Task<IMediasPage?> GetPage(IFilter filter) {
     await Initialize().ConfigureAwait(false);
     return await _Storage.GetMoviesPageAsync(filter).ConfigureAwait(false);
   }
 
-  public override async Task<IMoviesPage?> GetMoviesLastPage(IFilter filter) {
+  public override async Task<IMediasPage?> GetLastPage(IFilter filter) {
     await Initialize().ConfigureAwait(false);
     TFilter NewFilter = new TFilter(filter);
     NewFilter.Page = await PagesCount(filter);
     return await _Storage.GetMoviesPageAsync(NewFilter).ConfigureAwait(false);
   }
 
-  public override async Task<IMovie?> GetMovie(IRecord movie) {
+  public override async Task<IMedia?> Get(IRecord movie) {
     if (string.IsNullOrWhiteSpace(movie.Id)) {
       Logger.LogWarning("Unable to retrieve movie : id is null or invalid");
       return null;

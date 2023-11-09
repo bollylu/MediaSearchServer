@@ -1,22 +1,19 @@
 ﻿namespace MediaSearch.Server.Services;
 
-public interface IMovieCache : IName {
+public interface IMediaCache : IName {
 
   /// <summary>
   /// Path to the storage
   /// </summary>
   string RootStoragePath { get; }
 
-  #region --- Cache I/O --------------------------------------------
-  /// <summary>
-  /// Load the data into the cache (if the storage is available)
-  /// </summary>
-  /// <param name="token">A token to cancel operation</param>
-  /// <returns>A background task</returns>
-  Task Parse(CancellationToken token);
-  #endregion --- Cache I/O --------------------------------------------
-
   #region --- Cache management --------------------------------------------
+  /// <summary>
+  /// Add a media to the cache
+  /// </summary>
+  /// <param name="media"></param>
+  void AddMedia(IMedia media);
+
   /// <summary>
   /// Clear the cache
   /// </summary>
@@ -46,21 +43,21 @@ public interface IMovieCache : IName {
   /// Get all the movies in cache
   /// </summary>
   /// <returns>The complete list of movies in cache</returns>
-  IEnumerable<IMovie> GetAllMovies();
+  IEnumerable<IMedia> GetAll();
 
   /// <summary>
   /// Get a page of movie matching a filter
   /// </summary>
   /// <param name="filter">The data to check against</param>
   /// <returns>A list of IMovie</returns>
-  TMoviesPage? GetMoviesPage(IFilter filter);
+  IMediasPage? GetPage(IFilter filter);
 
   /// <summary>
   /// Get a movie from the cache
   /// </summary>
   /// <param name="id">The id of the movie</param>
   /// <returns>The requested movie or null if error</returns>
-  IMovie? GetMovie(string id);
+  IMedia? Get(string id);
   #endregion --- Movies access --------------------------------------------
 
   IAsyncEnumerable<string> GetGroups();

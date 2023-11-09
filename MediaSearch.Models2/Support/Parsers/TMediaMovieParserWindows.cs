@@ -21,7 +21,7 @@ public class TMediaMovieParserWindows : AMediaMovieParser {
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
-  public override async Task<IMediaMovie?> ParseFile(string source) {
+  public override async Task<IMediaMovie?> ParseFile(string source, CancellationToken token) {
     LastParseCount++;
 
     #region === Validate parameters ===
@@ -42,6 +42,10 @@ public class TMediaMovieParserWindows : AMediaMovieParser {
 
     NotifyParseFileStarting(source);
 
+    if (token.IsCancellationRequested) {
+      return null;
+    }
+
     try {
       LogDebug($"{nameof(_RootPath)} = {_RootPath.WithQuotes()}");
       string FullName = Path.GetFullPath(source);
@@ -54,8 +58,16 @@ public class TMediaMovieParserWindows : AMediaMovieParser {
       _ = int.TryParse(Year, out int ConvertedYear);
       LogDebug($"Year = {ConvertedYear}");
 
+      if (token.IsCancellationRequested) {
+        return null;
+      }
+
       IMediaSourceStreamsFinder Finder = new TFFProbe(FullName);
       await Finder.Init();
+
+      if (token.IsCancellationRequested) {
+        return null;
+      }
 
       #region --- MediaSource --------------------------------------------
       IMediaSourceVirtual MediaSource = new TMediaSourceVirtual() {
@@ -106,6 +118,7 @@ public class TMediaMovieParserWindows : AMediaMovieParser {
       LastSuccessCount++;
       return RetVal;
       #endregion --- MediaMovie -----------------------------------------
+
     } catch (Exception ex) {
       LastErrorCount++;
       NotifyParseFileCompleted($"Error parsing {source}");
@@ -113,38 +126,6 @@ public class TMediaMovieParserWindows : AMediaMovieParser {
       return null;
     }
 
-  }
-
-  public override async Task ParseFolderAsync(string source) {
-    #region === Validate parameters ===
-    if (source.IsEmpty()) {
-      LogError("Unable to parse : source is missing");
-      return;
-    }
-
-    LogDebugBox(nameof(source), source.ToString());
-
-    if (!Directory.Exists(source)) {
-      LogError($"Unable to parse : {source.WithQuotes()} is missing or access is denied");
-      return;
-    }
-    #endregion === Validate parameters ===
-
-    NotifyParseFolderStarting(source);
-
-    IEnumerable<string> Filenames = Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories)
-                                             .Where(f => f.AfterLast('.').ToLowerInvariant().IsIn(AllowedExtensions));
-    int Counter = 0;
-    await Parallel.ForEachAsync(Filenames, async (f, s) => {
-      IMediaMovie? NewValue = await ParseFile(f);
-      NotifyParseFolderProgress(Counter++);
-      if (NewValue is not null) {
-        Results.Enqueue(NewValue);
-      }
-    });
-
-    NotifyParseFolderCompleted(source);
-    ParsingComplete = true;
   }
 
 }

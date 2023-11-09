@@ -21,7 +21,7 @@ public class TMovieCacheTest {
 
     TFilter DefaultFilter = new TFilter() {
       Page = 2,
-      PageSize = AMovieCache.DEFAULT_PAGE_SIZE
+      PageSize = AMediaCache.DEFAULT_PAGE_SIZE
     };
 
     TFilter Filter50 = new TFilter() {
@@ -30,11 +30,11 @@ public class TMovieCacheTest {
 
     TMoviesPage? Target = Global.MovieCache.GetMoviesPage(TFilter.Empty);
     Assert.IsNotNull(Target);
-    Assert.AreEqual(AMovieCache.DEFAULT_PAGE_SIZE, Target.Movies.Count());
+    Assert.AreEqual(AMediaCache.DEFAULT_PAGE_SIZE, Target.Movies.Count());
 
     Target = Global.MovieCache.GetMoviesPage(DefaultFilter);
     Assert.IsNotNull(Target);
-    Assert.AreEqual(AMovieCache.DEFAULT_PAGE_SIZE, Target.Movies.Count());
+    Assert.AreEqual(AMediaCache.DEFAULT_PAGE_SIZE, Target.Movies.Count());
 
     Target = Global.MovieCache.GetMoviesPage(Filter50);
     Assert.IsNotNull(Target);

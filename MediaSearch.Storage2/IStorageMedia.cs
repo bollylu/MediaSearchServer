@@ -2,7 +2,6 @@
 
 public partial interface IStorageMedia : IStorage {
 
-  #region --- Movies --------------------------------------------
   /// <summary>
   /// Get one media from the storage, based on its Id
   /// </summary>
@@ -76,6 +75,5 @@ public partial interface IStorageMedia : IStorage {
   /// </summary>
   /// <returns><see langword="true"/> if successful, <see langword="false"/> otherwise</returns>
   ValueTask<bool> RemoveAllMediasAsync();
-  #endregion --- Movies --------------------------------------------
 
 }

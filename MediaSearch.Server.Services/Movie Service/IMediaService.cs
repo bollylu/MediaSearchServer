@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Server.Services;
 
-public interface IMovieService {
+public interface IMediaService {
 
   public const int DEFAULT_PAGE_SIZE = 20;
 
@@ -48,7 +48,7 @@ public interface IMovieService {
   /// </summary>
   /// <param name="filter"></param>
   /// <returns>The quantity of movies in the cache/></returns>
-  ValueTask<int> MoviesCount(IFilter filter);
+  ValueTask<int> MediasCount(IFilter filter);
 
   /// <summary>
   /// The number of pages given a specific page size (the last page can be incomplete)
@@ -62,14 +62,14 @@ public interface IMovieService {
   /// Get all the movies
   /// </summary>
   /// <returns>The complete list of movies in cache</returns>
-  IAsyncEnumerable<IMovie> GetAllMovies();
+  IAsyncEnumerable<IMedia> GetAll();
 
   /// <summary>
   /// Get a page of movies matching a filter
   /// </summary>
   /// <param name="filter">The data to check in name and alt. names</param>
   /// <returns>A page of IMovie</returns>
-  Task<IMoviesPage?> GetMoviesPage(IFilter filter);
+  Task<IMediasPage?> GetPage(IFilter filter);
 
   // <summary>
   /// Get a page of movies matching a filter
@@ -78,14 +78,14 @@ public interface IMovieService {
   /// <param name="startPage">Which page to start with</param>
   /// <param name="pageSize">How many movies on a page</param>
   /// <returns>A page of IMovie</returns>
-  Task<IMoviesPage?> GetMoviesLastPage(IFilter filter);
+  Task<IMediasPage?> GetLastPage(IFilter filter);
 
   /// <summary>
   /// Get a movie based on it's Id
   /// </summary>
   /// <param name="id">The Id in memory for the requeted movie</param>
   /// <returns>An movie or null is not found</returns>
-  Task<IMovie?> GetMovie(IRecord id);
+  Task<IMedia?> Get(IRecord id);
   #endregion --- Movies --------------------------------------------
 
   IAsyncEnumerable<string> GetGroups();

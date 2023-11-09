@@ -3,16 +3,16 @@
 // <summary>
 /// Server Movie service. Provides access to groups, movies and pictures from NAS
 /// </summary>
-public class XMovieService : AMovieService {
+public class XMediaService : AMediaService {
 
   #region --- Constants --------------------------------------------
   public const int TIMEOUT_IN_MS = 500000;
   #endregion --- Constants --------------------------------------------
 
-  private readonly IMovieCache _MoviesCache;
+  private readonly IMediaCache _MoviesCache;
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public XMovieService(IMovieCache movieCache) : base() {
+  public XMediaService(IMediaCache movieCache) : base() {
     _MoviesCache = movieCache;
   }
 
@@ -35,9 +35,19 @@ public class XMovieService : AMovieService {
 
     Logger.Log($"Parsing data source : {RootStoragePath}");
     using (CancellationTokenSource Timeout = new CancellationTokenSource((int)TimeSpan.FromMinutes(5).TotalMilliseconds)) {
-      await _MoviesCache.Parse(Timeout.Token).ConfigureAwait(false);
-    }
+      IMediaMovieParser MovieParser = new TMediaMovieParserWindows(RootStoragePath);
+      MovieParser.Init();
+      Task DogetResults = Task.Run(() => {
+        while (MovieParser.Results.Any() || !MovieParser.ParsingComplete) {
+          MovieParser.Results.TryDequeue(out IMediaMovie? MovieItem);
+          if (MovieItem is not null) {
+            _MoviesCache.AddMedia(MovieItem);
+          }
+        }
+      }, Timeout.Token);
 
+      await Task.WhenAll(MovieParser.ParseFolderAsync(RootStoragePath), DogetResults);
+    }
     _IsInitialized = true;
     _IsInitializing = false;
   }
@@ -56,44 +66,44 @@ public class XMovieService : AMovieService {
   }
 
   #region --- Movies --------------------------------------------
-  public override async ValueTask<int> MoviesCount(IFilter filter) {
+  public override async ValueTask<int> MediasCount(IFilter filter) {
     await Initialize().ConfigureAwait(false);
-    return _MoviesCache.GetAllMovies().WithFilter(filter).Count();
+    return _MoviesCache.GetAll().WithFilter(filter).Count();
   }
 
   public override async ValueTask<int> PagesCount(IFilter filter) {
     await Initialize().ConfigureAwait(false);
-    int FilteredMoviesCount = await MoviesCount(filter).ConfigureAwait(false);
+    int FilteredMoviesCount = await MediasCount(filter).ConfigureAwait(false);
     return (FilteredMoviesCount / filter.PageSize) + (FilteredMoviesCount % filter.PageSize > 0 ? 1 : 0);
   }
 
-  public override async IAsyncEnumerable<IMovie> GetAllMovies() {
+  public override async IAsyncEnumerable<IMedia> GetAll() {
     await Initialize().ConfigureAwait(false);
 
-    foreach (TMovie MovieItem in _MoviesCache.GetAllMovies()) {
+    foreach (IMedia MovieItem in _MoviesCache.GetAll()) {
       yield return MovieItem;
     }
   }
 
-  public override async Task<IMoviesPage?> GetMoviesPage(IFilter filter) {
+  public override async Task<IMediasPage?> GetPage(IFilter filter) {
     await Initialize().ConfigureAwait(false);
-    return _MoviesCache.GetMoviesPage(filter);
+    return _MoviesCache.GetPage(filter);
   }
 
-  public override async Task<IMoviesPage?> GetMoviesLastPage(IFilter filter) {
+  public override async Task<IMediasPage?> GetLastPage(IFilter filter) {
     await Initialize().ConfigureAwait(false);
     TFilter NewFilter = new TFilter(filter);
     NewFilter.Page = await PagesCount(filter);
-    return _MoviesCache.GetMoviesPage(NewFilter);
+    return _MoviesCache.GetPage(NewFilter);
   }
 
-  public override async Task<IMovie?> GetMovie(IRecord movie) {
+  public override async Task<IMedia?> Get(IRecord movie) {
     await Initialize().ConfigureAwait(false);
     if (string.IsNullOrWhiteSpace(movie.Id)) {
       Logger.LogWarning("Unable to retrieve movie : id is null or invalid");
       return null;
     }
-    IMovie? Movie = _MoviesCache.GetMovie(movie.Id);
+    IMedia? Movie = _MoviesCache.Get(movie.Id);
     return Movie;
   }
   #endregion --- Movies --------------------------------------------

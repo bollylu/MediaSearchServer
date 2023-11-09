@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MediaSearch.Models2\MediaSearch.Models2.csproj" />
+    <ProjectReference Include="..\MediaSearch.Server.Services\MediaSearch.Server.Services.csproj" />
   </ItemGroup>
 
 </Project>

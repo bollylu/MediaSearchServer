@@ -32,4 +32,9 @@
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MediaSearch.Models2\MediaSearch.Models2.csproj" />
+    <ProjectReference Include="..\MediaSearch.Storage2\MediaSearch.Storage2.csproj" />
+  </ItemGroup>
+
 </Project>

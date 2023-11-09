@@ -5,6 +5,7 @@ public interface IMediaMovieParser : ILoggable {
 
   Task<IMediaMovie?> ParseFile(string fullFileName);
   Task ParseFolderAsync(string fullFolderName);
+  Task ParseFolderAsync(string fullFolderName, CancellationToken token);
 
   event EventHandler<string>? OnParseFileStarting;
   event EventHandler<string>? OnParseFolderStarting;

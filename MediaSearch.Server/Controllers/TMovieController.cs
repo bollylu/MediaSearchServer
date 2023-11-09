@@ -7,12 +7,12 @@ namespace MediaSearch.Server.Controllers;
 [Produces("application/json")]
 public class TMovieController : ControllerBase, ILoggable {
 
-  private readonly IMovieService _MovieService;
+  private readonly IMediaService _MovieService;
 
   public ILogger Logger { get; set; } = GlobalSettings.LoggerPool.GetLogger<TMovieController>();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TMovieController(IMovieService movieService) {
+  public TMovieController(IMediaService movieService) {
     Logger.LogDebugEx("Building TMovie controller");
     _MovieService = movieService;
   }
@@ -34,7 +34,7 @@ public class TMovieController : ControllerBase, ILoggable {
 
     Logger.LogDebugBox("Filter received in controller", filter);
 
-    TMoviesPage? RetVal = await _MovieService.GetMoviesPage(filter).ConfigureAwait(false) as TMoviesPage;
+    TMoviesPage? RetVal = await _MovieService.GetPage(filter).ConfigureAwait(false) as TMoviesPage;
 
     if (RetVal is null) {
       return new EmptyResult();
@@ -87,7 +87,7 @@ public class TMovieController : ControllerBase, ILoggable {
   public async Task<ActionResult<IMoviesPage>> GetNews(TFilter filter) {
     Logger.LogDebug(HttpContext.Request.ListHeaders());
 
-    IMoviesPage? RetVal = await _MovieService.GetMoviesPage(filter).ConfigureAwait(false);
+    IMoviesPage? RetVal = await _MovieService.GetPage(filter).ConfigureAwait(false);
 
     if (RetVal is null) {
       return new EmptyResult();

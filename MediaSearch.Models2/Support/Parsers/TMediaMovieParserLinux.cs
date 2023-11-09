@@ -19,7 +19,7 @@ public class TMediaMovieParserLinux : AMediaMovieParser {
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
-  public override async Task<IMediaMovie?> ParseFile(string source) {
+  public override async Task<IMediaMovie?> ParseFile(string source, CancellationToken token) {
     LastParseCount++;
     #region === Validate parameters ===
     if (source.IsEmpty()) {
@@ -97,35 +97,4 @@ public class TMediaMovieParserLinux : AMediaMovieParser {
     return RetVal;
   }
 
-  public override async Task ParseFolderAsync(string source) {
-    #region === Validate parameters ===
-    if (source.IsEmpty()) {
-      LogError("Unable to parse : source is missing");
-      return;
-    }
-
-    LogDebugBox(nameof(source), source.ToString());
-
-    if (!Directory.Exists(source)) {
-      LogError($"Unable to parse : {source.WithQuotes()} is missing or access is denied");
-      return;
-    }
-    #endregion === Validate parameters ===
-
-    NotifyParseFolderStarting(source);
-
-    IEnumerable<string> Filenames = Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories)
-                                             .Where(f => f.AfterLast('.').ToLowerInvariant().IsIn(AllowedExtensions));
-    int Counter = 0;
-    await Parallel.ForEachAsync(Filenames, async (f, s) => {
-      IMediaMovie? NewValue = await ParseFile(f);
-      NotifyParseFolderProgress(Counter++);
-      if (NewValue is not null) {
-        Results.Enqueue(NewValue);
-      }
-    });
-
-    NotifyParseFolderCompleted(source);
-    ParsingComplete = true;
-  }
 }
