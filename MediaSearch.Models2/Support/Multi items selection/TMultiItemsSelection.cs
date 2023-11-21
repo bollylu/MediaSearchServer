@@ -1,6 +1,8 @@
 ﻿using System.Collections.Concurrent;
 using System.Globalization;
 
+using BLTools.Diagnostic;
+
 namespace MediaSearch.Models;
 public class TMultiItemsSelection : IMultiItemsSelection, IToStringIndent {
 
@@ -37,9 +39,11 @@ public class TMultiItemsSelection : IMultiItemsSelection, IToStringIndent {
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
 
+
   public ConcurrentBag<string> Items { get; } = new();
   public EFilterType Selection { get; set; } = EFilterType.Any;
 
+  [DoNotDump]
   private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
   public bool IsMatch(IEnumerable<string> target, CompareOptions options = CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) {

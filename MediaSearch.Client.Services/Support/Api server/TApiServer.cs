@@ -1,5 +1,7 @@
 ﻿using System.Net.Http.Headers;
 
+using BLTools.Json;
+
 namespace MediaSearch.Client.Services;
 
 public class TApiServer : ALoggable, IApiServer {
@@ -44,18 +46,18 @@ public class TApiServer : ALoggable, IApiServer {
     try {
 
       TMscGetRequestMessage RequestMessage = new TMscGetRequestMessage(uriRequest);
-      Logger.IfDebugMessage($"Request #{LocalRequestId}", uriRequest);
+      LogDebugEx($"Request #{LocalRequestId}", uriRequest);
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
       if (!LastResponse.IsSuccessStatusCode) {
-        Logger.IfDebugMessage($"Response #{LocalRequestId} : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+        LogDebugEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
         return default;
       }
 
       string StringContent = await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
       T? JsonContent = IJson<T>.FromJson(StringContent);
 
-      Logger.IfDebugMessageEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
+      LogDebugEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
 
       return JsonContent;
 
@@ -72,7 +74,7 @@ public class TApiServer : ALoggable, IApiServer {
     }
   }
 
-  public async Task<T?> GetJsonAsync<C, T>(string uriRequest, IJson<C> additionalContent, CancellationToken cancellationToken) where T : class, IJson<T> where C : class, IJson<C> {
+  public async Task<T?> GetJsonAsync<C, T>(string uriRequest, C additionalContent, CancellationToken cancellationToken) where T : class where C : class, IJson {
     int LocalRequestId = ++RequestId;
 
     try {
@@ -81,18 +83,18 @@ public class TApiServer : ALoggable, IApiServer {
       RequestMessage.Content = new StringContent(additionalContent.ToJson());
       RequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
-      Logger.IfDebugMessage($"Request #{LocalRequestId} : {uriRequest} - Content is {additionalContent.GetType().Name}", additionalContent);
+      LogDebugExBox($"Request #{LocalRequestId} : {uriRequest} - Content is {additionalContent.GetType().Name}", additionalContent);
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
       if (!LastResponse.IsSuccessStatusCode) {
-        Logger.IfDebugMessage($"Response #{LocalRequestId} : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+        LogDebugEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
         return default;
       }
 
       string StringContent = await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
       T? JsonContent = IJson<T>.FromJson(StringContent);
 
-      Logger.IfDebugMessageEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
+      LogDebugEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
 
       return JsonContent;
 
@@ -134,18 +136,18 @@ public class TApiServer : ALoggable, IApiServer {
     try {
 
       TMscGetRequestMessage RequestMessage = new TMscGetRequestMessage(uriRequest);
-      Logger.IfDebugMessage($"Request #{LocalRequestId} : {uriRequest}", "No content");
+      LogDebugExBox($"Request #{LocalRequestId} : {uriRequest}", "No content");
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
 
       if (!LastResponse.IsSuccessStatusCode) {
-        Logger.IfDebugMessage($"Response #{LocalRequestId} : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+        LogDebugEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
         return default;
       }
 
       string StringContent = await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
-      Logger.IfDebugMessageEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
+      LogDebugExBox($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
 
       return StringContent;
     } catch (Exception ex) {
@@ -188,18 +190,18 @@ public class TApiServer : ALoggable, IApiServer {
           }
       }
 
-      Logger.IfDebugMessage($"Request #{LocalRequestId} : {uriRequest} - Content is {additionalContent?.GetType().Name ?? "(null)"}", additionalContent);
+      LogDebugExBox($"Request #{LocalRequestId} : {uriRequest} - Content is {additionalContent?.GetType().Name ?? "(null)"}", additionalContent);
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
 
       if (!LastResponse.IsSuccessStatusCode) {
-        Logger.IfDebugMessage($"Response #{LocalRequestId} : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+        LogDebugEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
         return default;
       }
 
       string StringContent = await LastResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
-      Logger.IfDebugMessageEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
+      LogDebugEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", StringContent);
 
       return StringContent;
     } catch (Exception ex) {
@@ -221,13 +223,13 @@ public class TApiServer : ALoggable, IApiServer {
 
     int LocalRequestId = ++RequestId;
     try {
-      Logger.IfDebugMessageEx($"Probing server #{LocalRequestId}", BaseAddress);
+      LogDebugExBox($"Probing server #{LocalRequestId}", BaseAddress);
 
       TMscGetRequestMessage RequestMessage = new TMscGetRequestMessage();
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
 
-      Logger.IfDebugMessageEx($"Response #{LocalRequestId} : {LastResponse.StatusCode}", $"Probing {BaseAddress}");
+      LogDebugExBox($"Response #{LocalRequestId} : {LastResponse.StatusCode}", $"Probing {BaseAddress}");
 
       return LastResponse.IsSuccessStatusCode;
     } catch (Exception ex) {
@@ -253,7 +255,7 @@ public class TApiServer : ALoggable, IApiServer {
 
       Stream ContentStream = await LastResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
 
-      Logger.IfDebugMessage($"Response : {LastResponse.StatusCode}", $"Stream length is {ContentStream.Length} bytes");
+      LogDebugExBox($"Response : {LastResponse.StatusCode}", $"Stream length is {ContentStream.Length} bytes");
 
       return ContentStream;
 
@@ -273,12 +275,12 @@ public class TApiServer : ALoggable, IApiServer {
   public async Task<byte[]?> GetByteArrayAsync(string uriRequest, CancellationToken cancellationToken) {
     int LocalRequestId = ++RequestId;
     try {
-      Logger.IfDebugMessage($"Request #{LocalRequestId}", uriRequest);
+      LogDebugExBox($"Request #{LocalRequestId}", uriRequest);
 
       TMscGetRequestMessage RequestMessage = new TMscGetRequestMessage(uriRequest);
 
       LastResponse = await _HttpClient.SendAsync(RequestMessage, cancellationToken).ConfigureAwait(false);
-      Logger.IfDebugMessage($"Response #{LocalRequestId}", $"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
+      LogDebugExBox($"Response #{LocalRequestId}", $"{(int)LastResponse.StatusCode} : {LastResponse.ReasonPhrase}");
 
       if (!LastResponse.IsSuccessStatusCode) {
         throw new HttpRequestException($"Error loading {uriRequest} : {LastResponse.StatusCode} {LastResponse.ReasonPhrase}");
@@ -286,7 +288,7 @@ public class TApiServer : ALoggable, IApiServer {
 
       byte[] BytesContent = await LastResponse.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
 
-      Logger.IfDebugMessageEx($"Response #{LocalRequestId} content", BytesContent.ToHexString());
+      LogDebugExBox($"Response #{LocalRequestId} content", BytesContent.ToHexString());
 
       return BytesContent;
 

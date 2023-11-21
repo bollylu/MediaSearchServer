@@ -1,6 +1,6 @@
 ﻿namespace MediaSearch.Storage;
 
-public partial interface IStorageMedia : IStorage {
+public interface IStorageMedias : IStorage {
 
   /// <summary>
   /// Get one media from the storage, based on its Id

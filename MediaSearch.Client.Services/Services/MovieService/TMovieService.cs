@@ -59,7 +59,7 @@ public class TMovieService : ALoggable, IMovieService {
   #endregion --- Refresh data --------------------------------------------
 
   #region --- Movie actions --------------------------------------------
-  public async Task<IMoviesPage?> GetMoviesPage(IFilter filter) {
+  public async Task<IMediasPage?> GetMoviesPage(IFilter filter) {
     try {
 
       string RequestUrl = $"movie";
@@ -68,7 +68,7 @@ public class TMovieService : ALoggable, IMovieService {
 
       using (CancellationTokenSource Timeout = new CancellationTokenSource(GlobalSettings.HTTP_TIMEOUT_IN_MS)) {
 
-        TMoviesPage? Result = await ApiServer.GetJsonAsync<IFilter, TMoviesPage>(RequestUrl, new TFilter(filter), CancellationToken.None).ConfigureAwait(false);
+        IMediasPage? Result = await ApiServer.GetJsonAsync<IFilter, IMediasPage>(RequestUrl, new TFilter(filter), CancellationToken.None).ConfigureAwait(false);
         if (Result is null) {
           return null;
         }
@@ -90,7 +90,7 @@ public class TMovieService : ALoggable, IMovieService {
   public async Task<byte[]> GetPicture(string id, CancellationToken cancelToken, int w = 128, int h = 160) {
 
     string RequestUrl = $"movie/getPicture?movieId={id.ToUrl64()}&width={w}&height={h}";
-    Logger.IfDebugMessageEx("Requesting picture", RequestUrl);
+    Logger.LogDebugEx("Requesting picture", RequestUrl);
 
     try {
       using (CancellationTokenSource Timeout = new CancellationTokenSource(GlobalSettings.HTTP_TIMEOUT_IN_MS)) {
@@ -121,7 +121,7 @@ public class TMovieService : ALoggable, IMovieService {
     if (PictureBytes is null || PictureBytes.IsEmpty()) {
       PictureBytes = await GetPicture(movie.Id, cancelToken).ConfigureAwait(false);
       if (PictureBytes is null) {
-        PictureBytes = TMovie.PictureMissing;
+        PictureBytes = TMediaPicture.PictureMissing.Data;
       } else {
         _ImagesCache.AddImage(movie.Id, PictureBytes);
       }

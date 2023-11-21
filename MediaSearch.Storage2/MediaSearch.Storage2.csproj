@@ -1,19 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <EnablePreviewFeatures>true</EnablePreviewFeatures>
+    <GenerateRequiresPreviewFeaturesAttribute>True</GenerateRequiresPreviewFeaturesAttribute>
+    <RootNamespace>MediaSearch.Storage</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="_Global_\changelog.txt" />
+    <None Remove="_Global_\changelog.md" />
     <None Remove="_Global_\version.txt" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="_Global_\changelog.txt" />
+    <EmbeddedResource Include="_Global_\changelog.md" />
     <EmbeddedResource Include="_Global_\version.txt" />
   </ItemGroup>
 

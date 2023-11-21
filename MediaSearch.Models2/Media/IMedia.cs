@@ -35,5 +35,8 @@ public interface IMedia :
   IMediaSources MediaSources { get; }
   IMediaPictures MediaPictures { get; }
 
+  List<string> Groups { get; }
+  bool IsGroupMember { get; }
+
 }
 

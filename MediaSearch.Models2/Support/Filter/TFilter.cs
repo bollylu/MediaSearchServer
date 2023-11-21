@@ -1,4 +1,6 @@
-﻿namespace MediaSearch.Models;
+﻿using BLTools.Diagnostic;
+
+namespace MediaSearch.Models;
 
 public class TFilter : IFilter, IJson, IEquatable<TFilter> {
 
@@ -25,6 +27,7 @@ public class TFilter : IFilter, IJson, IEquatable<TFilter> {
       _Page = value.WithinLimits(1, int.MaxValue);
     }
   }
+  [DoNotDump]
   private int _Page = 1;
 
   /// <summary>
@@ -43,6 +46,7 @@ public class TFilter : IFilter, IJson, IEquatable<TFilter> {
       }
     }
   }
+  [DoNotDump]
   private int _PageSize = DEFAULT_PAGE_SIZE;
   #endregion --- Pagination --------------------------------------------
 
@@ -67,6 +71,7 @@ public class TFilter : IFilter, IJson, IEquatable<TFilter> {
       _DaysBack = value.WithinLimits(0, int.MaxValue);
     }
   }
+  [DoNotDump]
   private int _DaysBack = 0;
 
   #region --- Output date --------------------------------------------
@@ -84,6 +89,7 @@ public class TFilter : IFilter, IJson, IEquatable<TFilter> {
       _OutputDateMin = value.WithinLimits(0, int.MaxValue);
     }
   }
+  [DoNotDump]
   private int _OutputDateMin = DEFAULT_OUTPUT_DATE_MIN;
 
   /// <summary>
@@ -102,6 +108,7 @@ public class TFilter : IFilter, IJson, IEquatable<TFilter> {
       }
     }
   }
+  [DoNotDump]
   private int _OutputDateMax = DateTime.Now.Year + 1;
 
   #endregion --- Output date --------------------------------------------
@@ -120,6 +127,7 @@ public class TFilter : IFilter, IJson, IEquatable<TFilter> {
 
   #region --- Static instance for an empty filter --------------------------------------------
   public static TFilter Empty => _Empty ??= new TFilter();
+  [DoNotDump]
   private static TFilter? _Empty;
   #endregion --- Static instance for an empty filter --------------------------------------------
 

@@ -1,4 +1,5 @@
-﻿---
+﻿```mermaid
+---
 title: "MediaStreams"
 ---
 classDiagram

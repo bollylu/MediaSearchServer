@@ -5,11 +5,11 @@ public class XMovieService : IMovieService {
   public string ApiBase { get; } = "";
   public IApiServer ApiServer { get; set; } = new TApiServer();
 
-  public Task<IMoviesPage?> GetMoviesPage(IFilter filter) {
-    IMoviesPage RetVal = new TMoviesPage();
-    TMediaSourceMovie Source1 = new TMediaSourceMovie() { StoragePath = "Le seigneur des anneaux 1.mvk", Size = 8_001_000 };
-    TMediaSourceMovie Source2 = new TMediaSourceMovie() { StoragePath = "Le seigneur des anneaux 2.mvk", Size = 8_002_000 };
-    TMediaSourceMovie Source3 = new TMediaSourceMovie() { StoragePath = "Le seigneur des anneaux 3.mvk", Size = 8_003_000 };
+  public Task<IMediasPage?> GetMoviesPage(IFilter filter) {
+    IMediasPage RetVal = new TMediasPage();
+    IMediaSource Source1 = new TMediaSourceVirtual() { StoragePath = "Le seigneur des anneaux 1.mvk", Size = 8_001_000 };
+    IMediaSource Source2 = new TMediaSourceVirtual() { StoragePath = "Le seigneur des anneaux 2.mvk", Size = 8_002_000 };
+    IMediaSource Source3 = new TMediaSourceVirtual() { StoragePath = "Le seigneur des anneaux 3.mvk", Size = 8_003_000 };
 
     TMovie Movie1 = new TMovie() { Name = "Le seigneur des anneaux", Group = "Fantasy" };
     Movie1.MediaSources.Add(Source1);
@@ -23,7 +23,7 @@ public class XMovieService : IMovieService {
     Movie3.MediaSources.Add(Source3);
     RetVal.Movies.Add(Movie3);
 
-    return Task.FromResult<IMoviesPage?>(RetVal);
+    return Task.FromResult<IMediasPage?>(RetVal);
   }
 
   public Task<byte[]> GetPicture(string pathname, CancellationToken cancelToken, int w, int h) {

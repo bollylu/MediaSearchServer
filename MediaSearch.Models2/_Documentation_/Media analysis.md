@@ -1,3 +1,4 @@
+```mermaid
 mindmap
   All items
     Medias

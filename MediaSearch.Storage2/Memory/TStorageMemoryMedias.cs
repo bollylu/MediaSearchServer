@@ -1,5 +1,9 @@
 ﻿namespace MediaSearch.Storage;
-public partial class TStorageMemoryMedias : AStorageMemory, IStorageMedia {
+public class TStorageMemoryMedias : AStorageMemory, IStorageMedias {
+
+  protected readonly List<IMedia> Medias = new List<IMedia>();
+
+  protected readonly Dictionary<IRecord, Dictionary<string, byte[]>> MediaPictures = new Dictionary<IRecord, Dictionary<string, byte[]>>();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
   public TStorageMemoryMedias() : base() {
@@ -10,11 +14,34 @@ public partial class TStorageMemoryMedias : AStorageMemory, IStorageMedia {
   #region --- Converters -------------------------------------------------------------------------------------
   public override string ToString() {
     StringBuilder RetVal = new StringBuilder();
-    RetVal.AppendLine($"{nameof(PhysicalDataPath)} = {PhysicalDataPath.WithQuotes()}");
     RetVal.AppendLine($"{nameof(Medias)} = {Medias.Count} item(s))");
     return RetVal.ToString();
   }
   #endregion --- Converters -------------------------------------------------------------------------------------
+
+  public override Task Clear() {
+    try {
+      _lock.EnterWriteLock();
+      Medias.Clear();
+      return Task.CompletedTask;
+    } finally {
+      _lock.EnterWriteLock();
+    }
+
+  }
+
+  public override ValueTask<bool> Any() {
+    try {
+      _lock.EnterReadLock();
+      return ValueTask.FromResult(Medias.Any());
+    } finally {
+      _lock.ExitReadLock();
+    }
+  }
+
+  public override async ValueTask<bool> IsEmpty() {
+    return !await Any();
+  }
 
   public IAsyncEnumerable<IMedia> GetMediasAsync() {
     try {
@@ -39,7 +66,7 @@ public partial class TStorageMemoryMedias : AStorageMemory, IStorageMedia {
     LogDebugBox("Filter", filter);
 
     IMediasPage RetVal = new TMediasPage() {
-      Source = PhysicalDataPath,
+      //Source = PhysicalDataPath,
       Page = filter.Page
     };
 

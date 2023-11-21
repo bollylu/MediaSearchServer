@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+
 using System.Text.RegularExpressions;
 
 using BLTools.Processes;
@@ -166,7 +167,6 @@ public partial class TFFProbe : ALoggable, IMediaSourceStreamsFinder {
 
 
   /**********************************************************************************************************************************/
-
   public async Task<string> GetVersion() {
 
     string FullVersion = await ProcessHelper.ExecuteProcessAsync(FFPROBE, "-version");

@@ -70,6 +70,9 @@ public abstract class AMedia :
   public IMediaSources MediaSources { get; } = new TMediaSources();
   //[DoNotDump]
   public IMediaPictures MediaPictures { get; } = new TMediaPictures();
+
+  public List<string> Groups { get; } = new();
+  public bool IsGroupMember => Groups.Any();
   #endregion --- IMedia -----------------------------------------
 
   #endregion --- Public properties ---------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 public abstract class AStorage : ALoggable, IStorage {
   protected AStorage() { }
 
-  public string PhysicalDataPath { get; set; } = "";
+  //public string PhysicalDataPath { get; set; } = "";
 
   public abstract ValueTask<bool> Exists();
   public abstract ValueTask<bool> Create();
