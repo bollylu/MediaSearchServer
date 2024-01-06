@@ -1,34 +1,38 @@
-﻿namespace MediaSearch.Storage;
-public abstract class AStorageMemory : AStorage {
+﻿using BLTools.Diagnostic;
 
+namespace MediaSearch.Storage;
+public abstract class AStorageMemory : ALoggable, IStorage {
+
+  public string Name { get; set; } = string.Empty;
+
+  [DoNotDump]
   protected readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
   #region --- IStorage --------------------------------------------
-  public override ValueTask<bool> Exists() {
+  public ValueTask<bool> Exists() {
     return ValueTask.FromResult(true);
   }
 
-  public override async ValueTask<bool> Create() {
+  public async ValueTask<bool> Create() {
     await Clear();
     return true;
   }
 
-  public override async ValueTask<bool> Remove() {
+  public async ValueTask<bool> Remove() {
     await Clear();
     return true;
   }
 
-  //public override Task Clear() {
-  //  try {
-  //    _lock.EnterWriteLock();
-  //    Medias.Clear();
-  //    return Task.CompletedTask;
-  //  } finally {
-  //    _lock.EnterWriteLock();
-  //  }
+  public abstract Task Clear();
+  public abstract ValueTask<bool> Any();
+  public abstract ValueTask<bool> IsEmpty();
 
-  //}
   #endregion --- IStorage --------------------------------------------
+
+  protected AStorageMemory() { }
+  protected AStorageMemory(ILogger logger) {
+    Logger = logger;
+  }
 
   //protected bool AddPicture(IRecord mediaId, string pictureName, byte[] pictureContent) {
   //  const string ERROR_MSG_UNABLE_TO_ADD_PICTURE = "Unable to add picture";

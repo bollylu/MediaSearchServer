@@ -2,7 +2,7 @@
 
 public interface IStorage {
 
-  //string PhysicalDataPath { get; }
+  string Name { get; set; }
 
   ValueTask<bool> Exists();
   ValueTask<bool> Create();

@@ -2,6 +2,7 @@
 using BLTools.Diagnostic.Logging;
 
 using MediaSearch.Models;
+using MediaSearch.Storage;
 
 using static BLTools.ConsoleExtension.ConsoleExtension;
 using static BLTools.Diagnostic.TraceInfo;
@@ -13,6 +14,12 @@ class Program {
   static ILogger Logger = new TConsoleLogger<Program>();
 
   static async Task Main(string[] args) {
+
+    if (OperatingSystem.IsWindows()) {
+      Console.SetBufferSize(260, 60);
+      Console.SetWindowSize(260, 60);
+      Console.CursorVisible = false;
+    }
 
     #region --- Constants --------------------------------------------
     int TIMEOUT_IN_MS = (int)TimeSpan.FromMinutes(5).TotalMilliseconds;
@@ -57,28 +64,24 @@ class Program {
 
     #endregion --- Parameters --------------------------------------------
 
-    //TMovie TestMovie = new TMovie();
+    #region --- Initialize storage --------------------------------------------
+    Message("Instanciate storage");
+    TStorageMemoryMedias Storage = new();
+
+    try {
+      Message("Check for storage, if exists, remove it");
+      if (await Storage.Exists()) {
+        await Storage.Remove();
+      }
+      Message("Create storage");
+      await Storage.Create();
+    } catch (Exception ex) {
+      Usage($"Problem accessing storage : {ex.Message}");
+    }
+    Dump(Storage);
+    #endregion --- Initialize storage --------------------------------------------
 
 
-
-    //#region --- Initialize storage --------------------------------------------
-    //Message("Instanciate storage");
-    //IStorageMovie Storage = new TStorageMemoryMovies() { PhysicalDataPath = ParamDataSource };
-
-    //try {
-    //  Message("Check for storage, if exists, remove it");
-    //  if (await Storage.Exists()) {
-    //    await Storage.Remove();
-    //  }
-    //  Message("Create storage");
-    //  await Storage.Create();
-    //} catch (Exception ex) {
-    //  Usage($"Problem accessing storage : {ex.Message}");
-    //}
-    //Dump(Storage);
-    //#endregion --- Initialize storage --------------------------------------------
-
-    List<IMedia> Storage = new List<IMedia>();
 
     IMediaMovieParser MovieParser = new TMediaMovieParserWindows(ParamDataSource);
     MovieParser.Init();
@@ -90,18 +93,18 @@ class Program {
 
     using (TChrono Chrono = new()) {
       Chrono.Reset();
-      Task DogetResults = Task.Run(() => {
+      Task DogetResults = Task.Run(async () => {
         while (MovieParser.Results.Any() || !MovieParser.ParsingComplete) {
           MovieParser.Results.TryDequeue(out IMediaMovie? MovieItem);
           if (MovieItem is not null) {
-            Storage.Add(MovieItem);
+            await Storage.AddMediaAsync(MovieItem).ConfigureAwait(false);
           }
         }
       });
 
-      await Task.WhenAll(MovieParser.ParseFolderAsync(ParamDataSource), DogetResults);
+      await Task.WhenAll(MovieParser.ParseFolderAsync(ParamDataSource), DogetResults).ConfigureAwait(false);
 
-      Message($"{Storage.Count} movies available");
+      Message($"{await Storage.MediasCount()} movies available");
       Message($"{MovieParser.LastParseCount} parses done");
       Message($"{MovieParser.LastSuccessCount} success");
       Message($"{MovieParser.LastErrorCount} errors");
@@ -155,17 +158,19 @@ class Program {
   static readonly object DisplayLock = new object();
   static void ConsoleProgressUpdate() {
     lock (DisplayLock) {
-      int PosX = Console.CursorLeft;
-      int PosY = Console.CursorTop;
+      (int Col, int Row) CursorPos = Console.GetCursorPosition();
       ConsoleColor BGC = Console.BackgroundColor;
       ConsoleColor FGC = Console.ForegroundColor;
-      Console.SetCursorPosition(0, Console.CursorTop - 1);
-      Console.BackgroundColor = ConsoleColor.Cyan;
-      Console.ForegroundColor = ConsoleColor.DarkBlue;
-      Console.Write($"{Counter:0000} => {MessageToConsole}".AlignedLeft(Console.BufferWidth));
+
+      Console.SetCursorPosition(0, Console.WindowHeight - 1);
+      Console.BackgroundColor = ConsoleColor.Black;
+      Console.ForegroundColor = ConsoleColor.White;
+
+      Console.Write($"{Counter:0000} => {MessageToConsole}".AlignedLeft(Console.WindowWidth));
+
       Console.BackgroundColor = BGC;
       Console.ForegroundColor = FGC;
-      Console.SetCursorPosition(PosX, PosY);
+      Console.SetCursorPosition(CursorPos.Col, CursorPos.Row);
     }
   }
 }

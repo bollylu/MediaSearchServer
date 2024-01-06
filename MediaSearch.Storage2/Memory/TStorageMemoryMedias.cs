@@ -1,13 +1,15 @@
-﻿namespace MediaSearch.Storage;
+﻿using BLTools.Diagnostic;
+
+namespace MediaSearch.Storage;
 public class TStorageMemoryMedias : AStorageMemory, IStorageMedias {
 
-  protected readonly List<IMedia> Medias = new List<IMedia>();
+  [DoNotDump]
+  protected readonly List<IMedia> Medias = new();
 
-  protected readonly Dictionary<IRecord, Dictionary<string, byte[]>> MediaPictures = new Dictionary<IRecord, Dictionary<string, byte[]>>();
+  //protected readonly Dictionary<IRecord, Dictionary<string, byte[]>> MediaPictures = new ();
 
   #region --- Constructor(s) ---------------------------------------------------------------------------------
-  public TStorageMemoryMedias() : base() {
-    Logger = GlobalSettings.LoggerPool.GetLogger<TStorageMemoryMedias>();
+  public TStorageMemoryMedias() : base(GlobalSettings.LoggerPool.GetLogger<TStorageMemoryMedias>()) {
   }
   #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
@@ -160,7 +162,13 @@ public class TStorageMemoryMedias : AStorageMemory, IStorageMedias {
   }
 
   public ValueTask<bool> RemoveAllMediasAsync() {
-    throw new NotImplementedException();
+    try {
+      _lock.EnterWriteLock();
+      Medias.Clear();
+      return ValueTask.FromResult(true);
+    } finally {
+      _lock.ExitWriteLock();
+    }
   }
 
 }

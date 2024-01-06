@@ -4,8 +4,14 @@
 
 classDiagram
 
-  class IStorage:::red {
+  class IStorage {
         <<interface>>
+        + Exists() : bool
+        + Create() : bool
+        + Remove() : bool
+        + Any() : bool
+        + IsEmpty() : bool
+        + Clear()
         
   }
 
@@ -24,63 +30,57 @@ classDiagram
   }
 
   namespace KindOfStorage {
-    class IStorageMemory {
-          <<interface>>
+    class AStorageMemory {
+          <<abstract>>
     }
 
-    class IStorageSqLite {
-          <<interface>>
+    class AStorageSqLite {
+          <<abstract>>
     }
 
-    class IStorageMsSql {
-          <<interface>>
+    class AStorageMsSql {
+          <<abstract>>
     }
 
-    class IStorageMySql {
-          <<interface>>
+    class AStorageMySql {
+          <<abstract>>
     }
 
-    class IStorageXml {
-          <<interface>>
+    class AStorageXml {
+          <<abstract>>
     }
 
-    class IStorageJson {
-          <<interface>>
+    class AStorageJson {
+          <<abstract>>
     }
   }
 
-  class AStorage {
-
-  }
-
-  class ALoggable {
-
-  }
-
-  class `TStorageMemoryMedias(Movies|Series|...)` {
+  class `TStorage(Memory|SqLite|...)(Movies|Series|...)` {
 
   }
 
 
 
-IStorageSqLite <|-- IStorage : inherits
-IStorageMsSql <|-- IStorage : inherits
-IStorageMySql <|-- IStorage : inherits
-IStorageXml <|-- IStorage : inherits
-IStorageJson <|-- IStorage : inherits
-IStorageMemory <|-- IStorage : inherits
+AStorageSqLite --|> IStorage : implements
+AStorageMsSql --|> IStorage : implements
+AStorageMySql --|> IStorage : implements
+AStorageXml --|> IStorage : implements
+AStorageJson --|> IStorage : implements
+AStorageMemory --|> IStorage : implements
 
 
+IStorageMediasMovies --|> IStorageMedias : inherits
+IStorageMediasSeries --|> IStorageMedias : inherits
 
-IStorageMediasMovies <|-- IStorageMedias : inherits
-IStorageMediasSeries <|-- IStorageMedias : inherits
-
-AStorage <|-- IStorage : implements
-AStorage <|-- ALoggable : inherits
-
-`TStorageMemoryMedias(Movies|Series|...)` <|-- AStorage : inherits
-`TStorageMemoryMedias(Movies|Series|...)` <|.. IStorageMemory : compose
-`TStorageMemoryMedias(Movies|Series|...)` <|.. IStorageMediasMovies : compose
-
+`TStorage(Memory|SqLite|...)(Movies|Series|...)` ..|> AStorageMemory : inherits
+`TStorage(Memory|SqLite|...)(Movies|Series|...)` ..|> AStorageSqLite : inherits
+`TStorage(Memory|SqLite|...)(Movies|Series|...)` ..|> AStorageMsSql : inherits
+`TStorage(Memory|SqLite|...)(Movies|Series|...)` ..|> AStorageMySql : inherits
+`TStorage(Memory|SqLite|...)(Movies|Series|...)` ..|> AStorageXml : inherits
+`TStorage(Memory|SqLite|...)(Movies|Series|...)` ..|> AStorageJson : inherits
+`TStorage(Memory|SqLite|...)(Movies|Series|...)` ..|> IStorageMediasMovies : implements
+`TStorage(Memory|SqLite|...)(Movies|Series|...)` ..|> IStorageMediasSeries : implements
+TStorageMemoryMedias ..|> AStorageMemory : inherits
+TStorageMemoryMedias ..|> IStorageMedias : implements
 
 
